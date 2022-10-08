@@ -27,8 +27,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.lighttigerxiv.simple.mp.compose.Playlist
 import com.lighttigerxiv.simple.mp.compose.R
+import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.composables.BasicToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
@@ -41,7 +43,7 @@ fun AddToPlaylistScreen(
     previousPage: String,
     selectedSongID: Long,
     onBackClick: () -> Unit
-){
+) {
 
     val createPlaylistSheetState = rememberBottomSheetScaffoldState()
     val playlists = activityMainViewModel.playlists.observeAsState().value!!
@@ -52,14 +54,14 @@ fun AddToPlaylistScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-    ){
+    ) {
 
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
 
             BasicToolbar(
-                backButtonText = remember{previousPage},
+                backButtonText = remember { previousPage },
                 onBackClicked = { onBackClick() }
             )
 
@@ -86,14 +88,14 @@ fun AddToPlaylistScreen(
                                 .fillMaxWidth()
                                 .wrapContentHeight(),
                             horizontalArrangement = Arrangement.Center
-                        ){
+                        ) {
                             Row(
                                 modifier = Modifier
                                     .width(40.dp)
                                     .height(5.dp)
                                     .clip(RoundedCornerShape(percent = 100))
                                     .background(MaterialTheme.colorScheme.primary)
-                            ){}
+                            ) {}
                         }
 
                         Spacer(Modifier.height(10.dp))
@@ -118,22 +120,11 @@ fun AddToPlaylistScreen(
                             horizontalArrangement = Arrangement.End,
                             modifier = Modifier
                                 .fillMaxWidth()
-                        ){
+                        ) {
                             Button(
                                 onClick = {
 
-                                    val lastID = if(playlists.size > 0) playlists.maxBy { it.id }.id else 0
-                                    val newPlaylistID = lastID + 1
-
-                                    val newPlaylist = Playlist(
-                                        id = newPlaylistID,
-                                        name = playlistNameValue,
-                                        image = null,
-                                        songs = ArrayList()
-                                    )
-
-                                    activityMainViewModel.updatePlaylists(newPlaylist)
-
+                                    activityMainViewModel.createPlaylist(playlistNameValue)
                                     scope.launch { createPlaylistSheetState.bottomSheetState.collapse() }
                                 }
                             ) {
@@ -145,14 +136,14 @@ fun AddToPlaylistScreen(
                         }
                     }
                 }
-            ) { sheetPadding->
+            ) { sheetPadding ->
 
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(activityMainViewModel.surfaceColor.value!!)
                         .padding(sheetPadding)
-                ){
+                ) {
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -195,10 +186,10 @@ fun AddToPlaylistScreen(
                         modifier = Modifier.fillMaxSize(),
                         content = {
 
-                            items( playlists, key = { playlist -> playlist.id } ){ playlist ->
+                            items(playlists, key = { playlist -> playlist.id }) { playlist ->
 
-                                val playlistID = remember{playlist.id}
-                                val playlistName = remember{playlist.name}
+                                val playlistID = remember { playlist.id }
+                                val playlistName = remember { playlist.name }
 
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -209,7 +200,13 @@ fun AddToPlaylistScreen(
                                             var canContinue = true
 
 
-                                            playlist.songs.forEach { song ->
+                                            val playlistSongs = if (playlist.songs != null)
+                                                Gson().fromJson(playlist.songs, object : TypeToken<ArrayList<Song>>() {}.type) as ArrayList<Song>
+                                            else
+                                                ArrayList()
+
+
+                                            playlistSongs.forEach { song ->
 
                                                 if (song.id == selectedSongID) {
                                                     canContinue = false
@@ -219,16 +216,13 @@ fun AddToPlaylistScreen(
                                                 }
                                             }
 
+
                                             if (canContinue) {
 
-                                                activityMainViewModel.playlists.value!!.find { it.id == playlistID }!!.songs.add(selectedSong)
+                                                playlistSongs.add(selectedSong)
+                                                val newPlaylistSongsJson = Gson().toJson(playlistSongs)
 
-                                                val playlistsJson = Gson().toJson(activityMainViewModel.playlists.value!!)
-
-                                                activityMainViewModel.preferences
-                                                    .edit()
-                                                    .putString("playlists", playlistsJson)
-                                                    .apply()
+                                                activityMainViewModel.updatePlaylistSongs(songsJson = newPlaylistSongsJson, playlistID = playlist.id)
 
                                                 onBackClick()
                                             }

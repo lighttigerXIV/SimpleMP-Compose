@@ -2,7 +2,6 @@ package com.lighttigerxiv.simple.mp.compose.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -51,10 +50,7 @@ fun SongItem(
     Row( modifier = Modifier
         .fillMaxWidth()
         .height(70.dp)
-        .clickable(
-            indication = null,
-            interactionSource = remember { MutableInteractionSource() }
-        ) {
+        .clickable{
             onSongClick(position)
         }
     ) {
@@ -148,7 +144,6 @@ fun SongItem(
             )
         }
     }
-
 
 
     if(!lastPosition){

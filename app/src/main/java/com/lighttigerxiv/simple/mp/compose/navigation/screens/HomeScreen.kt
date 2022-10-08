@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.navigation.screens
 
-import android.annotation.SuppressLint
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import androidx.compose.foundation.Image
@@ -12,23 +11,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.activities.ActivitySettings
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
 import com.lighttigerxiv.simple.mp.compose.composables.SongItem
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun HomeScreen(
     activityMainViewModel: ActivityMainViewModel

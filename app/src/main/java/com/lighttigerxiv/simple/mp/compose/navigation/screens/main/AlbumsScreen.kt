@@ -25,7 +25,7 @@ import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
 @Composable
 fun AlbumsScreen(
     activityMainViewModel: ActivityMainViewModel,
-    onAlbumClicked : () -> Unit
+    onAlbumClicked : (albumID : Long) -> Unit
 ){
 
     val context = LocalContext.current
@@ -124,7 +124,7 @@ fun AlbumsScreen(
                         cardText = remember{album.albumName},
                         onCardClicked = {
                             activityMainViewModel.clickedAlbumID.value = album.albumID
-                            onAlbumClicked()
+                            onAlbumClicked(album.albumID)
                         }
                     )
                 }

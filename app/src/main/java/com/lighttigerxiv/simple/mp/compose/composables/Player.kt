@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.composables
 
-import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,7 +19,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -30,10 +28,9 @@ import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
 @Composable
 fun Player(
     activityMainViewModel: ActivityMainViewModel,
-    onClosePlayer : () -> Unit
-){
+    onClosePlayer: () -> Unit
+) {
 
-    val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val songTitle = activityMainViewModel.selectedSongTitle.observeAsState().value
     val songArtistName = activityMainViewModel.selectedSongArtistName.observeAsState().value
@@ -51,18 +48,18 @@ fun Player(
 
 
     val sliderValue = remember { mutableStateOf(currentMediaPlayerPosition!! / 1000.toFloat()) }
-    val currentMinutesAndSecondsValue = remember{ mutableStateOf(songCurrentMinutesAndSeconds) }
+    val currentMinutesAndSecondsValue = remember { mutableStateOf(songCurrentMinutesAndSeconds) }
 
     val primaryColor = MaterialTheme.colorScheme.primary
     val iconsColor = MaterialTheme.colorScheme.onSurface
 
 
     val shuffleColor =
-        if(isMusicShuffled!!) primaryColor
+        if (isMusicShuffled!!) primaryColor
         else iconsColor
 
     val repeatColor =
-        if(isMusicOnRepeat!!) primaryColor
+        if (isMusicOnRepeat!!) primaryColor
         else iconsColor
 
 
@@ -83,10 +80,10 @@ fun Player(
 
 
                 Image(
-                    bitmap = remember{activityMainViewModel.closePlayerIcon},
+                    bitmap = remember { activityMainViewModel.closePlayerIcon },
                     contentDescription = "",
                     contentScale = ContentScale.FillHeight,
-                    colorFilter = remember { ColorFilter.tint(iconsColor)},
+                    colorFilter = remember { ColorFilter.tint(iconsColor) },
                     modifier = Modifier
                         .height(45.dp)
                         .width(45.dp)
@@ -99,30 +96,23 @@ fun Player(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Image(
-                    bitmap = remember{activityMainViewModel.queueListIcon},
+                    bitmap = remember { activityMainViewModel.queueListIcon },
                     contentDescription = "",
                     contentScale = ContentScale.FillHeight,
-                    colorFilter = remember { ColorFilter.tint(iconsColor)},
+                    colorFilter = remember { ColorFilter.tint(iconsColor) },
                     modifier = Modifier
                         .height(45.dp)
                         .width(45.dp)
                         .padding(10.dp)
-                        .clickable {
-                            /*
-                            context.startActivity(
-                                Intent( context, ActivityQueueList::class.java )
-                            )
-
-                             */
-                        }
+                        .clickable {}
                 )
             }
 
-            when(configuration.orientation){
+            when (configuration.orientation) {
 
-                Configuration.ORIENTATION_PORTRAIT->{
+                Configuration.ORIENTATION_PORTRAIT -> {
 
-                    if(songAlbumArt != null){
+                    if (songAlbumArt != null) {
 
                         Image(
                             bitmap = songAlbumArt.asImageBitmap(),
@@ -153,7 +143,7 @@ fun Player(
                             modifier = Modifier
                                 .fillMaxWidth()
                         )
-                        Spacer(modifier = Modifier.height(10.dp) )
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         Slider(
                             value = sliderValue.value,
@@ -208,11 +198,11 @@ fun Player(
                                 modifier = Modifier.wrapContentHeight()
                             ) {
 
-                                if(isMusicShuffled){
+                                if (isMusicShuffled) {
                                     Spacer(modifier = Modifier.height(5.dp)) //Needed to keep shuffle button in place when shuffle is enabled
                                 }
                                 Image(
-                                    bitmap = remember{activityMainViewModel.shuffleIcon},
+                                    bitmap = remember { activityMainViewModel.shuffleIcon },
                                     contentDescription = "",
                                     colorFilter = ColorFilter.tint(shuffleColor),
                                     modifier = Modifier
@@ -222,13 +212,13 @@ fun Player(
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) { activityMainViewModel.toggleShuffle() }
                                 )
-                                if(isMusicShuffled){
+                                if (isMusicShuffled) {
                                     Dot()
                                 }
                             }
 
                             Image(
-                                bitmap = remember{activityMainViewModel.previousIcon},
+                                bitmap = remember { activityMainViewModel.previousIcon },
                                 contentDescription = "",
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
                                 modifier = Modifier
@@ -250,7 +240,7 @@ fun Player(
                                     ) { activityMainViewModel.pauseResumeMusic() }
                             )
                             Image(
-                                bitmap = remember{activityMainViewModel.nextIcon},
+                                bitmap = remember { activityMainViewModel.nextIcon },
                                 contentDescription = "",
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
                                 modifier = Modifier
@@ -264,13 +254,13 @@ fun Player(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.wrapContentHeight()
-                            ){
+                            ) {
 
-                                if(isMusicOnRepeat){
+                                if (isMusicOnRepeat) {
                                     Spacer(modifier = Modifier.height(5.dp)) //Needed to keep repeat button in place when repeat is enabled
                                 }
                                 Image(
-                                    bitmap = remember{activityMainViewModel.repeatIcon},
+                                    bitmap = remember { activityMainViewModel.repeatIcon },
                                     contentDescription = "",
                                     colorFilter = ColorFilter.tint(repeatColor),
                                     modifier = Modifier
@@ -280,16 +270,16 @@ fun Player(
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) { activityMainViewModel.toggleRepeat() }
                                 )
-                                if(isMusicOnRepeat){
+                                if (isMusicOnRepeat) {
                                     Dot()
                                 }
                             }
                         }
                     }
                 }
-                else->{
+                else -> {
 
-                    if(songAlbumArt != null){
+                    if (songAlbumArt != null) {
 
                         Row(
                             modifier = Modifier
@@ -384,7 +374,7 @@ fun Player(
                                         modifier = Modifier.wrapContentHeight()
                                     ) {
 
-                                        if(isMusicShuffled){
+                                        if (isMusicShuffled) {
                                             Spacer(modifier = Modifier.height(5.dp)) //Needed to keep shuffle button in place when shuffle is enabled
                                         }
                                         Image(
@@ -398,7 +388,7 @@ fun Player(
                                                     interactionSource = remember { MutableInteractionSource() }
                                                 ) { activityMainViewModel.toggleShuffle() }
                                         )
-                                        if(isMusicShuffled){
+                                        if (isMusicShuffled) {
                                             Dot()
                                         }
                                     }
@@ -440,9 +430,9 @@ fun Player(
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         modifier = Modifier.wrapContentHeight()
-                                    ){
+                                    ) {
 
-                                        if(isMusicOnRepeat){
+                                        if (isMusicOnRepeat) {
                                             Spacer(modifier = Modifier.height(5.dp)) //Needed to keep repeat button in place when repeat is enabled
                                         }
                                         Image(
@@ -456,7 +446,7 @@ fun Player(
                                                     interactionSource = remember { MutableInteractionSource() }
                                                 ) { activityMainViewModel.toggleRepeat() }
                                         )
-                                        if(isMusicOnRepeat){
+                                        if (isMusicOnRepeat) {
                                             Dot()
                                         }
                                     }
@@ -467,9 +457,9 @@ fun Player(
                 }
             }
 
-            activityMainViewModel.onSongSecondPassed = { position->
+            activityMainViewModel.onSongSecondPassed = { position ->
 
-                if(!isDragged){
+                if (!isDragged) {
                     sliderValue.value = position.toFloat()
                 }
 
@@ -480,7 +470,7 @@ fun Player(
 }
 
 @Composable
-fun Dot(){
+fun Dot() {
     Box(
         modifier = Modifier
             .height(5.dp)

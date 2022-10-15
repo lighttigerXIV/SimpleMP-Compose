@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens
+package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
@@ -26,12 +26,12 @@ import com.lighttigerxiv.simple.mp.compose.composables.SongItem
 @Composable
 fun HomeScreen(
     activityMainViewModel: ActivityMainViewModel
-){
+) {
     val context = LocalContext.current
     var popupMenuExpanded by remember { mutableStateOf(false) }
     val sortSharedPrefs = context.getSharedPreferences("sorting", MODE_PRIVATE)
     val homeSongsList = activityMainViewModel.currentHomeSongsList.observeAsState().value!!
-    val surfaceColor = remember{ activityMainViewModel.surfaceColor.value!! }
+    val surfaceColor = remember { activityMainViewModel.surfaceColor.value!! }
 
 
     val menuEntries = ArrayList<String>()
@@ -49,43 +49,51 @@ fun HomeScreen(
 
         Scaffold(
             floatingActionButton = {
-                ExtendedFloatingActionButton(
-                    onClick = { activityMainViewModel.shuffle(homeSongsList) },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .height(60.dp)
-                        .width(60.dp)
-                ){
-                    Image(
-                        bitmap = activityMainViewModel.shuffleIcon,
-                        contentDescription = "",
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+
+                if (activityMainViewModel.songsList.size > 0) {
+
+                    ExtendedFloatingActionButton(
+                        onClick = { activityMainViewModel.shuffle(homeSongsList) },
+                        containerColor = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
-                            .height(30.dp)
-                            .width(30.dp)
-                    )
+                            .height(60.dp)
+                            .width(60.dp)
+                    ) {
+                        Image(
+                            bitmap = activityMainViewModel.shuffleIcon,
+                            contentDescription = "",
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                            modifier = Modifier
+                                .height(30.dp)
+                                .width(30.dp)
+                        )
+                    }
                 }
             }
-        ) { scaffoldPadding->
+        ) { scaffoldPadding ->
 
-            Column( modifier = Modifier
-                .fillMaxSize()
-                .background(surfaceColor)
-                .padding(scaffoldPadding) ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(surfaceColor)
+                    .padding(scaffoldPadding)
+            ) {
 
-                Row( modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                ) {
 
                     val searchPlaceholder = activityMainViewModel.hintHomeSearchText.value!!
                     val searchText = activityMainViewModel.homeSearchText.observeAsState().value!!
-                    
+
                     CustomTextField(
                         text = searchText,
                         placeholder = searchPlaceholder,
                         onValueChanged = {
                             activityMainViewModel.homeSearchText.value = it
-                            activityMainViewModel.filterHomeSongsList( sortSharedPrefs.getString("home", "Recent")!! )
+                            activityMainViewModel.filterHomeSongsList(sortSharedPrefs.getString("home", "Recent")!!)
                         },
                         sideIcon = painterResource(id = R.drawable.icon_more_regular),
                         onSideIconClick = { popupMenuExpanded = true }
@@ -96,28 +104,28 @@ fun HomeScreen(
                     ) {
 
                         DropdownMenuItem(
-                            text = { Text(text = "Sort By Recent")},
+                            text = { Text(text = "Sort By Recent") },
                             onClick = {
                                 sortSharedPrefs.edit().putString("home", "Recent").apply()
                                 activityMainViewModel.currentHomeSongsList.value = activityMainViewModel.recentHomeSongsList
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text(text = "Sort By Oldest")},
+                            text = { Text(text = "Sort By Oldest") },
                             onClick = {
                                 sortSharedPrefs.edit().putString("home", "Oldest").apply()
                                 activityMainViewModel.currentHomeSongsList.value = activityMainViewModel.oldestHomeSongsList
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text(text = "Sort By Ascendent")},
+                            text = { Text(text = "Sort By Ascendent") },
                             onClick = {
                                 sortSharedPrefs.edit().putString("home", "Ascendent").apply()
                                 activityMainViewModel.currentHomeSongsList.value = activityMainViewModel.ascendentHomeSongsList
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text(text = "Sort By Descendent")},
+                            text = { Text(text = "Sort By Descendent") },
                             onClick = {
                                 sortSharedPrefs.edit().putString("home", "Descendent").apply()
                                 activityMainViewModel.currentHomeSongsList.value = activityMainViewModel.descendentHomeSongsList
@@ -125,7 +133,7 @@ fun HomeScreen(
                         )
                         Divider()
                         DropdownMenuItem(
-                            text = { Text(text = "Settings")},
+                            text = { Text(text = "Settings") },
                             onClick = { context.startActivity(Intent(context, ActivitySettings::class.java)) }
                         )
                     }
@@ -134,29 +142,37 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(30.dp))
 
+
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
-                ){
+                ) {
 
-                    itemsIndexed( items = homeSongsList, key = { _, song -> song.id } ){ index, song->
+
+
+                    itemsIndexed(items = homeSongsList, key = { _, song -> song.id }) { index, song ->
 
                         SongItem(
-                            song = remember{song},
-                            position = index,
+                            song = song,
+                            position =  index,
+                            songAlbumArt = activityMainViewModel.songsImagesList.find { it.albumID == song.albumID }!!.albumArt.asImageBitmap(),
                             lastPosition = index == homeSongsList.size - 1,
-                            songAlbumArt = remember { activityMainViewModel.songsImagesList.find { it.albumID == song.albumID }!!.albumArt.asImageBitmap() },
                             highlight = song.path == activityMainViewModel.selectedSongPath.observeAsState().value,
-                            popupMenuEntries = menuEntries,
+                            popupMenuEntries = remember{menuEntries},
+
                             onMenuClicked = { option->
 
                                 when(option){
 
                                     "artist" -> {}
-                                    "album" -> {}
+                                    "album" -> {
+
+                                        activityMainViewModel.clickedAlbumIDForFloatingAlbum.value = song.albumID
+                                        activityMainViewModel.navController.navigate("floatingAlbumScreen")
+                                    }
                                     "playlist" -> {
 
                                         activityMainViewModel.clickedSongForAddToPlaylist.value = song.id
-                                        activityMainViewModel.navController.navigate("addToPlaylist")
+                                        activityMainViewModel.navController.navigate("addToPlaylistScreen")
                                     }
                                 }
                             },

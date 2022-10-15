@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens
+package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavBackStackEntry
 import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.composables.BasicToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.SongItem
@@ -29,10 +30,11 @@ import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 @Composable
 fun AlbumScreen(
     activityMainViewModel: ActivityMainViewModel,
-    albumID: Long,
+    backStackEntry: NavBackStackEntry,
     onBackClicked: () -> Unit
 ){
 
+    val albumID = remember { backStackEntry.arguments?.getLong("albumID") }
     val album = remember { activityMainViewModel.currentAlbumsList.value!!.find{ it.albumID == albumID }!! }
     val albumArt = remember { activityMainViewModel.songsImagesList.find { it.albumID == albumID }!!.albumArt.asImageBitmap() }
     val albumName = remember { album.albumName }

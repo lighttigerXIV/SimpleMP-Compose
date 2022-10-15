@@ -23,18 +23,17 @@ import com.lighttigerxiv.simple.mp.compose.Song
 fun SongItem(
     song: Song,
     position: Int,
-    lastPosition: Boolean,
+    lastPosition: Boolean = false,
     songAlbumArt: ImageBitmap,
-    highlight: Boolean,
+    highlight: Boolean = false,
     popupMenuEntries: ArrayList<String> = ArrayList(),
-    onSongClick: (position: Int) -> Unit,
-    onMenuClicked : ( option: String ) -> Unit = {}
-){
+    onSongClick: (position: Int) -> Unit = {},
+    onMenuClicked: (option: String) -> Unit = {}
+) {
 
     val songTitle = remember { song.title }
     val songArtist = remember { song.artistName }
-    val isPopupMenuExpanded = remember{ mutableStateOf(false)}
-
+    val isPopupMenuExpanded = remember { mutableStateOf(false) }
 
     val titleColor = when (highlight) {
         true -> MaterialTheme.colorScheme.primary
@@ -50,22 +49,22 @@ fun SongItem(
     Row( modifier = Modifier
         .fillMaxWidth()
         .height(70.dp)
-        .clickable{
-            onSongClick(position)
-        }
+        .clickable{ onSongClick(position) }
     ) {
 
-
         Image(
-            bitmap = remember{ songAlbumArt },
+            bitmap = songAlbumArt,
             contentDescription = songTitle,
             modifier = Modifier
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(20)),
         )
+
         Spacer(modifier = Modifier
             .fillMaxHeight()
             .width(10.dp))
+
+
 
         Column( modifier = Modifier
             .fillMaxHeight()
@@ -143,11 +142,13 @@ fun SongItem(
                     .clickable { isPopupMenuExpanded.value = true }
             )
         }
-    }
 
+
+    }
 
     if(!lastPosition){
         Spacer(modifier = Modifier.height(5.dp))
     }
+
 }
 

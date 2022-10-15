@@ -101,6 +101,10 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
     var isMusicOnRepeat = MutableLiveData(false)
 
     val clickedSongForAddToPlaylist = MutableLiveData<Long>(0)
+    val clickedAlbumIDForFloatingAlbum = MutableLiveData<Long>(0)
+    val clickedArtistIDForFloatingArtist = MutableLiveData<Long>(0)
+
+
 
 
     //Song Related

@@ -23,8 +23,8 @@ import com.lighttigerxiv.simple.mp.compose.composables.ImageCard
 @Composable
 fun ArtistsScreen(
     activityMainViewModel: ActivityMainViewModel,
-    onArtistClicked: () -> Unit
-){
+    onArtistClicked: (artistID: Long) -> Unit
+) {
 
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
@@ -34,10 +34,10 @@ fun ArtistsScreen(
     val artistsList = activityMainViewModel.currentArtistsList.observeAsState().value!!
 
 
-    val gridCellsCount = when(configuration.orientation){
+    val gridCellsCount = when (configuration.orientation) {
 
-        Configuration.ORIENTATION_PORTRAIT->2
-        else->4
+        Configuration.ORIENTATION_PORTRAIT -> 2
+        else -> 4
     }
 
     Box(
@@ -47,7 +47,7 @@ fun ArtistsScreen(
             .padding(10.dp)
     ) {
 
-        Column( modifier = Modifier.fillMaxSize() ) {
+        Column(modifier = Modifier.fillMaxSize()) {
 
             Row(
                 modifier = Modifier
@@ -112,19 +112,19 @@ fun ArtistsScreen(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier
                     .fillMaxSize(),
-            ){
+            ) {
 
                 items(
                     items = artistsList,
-                    key = { artist-> artist.artistID },
-                ){ artist->
+                    key = { artist -> artist.artistID },
+                ) { artist ->
 
                     ImageCard(
                         cardImage = remember { activityMainViewModel.songsImagesList.first { it.albumID == artist.albumID }.albumArt },
-                        cardText = remember{artist.artistName},
+                        cardText = remember { artist.artistName },
                         onCardClicked = {
-                            activityMainViewModel.clickedArtistID.value = artist.artistID
-                            onArtistClicked()
+
+                            onArtistClicked(artist.artistID)
                         }
                     )
                 }

@@ -4,6 +4,7 @@
     package="com.lighttigerxiv.simple.mp.compose">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -20,6 +21,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ComposeSimpleMP"
         tools:targetApi="31">
+        <activity
+            android:name=".ActivityFirstSetup"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".ActivityAddToPlaylist"
             android:exported="false" />

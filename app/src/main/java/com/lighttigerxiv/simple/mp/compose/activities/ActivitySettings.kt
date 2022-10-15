@@ -7,8 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -122,31 +120,50 @@ class ActivitySettings : ComponentActivity() {
                                 text = "Theming",
                                 color = MaterialTheme.colorScheme.primary,
                                 fontSize = 16.sp,
-                                textAlign = TextAlign.Center,
+                                textAlign = TextAlign.Start,
                                 maxLines = 1,
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
                         Spacer(modifier = Modifier.height(10.dp))
-                        DefaultSettingItem(
-                            icon = painterResource(id = R.drawable.icon_theme_mode_regular),
-                            settingText = "Theme Mode",
-                            settingValue = activitySettingsViewModel.themeModeSetting.value!!,
-                            onSettingClick = { showThemeModeDialog.value = true },
-                        )
-                        DefaultSettingItem(
-                            icon = painterResource(id = R.drawable.icon_moon_regular),
-                            settingText = "Dark Mode",
-                            settingValue = activitySettingsViewModel.darkModeSetting.value!!,
-                            onSettingClick = { showDarkModeDialog.value = true }
-                        )
 
-                        DefaultSettingItem(
-                            icon = painterResource(id = R.drawable.icon_theme_regular),
-                            settingText = "Accent Color",
-                            settingValue = activitySettingsViewModel.themeAccentSetting.value!!,
-                            onSettingClick = { showThemeAccentDialog.value = true }
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                        ){
+
+                            DefaultSettingItem(
+                                icon = painterResource(id = R.drawable.icon_theme_mode_regular),
+                                settingText = "Theme Mode",
+                                settingValue = activitySettingsViewModel.themeModeSetting.value!!,
+                                onSettingClick = { showThemeModeDialog.value = true },
+                            )
+
+                            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                                Divider(Modifier.fillMaxWidth(0.95f))
+                            }
+
+                            DefaultSettingItem(
+                                icon = painterResource(id = R.drawable.icon_moon_regular),
+                                settingText = "Dark Mode",
+                                settingValue = activitySettingsViewModel.darkModeSetting.value!!,
+                                onSettingClick = { showDarkModeDialog.value = true }
+                            )
+
+                            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                                Divider(Modifier.fillMaxWidth(0.95f))
+                            }
+
+                            DefaultSettingItem(
+                                icon = painterResource(id = R.drawable.icon_theme_regular),
+                                settingText = "Accent Color",
+                                settingValue = activitySettingsViewModel.themeAccentSetting.value!!,
+                                onSettingClick = { showThemeAccentDialog.value = true }
+                            )
+                        }
+
 
                         if (showThemeModeDialog.value) {
 
@@ -305,7 +322,7 @@ class ActivitySettings : ComponentActivity() {
                                 }
                             }
                         }
-                        Divider()
+
                         Spacer(modifier = Modifier.height(10.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth()
@@ -315,19 +332,30 @@ class ActivitySettings : ComponentActivity() {
                                 text = "Audio",
                                 color = MaterialTheme.colorScheme.primary,
                                 fontSize = 16.sp,
-                                textAlign = TextAlign.Center,
+                                textAlign = TextAlign.Start,
                                 maxLines = 1,
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        DefaultSettingItem(
-                            icon = painterResource(id = R.drawable.icon_filter_regular),
-                            settingText = "Filter Audio Below",
-                            settingValue = activitySettingsViewModel.filterAudioSetting.value!!,
-                            onSettingClick = { showFilterAudioDialog.value = true }
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                        ) {
+
+                            DefaultSettingItem(
+                                icon = painterResource(id = R.drawable.icon_filter_regular),
+                                settingText = "Filter Audio Below",
+                                settingValue = "${activitySettingsViewModel.filterAudioSetting.value!!} seconds",
+                                onSettingClick = { showFilterAudioDialog.value = true }
+                            )
+                        }
+
+
 
                         if( showDarkModeDialog.value ){
 
@@ -386,7 +414,7 @@ class ActivitySettings : ComponentActivity() {
                                         }
 
                                         Row(
-                                            verticalAlignment = Alignment.CenterVertically,
+                                            verticalAlignment = CenterVertically,
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .clickable {

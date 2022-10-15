@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens
+package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import android.content.Context
 import android.content.res.Configuration
@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavBackStackEntry
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -51,28 +52,29 @@ import java.io.ByteArrayOutputStream
 @Composable
 fun ArtistScreen(
     activityMainViewModel: ActivityMainViewModel,
+    backStackEntry: NavBackStackEntry,
     onBackClicked: () -> Unit,
-    onArtistAlbumOpened: () -> Unit
-){
+    onArtistAlbumOpened: (albumID: Long) -> Unit
+) {
 
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val artistID = remember { activityMainViewModel.clickedArtistID }.value
-    val artist = remember { activityMainViewModel.songsList.find{ it.artistID == artistID }!! }
+    val artistID = remember { backStackEntry.arguments?.getLong("artistID") }
+    val artist = remember { activityMainViewModel.songsList.find { it.artistID == artistID }!! }
     val artistName = remember { artist.artistName }
     val defaultArtistPicture = remember { BitmapFactory.decodeResource(context.resources, R.drawable.icon_person_regular_highres) }
     val artistPicture = remember { mutableStateOf(defaultArtistPicture) }
-    getArtistPicture(context, artistID!!, artistName, artistPicture )
+    getArtistPicture(context, artistID!!, artistName, artistPicture)
     val artistSongsList = remember { activityMainViewModel.songsList.filter { it.artistID == artistID } as ArrayList<Song> }
     val artistAlbumsList = remember { artistSongsList.distinctBy { it.albumID } }
 
     val pagerState = rememberPagerState()
     val nestedScrollViewState = rememberNestedScrollViewState()
 
-    val gridCellsCount = when(configuration.orientation){
+    val gridCellsCount = when (configuration.orientation) {
 
-        Configuration.ORIENTATION_PORTRAIT->2
-        else->4
+        Configuration.ORIENTATION_PORTRAIT -> 2
+        else -> 4
     }
 
     VerticalNestedScrollView(
@@ -83,13 +85,13 @@ fun ArtistScreen(
                     .fillMaxWidth()
                     .wrapContentHeight()
             ) {
-                BasicToolbar(backButtonText = "Artists", onBackClicked = {onBackClicked()})
+                BasicToolbar(backButtonText = "Artists", onBackClicked = { onBackClicked() })
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Image(
                     bitmap = artistPicture.value.asImageBitmap(),
                     contentDescription = "",
-                    colorFilter = if(artistPicture.value == defaultArtistPicture) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                    colorFilter = if (artistPicture.value == defaultArtistPicture) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
                         .aspectRatio(1f)
@@ -155,12 +157,12 @@ fun ArtistScreen(
                     count = 2,
                     state = pagerState,
                     modifier = Modifier.fillMaxSize()
-                ) { currentPage->
+                ) { currentPage ->
 
 
-                    when(currentPage){
+                    when (currentPage) {
 
-                        0->{
+                        0 -> {
 
                             Column(
                                 modifier = Modifier.fillMaxSize()
@@ -195,13 +197,13 @@ fun ArtistScreen(
                                 LazyColumn(
                                     content = {
 
-                                        itemsIndexed( artistSongsList, key = {_, song -> song.id} ){ index, song->
+                                        itemsIndexed(artistSongsList, key = { _, song -> song.id }) { index, song ->
 
                                             SongItem(
                                                 song = song,
                                                 position = index,
                                                 lastPosition = index == artistSongsList.size - 1,
-                                                songAlbumArt = remember {activityMainViewModel.songsImagesList.find { it.albumID == song.albumID }!!.albumArt.asImageBitmap() },
+                                                songAlbumArt = remember { activityMainViewModel.songsImagesList.find { it.albumID == song.albumID }!!.albumArt.asImageBitmap() },
                                                 highlight = song.path == activityMainViewModel.selectedSongPath.observeAsState().value,
                                                 onSongClick = { activityMainViewModel.selectSong(artistSongsList, index) }
                                             )
@@ -210,9 +212,9 @@ fun ArtistScreen(
                                 )
                             }
                         }
-                        1->{
+                        1 -> {
                             Spacer(modifier = Modifier.height(20.dp))
-                            Column(modifier = Modifier.fillMaxSize() ){
+                            Column(modifier = Modifier.fillMaxSize()) {
 
                                 LazyVerticalGrid(
                                     columns = GridCells.Fixed(gridCellsCount),
@@ -222,8 +224,8 @@ fun ArtistScreen(
 
                                         items(
                                             items = artistAlbumsList,
-                                            key = { album-> album.albumID },
-                                        ){ album->
+                                            key = { album -> album.albumID },
+                                        ) { album ->
 
                                             val albumSongAlbumID = album.albumID
                                             val albumName = album.albumName
@@ -236,7 +238,7 @@ fun ArtistScreen(
                                                     .clickable {
                                                         activityMainViewModel.clickedArtistAlbumID.value =
                                                             album.albumID
-                                                        onArtistAlbumOpened()
+                                                        onArtistAlbumOpened(album.albumID)
                                                     }
 
                                             ) {
@@ -244,7 +246,7 @@ fun ArtistScreen(
                                                 Column(
                                                     modifier = Modifier.fillMaxSize(),
                                                     horizontalAlignment = Alignment.CenterHorizontally
-                                                ){
+                                                ) {
                                                     Image(
                                                         bitmap = remember { activityMainViewModel.songsImagesList.first { it.albumID == albumSongAlbumID }.albumArt.asImageBitmap() },
                                                         contentDescription = "",
@@ -283,43 +285,42 @@ fun getArtistPicture(
     artistID: Long,
     artistName: String,
     artistPicture: MutableState<Bitmap>
-){
+) {
 
     val spArtists = context.getSharedPreferences("artists", Context.MODE_PRIVATE)
     val artistPictureString = spArtists.getString(artistID.toString(), null)
 
 
-    if(artistPictureString != null){
+    if (artistPictureString != null) {
 
         val encodeByte = Base64.decode(artistPictureString, Base64.DEFAULT)
         artistPicture.value = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
-    }
-    else{
+    } else {
 
-        if(CheckInternet.isNetworkAvailable(context)){
+        if (CheckInternet.isNetworkAvailable(context)) {
 
             val url = "https://www.theaudiodb.com/api/v1/json/2/search.php?s=$artistName"
 
-            MakeRequest(context, url, onResponse = {responseCode, responseJson ->
+            MakeRequest(context, url, onResponse = { responseCode, responseJson ->
 
-                if(responseCode == 200){
+                if (responseCode == 200) {
 
                     val responseAudioDB = Gson().fromJson(responseJson, ResponseAudioDB::class.java)
 
 
-                    if(responseAudioDB != null){
+                    if (responseAudioDB != null) {
 
-                        if(responseAudioDB.artists?.get(0)?.strArtistThumb != null){
+                        if (responseAudioDB.artists?.get(0)?.strArtistThumb != null) {
 
-                            try{
+                            try {
 
                                 val artistImageURL = responseAudioDB.artists[0].strArtistThumb
 
                                 Glide.with(context)
                                     .asBitmap()
                                     .load(artistImageURL)
-                                    .into(object : CustomTarget<Bitmap>(){
-                                        override fun onResourceReady( resource: Bitmap, transition: Transition<in Bitmap>? ) {
+                                    .into(object : CustomTarget<Bitmap>() {
+                                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
 
                                             val baos = ByteArrayOutputStream()
                                             resource.compress(Bitmap.CompressFormat.PNG, 50, baos)
@@ -333,12 +334,12 @@ fun getArtistPicture(
 
                                         override fun onLoadCleared(placeholder: Drawable?) {}
                                     })
+                            } catch (exc: Exception) {
                             }
-                            catch (exc: Exception){}
                         }
                     }
                 }
-            } ).get()
+            }).get()
         }
     }
 }

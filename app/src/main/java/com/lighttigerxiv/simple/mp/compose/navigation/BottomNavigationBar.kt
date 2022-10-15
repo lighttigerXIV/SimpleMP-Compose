@@ -40,6 +40,8 @@ fun BottomNavigationBar(
                 item.route == "artistsScreen" && backStackEntry.value?.destination?.route == "artistScreen"-> true
                 item.route == "artistsScreen" && backStackEntry.value?.destination?.route == "artistAlbumScreen"-> true
                 item.route == "albumsScreen" && backStackEntry.value?.destination?.route == "albumScreen"-> true
+                item.route == "playlistsScreen" && backStackEntry.value?.destination?.route == "genrePlaylistScreen" -> true
+                item.route == "playlistsScreen" && backStackEntry.value?.destination?.route == "playlistScreen" -> true
                 else -> false
             }
 

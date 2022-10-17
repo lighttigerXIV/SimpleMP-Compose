@@ -12,7 +12,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -111,8 +110,7 @@ fun GenrePlaylistScreen(
                                 SongItem(
                                     song = song,
                                     position = index,
-                                    lastPosition = index == genrePlaylist.size - 1,
-                                    songAlbumArt = activityMainViewModel.songsImagesList.find { song.albumID == it.albumID }!!.albumArt.asImageBitmap(),
+                                    songAlbumArt = activityMainViewModel.songsImagesList.find { song.albumID == it.albumID }!!.albumArt,
                                     highlight = activityMainViewModel.selectedSongPath.observeAsState().value == song.path,
                                     onSongClick = {activityMainViewModel.selectSong(genrePlaylist, index)}
                                 )

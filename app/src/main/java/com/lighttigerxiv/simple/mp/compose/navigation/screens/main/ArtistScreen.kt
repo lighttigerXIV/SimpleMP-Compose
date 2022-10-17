@@ -35,7 +35,6 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import com.google.gson.Gson
 import com.lighttigerxiv.simple.mp.compose.*
@@ -120,20 +119,20 @@ fun ArtistScreen(
                 androidx.compose.material.TabRow(
                     selectedTabIndex = pagerState.currentPage,
                     contentColor = activityMainViewModel.surfaceColor.value!!,
-                    indicator = { tabPositions ->
-
-
-                        Box(
-                            modifier = Modifier
-                                .pagerTabIndicatorOffset(pagerState, tabPositions)
-                                .height(4.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    shape = RoundedCornerShape(10.dp),
-                                )
-                        )
-                    }
+                    indicator = {}
                 ) {
+
+                    val songsTabColor = when(pagerState.currentPage){
+
+                        0-> MaterialTheme.colorScheme.surfaceVariant
+                        else-> activityMainViewModel.surfaceColor.value!!
+                    }
+
+                    val albumsTabColor = when(pagerState.currentPage){
+
+                        1-> MaterialTheme.colorScheme.surfaceVariant
+                        else-> activityMainViewModel.surfaceColor.value!!
+                    }
 
                     Tab(
                         text = { Text("Songs", fontSize = 16.sp) },
@@ -141,7 +140,11 @@ fun ArtistScreen(
                         selectedContentColor = MaterialTheme.colorScheme.primary,
                         unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                         onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
-                        modifier = Modifier.background(activityMainViewModel.surfaceColor.value!!)
+                        modifier = Modifier
+                            .background(activityMainViewModel.surfaceColor.value!!)
+                            .padding(10.dp)
+                            .clip(RoundedCornerShape(percent = 100))
+                            .background(songsTabColor)
                     )
                     Tab(
                         text = { Text("Albums", fontSize = 16.sp) },
@@ -149,7 +152,11 @@ fun ArtistScreen(
                         unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                         selected = pagerState.currentPage == 1,
                         onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
-                        modifier = Modifier.background(activityMainViewModel.surfaceColor.value!!)
+                        modifier = Modifier
+                            .background(activityMainViewModel.surfaceColor.value!!)
+                            .padding(10.dp)
+                            .clip(RoundedCornerShape(percent = 100))
+                            .background(albumsTabColor)
                     )
                 }
                 Spacer(modifier = Modifier.height(20.dp))
@@ -202,8 +209,7 @@ fun ArtistScreen(
                                             SongItem(
                                                 song = song,
                                                 position = index,
-                                                lastPosition = index == artistSongsList.size - 1,
-                                                songAlbumArt = remember { activityMainViewModel.songsImagesList.find { it.albumID == song.albumID }!!.albumArt.asImageBitmap() },
+                                                songAlbumArt = remember { activityMainViewModel.songsImagesList.find { it.albumID == song.albumID }!!.albumArt },
                                                 highlight = song.path == activityMainViewModel.selectedSongPath.observeAsState().value,
                                                 onSongClick = { activityMainViewModel.selectSong(artistSongsList, index) }
                                             )
@@ -334,8 +340,7 @@ fun getArtistPicture(
 
                                         override fun onLoadCleared(placeholder: Drawable?) {}
                                     })
-                            } catch (exc: Exception) {
-                            }
+                            } catch (ignore: Exception) {}
                         }
                     }
                 }

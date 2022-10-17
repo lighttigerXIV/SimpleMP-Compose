@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
 
 @Composable
@@ -114,8 +115,8 @@ fun Player(
 
                     if (songAlbumArt != null) {
 
-                        Image(
-                            bitmap = songAlbumArt.asImageBitmap(),
+                        AsyncImage(
+                            model = songAlbumArt,
                             contentDescription = "",
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -151,7 +152,13 @@ fun Player(
                                 sliderValue.value = it
                                 currentMinutesAndSecondsValue.value = activityMainViewModel.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
                             },
-                            onValueChangeFinished = { activityMainViewModel.seekSongPosition(sliderValue.value.toInt()) },
+                            onValueChangeFinished = {
+
+                                if(activityMainViewModel.getIsMusicPaused())
+                                    activityMainViewModel.pauseResumeMusic()
+
+                                activityMainViewModel.seekSongPosition(sliderValue.value.toInt())
+                            },
                             valueRange = 1f..(songDuration!! / 1000).toFloat(),
                             interactionSource = interactionSource,
                             colors = SliderDefaults.colors(
@@ -332,7 +339,10 @@ fun Player(
                                         sliderValue.value = it
                                         currentMinutesAndSecondsValue.value = activityMainViewModel.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
                                     },
-                                    onValueChangeFinished = { activityMainViewModel.seekSongPosition(sliderValue.value.toInt()) },
+                                    onValueChangeFinished = {
+
+                                        activityMainViewModel.seekSongPosition(sliderValue.value.toInt())
+                                    },
                                     valueRange = 1f..(songDuration!! / 1000).toFloat(),
                                     interactionSource = interactionSource,
                                     colors = SliderDefaults.colors(

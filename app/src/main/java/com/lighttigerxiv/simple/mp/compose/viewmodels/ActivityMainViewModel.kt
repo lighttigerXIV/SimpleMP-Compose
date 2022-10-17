@@ -20,8 +20,7 @@ import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
 
 class ActivityMainViewModel(application: Application) : AndroidViewModel(application) {
 
-    val preferences = application.getSharedPreferences(application.packageName, MODE_PRIVATE)!!
-    val playlistDao = AppDatabase.getInstance(application).playlistDao
+    private val playlistDao = AppDatabase.getInstance(application).playlistDao
 
     val songsList = GetSongs.getSongsList(application, "Recent")
     var songsImagesList = GetSongs.getAllAlbumsImages(application)
@@ -84,6 +83,9 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
 
     //Screens states
 
+    //Home Screen
+    var showHomePopupMenu = MutableLiveData(false)
+
     //Playlist Screen
     var tfPlaylistName_PlaylistScreen = MutableLiveData("")
     var isOnEditMode_PlaylistScreen = MutableLiveData(false)
@@ -99,10 +101,6 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
     var currentMediaPlayerPosition = MutableLiveData(0)
     var isMusicShuffled = MutableLiveData(false)
     var isMusicOnRepeat = MutableLiveData(false)
-
-    val clickedSongForAddToPlaylist = MutableLiveData<Long>(0)
-    val clickedAlbumIDForFloatingAlbum = MutableLiveData<Long>(0)
-    val clickedArtistIDForFloatingArtist = MutableLiveData<Long>(0)
 
 
 
@@ -333,6 +331,11 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
             smpService.pauseResumeMusic(getApplication())
             updatePlayPauseIcons()
         }
+    }
+
+
+    fun getIsMusicPaused(): Boolean{
+        return if(isServiceBound) !smpService.isMusicPlaying() else false
     }
 
 

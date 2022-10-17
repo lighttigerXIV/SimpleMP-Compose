@@ -37,9 +37,7 @@ import com.lighttigerxiv.simple.mp.compose.composables.Player
 import com.lighttigerxiv.simple.mp.compose.navigation.BottomNavItem
 import com.lighttigerxiv.simple.mp.compose.navigation.BottomNavigationBar
 import com.lighttigerxiv.simple.mp.compose.navigation.screens.*
-import com.lighttigerxiv.simple.mp.compose.navigation.screens.main.AlbumScreen
-import com.lighttigerxiv.simple.mp.compose.navigation.screens.main.ArtistScreen
-import com.lighttigerxiv.simple.mp.compose.navigation.screens.main.HomeScreen
+import com.lighttigerxiv.simple.mp.compose.navigation.screens.main.*
 import com.lighttigerxiv.simple.mp.compose.ui.theme.ComposeSimpleMPTheme
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ThemeViewModel
 import kotlinx.coroutines.launch
@@ -232,7 +230,7 @@ class MainActivity : ComponentActivity() {
                                 composable(
                                     route = "artistAlbumScreen?albumID={albumID}",
                                     arguments = listOf(
-                                        navArgument("albumID"){type = NavType.LongType}
+                                        navArgument("albumID") { type = NavType.LongType }
                                     )
                                 ) { backStackEntry ->
                                     AlbumScreen(
@@ -244,7 +242,7 @@ class MainActivity : ComponentActivity() {
                                 composable(
                                     route = "albumScreen?albumID={albumID}",
                                     arguments = listOf(
-                                        navArgument("albumID"){ type = NavType.LongType }
+                                        navArgument("albumID") { type = NavType.LongType }
                                     )
                                 ) { backStackEntry ->
                                     AlbumScreen(
@@ -266,12 +264,57 @@ class MainActivity : ComponentActivity() {
                                         onBackClicked = { navController.navigateUp() }
                                     )
                                 }
-                                composable("addToPlaylistScreen") {
+                                composable(
+                                    route = "addToPlaylistScreen?songID={songID}",
+                                    arguments = listOf(
+                                        navArgument("songID") { type = NavType.LongType }
+                                    )
+                                ) { backStackEntry ->
                                     AddToPlaylistScreen(
                                         activityMainViewModel = activityMainViewModel,
+                                        backStackEntry = backStackEntry,
                                         previousPage = "Home",
-                                        selectedSongID = activityMainViewModel.clickedSongForAddToPlaylist.value!!,
                                         onBackClick = { navController.navigateUp() }
+                                    )
+                                }
+
+                                composable(
+                                    route = "floatingArtistScreen?artistID={artistID}",
+                                    arguments = listOf(
+                                        navArgument("artistID") { type = NavType.LongType }
+                                    )
+                                ){ backStackEntry ->
+                                    ArtistScreen(
+                                        activityMainViewModel = activityMainViewModel,
+                                        backStackEntry = backStackEntry,
+                                        onBackClicked = { navController.navigateUp() },
+                                        onArtistAlbumOpened = { albumID -> navController.navigate("floatingArtistAlbumScreen?albumID=$albumID") }
+                                    )
+                                }
+
+                                composable(
+                                    route = "floatingArtistAlbumScreen?albumID={albumID}",
+                                    arguments = listOf(
+                                        navArgument("albumID") { type = NavType.LongType }
+                                    )
+                                ){ backStackEntry ->
+                                    AlbumScreen(
+                                        activityMainViewModel = activityMainViewModel,
+                                        backStackEntry = backStackEntry,
+                                        onBackClicked = {navController.navigateUp()}
+                                    )
+                                }
+
+                                composable(
+                                    route = "floatingAlbumScreen?albumID={albumID}",
+                                    arguments = listOf(
+                                        navArgument("albumID") { type = NavType.LongType }
+                                    )
+                                ){ backStackEntry ->
+                                    AlbumScreen(
+                                        activityMainViewModel = activityMainViewModel,
+                                        backStackEntry = backStackEntry,
+                                        onBackClicked = {navController.navigateUp()}
                                     )
                                 }
                             }

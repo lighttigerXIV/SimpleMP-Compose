@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens
+package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import android.content.res.Configuration
 import androidx.compose.foundation.*
@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -29,11 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.lighttigerxiv.simple.mp.compose.Playlist
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.UsefulFunctions
@@ -77,20 +74,20 @@ fun PlaylistsScreen(
             TabRow(
                 selectedTabIndex = pagerState.currentPage,
                 contentColor = activityMainViewModel.surfaceColor.value!!,
-                indicator = { tabPositions ->
-
-
-                    Box(
-                        modifier = Modifier
-                            .pagerTabIndicatorOffset(pagerState, tabPositions)
-                            .height(4.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = RoundedCornerShape(10.dp),
-                            )
-                    )
-                }
+                indicator = {},
             ) {
+
+                val genrePlaylistColor = when(pagerState.currentPage){
+
+                    0-> MaterialTheme.colorScheme.surfaceVariant
+                    else-> activityMainViewModel.surfaceColor.value!!
+                }
+
+                val yourPlaylistsColor = when(pagerState.currentPage){
+
+                    1-> MaterialTheme.colorScheme.surfaceVariant
+                    else-> activityMainViewModel.surfaceColor.value!!
+                }
 
                 Tab(
                     text = { Text("Genres", fontSize = 16.sp) },
@@ -98,7 +95,11 @@ fun PlaylistsScreen(
                     selectedContentColor = MaterialTheme.colorScheme.primary,
                     unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                     onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
-                    modifier = Modifier.background(activityMainViewModel.surfaceColor.value!!)
+                    modifier = Modifier
+                        .background(activityMainViewModel.surfaceColor.value!!)
+                        .padding(10.dp)
+                        .clip(RoundedCornerShape(percent = 100))
+                        .background(genrePlaylistColor)
                 )
                 Tab(
                     text = { Text("Your Playlists", fontSize = 16.sp) },
@@ -106,7 +107,11 @@ fun PlaylistsScreen(
                     unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                     selected = pagerState.currentPage == 1,
                     onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
-                    modifier = Modifier.background(activityMainViewModel.surfaceColor.value!!)
+                    modifier = Modifier
+                        .background(activityMainViewModel.surfaceColor.value!!)
+                        .padding(10.dp)
+                        .clip(RoundedCornerShape(percent = 100))
+                        .background(yourPlaylistsColor)
                 )
             }
             Spacer(modifier = Modifier.height(20.dp))
@@ -124,7 +129,9 @@ fun PlaylistsScreen(
                             columns = GridCells.Fixed(gridCellsCount),
                             verticalArrangement = Arrangement.spacedBy(10.dp),
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            modifier = Modifier.padding(10.dp)
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(10.dp)
                         ) {
 
                             items(

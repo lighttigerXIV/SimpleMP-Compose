@@ -1,6 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.composables
 
-import androidx.compose.foundation.Image
+import android.graphics.Bitmap
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,12 +10,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.Song
 
@@ -23,8 +23,7 @@ import com.lighttigerxiv.simple.mp.compose.Song
 fun SongItem(
     song: Song,
     position: Int,
-    lastPosition: Boolean = false,
-    songAlbumArt: ImageBitmap,
+    songAlbumArt: Bitmap,
     highlight: Boolean = false,
     popupMenuEntries: ArrayList<String> = ArrayList(),
     onSongClick: (position: Int) -> Unit = {},
@@ -40,50 +39,55 @@ fun SongItem(
         else -> MaterialTheme.colorScheme.onSurface
     }
 
+
     val titleWeight = when (highlight){
         true -> FontWeight.Medium
         else -> FontWeight.Normal
     }
 
 
-    Row( modifier = Modifier
+    Row(modifier = Modifier
         .fillMaxWidth()
         .height(70.dp)
-        .clickable{ onSongClick(position) }
+        .clickable { onSongClick(position) }
     ) {
 
-        Image(
-            bitmap = songAlbumArt,
-            contentDescription = songTitle,
+        AsyncImage(
+            model = songAlbumArt,
+            contentDescription = "",
             modifier = Modifier
-                .fillMaxHeight()
-                .clip(RoundedCornerShape(20)),
+                .clip(RoundedCornerShape(20))
         )
 
-        Spacer(modifier = Modifier
-            .fillMaxHeight()
-            .width(10.dp))
+        Spacer(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(10.dp)
+        )
 
-
-
-        Column( modifier = Modifier
-            .fillMaxHeight()
-            .weight(1f) ) {
-            Row(modifier = Modifier
-                .fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
                 Text(
                     text = songTitle,
-                    fontSize = 16.sp ,
+                    fontSize = 16.sp,
                     color = titleColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontWeight = titleWeight
                 )
             }
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.5f)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.5f)
+            ) {
                 Text(
                     text = songArtist,
                     fontSize = 16.sp,
@@ -104,30 +108,30 @@ fun SongItem(
 
             DropdownMenu(
                 expanded = isPopupMenuExpanded.value,
-                onDismissRequest = {isPopupMenuExpanded.value = false}
+                onDismissRequest = { isPopupMenuExpanded.value = false }
             ) {
 
-                if( popupMenuEntries.contains("artist") ){
+                if (popupMenuEntries.contains("artist")) {
 
                     DropdownMenuItem(
                         text = { Text(text = "Go to Artist") },
-                        onClick = {onMenuClicked("artist")}
+                        onClick = { onMenuClicked("artist") }
                     )
                 }
 
-                if( popupMenuEntries.contains("album") ){
+                if (popupMenuEntries.contains("album")) {
 
                     DropdownMenuItem(
                         text = { Text(text = "Go to Album") },
-                        onClick = {onMenuClicked("album")}
+                        onClick = { onMenuClicked("album") }
                     )
                 }
 
-                if( popupMenuEntries.contains("playlist") ){
+                if (popupMenuEntries.contains("playlist")) {
 
                     DropdownMenuItem(
                         text = { Text(text = "Add to Playlist") },
-                        onClick = {onMenuClicked("playlist")}
+                        onClick = { onMenuClicked("playlist") }
                     )
                 }
             }
@@ -142,13 +146,8 @@ fun SongItem(
                     .clickable { isPopupMenuExpanded.value = true }
             )
         }
-
-
     }
 
-    if(!lastPosition){
-        Spacer(modifier = Modifier.height(5.dp))
-    }
-
+    Spacer(modifier = Modifier.height(10.dp))
 }
 

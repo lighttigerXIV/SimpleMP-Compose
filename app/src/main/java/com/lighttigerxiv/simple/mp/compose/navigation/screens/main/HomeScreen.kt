@@ -12,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -28,13 +27,13 @@ fun HomeScreen(
     activityMainViewModel: ActivityMainViewModel
 ) {
     val context = LocalContext.current
-    var popupMenuExpanded by remember { mutableStateOf(false) }
+    val popupMenuExpanded = activityMainViewModel.showHomePopupMenu.observeAsState().value!!
     val sortSharedPrefs = context.getSharedPreferences("sorting", MODE_PRIVATE)
     val homeSongsList = activityMainViewModel.currentHomeSongsList.observeAsState().value!!
     val surfaceColor = remember { activityMainViewModel.surfaceColor.value!! }
 
 
-    val menuEntries = ArrayList<String>()
+    val menuEntries = remember{ArrayList<String>()}
     menuEntries.add("artist")
     menuEntries.add("album")
     menuEntries.add("playlist")
@@ -96,11 +95,11 @@ fun HomeScreen(
                             activityMainViewModel.filterHomeSongsList(sortSharedPrefs.getString("home", "Recent")!!)
                         },
                         sideIcon = painterResource(id = R.drawable.icon_more_regular),
-                        onSideIconClick = { popupMenuExpanded = true }
+                        onSideIconClick = { activityMainViewModel.showHomePopupMenu.value = true }
                     )
                     DropdownMenu(
                         expanded = popupMenuExpanded,
-                        onDismissRequest = { popupMenuExpanded = false }
+                        onDismissRequest = { activityMainViewModel.showHomePopupMenu.value = false }
                     ) {
 
                         DropdownMenuItem(
@@ -108,6 +107,7 @@ fun HomeScreen(
                             onClick = {
                                 sortSharedPrefs.edit().putString("home", "Recent").apply()
                                 activityMainViewModel.currentHomeSongsList.value = activityMainViewModel.recentHomeSongsList
+                                activityMainViewModel.showHomePopupMenu.value = false
                             }
                         )
                         DropdownMenuItem(
@@ -115,6 +115,7 @@ fun HomeScreen(
                             onClick = {
                                 sortSharedPrefs.edit().putString("home", "Oldest").apply()
                                 activityMainViewModel.currentHomeSongsList.value = activityMainViewModel.oldestHomeSongsList
+                                activityMainViewModel.showHomePopupMenu.value = false
                             }
                         )
                         DropdownMenuItem(
@@ -122,6 +123,7 @@ fun HomeScreen(
                             onClick = {
                                 sortSharedPrefs.edit().putString("home", "Ascendent").apply()
                                 activityMainViewModel.currentHomeSongsList.value = activityMainViewModel.ascendentHomeSongsList
+                                activityMainViewModel.showHomePopupMenu.value = false
                             }
                         )
                         DropdownMenuItem(
@@ -129,12 +131,16 @@ fun HomeScreen(
                             onClick = {
                                 sortSharedPrefs.edit().putString("home", "Descendent").apply()
                                 activityMainViewModel.currentHomeSongsList.value = activityMainViewModel.descendentHomeSongsList
+                                activityMainViewModel.showHomePopupMenu.value = false
                             }
                         )
                         Divider()
                         DropdownMenuItem(
                             text = { Text(text = "Settings") },
-                            onClick = { context.startActivity(Intent(context, ActivitySettings::class.java)) }
+                            onClick = {
+                                context.startActivity(Intent(context, ActivitySettings::class.java))
+                                activityMainViewModel.showHomePopupMenu.value = false
+                            }
                         )
                     }
                 }
@@ -144,44 +150,44 @@ fun HomeScreen(
 
 
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
+                    modifier = Modifier.fillMaxSize(),
+                    content = {
+                        itemsIndexed(items = homeSongsList, key = { _, song -> song.id }) { index, song ->
 
+                            SongItem(
+                                song = song,
+                                position =  index,
+                                songAlbumArt = remember{activityMainViewModel.songsImagesList.find { it.albumID == song.albumID }!!.albumArt},
+                                highlight = song.path == activityMainViewModel.selectedSongPath.observeAsState().value,
+                                popupMenuEntries = menuEntries,
+                                onMenuClicked = { option->
 
+                                    when(option){
 
-                    itemsIndexed(items = homeSongsList, key = { _, song -> song.id }) { index, song ->
+                                        "artist" -> {
 
-                        SongItem(
-                            song = song,
-                            position =  index,
-                            songAlbumArt = activityMainViewModel.songsImagesList.find { it.albumID == song.albumID }!!.albumArt.asImageBitmap(),
-                            lastPosition = index == homeSongsList.size - 1,
-                            highlight = song.path == activityMainViewModel.selectedSongPath.observeAsState().value,
-                            popupMenuEntries = remember{menuEntries},
+                                            val artistID = song.artistID
+                                            activityMainViewModel.navController.navigate("floatingArtistScreen?artistID=$artistID")
+                                        }
+                                        "album" -> {
 
-                            onMenuClicked = { option->
+                                            val albumID = song.albumID
+                                            activityMainViewModel.navController.navigate("floatingAlbumScreen?albumID=$albumID")
+                                        }
+                                        "playlist" -> {
 
-                                when(option){
-
-                                    "artist" -> {}
-                                    "album" -> {
-
-                                        activityMainViewModel.clickedAlbumIDForFloatingAlbum.value = song.albumID
-                                        activityMainViewModel.navController.navigate("floatingAlbumScreen")
+                                            val songID = song.id
+                                            activityMainViewModel.navController.navigate("addToPlaylistScreen?songID=$songID")
+                                        }
                                     }
-                                    "playlist" -> {
-
-                                        activityMainViewModel.clickedSongForAddToPlaylist.value = song.id
-                                        activityMainViewModel.navController.navigate("addToPlaylistScreen")
-                                    }
+                                },
+                                onSongClick = { position ->
+                                    activityMainViewModel.selectSong(activityMainViewModel.currentHomeSongsList.value!!, position)
                                 }
-                            },
-                            onSongClick = { position ->
-                                activityMainViewModel.selectSong(activityMainViewModel.currentHomeSongsList.value!!, position)
-                            }
-                        )
+                            )
+                        }
                     }
-                }
+                )
             }
         }
     }

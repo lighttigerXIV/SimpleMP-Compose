@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -141,9 +140,7 @@ class ActivitySettings : ComponentActivity() {
                                 onSettingClick = { showThemeModeDialog.value = true },
                             )
 
-                            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                                Divider(Modifier.fillMaxWidth(0.95f))
-                            }
+
 
                             DefaultSettingItem(
                                 icon = painterResource(id = R.drawable.icon_moon_regular),
@@ -152,9 +149,7 @@ class ActivitySettings : ComponentActivity() {
                                 onSettingClick = { showDarkModeDialog.value = true }
                             )
 
-                            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                                Divider(Modifier.fillMaxWidth(0.95f))
-                            }
+
 
                             DefaultSettingItem(
                                 icon = painterResource(id = R.drawable.icon_theme_regular),
@@ -196,7 +191,7 @@ class ActivitySettings : ComponentActivity() {
                                         Spacer(modifier = Modifier.height(10.dp))
 
                                         Row(
-                                            verticalAlignment = Alignment.CenterVertically,
+                                            verticalAlignment = CenterVertically,
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .clickable {
@@ -222,7 +217,7 @@ class ActivitySettings : ComponentActivity() {
                                         }
 
                                         Row(
-                                            verticalAlignment = Alignment.CenterVertically,
+                                            verticalAlignment = CenterVertically,
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .clickable {
@@ -248,7 +243,7 @@ class ActivitySettings : ComponentActivity() {
                                         }
 
                                         Row(
-                                            verticalAlignment = Alignment.CenterVertically,
+                                            verticalAlignment = CenterVertically,
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .clickable {
@@ -388,7 +383,7 @@ class ActivitySettings : ComponentActivity() {
                                         Spacer(modifier = Modifier.height(10.dp))
 
                                         Row(
-                                            verticalAlignment = Alignment.CenterVertically,
+                                            verticalAlignment = CenterVertically,
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .clickable {

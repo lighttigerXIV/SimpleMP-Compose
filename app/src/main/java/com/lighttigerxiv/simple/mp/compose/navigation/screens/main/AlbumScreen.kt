@@ -137,8 +137,7 @@ fun AlbumScreen(
                                 SongItem(
                                     song = song,
                                     position = index,
-                                    lastPosition = index == albumSongsList.size - 1,
-                                    songAlbumArt = remember { activityMainViewModel.songsImagesList.first { it.albumID == song.albumID }.albumArt.asImageBitmap() },
+                                    songAlbumArt = remember { activityMainViewModel.songsImagesList.first { it.albumID == song.albumID }.albumArt },
                                     highlight = song.path == activityMainViewModel.selectedSongPath.observeAsState().value,
                                     onSongClick = { position->
                                         println(albumSongsList)

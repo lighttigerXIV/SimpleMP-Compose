@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens
+package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
@@ -26,9 +26,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavBackStackEntry
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.lighttigerxiv.simple.mp.compose.Playlist
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.composables.BasicToolbar
@@ -40,14 +40,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddToPlaylistScreen(
     activityMainViewModel: ActivityMainViewModel,
+    backStackEntry: NavBackStackEntry,
     previousPage: String,
-    selectedSongID: Long,
     onBackClick: () -> Unit
 ) {
 
+    val songID = backStackEntry.arguments?.getLong("songID")
     val createPlaylistSheetState = rememberBottomSheetScaffoldState()
     val playlists = activityMainViewModel.playlists.observeAsState().value!!
-    val selectedSong = activityMainViewModel.songsList.find { it.id == selectedSongID }!!
+    val selectedSong = activityMainViewModel.songsList.find { it.id == songID }!!
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -188,7 +189,6 @@ fun AddToPlaylistScreen(
 
                             items(playlists, key = { playlist -> playlist.id }) { playlist ->
 
-                                val playlistID = remember { playlist.id }
                                 val playlistName = remember { playlist.name }
 
                                 Row(
@@ -208,7 +208,7 @@ fun AddToPlaylistScreen(
 
                                             playlistSongs.forEach { song ->
 
-                                                if (song.id == selectedSongID) {
+                                                if (song.id == songID) {
                                                     canContinue = false
                                                     Toast
                                                         .makeText(context, "Song already in playlist", Toast.LENGTH_SHORT)

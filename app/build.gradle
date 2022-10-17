@@ -35,6 +35,7 @@ android {
     }
     buildFeatures {
         compose true
+        viewBinding true
     }
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
@@ -78,6 +79,7 @@ dependencies {
     implementation "androidx.preference:preference-ktx:1.2.0"
 
     implementation "androidx.room:room-runtime:2.4.3"
+    implementation("io.coil-kt:coil-compose:2.2.2")
     //implementation "android.arch.persistence.room:runtime:1.1.1"
 
     implementation 'androidx.room:room-ktx:2.4.3'

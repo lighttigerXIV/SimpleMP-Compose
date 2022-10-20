@@ -6,7 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -43,7 +43,7 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(surfaceColor)
-            .padding(10.dp)
+            .padding(14.dp)
     ) {
 
         Scaffold(
@@ -152,12 +152,15 @@ fun HomeScreen(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     content = {
-                        itemsIndexed(items = homeSongsList, key = { _, song -> song.id }) { index, song ->
+
+                        items(
+                            items = homeSongsList,
+                            key = { song -> song.id }
+                        ) { song ->
 
                             SongItem(
                                 song = song,
-                                position =  index,
-                                songAlbumArt = remember{activityMainViewModel.songsImagesList.find { it.albumID == song.albumID }!!.albumArt},
+                                songAlbumArt = remember{activityMainViewModel.compressedImagesList.find { it.albumID == song.albumID }!!.albumArt},
                                 highlight = song.path == activityMainViewModel.selectedSongPath.observeAsState().value,
                                 popupMenuEntries = menuEntries,
                                 onMenuClicked = { option->
@@ -181,8 +184,8 @@ fun HomeScreen(
                                         }
                                     }
                                 },
-                                onSongClick = { position ->
-                                    activityMainViewModel.selectSong(activityMainViewModel.currentHomeSongsList.value!!, position)
+                                onSongClick = {
+                                    activityMainViewModel.selectSong(activityMainViewModel.songsList, activityMainViewModel.songsList.indexOf(song))
                                 }
                             )
                         }

@@ -57,7 +57,7 @@ fun PlaylistScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(activityMainViewModel.surfaceColor.value!!)
-            .padding(10.dp)
+            .padding(14.dp)
     ) {
 
         VerticalNestedScrollView(

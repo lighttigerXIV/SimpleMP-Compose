@@ -1,11 +1,11 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens
+package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -39,7 +39,7 @@ fun GenrePlaylistScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(activityMainViewModel.surfaceColor.value!!)
-            .padding(10.dp)
+            .padding(14.dp)
     ) {
 
         VerticalNestedScrollView(
@@ -102,17 +102,16 @@ fun GenrePlaylistScreen(
                     LazyColumn(
                         content = {
 
-                            itemsIndexed(
+                            items(
                                 genrePlaylist,
-                                key={ _, song-> song.id}
-                            ){ index, song->
+                                key={ song-> song.id}
+                            ){ song->
 
                                 SongItem(
                                     song = song,
-                                    position = index,
                                     songAlbumArt = activityMainViewModel.songsImagesList.find { song.albumID == it.albumID }!!.albumArt,
                                     highlight = activityMainViewModel.selectedSongPath.observeAsState().value == song.path,
-                                    onSongClick = {activityMainViewModel.selectSong(genrePlaylist, index)}
+                                    onSongClick = {activityMainViewModel.selectSong(genrePlaylist, position = genrePlaylist.indexOf(song))}
                                 )
                             }
                         }

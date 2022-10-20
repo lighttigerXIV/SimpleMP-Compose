@@ -23,7 +23,9 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
     private val playlistDao = AppDatabase.getInstance(application).playlistDao
 
     val songsList = GetSongs.getSongsList(application, "Recent")
+    val upNextQueueList = MutableLiveData(ArrayList<Song>())
     var songsImagesList = GetSongs.getAllAlbumsImages(application)
+    var compressedImagesList = GetSongs.getAllAlbumsImages(application, compressed = true)
     lateinit var navController: NavController
 
     //Home Songs
@@ -101,8 +103,6 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
     var currentMediaPlayerPosition = MutableLiveData(0)
     var isMusicShuffled = MutableLiveData(false)
     var isMusicOnRepeat = MutableLiveData(false)
-
-
 
 
     //Song Related
@@ -206,6 +206,7 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
                 currentPlayerIcon.value = pauseRoundIcon
                 currentMiniPlayerIcon.value = miniPlayerPauseIcon
 
+                upNextQueueList.value = smpService.getUpNextQueueList()
                 onSongSelected(song)
             }
 
@@ -280,6 +281,7 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
     fun toggleShuffle() {
         smpService.toggleShuffle()
         isMusicShuffled.value = smpService.isMusicShuffled
+        upNextQueueList.value = smpService.getUpNextQueueList()
     }
 
     fun selectPreviousSong() {
@@ -334,8 +336,8 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
     }
 
 
-    fun getIsMusicPaused(): Boolean{
-        return if(isServiceBound) !smpService.isMusicPlaying() else false
+    fun getIsMusicPaused(): Boolean {
+        return if (isServiceBound) !smpService.isMusicPlaying() else false
     }
 
 
@@ -459,7 +461,7 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
     }
 
 
-    fun updatePlaylistSongs( songsJson : String, playlistID: Int ){
+    fun updatePlaylistSongs(songsJson: String, playlistID: Int) {
 
         playlistDao.updatePlaylistSongs(
             songsJson = songsJson,

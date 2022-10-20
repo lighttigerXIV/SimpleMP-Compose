@@ -1,10 +1,7 @@
 package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -69,13 +66,13 @@ fun AddToPlaylistScreen(
             BottomSheetScaffold(
                 scaffoldState = createPlaylistSheetState,
                 sheetShape = RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp),
-                sheetElevation = 10.dp,
                 sheetPeekHeight = 0.dp,
                 sheetContent = {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
+                            .border(2.dp, MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp))
                             .background(MaterialTheme.colorScheme.background)
                             .padding(10.dp)
 

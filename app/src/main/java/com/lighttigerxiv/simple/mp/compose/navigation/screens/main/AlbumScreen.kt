@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -46,7 +47,7 @@ fun AlbumScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(activityMainViewModel.surfaceColor.value!!)
-            .padding(10.dp)
+            .padding(14.dp)
     ){
 
         VerticalNestedScrollView(
@@ -123,26 +124,22 @@ fun AlbumScreen(
                     LazyColumn(
                         content = {
 
-
-
                             item {
 
-                                //Top Content
                                 Spacer(modifier = Modifier.height(20.dp))
                             }
 
 
-                            itemsIndexed( albumSongsList, key = { _, song-> song.id } ){ index, song->
+                            items(
+                                items = albumSongsList,
+                                key = { song-> song.id }
+                            ){song->
 
                                 SongItem(
                                     song = song,
-                                    position = index,
                                     songAlbumArt = remember { activityMainViewModel.songsImagesList.first { it.albumID == song.albumID }.albumArt },
                                     highlight = song.path == activityMainViewModel.selectedSongPath.observeAsState().value,
-                                    onSongClick = { position->
-                                        println(albumSongsList)
-                                        activityMainViewModel.selectSong(albumSongsList, position)
-                                    }
+                                    onSongClick = { activityMainViewModel.selectSong(albumSongsList, albumSongsList.indexOf(song)) }
                                 )
                             }
                         },

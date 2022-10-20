@@ -114,7 +114,7 @@ fun PlaylistsScreen(
                         .background(yourPlaylistsColor)
                 )
             }
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             HorizontalPager(
                 count = 2,
                 state = pagerState,
@@ -131,7 +131,7 @@ fun PlaylistsScreen(
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(10.dp)
+                                .padding(14.dp)
                         ) {
 
                             items(
@@ -157,12 +157,13 @@ fun PlaylistsScreen(
                         BottomSheetScaffold(
                             scaffoldState = createPlaylistsScaffoldState,
                             sheetShape = RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp),
-                            sheetElevation = 10.dp,
+                            sheetPeekHeight = 0.dp,
                             sheetContent = {
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .wrapContentHeight()
+                                        .border(2.dp, MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp))
                                         .background(MaterialTheme.colorScheme.background)
                                         .padding(10.dp)
 
@@ -224,7 +225,7 @@ fun PlaylistsScreen(
                                     }
                                 }
                             },
-                            sheetPeekHeight = 0.dp,
+
                         ) { sheetPadding ->
 
                             Column(
@@ -232,10 +233,10 @@ fun PlaylistsScreen(
                                     .fillMaxSize()
                                     .background(activityMainViewModel.surfaceColor.value!!)
                                     .padding(
-                                        bottom = sheetPadding.calculateBottomPadding() + 10.dp,
-                                        start = sheetPadding.calculateStartPadding(LayoutDirection.Rtl),
-                                        end = sheetPadding.calculateEndPadding(LayoutDirection.Ltr),
-                                        top = sheetPadding.calculateTopPadding() + 10.dp
+                                        bottom = sheetPadding.calculateBottomPadding() + 14.dp,
+                                        start = sheetPadding.calculateStartPadding(LayoutDirection.Rtl) + 14.dp,
+                                        end = sheetPadding.calculateEndPadding(LayoutDirection.Ltr) + 14.dp,
+                                        top = sheetPadding.calculateTopPadding() + 14.dp
                                     )
                             ) {
 
@@ -274,13 +275,10 @@ fun PlaylistsScreen(
 
                                 Spacer(modifier = Modifier.height(10.dp))
 
-
-
                                 LazyVerticalGrid(
                                     columns = GridCells.Fixed(gridCellsCount),
                                     verticalArrangement = Arrangement.spacedBy(10.dp),
                                     horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                    modifier = Modifier.padding(10.dp),
                                     content = {
 
                                         items(playlists) { playlist ->

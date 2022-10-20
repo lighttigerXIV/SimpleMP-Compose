@@ -2,6 +2,7 @@ package com.lighttigerxiv.simple.mp.compose.composables
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -22,11 +23,10 @@ import com.lighttigerxiv.simple.mp.compose.Song
 @Composable
 fun SongItem(
     song: Song,
-    position: Int,
     songAlbumArt: Bitmap,
     highlight: Boolean = false,
     popupMenuEntries: ArrayList<String> = ArrayList(),
-    onSongClick: (position: Int) -> Unit = {},
+    onSongClick: () -> Unit = {},
     onMenuClicked: (option: String) -> Unit = {}
 ) {
 
@@ -49,14 +49,19 @@ fun SongItem(
     Row(modifier = Modifier
         .fillMaxWidth()
         .height(70.dp)
-        .clickable { onSongClick(position) }
+        .clickable(
+            interactionSource = remember{ MutableInteractionSource() },
+            indication = null
+        ) { onSongClick() }
     ) {
 
         AsyncImage(
-            model = songAlbumArt,
+            model = remember{songAlbumArt},
             contentDescription = "",
             modifier = Modifier
                 .clip(RoundedCornerShape(20))
+                .height(70.dp)
+                .width(70.dp)
         )
 
         Spacer(
@@ -136,15 +141,18 @@ fun SongItem(
                 }
             }
 
-            Icon(
-                painter = painterResource(id = R.drawable.icon_three_dots_regular),
-                contentDescription = "",
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(20.dp)
-                    .clickable { isPopupMenuExpanded.value = true }
-            )
+            if(popupMenuEntries.size > 0){
+
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_three_dots_regular),
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(20.dp)
+                        .clickable { isPopupMenuExpanded.value = true }
+                )
+            }
         }
     }
 

@@ -124,6 +124,7 @@ class MainActivity : ComponentActivity() {
                         bottomBar = {
 
                             BottomNavigationBar(
+                                activityMainViewModel = activityMainViewModel,
                                 navController = navController,
                                 items = bottomNavigationItems,
                                 onItemClick = { bottomNavItem ->

@@ -6,72 +6,67 @@ import android.content.Context
 import android.graphics.*
 import android.net.Uri
 import android.os.Build
-import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.util.Size
 
 class GetSongs {
 
-    companion object{
+    companion object {
 
         @SuppressLint("Range")
-        fun getSongsList(context: Context, sortType: String ): ArrayList<Song>{
+        fun getSongsList(context: Context, sortType: String): ArrayList<Song> {
 
-            try{
+            try {
 
                 val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
                 val cursor = context.contentResolver.query(uri, null, null, null, null)
                 val songsList = ArrayList<Song>()
 
 
-                if( cursor != null && cursor.count > 0){
-                    if( cursor.moveToNext() ){
-                        do{
+                if (cursor != null && cursor.count > 0) {
+                    if (cursor.moveToNext()) {
+                        do {
 
-                            val id = cursor.getLong(cursor.getColumnIndex( MediaStore.Audio.Media._ID) )
-                            val songPath = cursor.getString( cursor.getColumnIndex(MediaStore.Audio.Media.DATA) )
-                            val title = cursor.getString( cursor.getColumnIndex(MediaStore.Audio.Media.TITLE ) )
-                            val albumName = cursor.getString( cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM))
-                            val albumID = cursor.getLong( cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID) )
-                            val duration = cursor.getInt( cursor.getColumnIndex(MediaStore.Audio.Media.DURATION) )
-                            val artistName = cursor.getString( cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST) )
-                            val artistID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID) )
+                            val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID))
+                            val songPath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
+                            val title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE))
+                            val albumName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM))
+                            val albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))
+                            val duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))
+                            val artistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST))
+                            val artistID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))
 
 
                             val genreID = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                                 cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.GENRE_ID))
-
                             else
                                 cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Genres._ID))
 
 
                             var genre = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.GENRE))
-
                             else
                                 null
 
 
-                            if( genre == null ) genre = context.getString(R.string.Undefined)
-                            val year = cursor.getInt( cursor.getColumnIndex(MediaStore.Audio.Media.YEAR) )
+                            if (genre == null) genre = context.getString(R.string.Undefined)
+                            val year = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.YEAR))
 
 
-
-                            val song = Song( id, songPath, title, albumName , albumID , duration, artistName, artistID, year,  genreID, genre )
+                            val song = Song(id, songPath, title, albumName, albumID, duration, artistName, artistID, year, genreID, genre)
 
                             val filterDuration = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString("FilterAudio", "60")!!.toInt() * 1000
-                            if( duration > filterDuration ) songsList.add( song )
-                        }
-                        while (cursor.moveToNext())
+                            if (duration > filterDuration) songsList.add(song)
+                        } while (cursor.moveToNext())
                     }
                     cursor.close()
                 }
 
 
 
-                when ( sortType ) {
+                when (sortType) {
 
-                    "Recent"-> songsList.reverse()
+                    "Recent" -> songsList.reverse()
                     "Ascendent" -> songsList.sortBy { it.title }
                     "Descendent" -> songsList.sortByDescending { it.title }
                 }
@@ -79,37 +74,38 @@ class GetSongs {
 
 
                 return songsList
+            } catch (exc: Exception) {
+                println("Exception-> $exc")
             }
-            catch (exc: Exception){println("Exception-> $exc")}
 
             return ArrayList()
         }
 
         @Suppress("DEPRECATION")
-        fun getSongAlbumArt( context: Context, songID: Long, albumID: Long ): Bitmap{
+        fun getSongAlbumArt(context: Context, songID: Long, albumID: Long): Bitmap {
 
             lateinit var albumArt: Bitmap
 
-            try{
+            try {
 
-                albumArt = if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+                albumArt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
                     val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
                     val songUri = ContentUris.withAppendedId(uri, songID)
 
-                    context.contentResolver.loadThumbnail( songUri, Size(500,500), null )
-                } else{
+                    context.contentResolver.loadThumbnail(songUri, Size(600, 600), null)
+                } else {
 
-                    val sArtWorkUri = Uri.parse( "content://media/external/audio/albumart" )
+                    val sArtWorkUri = Uri.parse("content://media/external/audio/albumart")
                     val albumArtUri = ContentUris.withAppendedId(sArtWorkUri, albumID)
 
-                    MediaStore.Images.Media.getBitmap( context.contentResolver, albumArtUri )
+                    MediaStore.Images.Media.getBitmap(context.contentResolver, albumArtUri)
                 }
 
-            } catch (ignore: Exception){
+            } catch (ignore: Exception) {
 
 
-                val defaultAlbumArt = BitmapFactory.decodeResource( context.resources, R.drawable.icon_music_record).copy(Bitmap.Config.ARGB_8888, true)
+                val defaultAlbumArt = BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record).copy(Bitmap.Config.ARGB_8888, true)
                 val paint = Paint()
                 val canvas = Canvas(defaultAlbumArt)
                 canvas.drawBitmap(defaultAlbumArt, 0F, 0F, paint)
@@ -120,19 +116,37 @@ class GetSongs {
             return albumArt
         }
 
-        fun getAllAlbumsImages( context: Context ): ArrayList<SongArt>{
+        fun getAllAlbumsImages(context: Context, compressed: Boolean = false): ArrayList<SongArt> {
 
             val songsList = getSongsList(context, sortType = "Recent")
             val songsImagesList = ArrayList<SongArt>()
 
-            songsList.forEach { song->
+            songsList.forEach { song ->
 
-                songsImagesList.add(
-                    SongArt(
-                        albumID = song.albumID,
-                        albumArt = getSongAlbumArt(context, song.id, song.albumID)
-                    )
-                )
+                when{
+
+                    compressed->{
+
+                        val uncompressedAlbumArt = getSongAlbumArt(context, song.id, song.albumID)
+                        val compressedAlbumArt = Bitmap.createScaledBitmap(uncompressedAlbumArt, uncompressedAlbumArt.width / 3, uncompressedAlbumArt.height / 3, false)
+
+                        songsImagesList.add(
+                            SongArt(
+                                albumID = song.albumID,
+                                albumArt = compressedAlbumArt
+                            )
+                        )
+                    }
+                    else->{
+
+                        songsImagesList.add(
+                            SongArt(
+                                albumID = song.albumID,
+                                albumArt = getSongAlbumArt(context, song.id, song.albumID)
+                            )
+                        )
+                    }
+                }
             }
 
             return songsImagesList

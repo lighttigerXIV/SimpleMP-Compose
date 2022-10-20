@@ -96,7 +96,7 @@ class ActivitySettings : ComponentActivity() {
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .background(surfaceColor)
-                    .padding(10.dp)
+                    .padding(14.dp)
                     .verticalScroll(rememberScrollState())
 
 

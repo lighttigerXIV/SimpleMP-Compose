@@ -12,7 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -204,14 +204,16 @@ fun ArtistScreen(
                                 LazyColumn(
                                     content = {
 
-                                        itemsIndexed(artistSongsList, key = { _, song -> song.id }) { index, song ->
+                                        items(
+                                            items = artistSongsList,
+                                            key = { song -> song.id }
+                                        ) { song ->
 
                                             SongItem(
                                                 song = song,
-                                                position = index,
                                                 songAlbumArt = remember { activityMainViewModel.songsImagesList.find { it.albumID == song.albumID }!!.albumArt },
                                                 highlight = song.path == activityMainViewModel.selectedSongPath.observeAsState().value,
-                                                onSongClick = { activityMainViewModel.selectSong(artistSongsList, index) }
+                                                onSongClick = { activityMainViewModel.selectSong(artistSongsList, artistSongsList.indexOf(song)) }
                                             )
                                         }
                                     }
@@ -282,7 +284,7 @@ fun ArtistScreen(
                 }
             }
         },
-        modifier = Modifier.padding(10.dp)
+        modifier = Modifier.padding(14.dp)
     )
 }
 

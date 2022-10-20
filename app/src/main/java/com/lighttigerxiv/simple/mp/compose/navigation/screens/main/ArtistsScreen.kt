@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens
+package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import android.content.Context
 import android.content.res.Configuration
@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -44,10 +45,14 @@ fun ArtistsScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(activityMainViewModel.surfaceColor.value!!)
-            .padding(10.dp)
+            .padding(14.dp)
     ) {
 
-        Column(modifier = Modifier.fillMaxSize()) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
 
             Row(
                 modifier = Modifier

@@ -120,7 +120,7 @@ fun AlbumScreen(
                         }
                     }
                     Spacer(modifier = Modifier.height(10.dp))
-                    Divider()
+                    Divider(color = MaterialTheme.colorScheme.surfaceVariant)
                     LazyColumn(
                         content = {
 

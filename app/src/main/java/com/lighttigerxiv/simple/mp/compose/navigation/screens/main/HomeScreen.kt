@@ -134,7 +134,7 @@ fun HomeScreen(
                                 activityMainViewModel.showHomePopupMenu.value = false
                             }
                         )
-                        Divider()
+                        Divider(color = MaterialTheme.colorScheme.onSurfaceVariant)
                         DropdownMenuItem(
                             text = { Text(text = "Settings") },
                             onClick = {

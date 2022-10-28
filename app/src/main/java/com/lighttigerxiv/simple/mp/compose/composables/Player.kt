@@ -720,17 +720,16 @@ fun Player(
                             }
                         }
                     }
-
-                    activityMainViewModel.onSongSecondPassed = { position ->
-
-                        if (!isDragged) {
-                            sliderValue.value = position.toFloat()
-                        }
-
-                        currentMinutesAndSecondsValue.value = activityMainViewModel.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
-                    }
                 }
             }
+        }
+        activityMainViewModel.onSongSecondPassed = { position ->
+
+            if (!isDragged) {
+                sliderValue.value = position.toFloat()
+            }
+
+            currentMinutesAndSecondsValue.value = activityMainViewModel.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
         }
     }
 }

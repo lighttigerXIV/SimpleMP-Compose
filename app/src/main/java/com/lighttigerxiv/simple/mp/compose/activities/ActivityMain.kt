@@ -162,11 +162,7 @@ class MainActivity : ComponentActivity() {
 
                                         Player(
                                             activityMainViewModel,
-                                            onClosePlayer = {
-                                                scope.launch {
-                                                    bottomSheetState.collapse()
-                                                }
-                                            }
+                                            bottomSheetState
                                         )
                                     }
                                 }

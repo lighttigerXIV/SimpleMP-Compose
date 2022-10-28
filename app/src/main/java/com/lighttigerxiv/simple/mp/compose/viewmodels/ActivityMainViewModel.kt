@@ -23,6 +23,7 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
     private val playlistDao = AppDatabase.getInstance(application).playlistDao
 
     val songsList = GetSongs.getSongsList(application, "Recent")
+    val queueList = MutableLiveData(ArrayList<Song>())
     val upNextQueueList = MutableLiveData(ArrayList<Song>())
     var songsImagesList = GetSongs.getAllAlbumsImages(application)
     var compressedImagesList = GetSongs.getAllAlbumsImages(application, compressed = true)
@@ -149,13 +150,25 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
         application.resources,
         R.drawable.icon_play_round_solid
     ).asImageBitmap()
-    val nextIcon = BitmapFactory.decodeResource(application.resources, R.drawable.icon_next_solid).asImageBitmap()
+    val nextIcon = BitmapFactory.decodeResource(
+        application.resources,
+        R.drawable.icon_next_solid
+    ).asImageBitmap()
     val repeatIcon = BitmapFactory.decodeResource(
         application.resources,
         R.drawable.icon_repeat_solid
     ).asImageBitmap()
 
     var currentPlayerIcon = MutableLiveData(pauseRoundIcon)
+
+
+    fun getCurrentSongPosition(): Int {
+
+        return if (isServiceBound)
+            smpService.currentSongPosition
+        else
+            0
+    }
 
 
     private val simpleMPConnection = object : ServiceConnection {
@@ -177,6 +190,9 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
                 selectedSongCurrentMinutesAndSeconds.value = "0:00"
                 updateCurrentSongAlbumArt()
                 miniPlayerHeight.value = 60.dp
+
+
+                queueList.value = smpService.getCurrentQueueList()
 
                 isMusicShuffled.value = smpService.isMusicShuffled
                 isMusicOnRepeat.value = smpService.isMusicOnRepeat
@@ -206,6 +222,8 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
                 currentPlayerIcon.value = pauseRoundIcon
                 currentMiniPlayerIcon.value = miniPlayerPauseIcon
 
+
+                queueList.value = smpService.getCurrentQueueList()
                 upNextQueueList.value = smpService.getUpNextQueueList()
                 onSongSelected(song)
             }
@@ -281,6 +299,7 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
     fun toggleShuffle() {
         smpService.toggleShuffle()
         isMusicShuffled.value = smpService.isMusicShuffled
+        queueList.value = smpService.getCurrentQueueList()
         upNextQueueList.value = smpService.getUpNextQueueList()
     }
 

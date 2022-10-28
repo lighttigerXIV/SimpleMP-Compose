@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 
 
@@ -438,6 +439,571 @@ private val DarkPinkColors = darkColorScheme(
     surfaceTint = pink_theme_dark_surfaceTint,
 )
 
+
+private val MacchiatoRosewater = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoRosewater,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoFlamingo = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoFlamingo,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoPink = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoPink,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoMauve = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoMauve,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoRed = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoRed,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoMaroon = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoMaroon,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoPeach = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoPeach,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoYellow = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoYellow,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoGreen = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoGreen,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoTeal = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoTeal,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoSky = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoSky,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoSapphire = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoSapphire,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoBlue = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoBlue,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MacchiatoLavender = darkColorScheme(
+    background = macchiatoBackground,
+    primary = macchiatoLavender,
+    onPrimary = macchiatoOnPrimary,
+    surface = macchiatoSurface,
+    onSurface = macchiatoOnSurface,
+    surfaceVariant = macchiatoSurfaceVariant,
+    onSurfaceVariant = macchiatoOnSurfaceVariant
+)
+
+private val MochaRosewater = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaRosewater,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+private val MochaFlamingo = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaFlamingo,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+private val MochaPink = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaPink,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+private val MochaMauve = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaMauve,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+private val MochaRed = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaRed,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+private val MochaMaroon = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaMaroon,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+private val MochaPeach = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaPeach,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+private val MochaYellow = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaYellow,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+
+private val MochaGreen = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaGreen,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+private val MochaTeal = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaTeal,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+private val MochaSky = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaSky,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+private val MochaSapphire = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaSapphire,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+private val MochaBlue = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaBlue,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+private val MochaLavender = darkColorScheme(
+    background = mochaBackground,
+    primary = mochaLavender,
+    onPrimary = mochaOnPrimary,
+    surface = mochaSurface,
+    onSurface = mochaOnSurface,
+    surfaceVariant = mochaSurfaceVariant,
+    onSurfaceVariant = mochaOnSurfaceVariant
+)
+
+
+private val FrappeRosewater = darkColorScheme(
+    background = frappeBackground,
+    primary = frappeRosewater,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val FrappeFlamingo = darkColorScheme(
+    background = frappeBackground,
+    primary = frappeFlamingo,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val FrappePink = darkColorScheme(
+    background = frappeBackground,
+    primary = frappePink,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val FrappeMauve = darkColorScheme(
+    background = frappeBackground,
+    primary = frappeMauve,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val FrappeRed = darkColorScheme(
+    background = frappeBackground,
+    primary = frappeRed,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val FrappeMaroon = darkColorScheme(
+    background = frappeBackground,
+    primary = frappeMaroon,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val FrappePeach = darkColorScheme(
+    background = frappeBackground,
+    primary = frappePeach,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val FrappeYellow = darkColorScheme(
+    background = frappeBackground,
+    primary = frappeYellow,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+
+private val FrappeGreen = darkColorScheme(
+    background = frappeBackground,
+    primary = frappeGreen,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val FrappeTeal = darkColorScheme(
+    background = frappeBackground,
+    primary = frappeTeal,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val FrappeSky = darkColorScheme(
+    background = frappeBackground,
+    primary = frappeSky,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val FrappeSapphire = darkColorScheme(
+    background = frappeBackground,
+    primary = frappeSapphire,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val FrappeBlue = darkColorScheme(
+    background = frappeBackground,
+    primary = frappeBlue,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val FrappeLavender = darkColorScheme(
+    background = frappeBackground,
+    primary = frappeLavender,
+    onPrimary = frappeOnPrimary,
+    surface = frappeSurface,
+    onSurface = frappeOnSurface,
+    surfaceVariant = frappeSurfaceVariant,
+    onSurfaceVariant = frappeOnSurfaceVariant
+)
+
+private val LatteRosewater = darkColorScheme(
+    background = latteBackground,
+    primary = latteRosewater,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+private val LatteFlamingo = darkColorScheme(
+    background = latteBackground,
+    primary = latteFlamingo,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+private val LattePink = darkColorScheme(
+    background = latteBackground,
+    primary = lattePink,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+private val LatteMauve = darkColorScheme(
+    background = latteBackground,
+    primary = latteMauve,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+private val LatteRed = darkColorScheme(
+    background = latteBackground,
+    primary = latteRed,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+private val LatteMaroon = darkColorScheme(
+    background = latteBackground,
+    primary = latteMaroon,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+private val LattePeach = darkColorScheme(
+    background = latteBackground,
+    primary = lattePeach,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+private val LatteYellow = darkColorScheme(
+    background = latteBackground,
+    primary = latteYellow,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+
+private val LatteGreen = darkColorScheme(
+    background = latteBackground,
+    primary = latteGreen,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+private val LatteTeal = darkColorScheme(
+    background = latteBackground,
+    primary = latteTeal,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+private val LatteSky = darkColorScheme(
+    background = latteBackground,
+    primary = latteSky,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+private val LatteSapphire = darkColorScheme(
+    background = latteBackground,
+    primary = latteSapphire,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+private val LatteBlue = darkColorScheme(
+    background = latteBackground,
+    primary = latteBlue,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
+private val LatteLavender = darkColorScheme(
+    background = latteBackground,
+    primary = latteLavender,
+    onPrimary = latteOnPrimary,
+    surface = latteSurface,
+    onSurface = latteOnSurface,
+    surfaceVariant = latteSurfaceVariant,
+    onSurfaceVariant = latteOnSurfaceVariant
+)
+
 @Composable
 fun ComposeSimpleMPTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
@@ -447,9 +1013,11 @@ fun ComposeSimpleMPTheme(
 
     val context = LocalContext.current
     val supportsMaterialYou = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).edit().putString("ThemeAccent", "MacchiatoLavender").apply()
     val themeAccent = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString("ThemeAccent", "Default")
 
-    val colors = when{
+
+    val colors = when {
 
 
         currentTheme == "Dark" && themeAccent == "Blue" -> DarkBlueColors
@@ -459,6 +1027,48 @@ fun ComposeSimpleMPTheme(
         currentTheme == "Dark" && themeAccent == "Orange" -> DarkOrangeColors
         currentTheme == "Dark" && themeAccent == "Green" -> DarkGreenColors
         currentTheme == "Dark" && themeAccent == "Pink" -> DarkPinkColors
+        currentTheme == "Dark" && themeAccent == "MacchiatoRosewater" -> MacchiatoRosewater
+        currentTheme == "Dark" && themeAccent == "MacchiatoFlamingo" -> MacchiatoFlamingo
+        currentTheme == "Dark" && themeAccent == "MacchiatoPink" -> MacchiatoRosewater
+        currentTheme == "Dark" && themeAccent == "MacchiatoMauve" -> MacchiatoRosewater
+        currentTheme == "Dark" && themeAccent == "MacchiatoRed" -> MacchiatoRosewater
+        currentTheme == "Dark" && themeAccent == "MacchiatoMaroon" -> MacchiatoMaroon
+        currentTheme == "Dark" && themeAccent == "MacchiatoPeach" -> MacchiatoPeach
+        currentTheme == "Dark" && themeAccent == "MacchiatoYellow" -> MacchiatoYellow
+        currentTheme == "Dark" && themeAccent == "MacchiatoGreen" -> MacchiatoGreen
+        currentTheme == "Dark" && themeAccent == "MacchiatoTeal" -> MacchiatoTeal
+        currentTheme == "Dark" && themeAccent == "MacchiatoSky" -> MacchiatoSky
+        currentTheme == "Dark" && themeAccent == "MacchiatoSapphire" -> MacchiatoSapphire
+        currentTheme == "Dark" && themeAccent == "MacchiatoBlue" -> MacchiatoBlue
+        currentTheme == "Dark" && themeAccent == "MacchiatoLavender" -> MacchiatoLavender
+        currentTheme == "Dark" && themeAccent == "MochaRosewater" -> MochaRosewater
+        currentTheme == "Dark" && themeAccent == "MochaFlamingo" -> MochaFlamingo
+        currentTheme == "Dark" && themeAccent == "MochaPink" -> MochaRosewater
+        currentTheme == "Dark" && themeAccent == "MochaMauve" -> MochaRosewater
+        currentTheme == "Dark" && themeAccent == "MochaRed" -> MochaRosewater
+        currentTheme == "Dark" && themeAccent == "MochaMaroon" -> MochaMaroon
+        currentTheme == "Dark" && themeAccent == "MochaPeach" -> MochaPeach
+        currentTheme == "Dark" && themeAccent == "MochaYellow" -> MochaYellow
+        currentTheme == "Dark" && themeAccent == "MochaGreen" -> MochaGreen
+        currentTheme == "Dark" && themeAccent == "MochaTeal" -> MochaTeal
+        currentTheme == "Dark" && themeAccent == "MochaSky" -> MochaSky
+        currentTheme == "Dark" && themeAccent == "MochaSapphire" -> MochaSapphire
+        currentTheme == "Dark" && themeAccent == "MochaBlue" -> MochaBlue
+        currentTheme == "Dark" && themeAccent == "MochaLavender" -> MochaLavender
+        currentTheme == "Dark" && themeAccent == "FrappeRosewater" -> FrappeRosewater
+        currentTheme == "Dark" && themeAccent == "FrappeFlamingo" -> FrappeFlamingo
+        currentTheme == "Dark" && themeAccent == "FrappePink" -> FrappeRosewater
+        currentTheme == "Dark" && themeAccent == "FrappeMauve" -> FrappeRosewater
+        currentTheme == "Dark" && themeAccent == "FrappeRed" -> FrappeRosewater
+        currentTheme == "Dark" && themeAccent == "FrappeMaroon" -> FrappeMaroon
+        currentTheme == "Dark" && themeAccent == "FrappePeach" -> FrappePeach
+        currentTheme == "Dark" && themeAccent == "FrappeYellow" -> FrappeYellow
+        currentTheme == "Dark" && themeAccent == "FrappeGreen" -> FrappeGreen
+        currentTheme == "Dark" && themeAccent == "FrappeTeal" -> FrappeTeal
+        currentTheme == "Dark" && themeAccent == "FrappeSky" -> FrappeSky
+        currentTheme == "Dark" && themeAccent == "FrappeSapphire" -> FrappeSapphire
+        currentTheme == "Dark" && themeAccent == "FrappeBlue" -> FrappeBlue
+        currentTheme == "Dark" && themeAccent == "FrappeLavender" -> FrappeLavender
 
         supportsMaterialYou && currentTheme == "Dark" -> dynamicDarkColorScheme(context)
 
@@ -469,6 +1079,48 @@ fun ComposeSimpleMPTheme(
         currentTheme == "Light" && themeAccent == "Orange" -> LightOrangeColors
         currentTheme == "Light" && themeAccent == "Green" -> LightGreenColors
         currentTheme == "Light" && themeAccent == "Pink" -> LightPinkColors
+        currentTheme == "Light" && themeAccent == "MacchiatoRosewater" -> MacchiatoRosewater
+        currentTheme == "Light" && themeAccent == "MacchiatoFlamingo" -> MacchiatoFlamingo
+        currentTheme == "Light" && themeAccent == "MacchiatoPink" -> MacchiatoRosewater
+        currentTheme == "Light" && themeAccent == "MacchiatoMauve" -> MacchiatoRosewater
+        currentTheme == "Light" && themeAccent == "MacchiatoRed" -> MacchiatoRosewater
+        currentTheme == "Light" && themeAccent == "MacchiatoMaroon" -> MacchiatoMaroon
+        currentTheme == "Light" && themeAccent == "MacchiatoPeach" -> MacchiatoPeach
+        currentTheme == "Light" && themeAccent == "MacchiatoYellow" -> MacchiatoYellow
+        currentTheme == "Light" && themeAccent == "MacchiatoGreen" -> MacchiatoGreen
+        currentTheme == "Light" && themeAccent == "MacchiatoTeal" -> MacchiatoTeal
+        currentTheme == "Light" && themeAccent == "MacchiatoSky" -> MacchiatoSky
+        currentTheme == "Light" && themeAccent == "MacchiatoSapphire" -> MacchiatoSapphire
+        currentTheme == "Light" && themeAccent == "MacchiatoBlue" -> MacchiatoBlue
+        currentTheme == "Light" && themeAccent == "MacchiatoLavender" -> MacchiatoLavender
+        currentTheme == "Light" && themeAccent == "MochaRosewater" -> MochaRosewater
+        currentTheme == "Light" && themeAccent == "MochaFlamingo" -> MochaFlamingo
+        currentTheme == "Light" && themeAccent == "MochaPink" -> MochaRosewater
+        currentTheme == "Light" && themeAccent == "MochaMauve" -> MochaRosewater
+        currentTheme == "Light" && themeAccent == "MochaRed" -> MochaRosewater
+        currentTheme == "Light" && themeAccent == "MochaMaroon" -> MochaMaroon
+        currentTheme == "Light" && themeAccent == "MochaPeach" -> MochaPeach
+        currentTheme == "Light" && themeAccent == "MochaYellow" -> MochaYellow
+        currentTheme == "Light" && themeAccent == "MochaGreen" -> MochaGreen
+        currentTheme == "Light" && themeAccent == "MochaTeal" -> MochaTeal
+        currentTheme == "Light" && themeAccent == "MochaSky" -> MochaSky
+        currentTheme == "Light" && themeAccent == "MochaSapphire" -> MochaSapphire
+        currentTheme == "Light" && themeAccent == "MochaBlue" -> MochaBlue
+        currentTheme == "Light" && themeAccent == "MochaLavender" -> MochaLavender
+        currentTheme == "Light" && themeAccent == "FrappeRosewater" -> FrappeRosewater
+        currentTheme == "Light" && themeAccent == "FrappeFlamingo" -> FrappeFlamingo
+        currentTheme == "Light" && themeAccent == "FrappePink" -> FrappeRosewater
+        currentTheme == "Light" && themeAccent == "FrappeMauve" -> FrappeRosewater
+        currentTheme == "Light" && themeAccent == "FrappeRed" -> FrappeRosewater
+        currentTheme == "Light" && themeAccent == "FrappeMaroon" -> FrappeMaroon
+        currentTheme == "Light" && themeAccent == "FrappePeach" -> FrappePeach
+        currentTheme == "Light" && themeAccent == "FrappeYellow" -> FrappeYellow
+        currentTheme == "Light" && themeAccent == "FrappeGreen" -> FrappeGreen
+        currentTheme == "Light" && themeAccent == "FrappeTeal" -> FrappeTeal
+        currentTheme == "Light" && themeAccent == "FrappeSky" -> FrappeSky
+        currentTheme == "Light" && themeAccent == "FrappeSapphire" -> FrappeSapphire
+        currentTheme == "Light" && themeAccent == "FrappeBlue" -> FrappeBlue
+        currentTheme == "Light" && themeAccent == "FrappeLavender" -> FrappeLavender
 
         supportsMaterialYou && currentTheme == "Light" -> dynamicLightColorScheme(context)
 
@@ -479,6 +1131,48 @@ fun ComposeSimpleMPTheme(
         themeAccent == "Orange" && useDarkTheme -> DarkOrangeColors
         themeAccent == "Green" && useDarkTheme -> DarkGreenColors
         themeAccent == "Pink" && useDarkTheme -> DarkPinkColors
+        themeAccent == "MacchiatoRosewater" && useDarkTheme -> MacchiatoRosewater
+        themeAccent == "MacchiatoFlamingo" && useDarkTheme -> MacchiatoFlamingo
+        themeAccent == "MacchiatoPink" && useDarkTheme -> MacchiatoPink
+        themeAccent == "MacchiatoMauve" && useDarkTheme -> MacchiatoMauve
+        themeAccent == "MacchiatoRed" && useDarkTheme -> MacchiatoRed
+        themeAccent == "MacchiatoMaroon" && useDarkTheme -> MacchiatoMaroon
+        themeAccent == "MacchiatoPeach" && useDarkTheme -> MacchiatoPeach
+        themeAccent == "MacchiatoYellow" && useDarkTheme -> MacchiatoYellow
+        themeAccent == "MacchiatoGreen" && useDarkTheme -> MacchiatoGreen
+        themeAccent == "MacchiatoTeal" && useDarkTheme -> MacchiatoTeal
+        themeAccent == "MacchiatoSky" && useDarkTheme -> MacchiatoSky
+        themeAccent == "MacchiatoSapphire" && useDarkTheme -> MacchiatoSapphire
+        themeAccent == "MacchiatoBlue" && useDarkTheme -> MacchiatoBlue
+        themeAccent == "MacchiatoLavender" && useDarkTheme -> MacchiatoLavender
+        themeAccent == "MochaRosewater" && useDarkTheme -> MochaRosewater
+        themeAccent == "MochaFlamingo" && useDarkTheme -> MochaFlamingo
+        themeAccent == "MochaPink" && useDarkTheme -> MochaPink
+        themeAccent == "MochaMauve" && useDarkTheme -> MochaMauve
+        themeAccent == "MochaRed" && useDarkTheme -> MochaRed
+        themeAccent == "MochaMaroon" && useDarkTheme -> MochaMaroon
+        themeAccent == "MochaPeach" && useDarkTheme -> MochaPeach
+        themeAccent == "MochaYellow" && useDarkTheme -> MochaYellow
+        themeAccent == "MochaGreen" && useDarkTheme -> MochaGreen
+        themeAccent == "MochaTeal" && useDarkTheme -> MochaTeal
+        themeAccent == "MochaSky" && useDarkTheme -> MochaSky
+        themeAccent == "MochaSapphire" && useDarkTheme -> MochaSapphire
+        themeAccent == "MochaBlue" && useDarkTheme -> MochaBlue
+        themeAccent == "MochaLavender" && useDarkTheme -> MochaLavender
+        themeAccent == "FrappeRosewater" && useDarkTheme -> FrappeRosewater
+        themeAccent == "FrappeFlamingo" && useDarkTheme -> FrappeFlamingo
+        themeAccent == "FrappePink" && useDarkTheme -> FrappePink
+        themeAccent == "FrappeMauve" && useDarkTheme -> FrappeMauve
+        themeAccent == "FrappeRed" && useDarkTheme -> FrappeRed
+        themeAccent == "FrappeMaroon" && useDarkTheme -> FrappeMaroon
+        themeAccent == "FrappePeach" && useDarkTheme -> FrappePeach
+        themeAccent == "FrappeYellow" && useDarkTheme -> FrappeYellow
+        themeAccent == "FrappeGreen" && useDarkTheme -> FrappeGreen
+        themeAccent == "FrappeTeal" && useDarkTheme -> FrappeTeal
+        themeAccent == "FrappeSky" && useDarkTheme -> FrappeSky
+        themeAccent == "FrappeSapphire" && useDarkTheme -> FrappeSapphire
+        themeAccent == "FrappeBlue" && useDarkTheme -> FrappeBlue
+        themeAccent == "FrappeLavender" && useDarkTheme -> FrappeLavender
 
         supportsMaterialYou && useDarkTheme -> dynamicDarkColorScheme(context)
 
@@ -489,20 +1183,33 @@ fun ComposeSimpleMPTheme(
         themeAccent == "Orange" && !useDarkTheme -> LightOrangeColors
         themeAccent == "Green" && !useDarkTheme -> LightGreenColors
         themeAccent == "Pink" && !useDarkTheme -> LightPinkColors
+        themeAccent!!.contains("Rosewater") && !useDarkTheme -> LatteRosewater
+        themeAccent.contains("Flamingo") && !useDarkTheme -> LatteFlamingo
+        themeAccent.contains("Pink") && !useDarkTheme -> LattePink
+        themeAccent.contains("Mauve") && !useDarkTheme -> LatteMauve
+        themeAccent.contains("Red") && !useDarkTheme -> LatteRed
+        themeAccent.contains("Maroon") && !useDarkTheme -> LatteMaroon
+        themeAccent.contains("Peach") && !useDarkTheme -> LattePeach
+        themeAccent.contains("Yellow") && !useDarkTheme -> LatteYellow
+        themeAccent.contains("Green") && !useDarkTheme -> LatteGreen
+        themeAccent.contains("Teal") && !useDarkTheme -> LatteTeal
+        themeAccent.contains("Sky") && !useDarkTheme -> LatteSky
+        themeAccent.contains("Sapphire") && !useDarkTheme -> LatteSapphire
+        themeAccent.contains("Blue") && !useDarkTheme -> LatteBlue
+        themeAccent.contains("Lavender") && !useDarkTheme -> LatteLavender
 
         supportsMaterialYou && !useDarkTheme -> dynamicLightColorScheme(context)
 
         useDarkTheme -> DarkBlueColors
 
-        else-> LightBlueColors
+        else -> LightBlueColors
     }
 
-    when(currentTheme){
+    when (currentTheme) {
 
         "Dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         "Light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
-
 
 
     MaterialTheme(

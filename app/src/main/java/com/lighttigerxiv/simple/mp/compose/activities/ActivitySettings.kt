@@ -92,14 +92,11 @@ class ActivitySettings : ComponentActivity() {
                     }
                 }
 
-
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .background(surfaceColor)
                     .padding(14.dp)
                     .verticalScroll(rememberScrollState())
-
-
                 ) {
 
                     Column(modifier = Modifier.fillMaxSize()) {
@@ -728,7 +725,12 @@ class ActivitySettings : ComponentActivity() {
                                                         .weight(0.25f)
                                                         .aspectRatio(1f)
                                                         .clip(RoundedCornerShape(100))
-                                                        .background(Color.Transparent)
+                                                        .background(Color.Magenta)
+                                                        .clickable {
+                                                            showThemeAccentDialog.value = false
+                                                            activitySettingsViewModel.selectedThemeAccentDialog.value = "Macchiato"
+                                                            activitySettingsViewModel.setThemeAccent()
+                                                        }
                                                 )
                                             }
                                         }

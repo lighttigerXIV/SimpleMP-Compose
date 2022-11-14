@@ -1,1 +1,1 @@
-# SimpleMP (Simple Music Player)
+# Simple MP (Simple Music Player)

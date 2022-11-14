@@ -1,2 +1,1 @@
-# SimpleMP-Compose
-Still not ready
+# SimpleMP (Simple Music Player)

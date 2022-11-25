@@ -11,9 +11,6 @@
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
 
-    <color name="onSurface">#ff000000</color>
-    <color name="surface">#FFFFFF</color>
-    <color name="blue">#232323</color>
-    <color name="widgetSurface">#121212</color>
-    <color name="onWidgetSurface">#ffffff</color>
+    <color name="onSurface">#ffffffff</color>
+
 </resources>

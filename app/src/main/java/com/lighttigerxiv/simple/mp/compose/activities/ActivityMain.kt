@@ -30,7 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.lighttigerxiv.simple.mp.compose.ActivityFirstSetup
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
+import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.composables.MiniPlayer
 import com.lighttigerxiv.simple.mp.compose.composables.Player
@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var activityMainViewModel: ActivityMainViewModel
+    private lateinit var activityMainVM: ActivityMainVM
 
 
     @OptIn(ExperimentalMaterialApi::class)
@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
         }
 
         createNotificationChannel()
-        activityMainViewModel = ViewModelProvider(this)[ActivityMainViewModel::class.java]
+        activityMainVM = ViewModelProvider(this)[ActivityMainVM::class.java]
         val themeViewModel = ViewModelProvider(this)[ThemeViewModel::class.java]
 
         setContent {
@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
                 val context = LocalContext.current
                 val scope = rememberCoroutineScope()
                 val navController = rememberNavController()
-                activityMainViewModel.navController = navController
+                activityMainVM.navController = navController
                 val scaffoldState = rememberScaffoldState()
                 val bottomNavigationItems = remember { ArrayList<BottomNavItem>(getNavigationItems(context)) }
                 val bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
@@ -104,10 +104,10 @@ class MainActivity : ComponentActivity() {
                     }
 
 
-                activityMainViewModel.surfaceColor.value = surfaceColor
+                activityMainVM.surfaceColor.value = surfaceColor
 
-                val miniPlayerHeight by activityMainViewModel.miniPlayerHeight.observeAsState()
-                val selectedSong by activityMainViewModel.selectedSong.observeAsState()
+                val miniPlayerHeight by activityMainVM.miniPlayerHeight.observeAsState()
+                val selectedSong by activityMainVM.selectedSong.observeAsState()
 
                 rememberSystemUiController().setStatusBarColor(surfaceColor)
 
@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
                         bottomBar = {
 
                             BottomNavigationBar(
-                                activityMainViewModel = activityMainViewModel,
+                                activityMainVM = activityMainVM,
                                 navController = navController,
                                 items = bottomNavigationItems,
                                 onItemClick = { bottomNavItem ->
@@ -157,11 +157,11 @@ class MainActivity : ComponentActivity() {
                                         && bottomSheetState.targetValue == BottomSheetValue.Collapsed
                                     ) {
 
-                                        MiniPlayer(activityMainViewModel)
+                                        MiniPlayer(activityMainVM)
                                     } else {
 
                                         Player(
-                                            activityMainViewModel,
+                                            activityMainVM,
                                             bottomSheetState
                                         )
                                     }
@@ -188,24 +188,24 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 composable("homeScreen") {
                                     HomeScreen(
-                                        activityMainViewModel = activityMainViewModel
+                                        activityMainVM = activityMainVM
                                     )
                                 }
                                 composable("artistsScreen") {
                                     ArtistsScreen(
-                                        activityMainViewModel = activityMainViewModel,
+                                        activityMainVM = activityMainVM,
                                         onArtistClicked = { artistID -> navController.navigate("artistScreen?artistID=$artistID") }
                                     )
                                 }
                                 composable("albumsScreen") {
                                     AlbumsScreen(
-                                        activityMainViewModel = activityMainViewModel,
+                                        activityMainVM = activityMainVM,
                                         onAlbumClicked = { albumID -> navController.navigate("albumScreen?albumID=$albumID") }
                                     )
                                 }
                                 composable("playlistsScreen") {
                                     PlaylistsScreen(
-                                        activityMainViewModel = activityMainViewModel,
+                                        activityMainVM = activityMainVM,
                                         onGenrePlaylistClick = { navController.navigate("genrePlaylistScreen") },
                                         onPlaylistClick = { navController.navigate("PlaylistScreen") }
                                     )
@@ -218,7 +218,7 @@ class MainActivity : ComponentActivity() {
                                 )
                                 { backStackEntry ->
                                     ArtistScreen(
-                                        activityMainViewModel = activityMainViewModel,
+                                        activityMainVM = activityMainVM,
                                         backStackEntry = backStackEntry,
                                         onBackClicked = { navController.navigateUp() },
                                         onArtistAlbumOpened = { albumID -> navController.navigate("artistAlbumScreen?albumID=$albumID") }
@@ -231,7 +231,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 ) { backStackEntry ->
                                     AlbumScreen(
-                                        activityMainViewModel = activityMainViewModel,
+                                        activityMainVM = activityMainVM,
                                         backStackEntry = backStackEntry,
                                         onBackClicked = { navController.navigateUp() },
                                     )
@@ -243,21 +243,21 @@ class MainActivity : ComponentActivity() {
                                     )
                                 ) { backStackEntry ->
                                     AlbumScreen(
-                                        activityMainViewModel = activityMainViewModel,
+                                        activityMainVM = activityMainVM,
                                         backStackEntry = backStackEntry,
                                         onBackClicked = { navController.navigateUp() }
                                     )
                                 }
                                 composable("genrePlaylistScreen") {
                                     GenrePlaylistScreen(
-                                        activityMainViewModel = activityMainViewModel,
+                                        activityMainVM = activityMainVM,
                                         onBackClicked = { navController.navigateUp() }
                                     )
                                 }
 
                                 composable("playlistScreen") {
                                     PlaylistScreen(
-                                        activityMainViewModel = activityMainViewModel,
+                                        activityMainVM = activityMainVM,
                                         onBackClicked = { navController.navigateUp() }
                                     )
                                 }
@@ -268,7 +268,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 ) { backStackEntry ->
                                     AddToPlaylistScreen(
-                                        activityMainViewModel = activityMainViewModel,
+                                        activityMainVM = activityMainVM,
                                         backStackEntry = backStackEntry,
                                         previousPage = "Home",
                                         onBackClick = { navController.navigateUp() }
@@ -282,7 +282,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 ){ backStackEntry ->
                                     ArtistScreen(
-                                        activityMainViewModel = activityMainViewModel,
+                                        activityMainVM = activityMainVM,
                                         backStackEntry = backStackEntry,
                                         onBackClicked = { navController.navigateUp() },
                                         onArtistAlbumOpened = { albumID -> navController.navigate("floatingArtistAlbumScreen?albumID=$albumID") }
@@ -296,7 +296,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 ){ backStackEntry ->
                                     AlbumScreen(
-                                        activityMainViewModel = activityMainViewModel,
+                                        activityMainVM = activityMainVM,
                                         backStackEntry = backStackEntry,
                                         onBackClicked = {navController.navigateUp()}
                                     )
@@ -309,7 +309,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 ){ backStackEntry ->
                                     AlbumScreen(
-                                        activityMainViewModel = activityMainViewModel,
+                                        activityMainVM = activityMainVM,
                                         backStackEntry = backStackEntry,
                                         onBackClicked = {navController.navigateUp()}
                                     )
@@ -318,13 +318,13 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    activityMainViewModel.onSongSelected = {
-                        activityMainViewModel.miniPlayerHeight.value = 60.dp
+                    activityMainVM.onSongSelected = {
+                        activityMainVM.miniPlayerHeight.value = 60.dp
                     }
 
-                    activityMainViewModel.onMediaPlayerStopped = {
+                    activityMainVM.onMediaPlayerStopped = {
                         scope.launch { bottomSheetState.collapse() }
-                        activityMainViewModel.miniPlayerHeight.value = 0.dp
+                        activityMainVM.miniPlayerHeight.value = 0.dp
                     }
                 }
             }

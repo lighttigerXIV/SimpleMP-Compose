@@ -6,25 +6,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
+import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 
 @Composable
 fun BottomNavigationBar(
-    activityMainViewModel: ActivityMainViewModel,
+    activityMainVM: ActivityMainVM,
     navController: NavController,
     items: ArrayList<BottomNavItem>,
     onItemClick: (BottomNavItem) -> Unit
@@ -46,8 +41,6 @@ fun BottomNavigationBar(
 
                 val destinationRoute = if(backStackEntry.value?.destination?.route == null) "" else backStackEntry.value?.destination?.route
                 val itemRoute = item.route
-
-                println("Destination route => $destinationRoute")
 
                 val isItemSelected = when {
 
@@ -104,6 +97,4 @@ fun BottomNavigationBar(
             }
         }
     }
-
-
 }

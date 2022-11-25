@@ -24,19 +24,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.lighttigerxiv.simple.mp.compose.Song
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
+import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 
 @Composable
 fun AlbumsAndArtistsGrid(
-    activityMainViewModel: ActivityMainViewModel,
+    activityMainVM: ActivityMainVM,
     contentType: String,
     onCardClicked : ()-> Unit
 ){
 
     val configuration = LocalConfiguration.current
-    val artistsList = activityMainViewModel.currentArtistsList.observeAsState().value!!
-    val albumsList = activityMainViewModel.currentAlbumsList.observeAsState().value!!
+    val artistsList = activityMainVM.currentArtistsList.observeAsState().value!!
+    val albumsList = activityMainVM.currentAlbumsList.observeAsState().value!!
 
     val gridCellsCount = when(configuration.orientation){
 
@@ -68,7 +67,7 @@ fun AlbumsAndArtistsGrid(
                                 .clip(RoundedCornerShape(14.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
                                 .clickable {
-                                    activityMainViewModel.clickedArtistID.value = artist.artistID
+                                    activityMainVM.clickedArtistID.value = artist.artistID
                                     onCardClicked()
                                 }
 
@@ -79,7 +78,7 @@ fun AlbumsAndArtistsGrid(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ){
                                 Image(
-                                    bitmap = remember { activityMainViewModel.songsImagesList.first { it.albumID == artistSongAlbumID }.albumArt.asImageBitmap() },
+                                    bitmap = remember { activityMainVM.songsImagesList.first { it.albumID == artistSongAlbumID }.albumArt.asImageBitmap() },
                                     contentDescription = "",
                                     modifier = Modifier
                                         .padding(10.dp)
@@ -117,7 +116,7 @@ fun AlbumsAndArtistsGrid(
                                 .clip(RoundedCornerShape(14.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
                                 .clickable {
-                                    activityMainViewModel.clickedAlbumID.value = album.albumID
+                                    activityMainVM.clickedAlbumID.value = album.albumID
                                     onCardClicked()
                                 }
 
@@ -128,7 +127,7 @@ fun AlbumsAndArtistsGrid(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ){
                                 Image(
-                                    bitmap = remember { activityMainViewModel.songsImagesList.first { it.albumID == albumSongAlbumID }.albumArt.asImageBitmap() },
+                                    bitmap = remember { activityMainVM.songsImagesList.first { it.albumID == albumSongAlbumID }.albumArt.asImageBitmap() },
                                     contentDescription = "",
                                     modifier = Modifier
                                         .padding(10.dp)

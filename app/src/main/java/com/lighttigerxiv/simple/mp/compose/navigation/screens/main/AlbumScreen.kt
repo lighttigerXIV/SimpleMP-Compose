@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -23,30 +22,30 @@ import androidx.navigation.NavBackStackEntry
 import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.composables.BasicToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.SongItem
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
+import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 
 
 @Composable
 fun AlbumScreen(
-    activityMainViewModel: ActivityMainViewModel,
+    activityMainVM: ActivityMainVM,
     backStackEntry: NavBackStackEntry,
     onBackClicked: () -> Unit
 ){
 
     val albumID = remember { backStackEntry.arguments?.getLong("albumID") }
-    val album = remember { activityMainViewModel.currentAlbumsList.value!!.find{ it.albumID == albumID }!! }
-    val albumArt = remember { activityMainViewModel.songsImagesList.find { it.albumID == albumID }!!.albumArt.asImageBitmap() }
+    val album = remember { activityMainVM.currentAlbumsList.value!!.find{ it.albumID == albumID }!! }
+    val albumArt = remember { activityMainVM.songsImagesList.find { it.albumID == albumID }!!.albumArt.asImageBitmap() }
     val albumName = remember { album.albumName }
     val albumArtist = remember { album.artistName }
-    val albumSongsList = remember { activityMainViewModel.recentHomeSongsList.filter { it.albumID == albumID } as ArrayList<Song> }
+    val albumSongsList = remember { activityMainVM.recentHomeSongsList.filter { it.albumID == albumID } as ArrayList<Song> }
     val nestedScrollViewState = rememberNestedScrollViewState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainViewModel.surfaceColor.value!!)
+            .background(activityMainVM.surfaceColor.value!!)
             .padding(14.dp)
     ){
 
@@ -104,7 +103,7 @@ fun AlbumScreen(
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         IconButton(
-                            onClick = { activityMainViewModel.selectSong(albumSongsList, 0) },
+                            onClick = { activityMainVM.selectSong(albumSongsList, 0) },
                             modifier = Modifier
                                 .height(60.dp)
                                 .width(60.dp)
@@ -112,7 +111,7 @@ fun AlbumScreen(
                                 .background(MaterialTheme.colorScheme.primary)
                         ) {
                             Icon(
-                                bitmap = activityMainViewModel.miniPlayerPlayIcon,
+                                bitmap = activityMainVM.miniPlayerPlayIcon,
                                 contentDescription = "",
                                 tint = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.padding(20.dp)
@@ -137,9 +136,9 @@ fun AlbumScreen(
 
                                 SongItem(
                                     song = song,
-                                    songAlbumArt = remember { activityMainViewModel.songsImagesList.first { it.albumID == song.albumID }.albumArt },
-                                    highlight = song.path == activityMainViewModel.selectedSongPath.observeAsState().value,
-                                    onSongClick = { activityMainViewModel.selectSong(albumSongsList, albumSongsList.indexOf(song)) }
+                                    songAlbumArt = remember { activityMainVM.songsImagesList.first { it.albumID == song.albumID }.albumArt },
+                                    highlight = song.path == activityMainVM.selectedSongPath.observeAsState().value,
+                                    onSongClick = { activityMainVM.selectSong(albumSongsList, albumSongsList.indexOf(song)) }
                                 )
                             }
                         },

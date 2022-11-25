@@ -1,8 +1,16 @@
 <resources>
+    <style name="Theme.ComposeSimpleMP" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/purple_700</item>
+    </style>
 
     <style name="Widget.ComposeSimpleMP.AppWidget.Container" parent="android:Widget">
         <item name="android:id">@android:id/background</item>
-        <item name="android:background">?android:attr/colorBackground</item>
+        <item name="android:background">@drawable/app_widget_background</item>
+    </style>
+
+    <style name="Text">
+        <item name="color">@color/onSurface</item>
+        <item name="android:textColor">@color/onSurface</item>
     </style>
 
     <style name="Widget.ComposeSimpleMP.AppWidget.InnerView" parent="android:Widget">

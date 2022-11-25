@@ -13,7 +13,4 @@ class ReceiverStop: BroadcastReceiver() {
 
         context.startService( actionsServiceIntent )
     }
-
-
-
 }

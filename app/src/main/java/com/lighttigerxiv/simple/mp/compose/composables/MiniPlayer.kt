@@ -18,17 +18,17 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
+import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 
 @Composable
 fun MiniPlayer(
-    activityMainViewModel: ActivityMainViewModel
+    activityMainVM: ActivityMainVM
 ){
 
-    val songTitle = activityMainViewModel.selectedSong.value!!.title
-    val songArtistName = activityMainViewModel.selectedSong.value!!.artistName
-    val songAlbumArt = activityMainViewModel.selectedSongAlbumArt.value!!
-    val currentMiniPlayerIcon = activityMainViewModel.currentMiniPlayerIcon.observeAsState()
+    val songTitle = activityMainVM.selectedSong.value!!.title
+    val songArtistName = activityMainVM.selectedSong.value!!.artistName
+    val songAlbumArt = activityMainVM.selectedSongAlbumArt.value!!
+    val currentMiniPlayerIcon = activityMainVM.currentMiniPlayerIcon.observeAsState()
 
 
     Row(modifier = Modifier
@@ -78,7 +78,7 @@ fun MiniPlayer(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
                 ) {
-                    activityMainViewModel.pauseResumeMusic()
+                    activityMainVM.pauseResumeMusic()
                 }
         )
         Spacer(modifier = Modifier.width(10.dp))

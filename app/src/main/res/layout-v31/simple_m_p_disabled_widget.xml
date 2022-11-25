@@ -1,0 +1,15 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.ComposeSimpleMP.AppWidget.Container"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:theme="@style/Widget.ComposeSimpleMP.AppWidget.Container">
+
+    <TextView
+        android:id="@+id/noMusicPlaying_Widget"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:gravity="center"
+        android:text="@string/noMusicPlaying"
+        android:textColor="?android:attr/colorAccent" />
+
+</RelativeLayout>

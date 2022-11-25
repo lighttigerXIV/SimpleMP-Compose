@@ -11,19 +11,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
+import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.composables.ImageCard
 
 @Composable
 fun ArtistsScreen(
-    activityMainViewModel: ActivityMainViewModel,
+    activityMainVM: ActivityMainVM,
     onArtistClicked: (artistID: Long) -> Unit
 ) {
 
@@ -32,7 +31,7 @@ fun ArtistsScreen(
     var popupMenuExpanded by remember { mutableStateOf(false) }
     val sortSharedPrefs = context.getSharedPreferences("sorting", Context.MODE_PRIVATE)
 
-    val artistsList = activityMainViewModel.currentArtistsList.observeAsState().value!!
+    val artistsList = activityMainVM.currentArtistsList.observeAsState().value!!
 
 
     val gridCellsCount = when (configuration.orientation) {
@@ -44,7 +43,7 @@ fun ArtistsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainViewModel.surfaceColor.value!!)
+            .background(activityMainVM.surfaceColor.value!!)
             .padding(14.dp)
     ) {
 
@@ -60,16 +59,16 @@ fun ArtistsScreen(
                     .height(50.dp)
             ) {
 
-                val searchText = activityMainViewModel.artistsSearchText.observeAsState().value!!
-                val hint = activityMainViewModel.hintArtistsSearchText.value!!
+                val searchText = activityMainVM.artistsSearchText.observeAsState().value!!
+                val hint = activityMainVM.hintArtistsSearchText.value!!
 
                 CustomTextField(
                     text = searchText,
                     placeholder = hint,
                     textType = "text",
                     onValueChanged = {
-                        activityMainViewModel.artistsSearchText.value = it
-                        activityMainViewModel.filterArtistsList(sortSharedPrefs.getString("artists", "Recent")!!)
+                        activityMainVM.artistsSearchText.value = it
+                        activityMainVM.filterArtistsList(sortSharedPrefs.getString("artists", "Recent")!!)
                     },
                     sideIcon = painterResource(id = R.drawable.icon_more_regular),
                     onSideIconClick = { popupMenuExpanded = true },
@@ -83,28 +82,28 @@ fun ArtistsScreen(
                         text = { Text(text = "Sort By Recent") },
                         onClick = {
                             sortSharedPrefs.edit().putString("artists", "Recent").apply()
-                            activityMainViewModel.currentArtistsList.value = activityMainViewModel.recentArtistsList
+                            activityMainVM.currentArtistsList.value = activityMainVM.recentArtistsList
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(text = "Sort By Oldest") },
                         onClick = {
                             sortSharedPrefs.edit().putString("artists", "Oldest").apply()
-                            activityMainViewModel.currentArtistsList.value = activityMainViewModel.oldestArtistsList
+                            activityMainVM.currentArtistsList.value = activityMainVM.oldestArtistsList
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(text = "Sort By Ascendent") },
                         onClick = {
                             sortSharedPrefs.edit().putString("artists", "Ascendent").apply()
-                            activityMainViewModel.currentArtistsList.value = activityMainViewModel.ascendentArtistsList
+                            activityMainVM.currentArtistsList.value = activityMainVM.ascendentArtistsList
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(text = "Sort By Descendent") },
                         onClick = {
                             sortSharedPrefs.edit().putString("artists", "Descendent").apply()
-                            activityMainViewModel.currentArtistsList.value = activityMainViewModel.descendentArtistsList
+                            activityMainVM.currentArtistsList.value = activityMainVM.descendentArtistsList
                         }
                     )
                 }
@@ -125,7 +124,7 @@ fun ArtistsScreen(
                 ) { artist ->
 
                     ImageCard(
-                        cardImage = remember { activityMainViewModel.songsImagesList.first { it.albumID == artist.albumID }.albumArt },
+                        cardImage = remember { activityMainVM.songsImagesList.first { it.albumID == artist.albumID }.albumArt },
                         cardText = remember { artist.artistName },
                         onCardClicked = {
 

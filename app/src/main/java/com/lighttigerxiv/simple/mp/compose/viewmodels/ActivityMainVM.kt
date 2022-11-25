@@ -2,6 +2,7 @@ package com.lighttigerxiv.simple.mp.compose.viewmodels
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.appwidget.AppWidgetManager
 import android.content.*
 import android.content.Context.MODE_PRIVATE
 import android.graphics.Bitmap
@@ -18,7 +19,7 @@ import com.lighttigerxiv.simple.mp.compose.data.AppDatabase
 import com.lighttigerxiv.simple.mp.compose.data.Playlist
 import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
 
-class ActivityMainViewModel(application: Application) : AndroidViewModel(application) {
+class ActivityMainVM(application: Application) : AndroidViewModel(application) {
 
     private val playlistDao = AppDatabase.getInstance(application).playlistDao
 
@@ -177,6 +178,19 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
 
             val binder = service as SimpleMPService.LocalBinder
             smpService = binder.getService()
+
+            fun updateWidget(){
+                val intent = Intent(application, SimpleMPWidget::class.java)
+                intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+
+                val ids = AppWidgetManager.getInstance(application)
+                    .getAppWidgetIds(ComponentName(application, SimpleMPWidget::class.java))
+
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+                application.sendBroadcast(intent)
+            }
+
+
             if (smpService.isMusicPlayingOrPaused()) {
 
                 updatePlayPauseIcons()
@@ -226,6 +240,8 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
                 queueList.value = smpService.getCurrentQueueList()
                 upNextQueueList.value = smpService.getUpNextQueueList()
                 onSongSelected(song)
+
+                updateWidget()
             }
 
 
@@ -239,12 +255,14 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
 
                 currentMiniPlayerIcon.value = miniPlayerPlayIcon
                 currentPlayerIcon.value = playRoundIcon
+                updateWidget()
             }
 
             smpService.onSongResumed = {
 
                 currentMiniPlayerIcon.value = miniPlayerPauseIcon
                 currentPlayerIcon.value = pauseRoundIcon
+                updateWidget()
             }
 
             smpService.onMediaPlayerStopped = {

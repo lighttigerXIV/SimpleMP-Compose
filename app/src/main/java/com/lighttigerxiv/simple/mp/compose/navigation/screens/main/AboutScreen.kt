@@ -15,7 +15,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.BuildConfig
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
@@ -49,6 +51,9 @@ fun AboutScreen(
                 .verticalScroll(rememberScrollState())
         ) {
 
+
+            Spacer(modifier = Modifier.height(20.dp))
+
             CustomText(
                 text = "App Version",
                 weight = FontWeight.Bold
@@ -64,6 +69,8 @@ fun AboutScreen(
                 text = "App Source",
                 weight = FontWeight.Bold
             )
+
+            Spacer(modifier = Modifier.height(10.dp))
 
             Row(
                 modifier = Modifier
@@ -112,6 +119,10 @@ fun AboutScreen(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(14.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .clickable {
+                        val intent = Intent(Intent.ACTION_VIEW).apply { data = Uri.parse("https://gitlab.com/lighttigerxiv/simplemp-compose") }
+                        context.startActivity(intent)
+                    }
                     .padding(14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

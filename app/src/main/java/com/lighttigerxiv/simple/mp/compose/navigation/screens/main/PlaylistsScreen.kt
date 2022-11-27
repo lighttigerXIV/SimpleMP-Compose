@@ -13,6 +13,7 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -32,6 +33,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.lighttigerxiv.simple.mp.compose.R
+import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.UsefulFunctions
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
@@ -68,27 +70,27 @@ fun PlaylistsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainVM.surfaceColor.value!!)
+            .background(activityMainVM.surfaceColor.collectAsState().value)
     ) {
 
         Column(modifier = Modifier.fillMaxSize()) {
 
             TabRow(
                 selectedTabIndex = pagerState.currentPage,
-                contentColor = activityMainVM.surfaceColor.value!!,
+                contentColor = activityMainVM.surfaceColor.collectAsState().value,
                 indicator = {},
             ) {
 
                 val genrePlaylistColor = when(pagerState.currentPage){
 
                     0-> MaterialTheme.colorScheme.surfaceVariant
-                    else-> activityMainVM.surfaceColor.value!!
+                    else-> activityMainVM.surfaceColor.collectAsState().value
                 }
 
                 val yourPlaylistsColor = when(pagerState.currentPage){
 
                     1-> MaterialTheme.colorScheme.surfaceVariant
-                    else-> activityMainVM.surfaceColor.value!!
+                    else-> activityMainVM.surfaceColor.collectAsState().value
                 }
 
                 Tab(
@@ -98,7 +100,7 @@ fun PlaylistsScreen(
                     unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                     onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
                     modifier = Modifier
-                        .background(activityMainVM.surfaceColor.value!!)
+                        .background(activityMainVM.surfaceColor.collectAsState().value)
                         .padding(10.dp)
                         .clip(RoundedCornerShape(percent = 100))
                         .background(genrePlaylistColor)
@@ -110,7 +112,7 @@ fun PlaylistsScreen(
                     selected = pagerState.currentPage == 1,
                     onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
                     modifier = Modifier
-                        .background(activityMainVM.surfaceColor.value!!)
+                        .background(activityMainVM.surfaceColor.collectAsState().value)
                         .padding(10.dp)
                         .clip(RoundedCornerShape(percent = 100))
                         .background(yourPlaylistsColor)
@@ -201,7 +203,7 @@ fun PlaylistsScreen(
                                     CustomTextField(
                                         text = playlistNameValue,
                                         placeholder = "Insert playlist name",
-                                        onValueChanged = { activityMainVM.tfNewPlaylistNameValue.value = it },
+                                        onTextChange = { activityMainVM.tfNewPlaylistNameValue.value = it },
                                         textType = "text"
                                     )
 
@@ -233,13 +235,9 @@ fun PlaylistsScreen(
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .background(activityMainVM.surfaceColor.value!!)
-                                    .padding(
-                                        bottom = sheetPadding.calculateBottomPadding() + 14.dp,
-                                        start = sheetPadding.calculateStartPadding(LayoutDirection.Rtl) + 14.dp,
-                                        end = sheetPadding.calculateEndPadding(LayoutDirection.Ltr) + 14.dp,
-                                        top = sheetPadding.calculateTopPadding() + 14.dp
-                                    )
+                                    .background(activityMainVM.surfaceColor.collectAsState().value)
+                                    .padding(sheetPadding)
+                                    .padding(14.dp)
                             ) {
 
                                 Row(

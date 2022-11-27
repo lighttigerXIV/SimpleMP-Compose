@@ -6,8 +6,6 @@ import android.content.*
 import android.graphics.Bitmap
 import android.media.*
 import android.media.AudioManager.OnAudioFocusChangeListener
-import android.media.session.MediaSession
-import android.media.session.PlaybackState
 import android.os.Binder
 import android.os.Handler
 import android.os.IBinder
@@ -390,7 +388,7 @@ class SimpleMPService: Service() {
                     .setShowActionsInCompactView(1, 2, 3)
                 )
                 .setSmallIcon(R.drawable.icon)
-                .addAction(R.drawable.icon_x, "Stop Player", pendingStopIntent )
+                .addAction(R.drawable.icon_x_solid, "Stop Player", pendingStopIntent )
                 .addAction(R.drawable.icon_previous_notification, "Previous Music", pendingPreviousSongIntent )
                 .addAction(R.drawable.icon_pause_notification, "Play Pause Music", pendingPlayPauseIntent )
                 .addAction(R.drawable.icon_next_notification, "Next Music", pendingSkipSongIntent )

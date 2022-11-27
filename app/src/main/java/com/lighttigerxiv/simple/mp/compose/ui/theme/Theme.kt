@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.ui.theme
 
-import android.content.Context
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -865,26 +864,23 @@ private val FrappeLavender = darkColorScheme(
 @Composable
 fun ComposeSimpleMPTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
+    themeMode: String,
+    themeAccent: String
 ) {
 
     val context = LocalContext.current
     val supportsMaterialYou = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    //context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).edit().putString("ThemeAccent", "MacchiatoLavender").apply()
-    val themeAccent = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString("ThemeAccent", "Default")
-    val currentTheme = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString("ThemeMode", "System")
 
-
-    println("Theme mode is $currentTheme")
     val colors = when {
 
-        currentTheme == "Dark" && themeAccent == "Blue" -> DarkBlueColors
-        currentTheme == "Dark" && themeAccent == "Red" -> DarkRedColors
-        currentTheme == "Dark" && themeAccent == "Purple" -> DarkPurpleColors
-        currentTheme == "Dark" && themeAccent == "Yellow" -> DarkYellowColors
-        currentTheme == "Dark" && themeAccent == "Orange" -> DarkOrangeColors
-        currentTheme == "Dark" && themeAccent == "Green" -> DarkGreenColors
-        currentTheme == "Dark" && themeAccent == "Pink" -> DarkPinkColors
+        themeMode == "Dark" && themeAccent == "Blue" -> DarkBlueColors
+        themeMode == "Dark" && themeAccent == "Red" -> DarkRedColors
+        themeMode == "Dark" && themeAccent == "Purple" -> DarkPurpleColors
+        themeMode == "Dark" && themeAccent == "Yellow" -> DarkYellowColors
+        themeMode == "Dark" && themeAccent == "Orange" -> DarkOrangeColors
+        themeMode == "Dark" && themeAccent == "Green" -> DarkGreenColors
+        themeMode == "Dark" && themeAccent == "Pink" -> DarkPinkColors
         themeAccent == "MacchiatoRosewater" -> MacchiatoRosewater
         themeAccent == "MacchiatoFlamingo" -> MacchiatoFlamingo
         themeAccent == "MacchiatoPink" -> MacchiatoPink
@@ -928,17 +924,17 @@ fun ComposeSimpleMPTheme(
         themeAccent == "FrappeBlue" -> FrappeBlue
         themeAccent == "FrappeLavender" -> FrappeLavender
 
-        supportsMaterialYou && currentTheme == "Dark" -> dynamicDarkColorScheme(context)
+        supportsMaterialYou && themeMode == "Dark" -> dynamicDarkColorScheme(context)
 
-        currentTheme == "Light" && themeAccent == "Blue" -> LightBlueColors
-        currentTheme == "Light" && themeAccent == "Red" -> LightRedColors
-        currentTheme == "Light" && themeAccent == "Purple" -> LightPurpleColors
-        currentTheme == "Light" && themeAccent == "Yellow" -> LightYellowColors
-        currentTheme == "Light" && themeAccent == "Orange" -> LightOrangeColors
-        currentTheme == "Light" && themeAccent == "Green" -> LightGreenColors
-        currentTheme == "Light" && themeAccent == "Pink" -> LightPinkColors
+        themeMode == "Light" && themeAccent == "Blue" -> LightBlueColors
+        themeMode == "Light" && themeAccent == "Red" -> LightRedColors
+        themeMode == "Light" && themeAccent == "Purple" -> LightPurpleColors
+        themeMode == "Light" && themeAccent == "Yellow" -> LightYellowColors
+        themeMode == "Light" && themeAccent == "Orange" -> LightOrangeColors
+        themeMode == "Light" && themeAccent == "Green" -> LightGreenColors
+        themeMode == "Light" && themeAccent == "Pink" -> LightPinkColors
 
-        supportsMaterialYou && currentTheme == "Light" -> dynamicLightColorScheme(context)
+        supportsMaterialYou && themeMode == "Light" -> dynamicLightColorScheme(context)
 
         themeAccent == "Blue" && useDarkTheme -> DarkBlueColors
         themeAccent == "Red" && useDarkTheme -> DarkRedColors
@@ -965,7 +961,7 @@ fun ComposeSimpleMPTheme(
         else -> LightBlueColors
     }
 
-    when (currentTheme) {
+    when (themeMode) {
 
         "Dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         "Light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)

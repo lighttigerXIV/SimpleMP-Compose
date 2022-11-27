@@ -72,7 +72,7 @@ fun BottomNavigationBar(
                             Image(
                                 bitmap = if (isItemSelected) item.activeIcon else item.inactiveIcon,
                                 contentDescription = item.name,
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
                                 modifier = Modifier
                                     .height(26.dp)
                                     .width(26.dp)
@@ -87,7 +87,7 @@ fun BottomNavigationBar(
                                         .width(20.dp)
                                         .height(2.dp)
                                         .clip(RoundedCornerShape(percent = 100))
-                                        .background(MaterialTheme.colorScheme.primary)
+                                        .background(MaterialTheme.colorScheme.onSurfaceVariant)
                                 )
                             }
                             else{

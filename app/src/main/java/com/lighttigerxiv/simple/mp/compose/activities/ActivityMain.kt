@@ -20,11 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -42,7 +39,6 @@ import com.lighttigerxiv.simple.mp.compose.navigation.BottomNavigationBar
 import com.lighttigerxiv.simple.mp.compose.navigation.screens.*
 import com.lighttigerxiv.simple.mp.compose.navigation.screens.main.*
 import com.lighttigerxiv.simple.mp.compose.ui.theme.ComposeSimpleMPTheme
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ThemeViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -66,298 +62,314 @@ class MainActivity : ComponentActivity() {
 
         createNotificationChannel()
         activityMainVM = ViewModelProvider(this)[ActivityMainVM::class.java]
-        val themeViewModel = ViewModelProvider(this)[ThemeViewModel::class.java]
 
         setContent {
-            ComposeSimpleMPTheme {
+            ComposeSimpleMPTheme(
+                useDarkTheme = isSystemInDarkTheme(),
+                themeMode = activityMainVM.themeModeSetting.collectAsState().value!!,
+                themeAccent = activityMainVM.themeAccentSetting.collectAsState().value!!,
+                content = {
 
-                val context = LocalContext.current
-                val scope = rememberCoroutineScope()
-                val navController = rememberNavController()
-                activityMainVM.navController = navController
-                val scaffoldState = rememberScaffoldState()
-                val bottomNavigationItems = remember { ArrayList<BottomNavItem>(getNavigationItems(context)) }
-                val bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
-                val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
-                val surfaceColor =
-                    if (themeViewModel.currentThemeSetting.value == "Dark" && themeViewModel.darkModeSetting.value == "Oled") {
-                        Color.Black
-                    } else if (themeViewModel.currentThemeSetting.value == "Dark" && themeViewModel.darkModeSetting.value == "Oled" && isSystemInDarkTheme()) {
-                        Color.Black
-                    } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Blue") {
-                        Color(0xFFFEFBFF)
-                    } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Red") {
-                        Color(0xFFFFFBFF)
-                    } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Purple") {
-                        Color(0xFFFFFBFF)
-                    } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Yellow") {
-                        Color(0xFFFFFBFF)
-                    } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Orange") {
-                        Color(0xFFFFFBFF)
-                    } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Green") {
-                        Color(0xFFFDFDF5)
-                    } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Pink") {
-                        Color(0xFFFFFBFF)
-                    } else if (themeViewModel.darkModeSetting.value == "Oled" && themeViewModel.currentThemeSetting.value == "Light" && isSystemInDarkTheme()) {
-                        Color(0xFFFFFBFF)
-                    } else if (themeViewModel.darkModeSetting.value == "Oled" && isSystemInDarkTheme()) {
-                        Color.Black
-                    } else {
-                        MaterialTheme.colorScheme.surface
-                    }
+                    val themeMode = activityMainVM.themeModeSetting.collectAsState().value
+                    val themeAccent = activityMainVM.themeAccentSetting.collectAsState().value
+                    val darkMode = activityMainVM.darkModeSetting.collectAsState().value
+
+                    val context = LocalContext.current
+                    val scope = rememberCoroutineScope()
+                    val navController = rememberNavController()
+                    activityMainVM.navController = navController
+                    val scaffoldState = rememberScaffoldState()
+                    val bottomNavigationItems = remember { ArrayList<BottomNavItem>(getNavigationItems(context)) }
+                    val bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
+                    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
 
 
-                val showNavigationBar = activityMainVM.showNavigationBar.collectAsState().value
+                    val showNavigationBar = activityMainVM.showNavigationBar.collectAsState().value
 
-
-                activityMainVM.surfaceColor.value = surfaceColor
-
-                val miniPlayerHeight by activityMainVM.miniPlayerHeight.observeAsState()
-                val selectedSong by activityMainVM.selectedSong.observeAsState()
-
-                rememberSystemUiController().setStatusBarColor(surfaceColor)
-
-                navController.addOnDestinationChangedListener { _, destination, _ ->
-
-                    when (destination.route) {
-                        "About" -> activityMainVM.setShowNavigationBar(false)
-                        "settings" -> activityMainVM.setShowNavigationBar(false)
-                        else -> {
-                            if (!showNavigationBar) activityMainVM.setShowNavigationBar(true)
+                    val surfaceColor =
+                        if (themeMode == "Dark" && darkMode == "Oled") {
+                            Color.Black
+                        } else if (themeMode == "Dark" && darkMode == "Oled" && isSystemInDarkTheme()) {
+                            Color.Black
+                        } else if (themeMode == "Light" && themeAccent == "Blue") {
+                            Color(0xFFFEFBFF)
+                        } else if (themeMode == "Light" && themeAccent == "Red") {
+                            Color(0xFFFFFBFF)
+                        } else if (themeMode == "Light" && themeAccent == "Purple") {
+                            Color(0xFFFFFBFF)
+                        } else if (themeMode == "Light" && themeAccent == "Yellow") {
+                            Color(0xFFFFFBFF)
+                        } else if (themeMode == "Light" && themeAccent == "Orange") {
+                            Color(0xFFFFFBFF)
+                        } else if (themeMode == "Light" && themeAccent == "Green") {
+                            Color(0xFFFDFDF5)
+                        } else if (themeMode == "Light" && themeAccent == "Pink") {
+                            Color(0xFFFFFBFF)
+                        } else if (darkMode == "Oled" && themeMode == "Light" && isSystemInDarkTheme()) {
+                            Color(0xFFFFFBFF)
+                        } else if (darkMode == "Oled" && isSystemInDarkTheme()) {
+                            Color.Black
+                        } else {
+                            MaterialTheme.colorScheme.surface
                         }
-                    }
-                }
 
-                if (bottomSheetState.isExpanded) {
-                    activityMainVM.setShowNavigationBar(false)
-                }
+                    activityMainVM.setSurfaceColor(surfaceColor)
 
+                    val miniPlayerHeight by activityMainVM.miniPlayerHeight.observeAsState()
+                    val selectedSong by activityMainVM.selectedSong.observeAsState()
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(surfaceColor)
-                ) {
+                    rememberSystemUiController().setStatusBarColor(surfaceColor)
 
-                    Scaffold(
-                        scaffoldState = scaffoldState,
-                        modifier = Modifier.fillMaxSize(),
-                        bottomBar = {
+                    navController.addOnDestinationChangedListener { _, destination, _ ->
 
-                            AnimatedVisibility(
-                                visible = showNavigationBar,
-                                exit = shrinkVertically(),
-                                enter = expandVertically()
-                            ) {
-                                BottomNavigationBar(
-                                    navController = navController,
-                                    items = bottomNavigationItems,
-                                    onItemClick = { bottomNavItem ->
-                                        navController.navigate(bottomNavItem.route) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
-                                            }
-                                            launchSingleTop = true
-                                            restoreState = true
-                                        }
-                                    }
-                                )
+                        when (destination.route) {
+                            "About" -> activityMainVM.setShowNavigationBar(false)
+                            "Settings" -> activityMainVM.setShowNavigationBar(false)
+                            else -> {
+                                if (!showNavigationBar) activityMainVM.setShowNavigationBar(true)
                             }
                         }
-                    ) { mainScaffoldPadding ->
+                    }
 
-                        BottomSheetScaffold(
-                            scaffoldState = bottomSheetScaffoldState,
-                            sheetContent = {
 
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize()
+
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(surfaceColor)
+                    ) {
+
+                        Scaffold(
+                            scaffoldState = scaffoldState,
+                            modifier = Modifier.fillMaxSize(),
+                            bottomBar = {
+
+                                AnimatedVisibility(
+                                    visible = showNavigationBar,
+                                    exit = shrinkVertically(),
+                                    enter = expandVertically()
                                 ) {
 
-                                    if (
-                                        selectedSong != null
-                                        && bottomSheetState.isCollapsed
-                                        && bottomSheetState.progress.fraction == 1.0f
-                                        && bottomSheetState.targetValue == BottomSheetValue.Collapsed
-                                    ) {
 
-                                        if (showNavigationBar)
-                                            MiniPlayer(activityMainVM)
-                                    } else {
-
-                                        if (showNavigationBar || bottomSheetState.isExpanded) {
-                                            Player(
-                                                activityMainVM,
-                                                bottomSheetState
-                                            )
+                                    BottomNavigationBar(
+                                        navController = navController,
+                                        items = bottomNavigationItems,
+                                        onItemClick = { bottomNavItem ->
+                                            navController.navigate(bottomNavItem.route) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
                                         }
-                                    }
-                                }
-                            },
-                            sheetPeekHeight = miniPlayerHeight!!,
-                            modifier = Modifier
-                                .padding(mainScaffoldPadding)
-                        ) { bottomSheetPadding ->
-
-                            NavHost(
-                                navController = navController,
-                                startDestination = "homeScreen",
-                                modifier = Modifier
-                                    .background(surfaceColor)
-                                    .padding(bottomSheetPadding)
-                            ) {
-
-
-                                composable("homeScreen") {
-                                    HomeScreen(
-                                        activityMainVM = activityMainVM,
-                                        openPage = { page -> navController.navigate(page) }
-                                    )
-                                }
-                                composable("artistsScreen") {
-                                    ArtistsScreen(
-                                        activityMainVM = activityMainVM,
-                                        onArtistClicked = { artistID -> navController.navigate("artistScreen?artistID=$artistID") }
-                                    )
-                                }
-                                composable("albumsScreen") {
-                                    AlbumsScreen(
-                                        activityMainVM = activityMainVM,
-                                        onAlbumClicked = { albumID -> navController.navigate("albumScreen?albumID=$albumID") }
-                                    )
-                                }
-                                composable("playlistsScreen") {
-                                    PlaylistsScreen(
-                                        activityMainVM = activityMainVM,
-                                        onGenrePlaylistClick = { navController.navigate("genrePlaylistScreen") },
-                                        onPlaylistClick = { navController.navigate("PlaylistScreen") }
-                                    )
-                                }
-                                composable(
-                                    route = "artistScreen?artistID={artistID}",
-                                    arguments = listOf(
-                                        navArgument("artistID") { type = NavType.LongType }
-                                    )
-                                )
-                                { backStackEntry ->
-                                    ArtistScreen(
-                                        activityMainVM = activityMainVM,
-                                        backStackEntry = backStackEntry,
-                                        onBackClicked = { navController.navigateUp() },
-                                        onArtistAlbumOpened = { albumID -> navController.navigate("artistAlbumScreen?albumID=$albumID") }
-                                    )
-                                }
-                                composable(
-                                    route = "artistAlbumScreen?albumID={albumID}",
-                                    arguments = listOf(
-                                        navArgument("albumID") { type = NavType.LongType }
-                                    )
-                                ) { backStackEntry ->
-                                    AlbumScreen(
-                                        activityMainVM = activityMainVM,
-                                        backStackEntry = backStackEntry,
-                                        onBackClicked = { navController.navigateUp() },
-                                    )
-                                }
-                                composable(
-                                    route = "albumScreen?albumID={albumID}",
-                                    arguments = listOf(
-                                        navArgument("albumID") { type = NavType.LongType }
-                                    )
-                                ) { backStackEntry ->
-                                    AlbumScreen(
-                                        activityMainVM = activityMainVM,
-                                        backStackEntry = backStackEntry,
-                                        onBackClicked = { navController.navigateUp() }
-                                    )
-                                }
-                                composable("genrePlaylistScreen") {
-                                    GenrePlaylistScreen(
-                                        activityMainVM = activityMainVM,
-                                        onBackClicked = { navController.navigateUp() }
-                                    )
-                                }
-
-                                composable("playlistScreen") {
-                                    PlaylistScreen(
-                                        activityMainVM = activityMainVM,
-                                        onBackClicked = { navController.navigateUp() }
-                                    )
-                                }
-                                composable(
-                                    route = "addToPlaylistScreen?songID={songID}",
-                                    arguments = listOf(
-                                        navArgument("songID") { type = NavType.LongType }
-                                    )
-                                ) { backStackEntry ->
-                                    AddToPlaylistScreen(
-                                        activityMainVM = activityMainVM,
-                                        backStackEntry = backStackEntry,
-                                        previousPage = "Home",
-                                        onBackClick = { navController.navigateUp() }
-                                    )
-                                }
-
-                                composable(
-                                    route = "floatingArtistScreen?artistID={artistID}",
-                                    arguments = listOf(
-                                        navArgument("artistID") { type = NavType.LongType }
-                                    )
-                                ) { backStackEntry ->
-                                    ArtistScreen(
-                                        activityMainVM = activityMainVM,
-                                        backStackEntry = backStackEntry,
-                                        onBackClicked = { navController.navigateUp() },
-                                        onArtistAlbumOpened = { albumID -> navController.navigate("floatingArtistAlbumScreen?albumID=$albumID") }
-                                    )
-                                }
-
-                                composable(
-                                    route = "floatingArtistAlbumScreen?albumID={albumID}",
-                                    arguments = listOf(
-                                        navArgument("albumID") { type = NavType.LongType }
-                                    )
-                                ) { backStackEntry ->
-                                    AlbumScreen(
-                                        activityMainVM = activityMainVM,
-                                        backStackEntry = backStackEntry,
-                                        onBackClicked = { navController.navigateUp() }
-                                    )
-                                }
-
-                                composable(
-                                    route = "floatingAlbumScreen?albumID={albumID}",
-                                    arguments = listOf(
-                                        navArgument("albumID") { type = NavType.LongType }
-                                    )
-                                ) { backStackEntry ->
-                                    AlbumScreen(
-                                        activityMainVM = activityMainVM,
-                                        backStackEntry = backStackEntry,
-                                        onBackClicked = { navController.navigateUp() }
-                                    )
-                                }
-
-                                composable("About") {
-                                    AboutScreen(
-                                        onBackClick = { navController.navigateUp() }
                                     )
                                 }
                             }
+                        ) { mainScaffoldPadding ->
+
+                            BottomSheetScaffold(
+                                scaffoldState = bottomSheetScaffoldState,
+                                sheetContent = {
+
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(surfaceColor)
+                                    ) {
+
+                                        if (
+                                            selectedSong != null
+                                            && bottomSheetState.isCollapsed
+                                            && bottomSheetState.progress.fraction == 1.0f
+                                            && bottomSheetState.targetValue == BottomSheetValue.Collapsed
+                                        ) {
+
+                                            if (showNavigationBar)
+                                                MiniPlayer(activityMainVM)
+                                        } else {
+
+                                            if (showNavigationBar || bottomSheetState.isExpanded) {
+                                                Player(
+                                                    activityMainVM,
+                                                    bottomSheetState
+                                                )
+                                            }
+                                        }
+                                    }
+                                },
+                                sheetPeekHeight = miniPlayerHeight!!,
+                                modifier = Modifier
+                                    .padding(mainScaffoldPadding)
+                            ) { bottomSheetPadding ->
+
+                                NavHost(
+                                    navController = navController,
+                                    startDestination = "homeScreen",
+                                    modifier = Modifier
+                                        .background(surfaceColor)
+                                        .padding(bottomSheetPadding)
+                                ) {
+
+
+                                    composable("homeScreen") {
+                                        HomeScreen(
+                                            activityMainVM = activityMainVM,
+                                            openPage = { page -> navController.navigate(page) }
+                                        )
+                                    }
+                                    composable("artistsScreen") {
+                                        ArtistsScreen(
+                                            activityMainVM = activityMainVM,
+                                            onArtistClicked = { artistID -> navController.navigate("artistScreen?artistID=$artistID") }
+                                        )
+                                    }
+                                    composable("albumsScreen") {
+                                        AlbumsScreen(
+                                            activityMainVM = activityMainVM,
+                                            onAlbumClicked = { albumID -> navController.navigate("albumScreen?albumID=$albumID") }
+                                        )
+                                    }
+                                    composable("playlistsScreen") {
+                                        PlaylistsScreen(
+                                            activityMainVM = activityMainVM,
+                                            onGenrePlaylistClick = { navController.navigate("genrePlaylistScreen") },
+                                            onPlaylistClick = { navController.navigate("PlaylistScreen") }
+                                        )
+                                    }
+                                    composable(
+                                        route = "artistScreen?artistID={artistID}",
+                                        arguments = listOf(
+                                            navArgument("artistID") { type = NavType.LongType }
+                                        )
+                                    )
+                                    { backStackEntry ->
+                                        ArtistScreen(
+                                            activityMainVM = activityMainVM,
+                                            backStackEntry = backStackEntry,
+                                            onBackClicked = { navController.navigateUp() },
+                                            onArtistAlbumOpened = { albumID -> navController.navigate("artistAlbumScreen?albumID=$albumID") }
+                                        )
+                                    }
+                                    composable(
+                                        route = "artistAlbumScreen?albumID={albumID}",
+                                        arguments = listOf(
+                                            navArgument("albumID") { type = NavType.LongType }
+                                        )
+                                    ) { backStackEntry ->
+                                        AlbumScreen(
+                                            activityMainVM = activityMainVM,
+                                            backStackEntry = backStackEntry,
+                                            onBackClicked = { navController.navigateUp() },
+                                        )
+                                    }
+                                    composable(
+                                        route = "albumScreen?albumID={albumID}",
+                                        arguments = listOf(
+                                            navArgument("albumID") { type = NavType.LongType }
+                                        )
+                                    ) { backStackEntry ->
+                                        AlbumScreen(
+                                            activityMainVM = activityMainVM,
+                                            backStackEntry = backStackEntry,
+                                            onBackClicked = { navController.navigateUp() }
+                                        )
+                                    }
+                                    composable("genrePlaylistScreen") {
+                                        GenrePlaylistScreen(
+                                            activityMainVM = activityMainVM,
+                                            onBackClicked = { navController.navigateUp() }
+                                        )
+                                    }
+
+                                    composable("playlistScreen") {
+                                        PlaylistScreen(
+                                            activityMainVM = activityMainVM,
+                                            onBackClicked = { navController.navigateUp() }
+                                        )
+                                    }
+                                    composable(
+                                        route = "addToPlaylistScreen?songID={songID}",
+                                        arguments = listOf(
+                                            navArgument("songID") { type = NavType.LongType }
+                                        )
+                                    ) { backStackEntry ->
+                                        AddToPlaylistScreen(
+                                            activityMainVM = activityMainVM,
+                                            backStackEntry = backStackEntry,
+                                            previousPage = "Home",
+                                            onBackClick = { navController.navigateUp() }
+                                        )
+                                    }
+
+                                    composable(
+                                        route = "floatingArtistScreen?artistID={artistID}",
+                                        arguments = listOf(
+                                            navArgument("artistID") { type = NavType.LongType }
+                                        )
+                                    ) { backStackEntry ->
+                                        ArtistScreen(
+                                            activityMainVM = activityMainVM,
+                                            backStackEntry = backStackEntry,
+                                            onBackClicked = { navController.navigateUp() },
+                                            onArtistAlbumOpened = { albumID -> navController.navigate("floatingArtistAlbumScreen?albumID=$albumID") }
+                                        )
+                                    }
+
+                                    composable(
+                                        route = "floatingArtistAlbumScreen?albumID={albumID}",
+                                        arguments = listOf(
+                                            navArgument("albumID") { type = NavType.LongType }
+                                        )
+                                    ) { backStackEntry ->
+                                        AlbumScreen(
+                                            activityMainVM = activityMainVM,
+                                            backStackEntry = backStackEntry,
+                                            onBackClicked = { navController.navigateUp() }
+                                        )
+                                    }
+
+                                    composable(
+                                        route = "floatingAlbumScreen?albumID={albumID}",
+                                        arguments = listOf(
+                                            navArgument("albumID") { type = NavType.LongType }
+                                        )
+                                    ) { backStackEntry ->
+                                        AlbumScreen(
+                                            activityMainVM = activityMainVM,
+                                            backStackEntry = backStackEntry,
+                                            onBackClicked = { navController.navigateUp() }
+                                        )
+                                    }
+
+                                    composable("Settings") {
+                                        SettingsScreen(
+                                            activityMainVM = activityMainVM,
+                                            onBackPressed = { navController.navigateUp() }
+                                        )
+                                    }
+
+                                    composable("About") {
+                                        AboutScreen(
+                                            onBackClick = { navController.navigateUp() }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        activityMainVM.onSongSelected = {
+                            activityMainVM.miniPlayerHeight.value = 60.dp
+                        }
+
+                        activityMainVM.onMediaPlayerStopped = {
+                            scope.launch { bottomSheetState.collapse() }
+                            activityMainVM.miniPlayerHeight.value = 0.dp
                         }
                     }
-
-                    activityMainVM.onSongSelected = {
-                        activityMainVM.miniPlayerHeight.value = 60.dp
-                    }
-
-                    activityMainVM.onMediaPlayerStopped = {
-                        scope.launch { bottomSheetState.collapse() }
-                        activityMainVM.miniPlayerHeight.value = 0.dp
-                    }
                 }
-            }
+            )
         }
     }
 

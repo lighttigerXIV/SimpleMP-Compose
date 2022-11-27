@@ -1,7 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import android.content.Context.MODE_PRIVATE
-import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,10 +12,8 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.activities.ActivitySettings
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import com.lighttigerxiv.simple.mp.compose.composables.SongItem
@@ -31,7 +28,7 @@ fun HomeScreen(
     val popupMenuExpanded = activityMainVM.showHomePopupMenu.observeAsState().value!!
     val sortSharedPrefs = context.getSharedPreferences("sorting", MODE_PRIVATE)
     val homeSongsList = activityMainVM.currentHomeSongsList.observeAsState().value!!
-    val surfaceColor = remember { activityMainVM.surfaceColor.value!! }
+    val surfaceColor = activityMainVM.surfaceColor.collectAsState().value
 
 
     val menuEntries = remember{ArrayList<String>()}
@@ -91,11 +88,11 @@ fun HomeScreen(
                     CustomTextField(
                         text = searchText,
                         placeholder = searchPlaceholder,
-                        onValueChanged = {
+                        onTextChange = {
                             activityMainVM.homeSearchText.value = it
                             activityMainVM.filterHomeSongsList(sortSharedPrefs.getString("home", "Recent")!!)
                         },
-                        sideIcon = painterResource(id = R.drawable.icon_more_regular),
+                        sideIcon = R.drawable.icon_more_regular,
                         onSideIconClick = { activityMainVM.showHomePopupMenu.value = true }
                     )
                     DropdownMenu(
@@ -106,49 +103,49 @@ fun HomeScreen(
                         DropdownMenuItem(
                             text = { Text(text = "Sort By Recent") },
                             onClick = {
+                                activityMainVM.showHomePopupMenu.value = false
                                 sortSharedPrefs.edit().putString("home", "Recent").apply()
                                 activityMainVM.currentHomeSongsList.value = activityMainVM.recentHomeSongsList
-                                activityMainVM.showHomePopupMenu.value = false
                             }
                         )
                         DropdownMenuItem(
                             text = { Text(text = "Sort By Oldest") },
                             onClick = {
+                                activityMainVM.showHomePopupMenu.value = false
                                 sortSharedPrefs.edit().putString("home", "Oldest").apply()
                                 activityMainVM.currentHomeSongsList.value = activityMainVM.oldestHomeSongsList
-                                activityMainVM.showHomePopupMenu.value = false
                             }
                         )
                         DropdownMenuItem(
                             text = { Text(text = "Sort By Ascendent") },
                             onClick = {
+                                activityMainVM.showHomePopupMenu.value = false
                                 sortSharedPrefs.edit().putString("home", "Ascendent").apply()
                                 activityMainVM.currentHomeSongsList.value = activityMainVM.ascendentHomeSongsList
-                                activityMainVM.showHomePopupMenu.value = false
                             }
                         )
                         DropdownMenuItem(
                             text = { Text(text = "Sort By Descendent") },
                             onClick = {
+                                activityMainVM.showHomePopupMenu.value = false
                                 sortSharedPrefs.edit().putString("home", "Descendent").apply()
                                 activityMainVM.currentHomeSongsList.value = activityMainVM.descendentHomeSongsList
-                                activityMainVM.showHomePopupMenu.value = false
                             }
                         )
 
                         DropdownMenuItem(
                             text = { Text(text = "Settings") },
                             onClick = {
-                                context.startActivity(Intent(context, ActivitySettings::class.java))
                                 activityMainVM.showHomePopupMenu.value = false
+                                openPage("Settings")
                             }
                         )
 
                         DropdownMenuItem(
                             text = { Text(text = "About")},
                             onClick = {
-                                openPage("About")
                                 activityMainVM.showHomePopupMenu.value = false
+                                openPage("About")
                             }
                         )
                     }

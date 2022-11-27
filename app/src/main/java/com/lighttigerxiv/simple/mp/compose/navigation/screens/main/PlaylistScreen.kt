@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens
+package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,7 +56,7 @@ fun PlaylistScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainVM.surfaceColor.value!!)
+            .background(activityMainVM.surfaceColor.collectAsState().value)
             .padding(14.dp)
     ) {
 
@@ -294,7 +295,7 @@ fun PlaylistScreen(
                             CustomTextField(
                                 text = activityMainVM.tfPlaylistName_PlaylistScreen.observeAsState().value!!,
                                 placeholder = "Insert playlist name",
-                                onValueChanged = { activityMainVM.tfPlaylistName_PlaylistScreen.value = it }
+                                onTextChange = { activityMainVM.tfPlaylistName_PlaylistScreen.value = it }
                             )
                         }
                         false -> {
@@ -325,7 +326,7 @@ fun PlaylistScreen(
                         Button(
                             onClick = { activityMainVM.selectSong(playlistSongs, 0) },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = activityMainVM.surfaceColor.value!!
+                                containerColor = activityMainVM.surfaceColor.collectAsState().value
                             ),
                             border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
                             modifier = Modifier

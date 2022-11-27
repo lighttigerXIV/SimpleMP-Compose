@@ -11,6 +11,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -108,7 +109,7 @@ fun AddToPlaylistScreen(
                         CustomTextField(
                             text = playlistNameValue,
                             placeholder = "Insert playlist name",
-                            onValueChanged = { activityMainVM.tfNewPlaylistNameValue.value = it },
+                            onTextChange = { activityMainVM.tfNewPlaylistNameValue.value = it },
                             textType = "text"
                         )
 
@@ -139,7 +140,7 @@ fun AddToPlaylistScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(activityMainVM.surfaceColor.value!!)
+                        .background(activityMainVM.surfaceColor.collectAsState().value)
                         .padding(sheetPadding)
                 ) {
 

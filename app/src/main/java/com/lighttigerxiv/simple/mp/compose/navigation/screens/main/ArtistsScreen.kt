@@ -13,7 +13,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
@@ -43,7 +42,7 @@ fun ArtistsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainVM.surfaceColor.value!!)
+            .background(activityMainVM.surfaceColor.collectAsState().value)
             .padding(14.dp)
     ) {
 
@@ -66,11 +65,11 @@ fun ArtistsScreen(
                     text = searchText,
                     placeholder = hint,
                     textType = "text",
-                    onValueChanged = {
+                    onTextChange = {
                         activityMainVM.artistsSearchText.value = it
                         activityMainVM.filterArtistsList(sortSharedPrefs.getString("artists", "Recent")!!)
                     },
-                    sideIcon = painterResource(id = R.drawable.icon_more_regular),
+                    sideIcon = R.drawable.icon_more_regular,
                     onSideIconClick = { popupMenuExpanded = true },
                 )
                 DropdownMenu(

@@ -8,6 +8,7 @@ import android.content.Context.MODE_PRIVATE
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.IBinder
+import android.widget.Toast
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
@@ -24,6 +25,9 @@ import kotlinx.coroutines.flow.asStateFlow
 class ActivityMainVM(application: Application) : AndroidViewModel(application) {
 
     private val playlistDao = AppDatabase.getInstance(application).playlistDao
+    private val preferences = application.getSharedPreferences(application.packageName, MODE_PRIVATE)
+
+    val context = application.applicationContext
 
     val songsList = GetSongs.getSongsList(application, "Recent")
     val queueList = MutableLiveData(ArrayList<Song>())
@@ -95,8 +99,6 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
 
     var hintAlbumsSearchText = MutableLiveData("Search Albums")
     var albumsSearchText = MutableLiveData("")
-
-    var surfaceColor = MutableLiveData<Color>()
 
     var tfNewPlaylistNameValue = MutableLiveData("")
 
@@ -560,5 +562,54 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
             "Ascendent" -> currentAlbumsList.value = ascendentAlbumsList.filterNot { !it.albumName.lowercase().trim().contains(albumsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
             "Descendent" -> currentAlbumsList.value = descendentAlbumsList.filterNot { !it.albumName.lowercase().trim().contains(albumsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
         }
+    }
+
+    //-------------------------- Settings Screen ----------------------------
+    private val _themeModeSetting = MutableStateFlow(preferences.getString("ThemeMode", "System"))
+    val themeModeSetting = _themeModeSetting.asStateFlow()
+    private val _darkModeSetting = MutableStateFlow(preferences.getString("DarkMode", "Color"))
+    val darkModeSetting = _darkModeSetting.asStateFlow()
+    private val _filterAudioSetting = MutableStateFlow(preferences.getString("FilterAudio", "60"))
+    val filterAudioSetting = _filterAudioSetting.asStateFlow()
+    private val _themeAccentSetting = MutableStateFlow(preferences.getString("ThemeAccent", "Default"))
+    val themeAccentSetting = _themeAccentSetting.asStateFlow()
+    private val _surfaceColor = MutableStateFlow(Color(0xff000000))
+    val surfaceColor = _surfaceColor.asStateFlow()
+    fun setSurfaceColor(value: Color){
+        _surfaceColor.value = value
+    }
+
+
+    val selectedThemeModeDialog = MutableLiveData(themeModeSetting.value)
+    val selectedDarkModeDialog = MutableLiveData(darkModeSetting.value)
+    val etFilterAudioDialog = MutableLiveData(filterAudioSetting.value)
+    val selectedThemeAccentDialog = MutableLiveData(themeAccentSetting.value)
+
+
+    fun setThemeMode(){
+
+        preferences.edit().putString("ThemeMode", selectedThemeModeDialog.value).apply()
+        _themeModeSetting.value = selectedThemeModeDialog.value
+    }
+
+    fun setDarkMode(){
+
+        preferences.edit().putString("DarkMode", selectedDarkModeDialog.value).apply()
+        _darkModeSetting.value = selectedDarkModeDialog.value
+    }
+
+
+    fun setFilterAudio(){
+
+        preferences.edit().putString("FilterAudio", etFilterAudioDialog.value).apply()
+        _filterAudioSetting.value = etFilterAudioDialog.value
+
+        Toast.makeText(context, "Setting will take effect on next app restart", Toast.LENGTH_LONG).show()
+    }
+
+    fun setThemeAccent(){
+
+        preferences.edit().putString("ThemeAccent", selectedThemeAccentDialog.value).apply()
+        _themeAccentSetting.value = selectedThemeAccentDialog.value
     }
 }

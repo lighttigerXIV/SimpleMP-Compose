@@ -15,7 +15,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
@@ -45,7 +44,7 @@ fun AlbumsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainVM.surfaceColor.value!!)
+            .background(activityMainVM.surfaceColor.collectAsState().value)
             .padding(14.dp)
     ) {
 
@@ -62,11 +61,11 @@ fun AlbumsScreen(
                     text = searchText,
                     placeholder = hint,
                     textType = "text",
-                    onValueChanged = {
+                    onTextChange = {
                         activityMainVM.albumsSearchText.value = it
                         activityMainVM.filterAlbumsList(sortSharedPrefs.getString("albums", "Recent")!!)
                     },
-                    sideIcon = painterResource(id = R.drawable.icon_more_regular),
+                    sideIcon = R.drawable.icon_more_regular,
                     onSideIconClick = { popupMenuExpanded = true }
                 )
                 DropdownMenu(

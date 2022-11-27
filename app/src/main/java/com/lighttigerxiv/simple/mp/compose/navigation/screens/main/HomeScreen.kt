@@ -24,7 +24,8 @@ import com.lighttigerxiv.simple.mp.compose.composables.SongItem
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    activityMainVM: ActivityMainVM
+    activityMainVM: ActivityMainVM,
+    openPage: (page: String) -> Unit
 ) {
     val context = LocalContext.current
     val popupMenuExpanded = activityMainVM.showHomePopupMenu.observeAsState().value!!
@@ -134,11 +135,19 @@ fun HomeScreen(
                                 activityMainVM.showHomePopupMenu.value = false
                             }
                         )
-                        Divider(color = MaterialTheme.colorScheme.onSurfaceVariant)
+
                         DropdownMenuItem(
                             text = { Text(text = "Settings") },
                             onClick = {
                                 context.startActivity(Intent(context, ActivitySettings::class.java))
+                                activityMainVM.showHomePopupMenu.value = false
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = { Text(text = "About")},
+                            onClick = {
+                                openPage("About")
                                 activityMainVM.showHomePopupMenu.value = false
                             }
                         )

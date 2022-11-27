@@ -58,7 +58,7 @@ fun AlbumScreen(
                         .wrapContentHeight()
                         .fillMaxWidth()
                 ){
-                    BasicToolbar(backButtonText = "Albums", onBackClicked = {onBackClicked()})
+                    BasicToolbar(backText = "Albums", onBackClick = {onBackClicked()})
                     Spacer(modifier = Modifier.height(10.dp))
                     Spacer(modifier = Modifier.height(10.dp) )
                     Image(

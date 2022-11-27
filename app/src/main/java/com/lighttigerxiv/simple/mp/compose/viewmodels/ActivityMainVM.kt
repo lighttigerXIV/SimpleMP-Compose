@@ -18,6 +18,8 @@ import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.data.AppDatabase
 import com.lighttigerxiv.simple.mp.compose.data.Playlist
 import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class ActivityMainVM(application: Application) : AndroidViewModel(application) {
 
@@ -29,6 +31,24 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     var songsImagesList = GetSongs.getAllAlbumsImages(application)
     var compressedImagesList = GetSongs.getAllAlbumsImages(application, compressed = true)
     lateinit var navController: NavController
+
+    private val _showNavigationBar = MutableStateFlow(true)
+    val showNavigationBar = _showNavigationBar.asStateFlow()
+    fun setShowNavigationBar(value: Boolean){
+
+        try{
+
+            if(smpService.isMusicPlaying() && value){
+                miniPlayerHeight.value = 60.dp
+            }
+            else{
+                miniPlayerHeight.value = 0.dp
+            }
+        }
+        catch(_: Exception){}
+
+        _showNavigationBar.value = value
+    }
 
     //Home Songs
     var recentHomeSongsList = ArrayList(songsList)

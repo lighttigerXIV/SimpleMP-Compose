@@ -51,8 +51,8 @@ fun GenrePlaylistScreen(
                         .wrapContentHeight()
                 ) {
                     BasicToolbar(
-                        backButtonText = "Playlists",
-                        onBackClicked = {onBackClicked()}
+                        backText = "Playlists",
+                        onBackClick = {onBackClicked()}
                     )
                     Image(
                         painter = painterResource(id = R.drawable.icon_playlists),

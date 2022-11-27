@@ -59,8 +59,8 @@ fun AddToPlaylistScreen(
         ) {
 
             BasicToolbar(
-                backButtonText = remember { previousPage },
-                onBackClicked = { onBackClick() }
+                backText = remember { previousPage },
+                onBackClick = { onBackClick() }
             )
 
             BottomSheetScaffold(

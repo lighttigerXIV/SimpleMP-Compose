@@ -1,7 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.activities
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -116,8 +115,8 @@ class ActivitySettings : ComponentActivity() {
                     Column(modifier = Modifier.fillMaxSize()) {
 
                         BasicToolbar(
-                            backButtonText = "Home",
-                            onBackClicked = { onBackPressed() }
+                            backText = "Home",
+                            onBackClick = { onBackPressed() }
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))

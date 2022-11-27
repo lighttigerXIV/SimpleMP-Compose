@@ -84,7 +84,7 @@ fun ArtistScreen(
                     .fillMaxWidth()
                     .wrapContentHeight()
             ) {
-                BasicToolbar(backButtonText = "Artists", onBackClicked = { onBackClicked() })
+                BasicToolbar(backText = "Artists", onBackClick = { onBackClicked() })
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Image(

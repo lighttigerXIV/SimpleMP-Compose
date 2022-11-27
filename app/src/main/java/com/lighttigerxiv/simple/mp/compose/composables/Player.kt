@@ -88,7 +88,7 @@ fun Player(
     LaunchedEffect(activityMainVM.selectedSong.observeAsState().value) {
 
         scope.launch {
-            if(activityMainVM.getCurrentSongPosition() > -1)
+            if (activityMainVM.getCurrentSongPosition() > -1)
                 songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition())
         }
     }
@@ -118,6 +118,7 @@ fun Player(
 
     BoxWithConstraints(
         modifier = Modifier
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(14.dp)
     ) {
 
@@ -289,7 +290,9 @@ fun Player(
                                                     text = currentMinutesAndSecondsValue.value!!,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
-                                                Spacer(modifier = Modifier.weight(1f))
+                                                Spacer(modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .weight(1f, fill = true))
                                                 Text(
                                                     text = songMinutesAndSeconds!!,
                                                     color = MaterialTheme.colorScheme.onSurface
@@ -583,7 +586,9 @@ fun Player(
                                                 text = currentMinutesAndSecondsValue.value!!,
                                                 color = MaterialTheme.colorScheme.onSurface
                                             )
-                                            Spacer(modifier = Modifier.weight(1f))
+                                            Spacer(modifier = Modifier
+                                                .fillMaxWidth()
+                                                .weight(1f))
                                             Text(
                                                 text = songMinutesAndSeconds!!,
                                                 color = MaterialTheme.colorScheme.onSurface

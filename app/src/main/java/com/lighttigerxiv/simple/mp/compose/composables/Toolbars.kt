@@ -1,18 +1,15 @@
 package com.lighttigerxiv.simple.mp.compose.composables
 
-import android.widget.PopupMenu
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,8 +18,8 @@ import com.lighttigerxiv.simple.mp.compose.UsefulFunctions
 
 @Composable
 fun BasicToolbar(
-    backButtonText: String,
-    onBackClicked : ()-> Unit
+    backText: String,
+    onBackClick : ()-> Unit
 ) {
 
     val context = LocalContext.current
@@ -32,7 +29,7 @@ fun BasicToolbar(
         .height(50.dp)) {
 
         androidx.compose.material3.Button(
-            onClick = {onBackClicked()},
+            onClick = {onBackClick()},
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent
             ),
@@ -48,7 +45,7 @@ fun BasicToolbar(
                     .width(25.dp)
             )
             Text(
-                text = backButtonText,
+                text = backText,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.primary,

@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -19,7 +20,6 @@ import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 
 @Composable
 fun BottomNavigationBar(
-    activityMainVM: ActivityMainVM,
     navController: NavController,
     items: ArrayList<BottomNavItem>,
     onItemClick: (BottomNavItem) -> Unit
@@ -29,14 +29,17 @@ fun BottomNavigationBar(
 
     Row(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-    ) {
+            .fillMaxWidth()
+            .height(55.dp)
+            .background(Color.Transparent),
+        horizontalArrangement = Arrangement.Center
+    ){
 
-        BottomNavigation(
-            elevation = 0.dp,
-            backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceVariant)
         ) {
-
             items.forEach { item ->
 
                 val destinationRoute = if(backStackEntry.value?.destination?.route == null) "" else backStackEntry.value?.destination?.route
@@ -96,5 +99,9 @@ fun BottomNavigationBar(
                 )
             }
         }
+
+
+
+
     }
 }

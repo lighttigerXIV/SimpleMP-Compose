@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -104,12 +107,30 @@ class MainActivity : ComponentActivity() {
                     }
 
 
+                val showNavigationBar = activityMainVM.showNavigationBar.collectAsState().value
+
+
                 activityMainVM.surfaceColor.value = surfaceColor
 
                 val miniPlayerHeight by activityMainVM.miniPlayerHeight.observeAsState()
                 val selectedSong by activityMainVM.selectedSong.observeAsState()
 
                 rememberSystemUiController().setStatusBarColor(surfaceColor)
+
+                navController.addOnDestinationChangedListener { _, destination, _ ->
+
+                    when (destination.route) {
+                        "About" -> activityMainVM.setShowNavigationBar(false)
+                        "settings" -> activityMainVM.setShowNavigationBar(false)
+                        else -> {
+                            if (!showNavigationBar) activityMainVM.setShowNavigationBar(true)
+                        }
+                    }
+                }
+
+                if (bottomSheetState.isExpanded) {
+                    activityMainVM.setShowNavigationBar(false)
+                }
 
 
                 Box(
@@ -123,20 +144,25 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         bottomBar = {
 
-                            BottomNavigationBar(
-                                activityMainVM = activityMainVM,
-                                navController = navController,
-                                items = bottomNavigationItems,
-                                onItemClick = { bottomNavItem ->
-                                    navController.navigate(bottomNavItem.route) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
+                            AnimatedVisibility(
+                                visible = showNavigationBar,
+                                exit = shrinkVertically(),
+                                enter = expandVertically()
+                            ) {
+                                BottomNavigationBar(
+                                    navController = navController,
+                                    items = bottomNavigationItems,
+                                    onItemClick = { bottomNavItem ->
+                                        navController.navigate(bottomNavItem.route) {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
                                         }
-                                        launchSingleTop = true
-                                        restoreState = true
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     ) { mainScaffoldPadding ->
 
@@ -144,10 +170,9 @@ class MainActivity : ComponentActivity() {
                             scaffoldState = bottomSheetScaffoldState,
                             sheetContent = {
 
-                                Box(
+                                Column(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .background(MaterialTheme.colorScheme.surfaceVariant)
                                 ) {
 
                                     if (
@@ -157,13 +182,16 @@ class MainActivity : ComponentActivity() {
                                         && bottomSheetState.targetValue == BottomSheetValue.Collapsed
                                     ) {
 
-                                        MiniPlayer(activityMainVM)
+                                        if (showNavigationBar)
+                                            MiniPlayer(activityMainVM)
                                     } else {
 
-                                        Player(
-                                            activityMainVM,
-                                            bottomSheetState
-                                        )
+                                        if (showNavigationBar || bottomSheetState.isExpanded) {
+                                            Player(
+                                                activityMainVM,
+                                                bottomSheetState
+                                            )
+                                        }
                                     }
                                 }
                             },
@@ -177,18 +205,14 @@ class MainActivity : ComponentActivity() {
                                 startDestination = "homeScreen",
                                 modifier = Modifier
                                     .background(surfaceColor)
-                                    .padding(
-                                        top = bottomSheetPadding.calculateTopPadding(),
-                                        bottom = bottomSheetPadding.calculateBottomPadding(),
-                                        end = bottomSheetPadding.calculateEndPadding(LayoutDirection.Rtl),
-                                        start = bottomSheetPadding.calculateStartPadding(
-                                            LayoutDirection.Ltr
-                                        )
-                                    )
+                                    .padding(bottomSheetPadding)
                             ) {
+
+
                                 composable("homeScreen") {
                                     HomeScreen(
-                                        activityMainVM = activityMainVM
+                                        activityMainVM = activityMainVM,
+                                        openPage = { page -> navController.navigate(page) }
                                     )
                                 }
                                 composable("artistsScreen") {
@@ -280,7 +304,7 @@ class MainActivity : ComponentActivity() {
                                     arguments = listOf(
                                         navArgument("artistID") { type = NavType.LongType }
                                     )
-                                ){ backStackEntry ->
+                                ) { backStackEntry ->
                                     ArtistScreen(
                                         activityMainVM = activityMainVM,
                                         backStackEntry = backStackEntry,
@@ -294,11 +318,11 @@ class MainActivity : ComponentActivity() {
                                     arguments = listOf(
                                         navArgument("albumID") { type = NavType.LongType }
                                     )
-                                ){ backStackEntry ->
+                                ) { backStackEntry ->
                                     AlbumScreen(
                                         activityMainVM = activityMainVM,
                                         backStackEntry = backStackEntry,
-                                        onBackClicked = {navController.navigateUp()}
+                                        onBackClicked = { navController.navigateUp() }
                                     )
                                 }
 
@@ -307,11 +331,17 @@ class MainActivity : ComponentActivity() {
                                     arguments = listOf(
                                         navArgument("albumID") { type = NavType.LongType }
                                     )
-                                ){ backStackEntry ->
+                                ) { backStackEntry ->
                                     AlbumScreen(
                                         activityMainVM = activityMainVM,
                                         backStackEntry = backStackEntry,
-                                        onBackClicked = {navController.navigateUp()}
+                                        onBackClicked = { navController.navigateUp() }
+                                    )
+                                }
+
+                                composable("About") {
+                                    AboutScreen(
+                                        onBackClick = { navController.navigateUp() }
                                     )
                                 }
                             }

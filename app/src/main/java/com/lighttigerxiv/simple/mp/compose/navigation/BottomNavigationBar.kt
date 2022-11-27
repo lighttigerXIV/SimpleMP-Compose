@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,17 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
+import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 
 @Composable
 fun BottomNavigationBar(
-    activityMainViewModel: ActivityMainViewModel,
     navController: NavController,
     items: ArrayList<BottomNavItem>,
     onItemClick: (BottomNavItem) -> Unit
@@ -34,20 +29,21 @@ fun BottomNavigationBar(
 
     Row(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-    ) {
+            .fillMaxWidth()
+            .height(55.dp)
+            .background(Color.Transparent),
+        horizontalArrangement = Arrangement.Center
+    ){
 
-        BottomNavigation(
-            elevation = 0.dp,
-            backgroundColor = MaterialTheme.colorScheme.surfaceVariant
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceVariant)
         ) {
-
             items.forEach { item ->
 
                 val destinationRoute = if(backStackEntry.value?.destination?.route == null) "" else backStackEntry.value?.destination?.route
                 val itemRoute = item.route
-
-                println("Destination route => $destinationRoute")
 
                 val isItemSelected = when {
 
@@ -76,7 +72,7 @@ fun BottomNavigationBar(
                             Image(
                                 bitmap = if (isItemSelected) item.activeIcon else item.inactiveIcon,
                                 contentDescription = item.name,
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
                                 modifier = Modifier
                                     .height(26.dp)
                                     .width(26.dp)
@@ -91,7 +87,7 @@ fun BottomNavigationBar(
                                         .width(20.dp)
                                         .height(2.dp)
                                         .clip(RoundedCornerShape(percent = 100))
-                                        .background(MaterialTheme.colorScheme.primary)
+                                        .background(MaterialTheme.colorScheme.onSurfaceVariant)
                                 )
                             }
                             else{
@@ -103,7 +99,9 @@ fun BottomNavigationBar(
                 )
             }
         }
+
+
+
+
     }
-
-
 }

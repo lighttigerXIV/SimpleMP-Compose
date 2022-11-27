@@ -1,6 +1,7 @@
 package com.lighttigerxiv.simple.mp.compose
 
 import android.Manifest.permission.*
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -39,82 +40,91 @@ class ActivityFirstSetup : ComponentActivity() {
                 activityFirstSetupViewModel.checkPermissions()
             }
 
+            val preferences = getSharedPreferences(packageName, Context.MODE_PRIVATE)
+            val themeMode = preferences.getString("ThemeMode", "System")!!
+            val themeAccent = preferences.getString("ThemeAccent", "Default")!!
+            val darkMode = preferences.getString("DarkMode", "Color")!!
 
         setContent {
-            ComposeSimpleMPTheme {
+            ComposeSimpleMPTheme(
+                useDarkTheme = isSystemInDarkTheme(),
+                themeMode = themeMode,
+                themeAccent = themeAccent,
+                content = {
 
-                val surfaceColor = if (themeViewModel.currentThemeSetting.value == "Dark" && themeViewModel.darkModeSetting.value == "Oled") {
-                    Color.Black
-                } else if (themeViewModel.currentThemeSetting.value == "Dark" && themeViewModel.darkModeSetting.value == "Oled" && isSystemInDarkTheme()) {
-                    Color.Black
-                } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Blue") {
-                    Color(0xFFFEFBFF)
-                } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Red") {
-                    Color(0xFFFFFBFF)
-                } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Purple") {
-                    Color(0xFFFFFBFF)
-                } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Yellow") {
-                    Color(0xFFFFFBFF)
-                } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Orange") {
-                    Color(0xFFFFFBFF)
-                } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Green") {
-                    Color(0xFFFDFDF5)
-                } else if (themeViewModel.currentThemeSetting.value == "Light" && themeViewModel.themeAccentSetting.value == "Pink") {
-                    Color(0xFFFFFBFF)
-                } else if (themeViewModel.darkModeSetting.value == "Oled" && themeViewModel.currentThemeSetting.value == "Light" && isSystemInDarkTheme()) {
-                    Color(0xFFFFFBFF)
-                } else if (themeViewModel.darkModeSetting.value == "Oled" && isSystemInDarkTheme()) {
-                    Color.Black
-                } else {
-                    MaterialTheme.colorScheme.surface
+                    val surfaceColor = if (themeMode == "Dark" && darkMode == "Oled") {
+                        Color.Black
+                    } else if (themeMode == "Dark" && darkMode == "Oled" && isSystemInDarkTheme()) {
+                        Color.Black
+                    } else if (themeMode == "Light" && themeAccent == "Blue") {
+                        Color(0xFFFEFBFF)
+                    } else if (themeMode == "Light" && themeAccent == "Red") {
+                        Color(0xFFFFFBFF)
+                    } else if (themeMode == "Light" && themeAccent == "Purple") {
+                        Color(0xFFFFFBFF)
+                    } else if (themeMode == "Light" && themeAccent == "Yellow") {
+                        Color(0xFFFFFBFF)
+                    } else if (themeMode == "Light" && themeAccent == "Orange") {
+                        Color(0xFFFFFBFF)
+                    } else if (themeMode == "Light" && themeAccent == "Green") {
+                        Color(0xFFFDFDF5)
+                    } else if (themeMode == "Light" && themeAccent == "Pink") {
+                        Color(0xFFFFFBFF)
+                    } else if (darkMode == "Oled" && themeMode == "Light" && isSystemInDarkTheme()) {
+                        Color(0xFFFFFBFF)
+                    } else if (darkMode == "Oled" && isSystemInDarkTheme()) {
+                        Color.Black
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    }
+
+                    rememberSystemUiController().setStatusBarColor(surfaceColor)
+
+                    val navController = rememberNavController()
+
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = "welcomeScreen",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(surfaceColor)
+                    ) {
+
+                        composable("welcomeScreen") {
+                            WelcomeScreen(
+                                onNextClicked = {
+                                    navController.navigate("permissionsScreen")
+                                }
+                            )
+                        }
+
+                        composable("permissionsScreen") {
+                            PermissionsScreen(
+                                activityFirstSetupViewModel = activityFirstSetupViewModel,
+                                onBackClicked = { navController.navigateUp() },
+                                onNextClicked = { navController.navigate("themesScreen") },
+                                onRequestNotificationPermission = { requestPermissionLauncher.launch(POST_NOTIFICATIONS) },
+                                onRequestStoragePermission = {
+
+                                    if (Build.VERSION.SDK_INT >= 33)
+                                        requestPermissionLauncher.launch(READ_MEDIA_AUDIO)
+                                    else
+                                        requestPermissionLauncher.launch(READ_EXTERNAL_STORAGE)
+                                }
+                            )
+                        }
+
+                        composable("themesScreen") {
+                            ThemesScreen(
+                                activityFirstSetupViewModel = activityFirstSetupViewModel,
+                                onBackClicked = { navController.navigateUp() },
+                                onKillActivity = { finish() }
+                            )
+                        }
+                    }
                 }
-
-                rememberSystemUiController().setStatusBarColor(surfaceColor)
-
-                val navController = rememberNavController()
-
-
-                NavHost(
-                    navController = navController,
-                    startDestination = "welcomeScreen",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(surfaceColor)
-                ) {
-
-                    composable("welcomeScreen") {
-                        WelcomeScreen(
-                            onNextClicked = {
-                                navController.navigate("permissionsScreen")
-                            }
-                        )
-                    }
-
-                    composable("permissionsScreen") {
-                        PermissionsScreen(
-                            activityFirstSetupViewModel = activityFirstSetupViewModel,
-                            onBackClicked = { navController.navigateUp() },
-                            onNextClicked = { navController.navigate("themesScreen") },
-                            onRequestNotificationPermission = { requestPermissionLauncher.launch(POST_NOTIFICATIONS) },
-                            onRequestStoragePermission = {
-
-                                if (Build.VERSION.SDK_INT >= 33)
-                                    requestPermissionLauncher.launch(READ_MEDIA_AUDIO)
-                                else
-                                    requestPermissionLauncher.launch(READ_EXTERNAL_STORAGE)
-                            }
-                        )
-                    }
-
-                    composable("themesScreen") {
-                        ThemesScreen(
-                            activityFirstSetupViewModel = activityFirstSetupViewModel,
-                            onBackClicked = { navController.navigateUp() },
-                            onKillActivity = { finish() }
-                        )
-                    }
-                }
-            }
+            )
         }
     }
 }

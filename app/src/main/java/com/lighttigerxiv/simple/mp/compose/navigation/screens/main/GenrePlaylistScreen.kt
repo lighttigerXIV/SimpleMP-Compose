@@ -21,24 +21,24 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.composables.BasicToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.SongItem
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
+import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 
 @Composable
 fun GenrePlaylistScreen(
-    activityMainViewModel: ActivityMainViewModel,
+    activityMainVM: ActivityMainVM,
     onBackClicked : () -> Unit
 ){
 
-    val genreID = remember{activityMainViewModel.clickedGenreID}.value!!
-    val genrePlaylist = remember{activityMainViewModel.songsList.filter { it.genreID == genreID } as ArrayList<Song>}
+    val genreID = remember{activityMainVM.clickedGenreID}.value!!
+    val genrePlaylist = remember{activityMainVM.songsList.filter { it.genreID == genreID } as ArrayList<Song>}
     val genreName = genrePlaylist[0].genre
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainViewModel.surfaceColor.value!!)
+            .background(activityMainVM.surfaceColor.value!!)
             .padding(14.dp)
     ) {
 
@@ -51,8 +51,8 @@ fun GenrePlaylistScreen(
                         .wrapContentHeight()
                 ) {
                     BasicToolbar(
-                        backButtonText = "Playlists",
-                        onBackClicked = {onBackClicked()}
+                        backText = "Playlists",
+                        onBackClick = {onBackClicked()}
                     )
                     Image(
                         painter = painterResource(id = R.drawable.icon_playlists),
@@ -80,9 +80,9 @@ fun GenrePlaylistScreen(
                 ) {
 
                     Button(
-                        onClick = { activityMainViewModel.selectSong(genrePlaylist, 0) },
+                        onClick = { activityMainVM.selectSong(genrePlaylist, 0) },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = activityMainViewModel.surfaceColor.value!!
+                            containerColor = activityMainVM.surfaceColor.value!!
                         ),
                         border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
                         modifier = Modifier
@@ -90,7 +90,7 @@ fun GenrePlaylistScreen(
                             .height(50.dp)
                     ) {
                         Icon(
-                            bitmap = activityMainViewModel.miniPlayerPlayIcon,
+                            bitmap = activityMainVM.miniPlayerPlayIcon,
                             contentDescription = "",
                             modifier = Modifier.height(20.dp),
                             tint = MaterialTheme.colorScheme.primary
@@ -109,9 +109,9 @@ fun GenrePlaylistScreen(
 
                                 SongItem(
                                     song = song,
-                                    songAlbumArt = activityMainViewModel.songsImagesList.find { song.albumID == it.albumID }!!.albumArt,
-                                    highlight = activityMainViewModel.selectedSongPath.observeAsState().value == song.path,
-                                    onSongClick = {activityMainViewModel.selectSong(genrePlaylist, position = genrePlaylist.indexOf(song))}
+                                    songAlbumArt = activityMainVM.songsImagesList.find { song.albumID == it.albumID }!!.albumArt,
+                                    highlight = activityMainVM.selectedSongPath.observeAsState().value == song.path,
+                                    onSongClick = {activityMainVM.selectSong(genrePlaylist, position = genrePlaylist.indexOf(song))}
                                 )
                             }
                         }

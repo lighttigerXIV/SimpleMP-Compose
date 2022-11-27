@@ -17,7 +17,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -29,27 +28,27 @@ import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
+import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun Player(
-    activityMainViewModel: ActivityMainViewModel,
+    activityMainVM: ActivityMainVM,
     bottomSheetState: BottomSheetState
 ) {
 
     val configuration = LocalConfiguration.current
-    val songTitle = activityMainViewModel.selectedSongTitle.observeAsState().value
-    val songArtistName = activityMainViewModel.selectedSongArtistName.observeAsState().value
-    val songAlbumArt = activityMainViewModel.selectedSongAlbumArt.observeAsState().value
-    val songDuration = activityMainViewModel.selectedSongDuration.observeAsState().value
-    val currentMediaPlayerPosition = activityMainViewModel.currentMediaPlayerPosition.observeAsState().value
-    val songMinutesAndSeconds = activityMainViewModel.selectedSongMinutesAndSeconds.observeAsState().value
-    val songCurrentMinutesAndSeconds = activityMainViewModel.selectedSongCurrentMinutesAndSeconds.observeAsState().value
-    val currentPlayerIcon = activityMainViewModel.currentPlayerIcon.observeAsState().value
-    val isMusicShuffled = activityMainViewModel.isMusicShuffled.observeAsState().value
-    val isMusicOnRepeat = activityMainViewModel.isMusicOnRepeat.observeAsState().value
+    val songTitle = activityMainVM.selectedSongTitle.observeAsState().value
+    val songArtistName = activityMainVM.selectedSongArtistName.observeAsState().value
+    val songAlbumArt = activityMainVM.selectedSongAlbumArt.observeAsState().value
+    val songDuration = activityMainVM.selectedSongDuration.observeAsState().value
+    val currentMediaPlayerPosition = activityMainVM.currentMediaPlayerPosition.observeAsState().value
+    val songMinutesAndSeconds = activityMainVM.selectedSongMinutesAndSeconds.observeAsState().value
+    val songCurrentMinutesAndSeconds = activityMainVM.selectedSongCurrentMinutesAndSeconds.observeAsState().value
+    val currentPlayerIcon = activityMainVM.currentPlayerIcon.observeAsState().value
+    val isMusicShuffled = activityMainVM.isMusicShuffled.observeAsState().value
+    val isMusicOnRepeat = activityMainVM.isMusicOnRepeat.observeAsState().value
     val queueListState = rememberLazyListState()
     val songsPagerState = rememberPagerState()
 
@@ -60,8 +59,8 @@ fun Player(
     val interactionSource = remember { MutableInteractionSource() }
     val isDragged by interactionSource.collectIsDraggedAsState()
 
-    val queueList = activityMainViewModel.queueList.observeAsState().value!!
-    val upNextQueueList = activityMainViewModel.upNextQueueList.observeAsState().value!!
+    val queueList = activityMainVM.queueList.observeAsState().value!!
+    val upNextQueueList = activityMainVM.upNextQueueList.observeAsState().value!!
     val sliderValue = remember { mutableStateOf(currentMediaPlayerPosition!! / 1000.toFloat()) }
     val currentMinutesAndSecondsValue = remember { mutableStateOf(songCurrentMinutesAndSeconds) }
 
@@ -78,21 +77,19 @@ fun Player(
 
         try {
 
-            if (activityMainViewModel.getCurrentSongPosition() != -1) {
-                songsPagerState.scrollToPage(activityMainViewModel.getCurrentSongPosition())
+            if (activityMainVM.getCurrentSongPosition() != -1) {
+                songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition())
 
             }
         } catch (ignore: Exception) {
         }
     }
 
-    LaunchedEffect(activityMainViewModel.selectedSong.observeAsState().value) {
+    LaunchedEffect(activityMainVM.selectedSong.observeAsState().value) {
 
-        try {
-            scope.launch {
-                songsPagerState.scrollToPage(activityMainViewModel.getCurrentSongPosition())
-            }
-        } catch (ignore: Exception) {
+        scope.launch {
+            if (activityMainVM.getCurrentSongPosition() > -1)
+                songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition())
         }
     }
 
@@ -101,11 +98,11 @@ fun Player(
 
         if (bottomSheetState.isExpanded) {
 
-            if (songsPagerState.currentPage > activityMainViewModel.getCurrentSongPosition()) {
-                activityMainViewModel.selectNextSong()
+            if (songsPagerState.currentPage > activityMainVM.getCurrentSongPosition()) {
+                activityMainVM.selectNextSong()
             }
-            if (songsPagerState.currentPage < activityMainViewModel.getCurrentSongPosition()) {
-                activityMainViewModel.selectPreviousSong()
+            if (songsPagerState.currentPage < activityMainVM.getCurrentSongPosition()) {
+                activityMainVM.selectPreviousSong()
             }
         }
     }
@@ -121,6 +118,7 @@ fun Player(
 
     BoxWithConstraints(
         modifier = Modifier
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(14.dp)
     ) {
 
@@ -225,7 +223,7 @@ fun Player(
                                             ) { currentPage ->
 
                                                 val pagerSong = queueList[currentPage]
-                                                val pagerAlbumArt = activityMainViewModel.songsImagesList.find { it.albumID == pagerSong.albumID }!!.albumArt
+                                                val pagerAlbumArt = activityMainVM.songsImagesList.find { it.albumID == pagerSong.albumID }!!.albumArt
 
 
                                                 AsyncImage(
@@ -264,14 +262,14 @@ fun Player(
                                                 value = sliderValue.value,
                                                 onValueChange = {
                                                     sliderValue.value = it
-                                                    currentMinutesAndSecondsValue.value = activityMainViewModel.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
+                                                    currentMinutesAndSecondsValue.value = activityMainVM.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
                                                 },
                                                 onValueChangeFinished = {
 
-                                                    if (activityMainViewModel.getIsMusicPaused())
-                                                        activityMainViewModel.pauseResumeMusic()
+                                                    if (activityMainVM.getIsMusicPaused())
+                                                        activityMainVM.pauseResumeMusic()
 
-                                                    activityMainViewModel.seekSongPosition(sliderValue.value.toInt())
+                                                    activityMainVM.seekSongPosition(sliderValue.value.toInt())
                                                 },
                                                 valueRange = 1f..(songDuration!! / 1000).toFloat(),
                                                 interactionSource = interactionSource,
@@ -292,7 +290,9 @@ fun Player(
                                                     text = currentMinutesAndSecondsValue.value!!,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
-                                                Spacer(modifier = Modifier.weight(1f))
+                                                Spacer(modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .weight(1f, fill = true))
                                                 Text(
                                                     text = songMinutesAndSeconds!!,
                                                     color = MaterialTheme.colorScheme.onSurface
@@ -316,7 +316,7 @@ fun Player(
                                                         Spacer(modifier = Modifier.height(5.dp)) //Needed to keep shuffle button in place when shuffle is enabled
                                                     }
                                                     Image(
-                                                        bitmap = remember { activityMainViewModel.shuffleIcon },
+                                                        bitmap = remember { activityMainVM.shuffleIcon },
                                                         contentDescription = "",
                                                         colorFilter = ColorFilter.tint(shuffleColor),
                                                         modifier = Modifier
@@ -325,7 +325,7 @@ fun Player(
                                                                 indication = null,
                                                                 interactionSource = remember { MutableInteractionSource() }
                                                             ) {
-                                                                activityMainViewModel.toggleShuffle()
+                                                                activityMainVM.toggleShuffle()
                                                             }
                                                     )
                                                     if (isMusicShuffled) {
@@ -334,7 +334,7 @@ fun Player(
                                                 }
 
                                                 Image(
-                                                    bitmap = remember { activityMainViewModel.previousIcon },
+                                                    bitmap = remember { activityMainVM.previousIcon },
                                                     contentDescription = "",
                                                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
                                                     modifier = Modifier
@@ -343,8 +343,8 @@ fun Player(
                                                             indication = null,
                                                             interactionSource = remember { MutableInteractionSource() }
                                                         ) {
-                                                            activityMainViewModel.selectPreviousSong()
-                                                            scope.launch { songsPagerState.scrollToPage(activityMainViewModel.getCurrentSongPosition()) }
+                                                            activityMainVM.selectPreviousSong()
+                                                            scope.launch { songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition()) }
                                                         }
                                                 )
                                                 Image(
@@ -356,10 +356,10 @@ fun Player(
                                                         .clickable(
                                                             indication = null,
                                                             interactionSource = remember { MutableInteractionSource() }
-                                                        ) { activityMainViewModel.pauseResumeMusic() }
+                                                        ) { activityMainVM.pauseResumeMusic() }
                                                 )
                                                 Image(
-                                                    bitmap = remember { activityMainViewModel.nextIcon },
+                                                    bitmap = remember { activityMainVM.nextIcon },
                                                     contentDescription = "",
                                                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
                                                     modifier = Modifier
@@ -368,8 +368,8 @@ fun Player(
                                                             indication = null,
                                                             interactionSource = remember { MutableInteractionSource() }
                                                         ) {
-                                                            activityMainViewModel.selectNextSong()
-                                                            scope.launch { songsPagerState.scrollToPage(activityMainViewModel.getCurrentSongPosition()) }
+                                                            activityMainVM.selectNextSong()
+                                                            scope.launch { songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition()) }
                                                         }
                                                 )
 
@@ -382,7 +382,7 @@ fun Player(
                                                         Spacer(modifier = Modifier.height(5.dp)) //Needed to keep repeat button in place when repeat is enabled
                                                     }
                                                     Image(
-                                                        bitmap = remember { activityMainViewModel.repeatIcon },
+                                                        bitmap = remember { activityMainVM.repeatIcon },
                                                         contentDescription = "",
                                                         colorFilter = ColorFilter.tint(repeatColor),
                                                         modifier = Modifier
@@ -390,7 +390,7 @@ fun Player(
                                                             .clickable(
                                                                 indication = null,
                                                                 interactionSource = remember { MutableInteractionSource() }
-                                                            ) { activityMainViewModel.toggleRepeat() }
+                                                            ) { activityMainVM.toggleRepeat() }
                                                     )
                                                     if (isMusicOnRepeat) {
                                                         Dot()
@@ -415,8 +415,8 @@ fun Player(
 
                                             SongItem(
                                                 song = song,
-                                                songAlbumArt = remember { activityMainViewModel.compressedImagesList.find { it.albumID == song.albumID }!!.albumArt },
-                                                highlight = activityMainViewModel.selectedSongPath.value!! == song.path
+                                                songAlbumArt = remember { activityMainVM.compressedImagesList.find { it.albumID == song.albumID }!!.albumArt },
+                                                highlight = activityMainVM.selectedSongPath.value!! == song.path
                                             )
                                         }
                                     })
@@ -516,7 +516,7 @@ fun Player(
                                         ) { currentPage ->
 
                                             val pagerSong = queueList[currentPage]
-                                            val pagerAlbumArt = activityMainViewModel.songsImagesList.find { it.albumID == pagerSong.albumID }!!.albumArt
+                                            val pagerAlbumArt = activityMainVM.songsImagesList.find { it.albumID == pagerSong.albumID }!!.albumArt
 
 
                                             AsyncImage(
@@ -555,14 +555,14 @@ fun Player(
                                             value = sliderValue.value,
                                             onValueChange = {
                                                 sliderValue.value = it
-                                                currentMinutesAndSecondsValue.value = activityMainViewModel.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
+                                                currentMinutesAndSecondsValue.value = activityMainVM.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
                                             },
                                             onValueChangeFinished = {
 
-                                                if (activityMainViewModel.getIsMusicPaused())
-                                                    activityMainViewModel.pauseResumeMusic()
+                                                if (activityMainVM.getIsMusicPaused())
+                                                    activityMainVM.pauseResumeMusic()
 
-                                                activityMainViewModel.seekSongPosition(sliderValue.value.toInt())
+                                                activityMainVM.seekSongPosition(sliderValue.value.toInt())
                                             },
                                             valueRange = 1f..(songDuration!! / 1000).toFloat(),
                                             interactionSource = interactionSource,
@@ -586,7 +586,9 @@ fun Player(
                                                 text = currentMinutesAndSecondsValue.value!!,
                                                 color = MaterialTheme.colorScheme.onSurface
                                             )
-                                            Spacer(modifier = Modifier.weight(1f))
+                                            Spacer(modifier = Modifier
+                                                .fillMaxWidth()
+                                                .weight(1f))
                                             Text(
                                                 text = songMinutesAndSeconds!!,
                                                 color = MaterialTheme.colorScheme.onSurface
@@ -614,7 +616,7 @@ fun Player(
                                                     Spacer(modifier = Modifier.height(5.dp)) //Needed to keep shuffle button in place when shuffle is enabled
                                                 }
                                                 Image(
-                                                    bitmap = remember { activityMainViewModel.shuffleIcon },
+                                                    bitmap = remember { activityMainVM.shuffleIcon },
                                                     contentDescription = "",
                                                     colorFilter = ColorFilter.tint(shuffleColor),
                                                     modifier = Modifier
@@ -623,7 +625,7 @@ fun Player(
                                                             indication = null,
                                                             interactionSource = remember { MutableInteractionSource() }
                                                         ) {
-                                                            activityMainViewModel.toggleShuffle()
+                                                            activityMainVM.toggleShuffle()
                                                         }
                                                 )
                                                 if (isMusicShuffled) {
@@ -632,7 +634,7 @@ fun Player(
                                             }
 
                                             Image(
-                                                bitmap = remember { activityMainViewModel.previousIcon },
+                                                bitmap = remember { activityMainVM.previousIcon },
                                                 contentDescription = "",
                                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
                                                 modifier = Modifier
@@ -641,8 +643,8 @@ fun Player(
                                                         indication = null,
                                                         interactionSource = remember { MutableInteractionSource() }
                                                     ) {
-                                                        activityMainViewModel.selectPreviousSong()
-                                                        scope.launch { songsPagerState.scrollToPage(activityMainViewModel.getCurrentSongPosition()) }
+                                                        activityMainVM.selectPreviousSong()
+                                                        scope.launch { songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition()) }
                                                     }
                                             )
                                             Image(
@@ -654,10 +656,10 @@ fun Player(
                                                     .clickable(
                                                         indication = null,
                                                         interactionSource = remember { MutableInteractionSource() }
-                                                    ) { activityMainViewModel.pauseResumeMusic() }
+                                                    ) { activityMainVM.pauseResumeMusic() }
                                             )
                                             Image(
-                                                bitmap = remember { activityMainViewModel.nextIcon },
+                                                bitmap = remember { activityMainVM.nextIcon },
                                                 contentDescription = "",
                                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
                                                 modifier = Modifier
@@ -666,8 +668,8 @@ fun Player(
                                                         indication = null,
                                                         interactionSource = remember { MutableInteractionSource() }
                                                     ) {
-                                                        activityMainViewModel.selectNextSong()
-                                                        scope.launch { songsPagerState.scrollToPage(activityMainViewModel.getCurrentSongPosition()) }
+                                                        activityMainVM.selectNextSong()
+                                                        scope.launch { songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition()) }
                                                     }
                                             )
 
@@ -680,7 +682,7 @@ fun Player(
                                                     Spacer(modifier = Modifier.height(5.dp)) //Needed to keep repeat button in place when repeat is enabled
                                                 }
                                                 Image(
-                                                    bitmap = remember { activityMainViewModel.repeatIcon },
+                                                    bitmap = remember { activityMainVM.repeatIcon },
                                                     contentDescription = "",
                                                     colorFilter = ColorFilter.tint(repeatColor),
                                                     modifier = Modifier
@@ -688,7 +690,7 @@ fun Player(
                                                         .clickable(
                                                             indication = null,
                                                             interactionSource = remember { MutableInteractionSource() }
-                                                        ) { activityMainViewModel.toggleRepeat() }
+                                                        ) { activityMainVM.toggleRepeat() }
                                                 )
                                                 if (isMusicOnRepeat) {
                                                     Dot()
@@ -712,8 +714,8 @@ fun Player(
 
                                             SongItem(
                                                 song = song,
-                                                songAlbumArt = remember { activityMainViewModel.compressedImagesList.find { it.albumID == song.albumID }!!.albumArt },
-                                                highlight = activityMainViewModel.selectedSongPath.value!! == song.path
+                                                songAlbumArt = remember { activityMainVM.compressedImagesList.find { it.albumID == song.albumID }!!.albumArt },
+                                                highlight = activityMainVM.selectedSongPath.value!! == song.path
                                             )
                                         }
                                     })
@@ -723,13 +725,13 @@ fun Player(
                 }
             }
         }
-        activityMainViewModel.onSongSecondPassed = { position ->
+        activityMainVM.onSongSecondPassed = { position ->
 
             if (!isDragged) {
                 sliderValue.value = position.toFloat()
             }
 
-            currentMinutesAndSecondsValue.value = activityMainViewModel.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
+            currentMinutesAndSecondsValue.value = activityMainVM.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
         }
     }
 }

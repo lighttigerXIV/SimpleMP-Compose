@@ -41,7 +41,7 @@ import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.composables.BasicToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.SongItem
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
+import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import kotlinx.coroutines.launch
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
@@ -50,7 +50,7 @@ import java.io.ByteArrayOutputStream
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ArtistScreen(
-    activityMainViewModel: ActivityMainViewModel,
+    activityMainVM: ActivityMainVM,
     backStackEntry: NavBackStackEntry,
     onBackClicked: () -> Unit,
     onArtistAlbumOpened: (albumID: Long) -> Unit
@@ -59,12 +59,12 @@ fun ArtistScreen(
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val artistID = remember { backStackEntry.arguments?.getLong("artistID") }
-    val artist = remember { activityMainViewModel.songsList.find { it.artistID == artistID }!! }
+    val artist = remember { activityMainVM.songsList.find { it.artistID == artistID }!! }
     val artistName = remember { artist.artistName }
     val defaultArtistPicture = remember { BitmapFactory.decodeResource(context.resources, R.drawable.icon_person_regular_highres) }
     val artistPicture = remember { mutableStateOf(defaultArtistPicture) }
     getArtistPicture(context, artistID!!, artistName, artistPicture)
-    val artistSongsList = remember { activityMainViewModel.songsList.filter { it.artistID == artistID } as ArrayList<Song> }
+    val artistSongsList = remember { activityMainVM.songsList.filter { it.artistID == artistID } as ArrayList<Song> }
     val artistAlbumsList = remember { artistSongsList.distinctBy { it.albumID } }
 
     val pagerState = rememberPagerState()
@@ -84,7 +84,7 @@ fun ArtistScreen(
                     .fillMaxWidth()
                     .wrapContentHeight()
             ) {
-                BasicToolbar(backButtonText = "Artists", onBackClicked = { onBackClicked() })
+                BasicToolbar(backText = "Artists", onBackClick = { onBackClicked() })
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Image(
@@ -118,20 +118,20 @@ fun ArtistScreen(
 
                 androidx.compose.material.TabRow(
                     selectedTabIndex = pagerState.currentPage,
-                    contentColor = activityMainViewModel.surfaceColor.value!!,
+                    contentColor = activityMainVM.surfaceColor.value!!,
                     indicator = {}
                 ) {
 
                     val songsTabColor = when(pagerState.currentPage){
 
                         0-> MaterialTheme.colorScheme.surfaceVariant
-                        else-> activityMainViewModel.surfaceColor.value!!
+                        else-> activityMainVM.surfaceColor.value!!
                     }
 
                     val albumsTabColor = when(pagerState.currentPage){
 
                         1-> MaterialTheme.colorScheme.surfaceVariant
-                        else-> activityMainViewModel.surfaceColor.value!!
+                        else-> activityMainVM.surfaceColor.value!!
                     }
 
                     Tab(
@@ -141,7 +141,7 @@ fun ArtistScreen(
                         unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                         onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
                         modifier = Modifier
-                            .background(activityMainViewModel.surfaceColor.value!!)
+                            .background(activityMainVM.surfaceColor.value!!)
                             .padding(10.dp)
                             .clip(RoundedCornerShape(percent = 100))
                             .background(songsTabColor)
@@ -153,7 +153,7 @@ fun ArtistScreen(
                         selected = pagerState.currentPage == 1,
                         onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
                         modifier = Modifier
-                            .background(activityMainViewModel.surfaceColor.value!!)
+                            .background(activityMainVM.surfaceColor.value!!)
                             .padding(10.dp)
                             .clip(RoundedCornerShape(percent = 100))
                             .background(albumsTabColor)
@@ -181,9 +181,9 @@ fun ArtistScreen(
                                         .wrapContentHeight()
                                 ) {
                                     Button(
-                                        onClick = { activityMainViewModel.selectSong(artistSongsList, 0) },
+                                        onClick = { activityMainVM.selectSong(artistSongsList, 0) },
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = activityMainViewModel.surfaceColor.value!!
+                                            containerColor = activityMainVM.surfaceColor.value!!
                                         ),
                                         border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
                                         modifier = Modifier
@@ -191,7 +191,7 @@ fun ArtistScreen(
                                             .height(50.dp)
                                     ) {
                                         Icon(
-                                            bitmap = activityMainViewModel.miniPlayerPlayIcon,
+                                            bitmap = activityMainVM.miniPlayerPlayIcon,
                                             contentDescription = "",
                                             modifier = Modifier.height(20.dp),
                                             tint = MaterialTheme.colorScheme.primary
@@ -211,9 +211,9 @@ fun ArtistScreen(
 
                                             SongItem(
                                                 song = song,
-                                                songAlbumArt = remember { activityMainViewModel.songsImagesList.find { it.albumID == song.albumID }!!.albumArt },
-                                                highlight = song.path == activityMainViewModel.selectedSongPath.observeAsState().value,
-                                                onSongClick = { activityMainViewModel.selectSong(artistSongsList, artistSongsList.indexOf(song)) }
+                                                songAlbumArt = remember { activityMainVM.songsImagesList.find { it.albumID == song.albumID }!!.albumArt },
+                                                highlight = song.path == activityMainVM.selectedSongPath.observeAsState().value,
+                                                onSongClick = { activityMainVM.selectSong(artistSongsList, artistSongsList.indexOf(song)) }
                                             )
                                         }
                                     }
@@ -244,7 +244,7 @@ fun ArtistScreen(
                                                     .clip(RoundedCornerShape(14.dp))
                                                     .background(MaterialTheme.colorScheme.surfaceVariant)
                                                     .clickable {
-                                                        activityMainViewModel.clickedArtistAlbumID.value =
+                                                        activityMainVM.clickedArtistAlbumID.value =
                                                             album.albumID
                                                         onArtistAlbumOpened(album.albumID)
                                                     }
@@ -256,7 +256,7 @@ fun ArtistScreen(
                                                     horizontalAlignment = Alignment.CenterHorizontally
                                                 ) {
                                                     Image(
-                                                        bitmap = remember { activityMainViewModel.songsImagesList.first { it.albumID == albumSongAlbumID }.albumArt.asImageBitmap() },
+                                                        bitmap = remember { activityMainVM.songsImagesList.first { it.albumID == albumSongAlbumID }.albumArt.asImageBitmap() },
                                                         contentDescription = "",
                                                         modifier = Modifier
                                                             .padding(10.dp)

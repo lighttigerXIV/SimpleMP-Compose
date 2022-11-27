@@ -17,12 +17,6 @@ class ActivityAddToPlaylist : AppCompatActivity() {
         val themeViewModel = ViewModelProvider(this)[ThemeViewModel::class.java]
 
         setContent {
-            ComposeSimpleMPTheme {
-
-                val context = LocalContext.current
-                val scope = rememberCoroutineScope()
-
-            }
         }
     }
 }

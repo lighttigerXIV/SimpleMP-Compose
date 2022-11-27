@@ -22,7 +22,6 @@ class MakeRequest(
     fun get() {
 
         val requestQueue = Volley.newRequestQueue(context)
-        println("Entrou no puta que pariu")
 
         val stringRequest = object : StringRequest(Method.GET, url, {},
             {

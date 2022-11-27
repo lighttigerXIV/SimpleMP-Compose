@@ -2,11 +2,13 @@ package com.lighttigerxiv.simple.mp.compose.viewmodels
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.appwidget.AppWidgetManager
 import android.content.*
 import android.content.Context.MODE_PRIVATE
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.IBinder
+import android.widget.Toast
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
@@ -17,10 +19,15 @@ import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.data.AppDatabase
 import com.lighttigerxiv.simple.mp.compose.data.Playlist
 import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-class ActivityMainViewModel(application: Application) : AndroidViewModel(application) {
+class ActivityMainVM(application: Application) : AndroidViewModel(application) {
 
     private val playlistDao = AppDatabase.getInstance(application).playlistDao
+    private val preferences = application.getSharedPreferences(application.packageName, MODE_PRIVATE)
+
+    val context = application.applicationContext
 
     val songsList = GetSongs.getSongsList(application, "Recent")
     val queueList = MutableLiveData(ArrayList<Song>())
@@ -28,6 +35,24 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
     var songsImagesList = GetSongs.getAllAlbumsImages(application)
     var compressedImagesList = GetSongs.getAllAlbumsImages(application, compressed = true)
     lateinit var navController: NavController
+
+    private val _showNavigationBar = MutableStateFlow(true)
+    val showNavigationBar = _showNavigationBar.asStateFlow()
+    fun setShowNavigationBar(value: Boolean){
+
+        try{
+
+            if(smpService.isMusicPlaying() && value){
+                miniPlayerHeight.value = 60.dp
+            }
+            else{
+                miniPlayerHeight.value = 0.dp
+            }
+        }
+        catch(_: Exception){}
+
+        _showNavigationBar.value = value
+    }
 
     //Home Songs
     var recentHomeSongsList = ArrayList(songsList)
@@ -74,8 +99,6 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
 
     var hintAlbumsSearchText = MutableLiveData("Search Albums")
     var albumsSearchText = MutableLiveData("")
-
-    var surfaceColor = MutableLiveData<Color>()
 
     var tfNewPlaylistNameValue = MutableLiveData("")
 
@@ -177,6 +200,19 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
 
             val binder = service as SimpleMPService.LocalBinder
             smpService = binder.getService()
+
+            fun updateWidget(){
+                val intent = Intent(application, SimpleMPWidget::class.java)
+                intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+
+                val ids = AppWidgetManager.getInstance(application)
+                    .getAppWidgetIds(ComponentName(application, SimpleMPWidget::class.java))
+
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+                application.sendBroadcast(intent)
+            }
+
+
             if (smpService.isMusicPlayingOrPaused()) {
 
                 updatePlayPauseIcons()
@@ -226,6 +262,8 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
                 queueList.value = smpService.getCurrentQueueList()
                 upNextQueueList.value = smpService.getUpNextQueueList()
                 onSongSelected(song)
+
+                updateWidget()
             }
 
 
@@ -239,12 +277,14 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
 
                 currentMiniPlayerIcon.value = miniPlayerPlayIcon
                 currentPlayerIcon.value = playRoundIcon
+                updateWidget()
             }
 
             smpService.onSongResumed = {
 
                 currentMiniPlayerIcon.value = miniPlayerPauseIcon
                 currentPlayerIcon.value = pauseRoundIcon
+                updateWidget()
             }
 
             smpService.onMediaPlayerStopped = {
@@ -522,5 +562,54 @@ class ActivityMainViewModel(application: Application) : AndroidViewModel(applica
             "Ascendent" -> currentAlbumsList.value = ascendentAlbumsList.filterNot { !it.albumName.lowercase().trim().contains(albumsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
             "Descendent" -> currentAlbumsList.value = descendentAlbumsList.filterNot { !it.albumName.lowercase().trim().contains(albumsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
         }
+    }
+
+    //-------------------------- Settings Screen ----------------------------
+    private val _themeModeSetting = MutableStateFlow(preferences.getString("ThemeMode", "System"))
+    val themeModeSetting = _themeModeSetting.asStateFlow()
+    private val _darkModeSetting = MutableStateFlow(preferences.getString("DarkMode", "Color"))
+    val darkModeSetting = _darkModeSetting.asStateFlow()
+    private val _filterAudioSetting = MutableStateFlow(preferences.getString("FilterAudio", "60"))
+    val filterAudioSetting = _filterAudioSetting.asStateFlow()
+    private val _themeAccentSetting = MutableStateFlow(preferences.getString("ThemeAccent", "Default"))
+    val themeAccentSetting = _themeAccentSetting.asStateFlow()
+    private val _surfaceColor = MutableStateFlow(Color(0xff000000))
+    val surfaceColor = _surfaceColor.asStateFlow()
+    fun setSurfaceColor(value: Color){
+        _surfaceColor.value = value
+    }
+
+
+    val selectedThemeModeDialog = MutableLiveData(themeModeSetting.value)
+    val selectedDarkModeDialog = MutableLiveData(darkModeSetting.value)
+    val etFilterAudioDialog = MutableLiveData(filterAudioSetting.value)
+    val selectedThemeAccentDialog = MutableLiveData(themeAccentSetting.value)
+
+
+    fun setThemeMode(){
+
+        preferences.edit().putString("ThemeMode", selectedThemeModeDialog.value).apply()
+        _themeModeSetting.value = selectedThemeModeDialog.value
+    }
+
+    fun setDarkMode(){
+
+        preferences.edit().putString("DarkMode", selectedDarkModeDialog.value).apply()
+        _darkModeSetting.value = selectedDarkModeDialog.value
+    }
+
+
+    fun setFilterAudio(){
+
+        preferences.edit().putString("FilterAudio", etFilterAudioDialog.value).apply()
+        _filterAudioSetting.value = etFilterAudioDialog.value
+
+        Toast.makeText(context, "Setting will take effect on next app restart", Toast.LENGTH_LONG).show()
+    }
+
+    fun setThemeAccent(){
+
+        preferences.edit().putString("ThemeAccent", selectedThemeAccentDialog.value).apply()
+        _themeAccentSetting.value = selectedThemeAccentDialog.value
     }
 }

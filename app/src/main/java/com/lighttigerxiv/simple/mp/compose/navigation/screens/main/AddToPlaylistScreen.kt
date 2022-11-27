@@ -11,6 +11,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -30,13 +31,13 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.composables.BasicToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainViewModel
+import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddToPlaylistScreen(
-    activityMainViewModel: ActivityMainViewModel,
+    activityMainVM: ActivityMainVM,
     backStackEntry: NavBackStackEntry,
     previousPage: String,
     onBackClick: () -> Unit
@@ -44,8 +45,8 @@ fun AddToPlaylistScreen(
 
     val songID = backStackEntry.arguments?.getLong("songID")
     val createPlaylistSheetState = rememberBottomSheetScaffoldState()
-    val playlists = activityMainViewModel.playlists.observeAsState().value!!
-    val selectedSong = activityMainViewModel.songsList.find { it.id == songID }!!
+    val playlists = activityMainVM.playlists.observeAsState().value!!
+    val selectedSong = activityMainVM.songsList.find { it.id == songID }!!
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -59,8 +60,8 @@ fun AddToPlaylistScreen(
         ) {
 
             BasicToolbar(
-                backButtonText = remember { previousPage },
-                onBackClicked = { onBackClick() }
+                backText = remember { previousPage },
+                onBackClick = { onBackClick() }
             )
 
             BottomSheetScaffold(
@@ -78,7 +79,7 @@ fun AddToPlaylistScreen(
 
                     ) {
 
-                        val playlistNameValue = activityMainViewModel.tfNewPlaylistNameValue.observeAsState().value!!
+                        val playlistNameValue = activityMainVM.tfNewPlaylistNameValue.observeAsState().value!!
 
                         Spacer(Modifier.height(2.dp))
                         Row(
@@ -108,7 +109,7 @@ fun AddToPlaylistScreen(
                         CustomTextField(
                             text = playlistNameValue,
                             placeholder = "Insert playlist name",
-                            onValueChanged = { activityMainViewModel.tfNewPlaylistNameValue.value = it },
+                            onTextChange = { activityMainVM.tfNewPlaylistNameValue.value = it },
                             textType = "text"
                         )
 
@@ -122,7 +123,7 @@ fun AddToPlaylistScreen(
                             Button(
                                 onClick = {
 
-                                    activityMainViewModel.createPlaylist(playlistNameValue)
+                                    activityMainVM.createPlaylist(playlistNameValue)
                                     scope.launch { createPlaylistSheetState.bottomSheetState.collapse() }
                                 }
                             ) {
@@ -139,7 +140,7 @@ fun AddToPlaylistScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(activityMainViewModel.surfaceColor.value!!)
+                        .background(activityMainVM.surfaceColor.collectAsState().value)
                         .padding(sheetPadding)
                 ) {
 
@@ -219,7 +220,7 @@ fun AddToPlaylistScreen(
                                                 playlistSongs.add(selectedSong)
                                                 val newPlaylistSongsJson = Gson().toJson(playlistSongs)
 
-                                                activityMainViewModel.updatePlaylistSongs(songsJson = newPlaylistSongsJson, playlistID = playlist.id)
+                                                activityMainVM.updatePlaylistSongs(songsJson = newPlaylistSongsJson, playlistID = playlist.id)
 
                                                 onBackClick()
                                             }

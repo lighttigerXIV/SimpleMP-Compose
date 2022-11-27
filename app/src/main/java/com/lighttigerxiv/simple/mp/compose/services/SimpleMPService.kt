@@ -1,6 +1,7 @@
 package com.lighttigerxiv.simple.mp.compose.services
 
 import android.app.*
+import android.appwidget.AppWidgetManager
 import android.content.*
 import android.graphics.Bitmap
 import android.media.*
@@ -11,10 +12,12 @@ import android.os.IBinder
 import android.os.Looper
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.view.KeyEvent
 import androidx.core.app.NotificationCompat
 import com.lighttigerxiv.simple.mp.compose.GetSongs
 import com.lighttigerxiv.simple.mp.compose.R
+import com.lighttigerxiv.simple.mp.compose.SimpleMPWidget
 import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.activities.MainActivity
 
@@ -35,7 +38,7 @@ class SimpleMPService: Service() {
     //Listeners
     var onSongSelected : (song: Song) -> Unit = {}
     var onSongSelectedForPlayer : (song: Song) -> Unit = {}
-    var onSongSelectedForQueue : (song: Song) -> Unit = {}
+    var onSongSelectedForWidget : (song: Song) -> Unit = {}
     var onSongPaused : () -> Unit = {}
     var onSongResumed : () -> Unit = {}
     var onSongSecondPassed : ( currentPosition: Int ) -> Unit = {}
@@ -66,7 +69,7 @@ class SimpleMPService: Service() {
         val context = this
 
         mediaButtonReceiver = ComponentName(context, ReceiverPlayPause::class.java)
-        mediaSession = MediaSessionCompat(context, "SessionTag")
+        mediaSession = MediaSessionCompat(context, "SimpleMPSession")
         mediaSession.setCallback(object : MediaSessionCompat.Callback(){
 
             override fun onMediaButtonEvent(mediaButtonIntent: Intent): Boolean {
@@ -90,7 +93,45 @@ class SimpleMPService: Service() {
 
                 return super.onMediaButtonEvent(mediaButtonIntent)
             }
+
+            override fun onPlay() {
+                super.onPlay()
+
+                pauseResumeMusic(context)
+            }
+
+            override fun onStop() {
+                super.onStop()
+
+                stopMediaPlayer()
+            }
+
+            override fun onPause() {
+                super.onPause()
+
+                pauseResumeMusic(context)
+            }
+
+            override fun onSkipToNext() {
+                super.onSkipToNext()
+
+                selectNextSong(context)
+            }
+
+            override fun onSkipToPrevious() {
+                super.onSkipToPrevious()
+
+                selectPreviousSong(context)
+            }
         })
+
+        /*
+        mediaSession.setFlags(
+            MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+        )
+
+         */
+
 
         return mBinder
     }
@@ -143,8 +184,6 @@ class SimpleMPService: Service() {
             playSong(context = context)
         }
     }
-
-
 
 
     fun toggleShuffle(){
@@ -230,7 +269,7 @@ class SimpleMPService: Service() {
 
     fun isMusicPlaying(): Boolean{
 
-        return mediaPlayer.isPlaying
+        return try{mediaPlayer.isPlaying} catch (_: Exception){false}
     }
 
 
@@ -310,7 +349,8 @@ class SimpleMPService: Service() {
 
 
             requestPlayWithFocus()
-            mediaSession.isActive = true
+
+
 
             //Open App
             val openAppIntent = Intent( context, MainActivity::class.java )
@@ -348,7 +388,7 @@ class SimpleMPService: Service() {
                     .setShowActionsInCompactView(1, 2, 3)
                 )
                 .setSmallIcon(R.drawable.icon)
-                .addAction(R.drawable.icon_x, "Stop Player", pendingStopIntent )
+                .addAction(R.drawable.icon_x_solid, "Stop Player", pendingStopIntent )
                 .addAction(R.drawable.icon_previous_notification, "Previous Music", pendingPreviousSongIntent )
                 .addAction(R.drawable.icon_pause_notification, "Play Pause Music", pendingPlayPauseIntent )
                 .addAction(R.drawable.icon_next_notification, "Next Music", pendingSkipSongIntent )
@@ -376,7 +416,7 @@ class SimpleMPService: Service() {
 
         onSongSelected(currentSong!!)
         onSongSelectedForPlayer(currentSong!!)
-        onSongSelectedForQueue(currentSong!!)
+        onSongSelectedForWidget(currentSong!!)
 
 
         val bluetoothReceiver = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
@@ -387,10 +427,27 @@ class SimpleMPService: Service() {
         mainHandler.post( object : Runnable{
             override fun run() {
 
-                onSongSecondPassed(mediaPlayer.currentPosition)
+                if(isMusicPlaying()){
+
+                    onSongSecondPassed(mediaPlayer.currentPosition)
+                    setPlaybackState(PlaybackStateCompat.STATE_PLAYING)
+                }
                 mainHandler.postDelayed( this,1000)
             }
         })
+    }
+
+    fun setPlaybackState(state: Int){
+
+        val stateBuilder = PlaybackStateCompat.Builder()
+            .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE
+                    or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                    or PlaybackStateCompat.ACTION_SKIP_TO_NEXT)
+            .apply {
+                setState(state, mediaPlayer.currentPosition.toLong(), 1.0f)
+            }
+
+        mediaSession.setPlaybackState(stateBuilder.build())
     }
 
 
@@ -445,14 +502,25 @@ class SimpleMPService: Service() {
     }
 
 
-
     fun stopMediaPlayer(){
 
         onMediaPlayerStopped()
         mediaPlayer.stop()
+        musicStarted = false
         currentSongPosition = -1
+
+        setPlaybackState(PlaybackStateCompat.STATE_STOPPED)
+
+        val intent = Intent(application, SimpleMPWidget::class.java)
+        intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+
+        val ids = AppWidgetManager.getInstance(application)
+            .getAppWidgetIds(ComponentName(application, SimpleMPWidget::class.java))
+
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+        application.sendBroadcast(intent)
+
         stopForeground(true)
-        stopSelf()
     }
 
 
@@ -486,6 +554,8 @@ class SimpleMPService: Service() {
         mediaSession.isActive = false
         onSongPaused()
 
+        setPlaybackState(PlaybackStateCompat.STATE_PAUSED)
+
         //Updates the notification
         val playPauseIntent = Intent(context, ReceiverPlayPause::class.java )
         playPauseIntent.putExtra( "action", "playPause" )
@@ -510,6 +580,7 @@ class SimpleMPService: Service() {
             playPauseIcon = R.drawable.icon_play_notification
 
             mediaPlayer.pause()
+            setPlaybackState(PlaybackStateCompat.STATE_PAUSED)
             onSongPaused()
         }
         else {
@@ -517,6 +588,7 @@ class SimpleMPService: Service() {
             playPauseIcon = R.drawable.icon_pause_notification
 
             requestPlayWithFocus()
+            setPlaybackState(PlaybackStateCompat.STATE_PLAYING)
             onSongResumed()
         }
 
@@ -547,6 +619,8 @@ class SimpleMPService: Service() {
 
                     mediaPlayer.start()
                     onSongResumed()
+
+                    mediaSession.isActive = true
 
                     true
                 }

@@ -39,7 +39,8 @@ import com.google.accompanist.pager.rememberPagerState
 import com.google.gson.Gson
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.composables.BasicToolbar
+import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
+import com.lighttigerxiv.simple.mp.compose.composables.PlayAndShuffleRow
 import com.lighttigerxiv.simple.mp.compose.composables.SongItem
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import kotlinx.coroutines.launch
@@ -77,6 +78,8 @@ fun ArtistScreen(
     }
 
     VerticalNestedScrollView(
+        modifier = Modifier
+            .padding(SCREEN_PADDING),
         state = nestedScrollViewState,
         header = {
             Column(
@@ -84,12 +87,12 @@ fun ArtistScreen(
                     .fillMaxWidth()
                     .wrapContentHeight()
             ) {
-                BasicToolbar(backText = "Artists", onBackClick = { onBackClicked() })
+                CustomToolbar(backText = remember { getAppString(context, R.string.Artists) }, onBackClick = { onBackClicked() })
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Image(
                     bitmap = artistPicture.value.asImageBitmap(),
-                    contentDescription = "",
+                    contentDescription = null,
                     colorFilter = if (artistPicture.value == defaultArtistPicture) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
@@ -118,42 +121,42 @@ fun ArtistScreen(
 
                 androidx.compose.material.TabRow(
                     selectedTabIndex = pagerState.currentPage,
-                    contentColor = activityMainVM.surfaceColor.value!!,
+                    contentColor = activityMainVM.surfaceColor.collectAsState().value,
                     indicator = {}
                 ) {
 
                     val songsTabColor = when(pagerState.currentPage){
 
                         0-> MaterialTheme.colorScheme.surfaceVariant
-                        else-> activityMainVM.surfaceColor.value!!
+                        else-> activityMainVM.surfaceColor.collectAsState().value
                     }
 
                     val albumsTabColor = when(pagerState.currentPage){
 
                         1-> MaterialTheme.colorScheme.surfaceVariant
-                        else-> activityMainVM.surfaceColor.value!!
+                        else-> activityMainVM.surfaceColor.collectAsState().value
                     }
 
                     Tab(
-                        text = { Text("Songs", fontSize = 16.sp) },
+                        text = { Text(remember { getAppString(context, R.string.Songs) }, fontSize = 16.sp) },
                         selected = pagerState.currentPage == 0,
                         selectedContentColor = MaterialTheme.colorScheme.primary,
                         unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                         onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
                         modifier = Modifier
-                            .background(activityMainVM.surfaceColor.value!!)
+                            .background(activityMainVM.surfaceColor.collectAsState().value)
                             .padding(10.dp)
                             .clip(RoundedCornerShape(percent = 100))
                             .background(songsTabColor)
                     )
                     Tab(
-                        text = { Text("Albums", fontSize = 16.sp) },
+                        text = { Text(remember { getAppString(context, R.string.Albums) }, fontSize = 16.sp) },
                         selectedContentColor = MaterialTheme.colorScheme.primary,
                         unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                         selected = pagerState.currentPage == 1,
                         onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
                         modifier = Modifier
-                            .background(activityMainVM.surfaceColor.value!!)
+                            .background(activityMainVM.surfaceColor.collectAsState().value)
                             .padding(10.dp)
                             .clip(RoundedCornerShape(percent = 100))
                             .background(albumsTabColor)
@@ -175,33 +178,15 @@ fun ArtistScreen(
                                 modifier = Modifier.fillMaxSize()
                             ) {
 
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .wrapContentHeight()
-                                ) {
-                                    Button(
-                                        onClick = { activityMainVM.selectSong(artistSongsList, 0) },
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = activityMainVM.surfaceColor.value!!
-                                        ),
-                                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(50.dp)
-                                    ) {
-                                        Icon(
-                                            bitmap = activityMainVM.miniPlayerPlayIcon,
-                                            contentDescription = "",
-                                            modifier = Modifier.height(20.dp),
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                        Spacer(modifier = Modifier.width(10.dp))
-                                        Text(text = "Play All Songs", color = MaterialTheme.colorScheme.primary)
-                                    }
-                                }
+                                PlayAndShuffleRow(
+                                    surfaceColor = activityMainVM.surfaceColor.collectAsState().value,
+                                    onPlayClick = {activityMainVM.unshuffleAndPlay(artistSongsList, 0)},
+                                    onSuffleClick = {activityMainVM.shuffleAndPlay(artistSongsList)}
+                                )
+
                                 Spacer(modifier = Modifier.height(20.dp))
                                 LazyColumn(
+                                    verticalArrangement = Arrangement.spacedBy(5.dp),
                                     content = {
 
                                         items(
@@ -226,8 +211,8 @@ fun ArtistScreen(
 
                                 LazyVerticalGrid(
                                     columns = GridCells.Fixed(gridCellsCount),
-                                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    verticalArrangement = Arrangement.spacedBy(5.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(5.dp),
                                     content = {
 
                                         items(
@@ -237,6 +222,7 @@ fun ArtistScreen(
 
                                             val albumSongAlbumID = album.albumID
                                             val albumName = album.albumName
+                                            val albumArt = activityMainVM.songsImagesList.first { it.albumID == albumSongAlbumID }.albumArt
 
                                             Box(
                                                 modifier = Modifier
@@ -244,8 +230,6 @@ fun ArtistScreen(
                                                     .clip(RoundedCornerShape(14.dp))
                                                     .background(MaterialTheme.colorScheme.surfaceVariant)
                                                     .clickable {
-                                                        activityMainVM.clickedArtistAlbumID.value =
-                                                            album.albumID
                                                         onArtistAlbumOpened(album.albumID)
                                                     }
 
@@ -256,7 +240,8 @@ fun ArtistScreen(
                                                     horizontalAlignment = Alignment.CenterHorizontally
                                                 ) {
                                                     Image(
-                                                        bitmap = remember { activityMainVM.songsImagesList.first { it.albumID == albumSongAlbumID }.albumArt.asImageBitmap() },
+                                                        bitmap = remember { (albumArt?: BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record)).asImageBitmap() },
+                                                        colorFilter = if(albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                                                         contentDescription = "",
                                                         modifier = Modifier
                                                             .padding(10.dp)
@@ -283,8 +268,7 @@ fun ArtistScreen(
                     }
                 }
             }
-        },
-        modifier = Modifier.padding(14.dp)
+        }
     )
 }
 

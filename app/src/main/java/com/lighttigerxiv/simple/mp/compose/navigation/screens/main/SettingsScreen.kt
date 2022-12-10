@@ -21,14 +21,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.composables.BasicToolbar
+import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
+import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
+import com.lighttigerxiv.simple.mp.compose.getAppString
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 
 @Composable
 fun SettingsScreen(
     activityMainVM: ActivityMainVM,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onOpenScreen: (route: String) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -47,14 +50,14 @@ fun SettingsScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(surfaceColor)
-            .padding(14.dp)
+            .padding(SCREEN_PADDING)
             .verticalScroll(rememberScrollState())
     ) {
 
         Column(modifier = Modifier.fillMaxSize()) {
 
-            BasicToolbar(
-                backText = "Home",
+            CustomToolbar(
+                backText = remember { getAppString(context, R.string.Home) },
                 onBackClick = { onBackPressed() }
             )
 
@@ -65,7 +68,7 @@ fun SettingsScreen(
             ) {
 
                 Text(
-                    text = "Theming",
+                    text = remember { getAppString(context, R.string.Theming) },
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Start,
@@ -84,7 +87,7 @@ fun SettingsScreen(
 
                 DefaultSettingItem(
                     icon = painterResource(id = R.drawable.icon_theme_mode_regular),
-                    settingText = "Theme Mode",
+                    settingText = remember { getAppString(context, R.string.Theme) },
                     settingValue = activityMainVM.themeModeSetting.collectAsState().value!!,
                     onSettingClick = { showThemeModeDialog.value = true },
                 )
@@ -93,7 +96,7 @@ fun SettingsScreen(
 
                 DefaultSettingItem(
                     icon = painterResource(id = R.drawable.icon_moon_regular),
-                    settingText = "Dark Mode",
+                    settingText = remember { getAppString(context, R.string.DarkMode) },
                     settingValue = activityMainVM.darkModeSetting.collectAsState().value!!,
                     onSettingClick = { showDarkModeDialog.value = true }
                 )
@@ -102,9 +105,9 @@ fun SettingsScreen(
 
                 DefaultSettingItem(
                     icon = painterResource(id = R.drawable.icon_theme_regular),
-                    settingText = "Accent Color",
+                    settingText = remember { getAppString(context, R.string.AccentColor) },
                     settingValue = activityMainVM.themeAccentSetting.collectAsState().value!!,
-                    onSettingClick = { showThemeAccentDialog.value = true }
+                    onSettingClick = { onOpenScreen("ThemesScreen") }
                 )
             }
 
@@ -132,7 +135,7 @@ fun SettingsScreen(
                             ) {
                                 Spacer(Modifier.width(10.dp))
                                 Text(
-                                    text = "Select Theme Mode",
+                                    text = remember { getAppString(context, R.string.SelectThemeMode) },
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     fontSize = 20.sp,
@@ -161,7 +164,7 @@ fun SettingsScreen(
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Text(
-                                    text = "System Default",
+                                    text = remember { getAppString(context, R.string.SystemDefault) },
                                     fontSize = 16.sp,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -188,7 +191,7 @@ fun SettingsScreen(
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Text(
-                                    text = "Light Mode",
+                                    text = remember { getAppString(context, R.string.LightMode) },
                                     fontSize = 16.sp,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -215,7 +218,7 @@ fun SettingsScreen(
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Text(
-                                    text = "Dark Mode",
+                                    text = remember { getAppString(context, R.string.DarkMode) },
                                     fontSize = 16.sp,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -245,7 +248,7 @@ fun SettingsScreen(
                                         .padding(5.dp)
                                 ) {
                                     Text(
-                                        text = "Cancel",
+                                        text = remember { getAppString(context, R.string.Cancel) },
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                         color = MaterialTheme.colorScheme.onSurface
@@ -265,7 +268,7 @@ fun SettingsScreen(
                                         .padding(5.dp)
                                 ) {
                                     Text(
-                                        text = "Apply",
+                                        text = remember { getAppString(context, R.string.Apply) },
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -282,7 +285,7 @@ fun SettingsScreen(
             ) {
 
                 Text(
-                    text = "Audio",
+                    text = remember { getAppString(context, R.string.Audio) },
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Start,
@@ -302,12 +305,11 @@ fun SettingsScreen(
 
                 DefaultSettingItem(
                     icon = painterResource(id = R.drawable.icon_filter_regular),
-                    settingText = "Filter Audio Below",
+                    settingText = remember { getAppString(context, R.string.FilterAudioBelow) },
                     settingValue = "${activityMainVM.filterAudioSetting.collectAsState().value} seconds",
                     onSettingClick = { showFilterAudioDialog.value = true }
                 )
             }
-
 
 
             if (showDarkModeDialog.value) {
@@ -333,7 +335,7 @@ fun SettingsScreen(
                             ) {
                                 Spacer(Modifier.width(10.dp))
                                 Text(
-                                    text = "Select Dark Mode",
+                                    text = remember { getAppString(context, R.string.SelectDarkMode) },
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     fontSize = 20.sp,
@@ -362,7 +364,7 @@ fun SettingsScreen(
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Text(
-                                    text = "Color",
+                                    text = remember { getAppString(context, R.string.Color) },
                                     fontSize = 16.sp,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -389,7 +391,7 @@ fun SettingsScreen(
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Text(
-                                    text = "Oled",
+                                    text = remember { getAppString(context, R.string.Oled) },
                                     fontSize = 16.sp,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -419,7 +421,7 @@ fun SettingsScreen(
                                         .padding(5.dp)
                                 ) {
                                     Text(
-                                        text = "Cancel",
+                                        text = remember { getAppString(context, R.string.Cancel) },
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                         color = MaterialTheme.colorScheme.onSurface
@@ -439,7 +441,7 @@ fun SettingsScreen(
                                         .padding(5.dp)
                                 ) {
                                     Text(
-                                        text = "Apply",
+                                        text = remember { getAppString(context, R.string.Apply) },
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -474,7 +476,7 @@ fun SettingsScreen(
                             ) {
                                 Spacer(Modifier.width(10.dp))
                                 Text(
-                                    text = "Filter Audio",
+                                    text = remember { getAppString(context, R.string.FilterAudio) },
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     fontSize = 20.sp,
@@ -486,7 +488,7 @@ fun SettingsScreen(
 
                             CustomTextField(
                                 text = etFilterAudioValue!!,
-                                placeholder = "Insert minimum seconds",
+                                placeholder = remember { getAppString(context, R.string.InsertMinimumSeconds) },
                                 textType = "number",
                                 onTextChange = {
                                     activityMainVM.etFilterAudioDialog.value = it
@@ -515,7 +517,7 @@ fun SettingsScreen(
                                         .padding(5.dp)
                                 ) {
                                     Text(
-                                        text = "Cancel",
+                                        text = remember { getAppString(context, R.string.Cancel) },
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                         color = MaterialTheme.colorScheme.onSurface
@@ -536,477 +538,10 @@ fun SettingsScreen(
                                         .padding(5.dp)
                                 ) {
                                     Text(
-                                        text = "Apply",
+                                        text = remember { getAppString(context, R.string.Apply) },
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (showThemeAccentDialog.value) {
-
-                Dialog(
-                    onDismissRequest = {
-                        showThemeAccentDialog.value = false
-                        activityMainVM.selectedThemeAccentDialog.value = activityMainVM.themeAccentSetting.value
-                    }
-                ) {
-
-                    Surface(
-                        shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.padding(10.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.fillMaxHeight(0.8f)
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight()
-                                    .weight(1f, fill = true)
-                                    .padding(10.dp)
-                                    .verticalScroll(rememberScrollState())
-                            ) {
-
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent!!,
-                                    text = "System",
-                                    settingValue = "System",
-                                    firstColor = MaterialTheme.colorScheme.surface,
-                                    secondColor = MaterialTheme.colorScheme.surface
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Blue",
-                                    settingValue = "Blue",
-                                    firstColor = Color(0xFF225FA6),
-                                    secondColor = Color(0xFF225FA6)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Red",
-                                    settingValue = "Red",
-                                    firstColor = Color(0xFFBF0027),
-                                    secondColor = Color(0xFFBF0027)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Purple",
-                                    settingValue = "Purple",
-                                    firstColor = Color(0xFF6750A4),
-                                    secondColor = Color(0xFF6750A4)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Orange",
-                                    settingValue = "Orange",
-                                    firstColor = Color(0xFF924B00),
-                                    secondColor = Color(0xFF924B00)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Yellow",
-                                    settingValue = "Yellow",
-                                    firstColor = Color(0xFF6D5E00),
-                                    secondColor = Color(0xFF6D5E00)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Green",
-                                    settingValue = "Green",
-                                    firstColor = Color(0xFF326B00),
-                                    secondColor = Color(0xFF326B00)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Pink",
-                                    settingValue = "Pink",
-                                    firstColor = Color(0xFF84468E),
-                                    secondColor = Color(0xFF84468E)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Rosewater",
-                                    settingValue = "FrappeRosewater",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xfff2d5cf)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Flamingo",
-                                    settingValue = "FrappeFlamingo",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xffeebebe)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Pink",
-                                    settingValue = "FrappePink",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xfff4b8e4)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Mauve",
-                                    settingValue = "FrappeMauve",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xffca9ee6)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Red",
-                                    settingValue = "FrappeRed",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xffe78284)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Maroon",
-                                    settingValue = "FrappeMaroon",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xffea999c)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Peach",
-                                    settingValue = "FrappePeach",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xffef9f76)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Yellow",
-                                    settingValue = "FrappeYellow",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xffe5c890)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Green",
-                                    settingValue = "FrappeGreen",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xffa6d189)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Teal",
-                                    settingValue = "FrappeTeal",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xff81c8be)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Sky",
-                                    settingValue = "FrappeSky",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xff99d1db)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Sapphire",
-                                    settingValue = "FrappeSapphire",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xff85c1dc)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Blue",
-                                    settingValue = "FrappeBlue",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xff8caaee)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Frappe Lavender",
-                                    settingValue = "FrappeLavender",
-                                    firstColor = Color(0xff303446),
-                                    secondColor = Color(0xffbabbf1)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Rosewater",
-                                    settingValue = "MacchiatoRosewater",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xfff5e0dc)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Flamingo",
-                                    settingValue = "MacchiatoFlamingo",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xfff2cdcd)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Pink",
-                                    settingValue = "MacchiatoPink",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xfff5c2e7)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Mauve",
-                                    settingValue = "MacchiatoMauve",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xffcba6f7)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Red",
-                                    settingValue = "MacchiatoRed",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xfff38ba8)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Maroon",
-                                    settingValue = "MacchiatoMaroon",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xffeba0ac)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Peach",
-                                    settingValue = "MacchiatoPeach",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xfffab387)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Yellow",
-                                    settingValue = "MacchiatoYellow",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xfff9e2af)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Green",
-                                    settingValue = "MacchiatoGreen",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xffa6e3a1)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Teal",
-                                    settingValue = "MacchiatoTeal",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xff94e2d5)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Sky",
-                                    settingValue = "MacchiatoSky",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xff89dceb)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Sapphire",
-                                    settingValue = "MacchiatoSapphire",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xff74c7ec)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Blue",
-                                    settingValue = "MacchiatoBlue",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xff89b4fa)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Macchiato Lavender",
-                                    settingValue = "MacchiatoLavender",
-                                    firstColor = Color(0xff24273a),
-                                    secondColor = Color(0xffb4befe)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent!!,
-                                    text = "Mocha Rosewater",
-                                    settingValue = "MochaRosewater",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xfff5e0dc)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Flamingo",
-                                    settingValue = "MochaFlamingo",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xfff2cdcd)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Pink",
-                                    settingValue = "MochaPink",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xfff5c2e7)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Mauve",
-                                    settingValue = "MochaMauve",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xffcba6f7)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Red",
-                                    settingValue = "MochaRed",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xfff38ba8)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Maroon",
-                                    settingValue = "MochaMaroon",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xffeba0ac)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Peach",
-                                    settingValue = "MochaPeach",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xfffab387)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Yellow",
-                                    settingValue = "MochaYellow",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xfff9e2af)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Green",
-                                    settingValue = "MochaGreen",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xffa6e3a1)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Teal",
-                                    settingValue = "MochaTeal",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xff94e2d5)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Sky",
-                                    settingValue = "MochaSky",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xff89dceb)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Sapphire",
-                                    settingValue = "MochaSapphire",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xff74c7ec)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Blue",
-                                    settingValue = "MochaBlue",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xff89b4fa)
-                                )
-                                ThemeAccentItem(
-                                    activityMainVM = activityMainVM,
-                                    selectedThemeAccent = selectedThemeAccent,
-                                    text = "Mocha Lavender",
-                                    settingValue = "MochaLavender",
-                                    firstColor = Color(0xff1e1e2e),
-                                    secondColor = Color(0xffb4befe)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            Row(
-                                horizontalArrangement = Arrangement.End,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp)
-                            ) {
-
-                                Button(
-                                    onClick = {
-                                        showThemeAccentDialog.value = false
-                                        activityMainVM.selectedThemeAccentDialog.value = activityMainVM.themeAccentSetting.value
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.surface
-                                    ),
-                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                                ) {
-                                    Text(
-                                        text = "Cancel",
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.width(10.dp))
-
-                                Button(
-                                    onClick = {
-                                        showThemeAccentDialog.value = false
-                                        activityMainVM.setThemeAccent()
-                                    }
-                                ) {
-                                    Text(text = "Apply")
                                 }
                             }
                         }
@@ -1039,8 +574,8 @@ fun DefaultSettingItem(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(10.dp)
             .clickable { onSettingClick() }
+            .padding(10.dp)
     ) {
 
 
@@ -1131,6 +666,5 @@ fun ThemeAccentItem(
         }
     }
 }
-
 
 

@@ -1,25 +1,32 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens
+package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import android.content.Context.MODE_PRIVATE
 import android.content.res.Configuration
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.lighttigerxiv.simple.mp.compose.R
+import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.composables.ImageCard
+import com.lighttigerxiv.simple.mp.compose.getAppString
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
+import kotlinx.coroutines.launch
 
 @Composable
 fun AlbumsScreen(
@@ -31,9 +38,9 @@ fun AlbumsScreen(
     val configuration = LocalConfiguration.current
     var popupMenuExpanded by remember { mutableStateOf(false) }
     val sortSharedPrefs = context.getSharedPreferences("sorting", MODE_PRIVATE)
-
+    val listState = rememberLazyGridState()
     val albumsList = activityMainVM.currentAlbumsList.observeAsState().value!!
-
+    val scope = rememberCoroutineScope()
 
     val gridCellsCount = when(configuration.orientation){
 
@@ -45,7 +52,7 @@ fun AlbumsScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(activityMainVM.surfaceColor.collectAsState().value)
-            .padding(14.dp)
+            .padding(SCREEN_PADDING)
     ) {
 
         Column( modifier = Modifier.fillMaxSize() ) {
@@ -55,17 +62,17 @@ fun AlbumsScreen(
                 .height(50.dp)) {
 
                 val searchText = activityMainVM.albumsSearchText.observeAsState().value!!
-                val hint = activityMainVM.hintAlbumsSearchText.value!!
 
                 CustomTextField(
                     text = searchText,
-                    placeholder = hint,
+                    placeholder = remember { getAppString(context, R.string.SearchAlbums) },
                     textType = "text",
                     onTextChange = {
                         activityMainVM.albumsSearchText.value = it
                         activityMainVM.filterAlbumsList(sortSharedPrefs.getString("albums", "Recent")!!)
+                        scope.launch { listState.scrollToItem(0) }
                     },
-                    sideIcon = R.drawable.icon_more_regular,
+                    sideIcon = R.drawable.icon_sort_solid,
                     onSideIconClick = { popupMenuExpanded = true }
                 )
                 DropdownMenu(
@@ -74,28 +81,28 @@ fun AlbumsScreen(
                 ) {
 
                     DropdownMenuItem(
-                        text = { Text(text = "Sort By Recent") },
+                        text = { Text(text = remember { getAppString(context, R.string.SortByRecentlyAdded) }) },
                         onClick = {
                             sortSharedPrefs.edit().putString("albums", "Recent").apply()
                             activityMainVM.currentAlbumsList.value = activityMainVM.recentAlbumsList
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text(text = "Sort By Oldest") },
+                        text = { Text(text = remember { getAppString(context, R.string.SortByOldestAdded) }) },
                         onClick = {
                             sortSharedPrefs.edit().putString("albums", "Oldest").apply()
                             activityMainVM.currentAlbumsList.value = activityMainVM.oldestAlbumsList
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text(text = "Sort By Ascendent") },
+                        text = { Text(text = remember { getAppString(context, R.string.SortByAscendent) }) },
                         onClick = {
                             sortSharedPrefs.edit().putString("albums", "Ascendent").apply()
                             activityMainVM.currentAlbumsList.value = activityMainVM.ascendentAlbumsList
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text(text = "Sort By Descendent") },
+                        text = { Text(text = remember { getAppString(context, R.string.SortByDescendent) }) },
                         onClick = {
                             sortSharedPrefs.edit().putString("albums", "Descendent").apply()
                             activityMainVM.currentAlbumsList.value = activityMainVM.descendentAlbumsList
@@ -107,8 +114,9 @@ fun AlbumsScreen(
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(gridCellsCount),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                state = listState,
                 modifier = Modifier
                     .fillMaxSize(),
             ){
@@ -118,11 +126,13 @@ fun AlbumsScreen(
                     key = { album-> album.albumID },
                 ){ album->
 
+                    val albumArt = activityMainVM.songsImagesList.first { it.albumID == album.albumID }.albumArt
+
                     ImageCard(
-                        cardImage = remember { activityMainVM.songsImagesList.first { it.albumID == album.albumID }.albumArt },
+                        cardImage = remember { albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record) },
+                        imageTint = if(albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                         cardText = remember{album.albumName},
                         onCardClicked = {
-                            activityMainVM.clickedAlbumID.value = album.albumID
                             onAlbumClicked(album.albumID)
                         }
                     )

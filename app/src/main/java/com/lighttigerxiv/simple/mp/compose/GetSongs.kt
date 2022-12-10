@@ -82,9 +82,9 @@ class GetSongs {
         }
 
         @Suppress("DEPRECATION")
-        fun getSongAlbumArt(context: Context, songID: Long, albumID: Long): Bitmap {
+        fun getSongAlbumArt(context: Context, songID: Long, albumID: Long): Bitmap? {
 
-            lateinit var albumArt: Bitmap
+            var albumArt: Bitmap? = null
 
             try {
 
@@ -102,16 +102,7 @@ class GetSongs {
                     MediaStore.Images.Media.getBitmap(context.contentResolver, albumArtUri)
                 }
 
-            } catch (ignore: Exception) {
-
-
-                val defaultAlbumArt = BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record).copy(Bitmap.Config.ARGB_8888, true)
-                val paint = Paint()
-                val canvas = Canvas(defaultAlbumArt)
-                canvas.drawBitmap(defaultAlbumArt, 0F, 0F, paint)
-
-                albumArt = defaultAlbumArt
-            }
+            } catch (ignore: Exception) {}
 
             return albumArt
         }
@@ -128,7 +119,7 @@ class GetSongs {
                     compressed->{
 
                         val uncompressedAlbumArt = getSongAlbumArt(context, song.id, song.albumID)
-                        val compressedAlbumArt = Bitmap.createScaledBitmap(uncompressedAlbumArt, uncompressedAlbumArt.width / 3, uncompressedAlbumArt.height / 3, false)
+                        val compressedAlbumArt = uncompressedAlbumArt?.let { Bitmap.createScaledBitmap(it, uncompressedAlbumArt.width / 3, uncompressedAlbumArt.height / 3, false) }
 
                         songsImagesList.add(
                             SongArt(

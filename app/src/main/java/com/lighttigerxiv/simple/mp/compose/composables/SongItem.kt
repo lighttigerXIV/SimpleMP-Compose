@@ -1,7 +1,10 @@
 package com.lighttigerxiv.simple.mp.compose.composables
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +14,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -20,16 +25,18 @@ import coil.compose.AsyncImage
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.Song
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SongItem(
     song: Song,
-    songAlbumArt: Bitmap,
+    songAlbumArt: Bitmap?,
     highlight: Boolean = false,
     popupMenuEntries: ArrayList<String> = ArrayList(),
     onSongClick: () -> Unit = {},
     onMenuClicked: (option: String) -> Unit = {}
 ) {
 
+    val context = LocalContext.current
     val songTitle = remember { song.title }
     val songArtist = remember { song.artistName }
     val isPopupMenuExpanded = remember { mutableStateOf(false) }
@@ -49,15 +56,17 @@ fun SongItem(
     Row(modifier = Modifier
         .fillMaxWidth()
         .height(70.dp)
-        .clickable(
-            interactionSource = remember{ MutableInteractionSource() },
-            indication = null
-        ) { onSongClick() }
+        .clip(RoundedCornerShape(14.dp))
+        .combinedClickable(
+            onClick = {onSongClick()},
+            onLongClick = {isPopupMenuExpanded.value = true}
+        )
     ) {
 
         AsyncImage(
-            model = remember{songAlbumArt},
+            model = remember{ songAlbumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record) },
             contentDescription = "",
+            colorFilter = if(songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
             modifier = Modifier
                 .clip(RoundedCornerShape(20))
                 .height(70.dp)
@@ -73,34 +82,26 @@ fun SongItem(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .weight(1f)
+                .weight(1f),
+            verticalArrangement = Arrangement.Top
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = songTitle,
-                    fontSize = 16.sp,
-                    color = titleColor,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    fontWeight = titleWeight
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.5f)
-            ) {
-                Text(
-                    text = songArtist,
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+
+            Text(
+                text = songTitle,
+                fontSize = 16.sp,
+                color = titleColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = titleWeight
+            )
+
+            Text(
+                text = songArtist,
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
 
 
@@ -140,22 +141,7 @@ fun SongItem(
                     )
                 }
             }
-
-            if(popupMenuEntries.size > 0){
-
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_three_dots_regular),
-                    contentDescription = "",
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(20.dp)
-                        .clickable { isPopupMenuExpanded.value = true }
-                )
-            }
         }
     }
-
-    Spacer(modifier = Modifier.height(10.dp))
 }
 

@@ -1,11 +1,14 @@
 package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import android.content.res.Configuration
+import android.graphics.BitmapFactory
+import android.util.Base64
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.ExperimentalMaterialApi
@@ -21,10 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -32,10 +35,8 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
-import com.lighttigerxiv.simple.mp.compose.Song
-import com.lighttigerxiv.simple.mp.compose.UsefulFunctions
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.composables.ImageCard
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
@@ -45,19 +46,19 @@ import kotlinx.coroutines.launch
 @Composable
 fun PlaylistsScreen(
     activityMainVM: ActivityMainVM,
-    onGenrePlaylistClick: () -> Unit,
-    onPlaylistClick: () -> Unit
+    onGenrePlaylistClick: (genreID: Long) -> Unit,
+    onPlaylistClick: (playlistID: Int) -> Unit
 ) {
 
     val genresList = activityMainVM.genresList
-    val playlists = activityMainVM.playlists.observeAsState().value!!
+    val playlists = activityMainVM.currentPlaylistsPLSS.collectAsState().value
 
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val pagerState = rememberPagerState()
     val createPlaylistsScaffoldState = rememberBottomSheetScaffoldState()
     val scope = rememberCoroutineScope()
-
+    val userPlaylistsGridState = rememberLazyGridState()
 
 
 
@@ -67,15 +68,24 @@ fun PlaylistsScreen(
         else -> 4
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(activityMainVM.surfaceColor.collectAsState().value)
     ) {
 
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
 
             TabRow(
+                modifier = Modifier
+                    .padding(
+                        top = SCREEN_PADDING,
+                        start = SCREEN_PADDING,
+                        end = SCREEN_PADDING
+                    ),
                 selectedTabIndex = pagerState.currentPage,
                 contentColor = activityMainVM.surfaceColor.collectAsState().value,
                 indicator = {},
@@ -94,7 +104,7 @@ fun PlaylistsScreen(
                 }
 
                 Tab(
-                    text = { Text("Genres", fontSize = 16.sp) },
+                    text = { Text(remember { getAppString(context, R.string.Genres) }, fontSize = 16.sp) },
                     selected = pagerState.currentPage == 0,
                     selectedContentColor = MaterialTheme.colorScheme.primary,
                     unselectedContentColor = MaterialTheme.colorScheme.onSurface,
@@ -106,7 +116,7 @@ fun PlaylistsScreen(
                         .background(genrePlaylistColor)
                 )
                 Tab(
-                    text = { Text("Your Playlists", fontSize = 16.sp) },
+                    text = { Text(remember { getAppString(context, R.string.YourPlaylists) }, fontSize = 16.sp) },
                     selectedContentColor = MaterialTheme.colorScheme.primary,
                     unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                     selected = pagerState.currentPage == 1,
@@ -120,9 +130,10 @@ fun PlaylistsScreen(
             }
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalPager(
+                modifier = Modifier
+                    .fillMaxSize(),
                 count = 2,
                 state = pagerState,
-                modifier = Modifier.fillMaxSize()
             ) { currentPage ->
 
 
@@ -131,11 +142,15 @@ fun PlaylistsScreen(
                     0 -> {
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(gridCellsCount),
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalArrangement = Arrangement.spacedBy(5.dp),
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(14.dp)
+                                .padding(
+                                    start = SCREEN_PADDING,
+                                    end = SCREEN_PADDING,
+                                    bottom = SCREEN_PADDING
+                                )
                         ) {
 
                             items(
@@ -144,19 +159,20 @@ fun PlaylistsScreen(
                             ) { genre ->
 
                                 ImageCard(
-                                    cardImage = remember { UsefulFunctions.getBitmapFromVectorDrawable(context, R.drawable.icon_playlists) },
+                                    cardImage = remember { getBitmapFromVectorDrawable(context, R.drawable.icon_playlists) },
                                     imageTint = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                                     cardText = remember { genre.genre },
                                     onCardClicked = {
 
-                                        activityMainVM.clickedGenreID.value = genre.genreID
-                                        onGenrePlaylistClick()
+                                        onGenrePlaylistClick(genre.genreID)
                                     }
                                 )
                             }
                         }
                     }
                     1 -> {
+
+                        val searchValue = activityMainVM.searchValuePLSS.collectAsState().value
 
                         BottomSheetScaffold(
                             scaffoldState = createPlaylistsScaffoldState,
@@ -194,7 +210,7 @@ fun PlaylistsScreen(
                                     Spacer(Modifier.height(10.dp))
 
                                     Text(
-                                        text = "Playlist Name",
+                                        text = remember { getAppString(context, R.string.PlaylistName) },
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
 
@@ -202,7 +218,7 @@ fun PlaylistsScreen(
 
                                     CustomTextField(
                                         text = playlistNameValue,
-                                        placeholder = "Insert playlist name",
+                                        placeholder = remember { getAppString(context, R.string.InsertPlaylistName) },
                                         onTextChange = { activityMainVM.tfNewPlaylistNameValue.value = it },
                                         textType = "text"
                                     )
@@ -219,11 +235,12 @@ fun PlaylistsScreen(
 
                                                 activityMainVM.createPlaylist( playlistNameValue )
                                                 scope.launch { createPlaylistsScaffoldState.bottomSheetState.collapse() }
-                                            }
+                                            },
+                                            enabled = playlistNameValue.isNotEmpty()
                                         ) {
 
                                             Text(
-                                                text = "Create"
+                                                text = remember { getAppString(context, R.string.Create) }
                                             )
                                         }
                                     }
@@ -237,7 +254,11 @@ fun PlaylistsScreen(
                                     .fillMaxSize()
                                     .background(activityMainVM.surfaceColor.collectAsState().value)
                                     .padding(sheetPadding)
-                                    .padding(14.dp)
+                                    .padding(
+                                        start = SCREEN_PADDING,
+                                        end = SCREEN_PADDING,
+                                        bottom = SCREEN_PADDING
+                                    )
                             ) {
 
                                 Row(
@@ -245,54 +266,48 @@ fun PlaylistsScreen(
                                     horizontalArrangement = Arrangement.Center
                                 ) {
 
-                                    Button(
-                                        onClick = { scope.launch { createPlaylistsScaffoldState.bottomSheetState.expand() } },
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = Color.Transparent
-                                        ),
-                                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
-                                        modifier = Modifier
-                                            .wrapContentWidth()
-                                            .height(50.dp)
-                                            .clip(RoundedCornerShape(percent = 100))
-                                    ) {
-
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.icon_plus_regular),
-                                            contentDescription = "",
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier
-                                                .height(14.dp)
-                                                .width(14.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(10.dp))
-                                        Text(
-                                            text = "Create Playlist",
-                                            color = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
+                                    CustomTextField(
+                                        text = searchValue,
+                                        onTextChange = {
+                                            activityMainVM.setSearchValuePLSS(it)
+                                            activityMainVM.filterPlaylistsPLSS()
+                                            scope.launch { userPlaylistsGridState.scrollToItem(0) }
+                                        },
+                                        placeholder = remember { getAppString(context, R.string.SearchPlaylists) },
+                                        sideIcon = R.drawable.icon_plus_solid,
+                                        onSideIconClick = {
+                                            scope.launch {
+                                                createPlaylistsScaffoldState.bottomSheetState.expand()
+                                            }
+                                        }
+                                    )
                                 }
 
                                 Spacer(modifier = Modifier.height(10.dp))
 
                                 LazyVerticalGrid(
+                                    state = userPlaylistsGridState,
                                     columns = GridCells.Fixed(gridCellsCount),
-                                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    verticalArrangement = Arrangement.spacedBy(5.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(5.dp),
                                     content = {
 
                                         items(playlists) { playlist ->
 
-                                            val playlistID = remember { playlist.id }
-                                            val playlistName = remember { playlist.name }
+                                            val playlistImage = if(playlist.image.isNullOrEmpty()){
+                                                getBitmapFromVectorDrawable(context, R.drawable.icon_playlists)
+                                            }
+                                            else {
+                                                val imageBytes = Base64.decode(playlist.image, Base64.DEFAULT)
+                                                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                                            }
 
 
                                             ImageCard(
-                                                cardImage = remember { UsefulFunctions.getBitmapFromVectorDrawable(context, R.drawable.icon_playlists) },
-                                                imageTint = ColorFilter.tint(MaterialTheme.colorScheme.primary),
-                                                cardText = playlistName,
+                                                cardImage = playlistImage,
+                                                imageTint = if(playlist.image.isNullOrEmpty()) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                                                cardText = playlist.name,
                                                 onCardClicked = {
-                                                    activityMainVM.clickedPlaylistID.value = playlistID
 
                                                     if (playlist.songs != null) {
                                                         val playlistSongs = Gson().fromJson(playlist.songs, object : TypeToken<ArrayList<Song>>() {}.type) as ArrayList<Song>
@@ -304,7 +319,7 @@ fun PlaylistsScreen(
                                                         activityMainVM.currentPlaylistSongs.value = playlistSongs
                                                     }
 
-                                                    onPlaylistClick()
+                                                    onPlaylistClick(playlist.id)
                                                 }
                                             )
                                         }
@@ -312,7 +327,6 @@ fun PlaylistsScreen(
                                 )
                             }
                         }
-
                     }
                 }
             }

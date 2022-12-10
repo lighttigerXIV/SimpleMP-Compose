@@ -1,11 +1,18 @@
 package com.lighttigerxiv.simple.mp.compose.activities
 
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Base64
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
@@ -40,7 +47,11 @@ import com.lighttigerxiv.simple.mp.compose.navigation.screens.*
 import com.lighttigerxiv.simple.mp.compose.navigation.screens.main.*
 import com.lighttigerxiv.simple.mp.compose.ui.theme.ComposeSimpleMPTheme
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
+import java.util.*
+import kotlin.collections.ArrayList
 
+@Suppress("DEPRECATION")
 class MainActivity : ComponentActivity() {
 
     private lateinit var activityMainVM: ActivityMainVM
@@ -62,6 +73,8 @@ class MainActivity : ComponentActivity() {
 
         createNotificationChannel()
         activityMainVM = ViewModelProvider(this)[ActivityMainVM::class.java]
+
+
 
         setContent {
             ComposeSimpleMPTheme(
@@ -89,8 +102,6 @@ class MainActivity : ComponentActivity() {
                     val surfaceColor =
                         if (themeMode == "Dark" && darkMode == "Oled") {
                             Color.Black
-                        } else if (themeMode == "Dark" && darkMode == "Oled" && isSystemInDarkTheme()) {
-                            Color.Black
                         } else if (themeMode == "Light" && themeAccent == "Blue") {
                             Color(0xFFFEFBFF)
                         } else if (themeMode == "Light" && themeAccent == "Red") {
@@ -107,11 +118,15 @@ class MainActivity : ComponentActivity() {
                             Color(0xFFFFFBFF)
                         } else if (darkMode == "Oled" && themeMode == "Light" && isSystemInDarkTheme()) {
                             Color(0xFFFFFBFF)
+                        } else if (darkMode == "Oled" && themeAccent!!.startsWith("Catppuccin")) {
+                            Color.Black
                         } else if (darkMode == "Oled" && isSystemInDarkTheme()) {
                             Color.Black
                         } else {
                             MaterialTheme.colorScheme.surface
                         }
+
+                    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
 
                     activityMainVM.setSurfaceColor(surfaceColor)
 
@@ -119,19 +134,22 @@ class MainActivity : ComponentActivity() {
                     val selectedSong by activityMainVM.selectedSong.observeAsState()
 
                     rememberSystemUiController().setStatusBarColor(surfaceColor)
+                    rememberSystemUiController().setNavigationBarColor(surfaceVariantColor)
+
 
                     navController.addOnDestinationChangedListener { _, destination, _ ->
 
-                        when (destination.route) {
-                            "About" -> activityMainVM.setShowNavigationBar(false)
-                            "Settings" -> activityMainVM.setShowNavigationBar(false)
+                        when {
+                            destination.route == "About" -> activityMainVM.setShowNavigationBar(false)
+                            destination.route == "Settings" -> activityMainVM.setShowNavigationBar(false)
+                            destination.route!!.startsWith("floating") -> activityMainVM.setShowNavigationBar(false)
+                            destination.route!!.startsWith("addToPlaylistScreen") -> activityMainVM.setShowNavigationBar(false)
+                            destination.route == "ThemesScreen" -> activityMainVM.setShowNavigationBar(false)
                             else -> {
                                 if (!showNavigationBar) activityMainVM.setShowNavigationBar(true)
                             }
                         }
                     }
-
-
 
 
                     Box(
@@ -150,7 +168,6 @@ class MainActivity : ComponentActivity() {
                                     exit = shrinkVertically(),
                                     enter = expandVertically()
                                 ) {
-
 
                                     BottomNavigationBar(
                                         navController = navController,
@@ -192,8 +209,14 @@ class MainActivity : ComponentActivity() {
 
                                             if (showNavigationBar || bottomSheetState.isExpanded) {
                                                 Player(
-                                                    activityMainVM,
-                                                    bottomSheetState
+                                                    activityMainVM = activityMainVM,
+                                                    bottomSheetState = bottomSheetState,
+                                                    onGoToPage = {
+                                                        scope.launch {
+                                                            bottomSheetState.collapse()
+                                                        }
+                                                        navController.navigate(it)
+                                                    }
                                                 )
                                             }
                                         }
@@ -206,14 +229,14 @@ class MainActivity : ComponentActivity() {
 
                                 NavHost(
                                     navController = navController,
-                                    startDestination = "homeScreen",
+                                    startDestination = "HomeScreen",
                                     modifier = Modifier
                                         .background(surfaceColor)
                                         .padding(bottomSheetPadding)
                                 ) {
 
 
-                                    composable("homeScreen") {
+                                    composable("HomeScreen") {
                                         HomeScreen(
                                             activityMainVM = activityMainVM,
                                             openPage = { page -> navController.navigate(page) }
@@ -234,8 +257,13 @@ class MainActivity : ComponentActivity() {
                                     composable("playlistsScreen") {
                                         PlaylistsScreen(
                                             activityMainVM = activityMainVM,
-                                            onGenrePlaylistClick = { navController.navigate("genrePlaylistScreen") },
-                                            onPlaylistClick = { navController.navigate("PlaylistScreen") }
+                                            onGenrePlaylistClick = { playlistID ->
+                                                navController.navigate("GenrePlaylistScreen/$playlistID")
+                                            },
+                                            onPlaylistClick = { playlistID ->
+                                                activityMainVM.loadPlaylistScreen(playlistID)
+                                                navController.navigate("PlaylistScreen/$playlistID")
+                                            }
                                         )
                                     }
                                     composable(
@@ -276,17 +304,31 @@ class MainActivity : ComponentActivity() {
                                             onBackClicked = { navController.navigateUp() }
                                         )
                                     }
-                                    composable("genrePlaylistScreen") {
+                                    composable("GenrePlaylistScreen/{genreID}") {
+                                        val genreID = it.arguments!!.getString("genreID")
                                         GenrePlaylistScreen(
                                             activityMainVM = activityMainVM,
+                                            genreID = genreID!!,
                                             onBackClicked = { navController.navigateUp() }
                                         )
                                     }
 
-                                    composable("playlistScreen") {
+                                    composable("PlaylistScreen/{playlistID}") {
+
                                         PlaylistScreen(
                                             activityMainVM = activityMainVM,
-                                            onBackClicked = { navController.navigateUp() }
+                                            arguments = it.arguments!!,
+                                            onBackClick = { navController.navigateUp() },
+                                            onGetImage = {
+                                                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                                                    addCategory(Intent.CATEGORY_OPENABLE)
+                                                    type = "image/*"
+                                                    addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+                                                    addFlags(FLAG_GRANT_READ_URI_PERMISSION)
+                                                }
+
+                                                startActivityForResult(intent, 1)
+                                            }
                                         )
                                     }
                                     composable(
@@ -346,12 +388,23 @@ class MainActivity : ComponentActivity() {
                                     composable("Settings") {
                                         SettingsScreen(
                                             activityMainVM = activityMainVM,
-                                            onBackPressed = { navController.navigateUp() }
+                                            onBackPressed = { navController.navigateUp() },
+                                            onOpenScreen = { navController.navigate(it) }
                                         )
                                     }
 
                                     composable("About") {
                                         AboutScreen(
+                                            activityMainVM = activityMainVM,
+                                            onBackClick = { navController.navigateUp() }
+                                        )
+                                    }
+                                    composable("ThemesScreen") {
+
+                                        activityMainVM.resetThemesScreen()
+
+                                        ThemesScreen(
+                                            activityMainVM = activityMainVM,
                                             onBackClick = { navController.navigateUp() }
                                         )
                                     }
@@ -385,6 +438,29 @@ class MainActivity : ComponentActivity() {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(mChannel)
     }
+
+    @Deprecated("Deprecated in Java", ReplaceWith("super.onActivityResult(requestCode, resultCode, data)", "androidx.activity.ComponentActivity"))
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        if (resultCode == Activity.RESULT_OK && requestCode == 1) {
+
+            try {
+
+                val uri = data!!.data!!
+                contentResolver.takePersistableUriPermission(uri, FLAG_GRANT_READ_URI_PERMISSION)
+
+                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+                val baos = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+                val bitmapBytes = baos.toByteArray()
+                val bitmapString = Base64.encodeToString(bitmapBytes, Base64.DEFAULT)
+
+                activityMainVM.onPlaylistImageSelected(bitmapString)
+            } catch (_: Exception) {
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 }
 
 
@@ -395,7 +471,7 @@ fun getNavigationItems(context: Context): ArrayList<BottomNavItem> {
     itemsList.add(
         BottomNavItem(
             name = "Home",
-            route = "homeScreen",
+            route = "HomeScreen",
             activeIcon = BitmapFactory.decodeResource(context.resources, R.drawable.icon_home_solid).asImageBitmap(),
             inactiveIcon = BitmapFactory.decodeResource(context.resources, R.drawable.icon_home_regular).asImageBitmap()
         )

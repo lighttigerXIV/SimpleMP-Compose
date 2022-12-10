@@ -4,5 +4,5 @@ import android.graphics.Bitmap
 
 data class SongArt(
     val albumID: Long,
-    val albumArt: Bitmap
+    val albumArt: Bitmap?
 )

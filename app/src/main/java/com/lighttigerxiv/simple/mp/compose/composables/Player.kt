@@ -1,6 +1,7 @@
 package com.lighttigerxiv.simple.mp.compose.composables
 
 import android.content.res.Configuration
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
@@ -18,8 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -28,6 +31,8 @@ import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.lighttigerxiv.simple.mp.compose.R
+import com.lighttigerxiv.simple.mp.compose.getAppString
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import kotlinx.coroutines.launch
 
@@ -35,24 +40,36 @@ import kotlinx.coroutines.launch
 @Composable
 fun Player(
     activityMainVM: ActivityMainVM,
-    bottomSheetState: BottomSheetState
+    bottomSheetState: BottomSheetState,
+    onGoToPage: (page: String) -> Unit
 ) {
 
+    val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val songTitle = activityMainVM.selectedSongTitle.observeAsState().value
     val songArtistName = activityMainVM.selectedSongArtistName.observeAsState().value
     val songAlbumArt = activityMainVM.selectedSongAlbumArt.observeAsState().value
     val songDuration = activityMainVM.selectedSongDuration.observeAsState().value
-    val currentMediaPlayerPosition = activityMainVM.currentMediaPlayerPosition.observeAsState().value
+    val currentMediaPlayerPosition = activityMainVM.currentMediaPlayerPosition.collectAsState().value
     val songMinutesAndSeconds = activityMainVM.selectedSongMinutesAndSeconds.observeAsState().value
     val songCurrentMinutesAndSeconds = activityMainVM.selectedSongCurrentMinutesAndSeconds.observeAsState().value
-    val currentPlayerIcon = activityMainVM.currentPlayerIcon.observeAsState().value
-    val isMusicShuffled = activityMainVM.isMusicShuffled.observeAsState().value
-    val isMusicOnRepeat = activityMainVM.isMusicOnRepeat.observeAsState().value
+    val menuOpened = remember{ mutableStateOf(false)}
+
     val queueListState = rememberLazyListState()
     val songsPagerState = rememberPagerState()
 
-    val context = LocalContext.current
+    //------ Playback States --------------//
+    val isMusicPlaying = activityMainVM.isMusicPlaying.collectAsState().value
+    val isMusicShuffled = activityMainVM.isMusicShuffled.collectAsState().value
+    val isMusicOnRepeat = activityMainVM.isMusicOnRepeat.collectAsState().value
+
+
+    val currentPlayerIcon = remember{ mutableStateOf(if (isMusicPlaying)
+        R.drawable.icon_pause_round_solid
+    else
+        R.drawable.icon_play_round_solid) }
+
+
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
 
@@ -61,7 +78,7 @@ fun Player(
 
     val queueList = activityMainVM.queueList.observeAsState().value!!
     val upNextQueueList = activityMainVM.upNextQueueList.observeAsState().value!!
-    val sliderValue = remember { mutableStateOf(currentMediaPlayerPosition!! / 1000.toFloat()) }
+    val sliderValue = remember { mutableStateOf(currentMediaPlayerPosition / 1000.toFloat()) }
     val currentMinutesAndSecondsValue = remember { mutableStateOf(songCurrentMinutesAndSeconds) }
 
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -73,10 +90,16 @@ fun Player(
         else -> true
     }
 
+    LaunchedEffect(isMusicPlaying) {
+        currentPlayerIcon.value =
+            if (isMusicPlaying)
+                R.drawable.icon_pause_round_solid
+            else
+                R.drawable.icon_play_round_solid
+    }
+
     LaunchedEffect(queueList) {
-
         try {
-
             if (activityMainVM.getCurrentSongPosition() != -1) {
                 songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition())
 
@@ -86,7 +109,6 @@ fun Player(
     }
 
     LaunchedEffect(activityMainVM.selectedSong.observeAsState().value) {
-
         scope.launch {
             if (activityMainVM.getCurrentSongPosition() > -1)
                 songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition())
@@ -108,11 +130,11 @@ fun Player(
     }
 
     val shuffleColor =
-        if (isMusicShuffled!!) primaryColor
+        if (isMusicShuffled) primaryColor
         else iconsColor
 
     val repeatColor =
-        if (isMusicOnRepeat!!) primaryColor
+        if (isMusicOnRepeat) primaryColor
         else iconsColor
 
 
@@ -168,7 +190,7 @@ fun Player(
                         }
 
                         Tab(
-                            text = { Text("Song", fontSize = 16.sp) },
+                            text = { Text(remember { getAppString(context, R.string.Song) }, fontSize = 16.sp) },
                             selected = pagerState.currentPage == 0,
                             selectedContentColor = MaterialTheme.colorScheme.primary,
                             unselectedContentColor = MaterialTheme.colorScheme.onSurface,
@@ -180,7 +202,7 @@ fun Player(
                                 .background(songsColor)
                         )
                         Tab(
-                            text = { Text("Queue List", fontSize = 16.sp) },
+                            text = { Text(remember { getAppString(context, R.string.QueueList) }, fontSize = 16.sp) },
                             selectedContentColor = MaterialTheme.colorScheme.primary,
                             unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                             selected = pagerState.currentPage == 1,
@@ -203,7 +225,7 @@ fun Player(
 
                             0 -> {
 
-                                if (songAlbumArt != null) {
+                                if (activityMainVM.selectedSong.value != null) {
                                     Row(
                                         modifier = Modifier.fillMaxSize()
                                     ) {
@@ -211,7 +233,6 @@ fun Player(
                                         Column(
                                             modifier = Modifier.fillMaxWidth(0.3f)
                                         ) {
-
 
                                             HorizontalPager(
                                                 state = songsPagerState,
@@ -223,11 +244,12 @@ fun Player(
                                             ) { currentPage ->
 
                                                 val pagerSong = queueList[currentPage]
-                                                val pagerAlbumArt = activityMainVM.songsImagesList.find { it.albumID == pagerSong.albumID }!!.albumArt
+                                                val pagerAlbumArt = activityMainVM.songsImagesList.find { it.albumID == pagerSong.albumID }?.albumArt
 
 
                                                 AsyncImage(
-                                                    model = pagerAlbumArt,
+                                                    model = pagerAlbumArt ?: remember{BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record)},
+                                                    colorFilter = if(pagerAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                                                     contentDescription = "",
                                                     modifier = Modifier
                                                         .fillMaxHeight()
@@ -237,27 +259,85 @@ fun Player(
                                             }
                                         }
                                         Column(
-                                            modifier = Modifier.fillMaxWidth()
+                                            modifier = Modifier
+                                                .fillMaxWidth(),
+                                            verticalArrangement = Arrangement.Center
                                         ) {
-                                            Text(
-                                                text = songTitle!!,
-                                                fontSize = 18.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
-                                                color = MaterialTheme.colorScheme.primary,
+
+                                            Row(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
-                                            )
-                                            Text(
-                                                text = songArtistName!!,
-                                                fontSize = 18.sp,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                            )
+                                                    .weight(1f, fill = true)
+                                            ) {
+
+                                                Column(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .weight(1f, fill = true)
+                                                ) {
+
+                                                    Text(
+                                                        text = songTitle!!,
+                                                        fontSize = 18.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                        color = MaterialTheme.colorScheme.primary,
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                    )
+                                                    Text(
+                                                        text = songArtistName!!,
+                                                        fontSize = 18.sp,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                    )
+                                                }
+
+                                                Column(
+                                                    verticalArrangement = Arrangement.Center
+                                                ) {
+
+                                                    Icon(
+                                                        modifier = Modifier
+                                                            .height(20.dp)
+                                                            .aspectRatio(1f)
+                                                            .clickable {
+                                                                menuOpened.value = true
+                                                            },
+                                                        painter = painterResource(id = R.drawable.icon_three_dots_solid),
+                                                        contentDescription = null,
+                                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                                    )
+
+                                                    DropdownMenu(
+                                                        modifier = Modifier
+                                                            .background(MaterialTheme.colorScheme.surface),
+                                                        expanded = menuOpened.value,
+                                                        onDismissRequest = {menuOpened.value = false},
+                                                    ) {
+
+                                                        DropdownMenuItem(
+                                                            text = { Text(text = remember { getAppString(context, R.string.GoToArtist) }) },
+                                                            onClick = {onGoToPage("floatingArtistScreen?artistID=${activityMainVM.selectedSong.value!!.artistID}")}
+                                                        )
+
+                                                        DropdownMenuItem(
+                                                            text = { Text(text = remember { getAppString(context, R.string.GoToAlbum) }) },
+                                                            onClick = {onGoToPage("floatingArtistAlbumScreen?albumID=${activityMainVM.selectedSong.value!!.albumID}")}
+                                                        )
+
+                                                        DropdownMenuItem(
+                                                            text = { Text(text = remember { getAppString(context, R.string.AddToPlaylist) }) },
+                                                            onClick = {onGoToPage("addToPlaylistScreen?songID=${activityMainVM.selectedSong.value!!.id}")}
+                                                        )
+                                                    }
+                                                }
+                                            }
+
                                             Slider(
                                                 value = sliderValue.value,
                                                 onValueChange = {
@@ -290,9 +370,11 @@ fun Player(
                                                     text = currentMinutesAndSecondsValue.value!!,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
-                                                Spacer(modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .weight(1f, fill = true))
+                                                Spacer(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .weight(1f, fill = true)
+                                                )
                                                 Text(
                                                     text = songMinutesAndSeconds!!,
                                                     color = MaterialTheme.colorScheme.onSurface
@@ -315,10 +397,10 @@ fun Player(
                                                     if (isMusicShuffled) {
                                                         Spacer(modifier = Modifier.height(5.dp)) //Needed to keep shuffle button in place when shuffle is enabled
                                                     }
-                                                    Image(
-                                                        bitmap = remember { activityMainVM.shuffleIcon },
+                                                    Icon(
+                                                        painter = painterResource(id = R.drawable.icon_shuffle_solid),
                                                         contentDescription = "",
-                                                        colorFilter = ColorFilter.tint(shuffleColor),
+                                                        tint = shuffleColor,
                                                         modifier = Modifier
                                                             .height(30.dp)
                                                             .clickable(
@@ -333,10 +415,10 @@ fun Player(
                                                     }
                                                 }
 
-                                                Image(
-                                                    bitmap = remember { activityMainVM.previousIcon },
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.icon_previous_solid),
                                                     contentDescription = "",
-                                                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                                                    tint = MaterialTheme.colorScheme.onSurface,
                                                     modifier = Modifier
                                                         .height(30.dp)
                                                         .clickable(
@@ -347,21 +429,22 @@ fun Player(
                                                             scope.launch { songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition()) }
                                                         }
                                                 )
-                                                Image(
-                                                    bitmap = currentPlayerIcon!!,
+                                                Icon(
+                                                    painter = painterResource(id = currentPlayerIcon.value),
                                                     contentDescription = "",
-                                                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                                     modifier = Modifier
                                                         .height(60.dp)
+                                                        .aspectRatio(1f)
                                                         .clickable(
                                                             indication = null,
                                                             interactionSource = remember { MutableInteractionSource() }
                                                         ) { activityMainVM.pauseResumeMusic() }
                                                 )
-                                                Image(
-                                                    bitmap = remember { activityMainVM.nextIcon },
-                                                    contentDescription = "",
-                                                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.icon_next_solid),
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.onSurface,
                                                     modifier = Modifier
                                                         .height(30.dp)
                                                         .clickable(
@@ -381,10 +464,10 @@ fun Player(
                                                     if (isMusicOnRepeat) {
                                                         Spacer(modifier = Modifier.height(5.dp)) //Needed to keep repeat button in place when repeat is enabled
                                                     }
-                                                    Image(
-                                                        bitmap = remember { activityMainVM.repeatIcon },
+                                                    Icon(
+                                                        painter = painterResource(id = R.drawable.icon_repeat_solid),
                                                         contentDescription = "",
-                                                        colorFilter = ColorFilter.tint(repeatColor),
+                                                        tint = repeatColor,
                                                         modifier = Modifier
                                                             .height(30.dp)
                                                             .clickable(
@@ -406,6 +489,7 @@ fun Player(
                                 LazyColumn(
                                     state = queueListState,
                                     modifier = Modifier.fillMaxSize(),
+                                    verticalArrangement = Arrangement.spacedBy(5.dp),
                                     content = {
 
                                         items(
@@ -415,7 +499,7 @@ fun Player(
 
                                             SongItem(
                                                 song = song,
-                                                songAlbumArt = remember { activityMainVM.compressedImagesList.find { it.albumID == song.albumID }!!.albumArt },
+                                                songAlbumArt = remember { activityMainVM.compressedImagesList.find { it.albumID == song.albumID }?.albumArt },
                                                 highlight = activityMainVM.selectedSongPath.value!! == song.path
                                             )
                                         }
@@ -426,6 +510,7 @@ fun Player(
                 }
             }
 
+            //Device in portrait
             else -> {
                 Column(
                     modifier = Modifier.height(screenHeight)
@@ -468,7 +553,7 @@ fun Player(
                         }
 
                         Tab(
-                            text = { Text("Song", fontSize = 16.sp) },
+                            text = { Text(remember { getAppString(context, R.string.Song) }, fontSize = 16.sp) },
                             selected = pagerState.currentPage == 0,
                             selectedContentColor = MaterialTheme.colorScheme.primary,
                             unselectedContentColor = MaterialTheme.colorScheme.onSurface,
@@ -480,7 +565,7 @@ fun Player(
                                 .background(songsColor)
                         )
                         Tab(
-                            text = { Text("Queue List", fontSize = 16.sp) },
+                            text = { Text(remember { getAppString(context, R.string.QueueList) }, fontSize = 16.sp) },
                             selectedContentColor = MaterialTheme.colorScheme.primary,
                             unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                             selected = pagerState.currentPage == 1,
@@ -504,7 +589,7 @@ fun Player(
 
                                 Column {
 
-                                    if (songAlbumArt != null) {
+                                    if (activityMainVM.selectedSong.value != null) {
 
                                         HorizontalPager(
                                             state = songsPagerState,
@@ -516,12 +601,14 @@ fun Player(
                                         ) { currentPage ->
 
                                             val pagerSong = queueList[currentPage]
-                                            val pagerAlbumArt = activityMainVM.songsImagesList.find { it.albumID == pagerSong.albumID }!!.albumArt
+                                            val pagerAlbumArt = activityMainVM.songsImagesList.find { it.albumID == pagerSong.albumID }?.albumArt
 
 
                                             AsyncImage(
-                                                model = pagerAlbumArt,
+                                                model = pagerAlbumArt ?: remember{BitmapFactory.decodeResource(context.resources,R.drawable.icon_music_record)},
                                                 contentDescription = "",
+                                                colorFilter = if(pagerAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                                                contentScale = ContentScale.Crop,
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .aspectRatio(1f)
@@ -530,25 +617,84 @@ fun Player(
                                         }
 
                                         Spacer(modifier = Modifier.height(10.dp))
-                                        Text(
-                                            text = songTitle!!,
-                                            fontSize = 18.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                            color = MaterialTheme.colorScheme.primary,
+
+                                        Row(
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                        )
-                                        Text(
-                                            text = songArtistName!!,
-                                            fontSize = 18.sp,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                        )
+                                                .fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+
+                                            Column(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .weight(1f, fill = true),
+                                                verticalArrangement = Arrangement.Top
+                                            ) {
+
+                                                Text(
+                                                    text = songTitle!!,
+                                                    fontSize = 18.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    color = MaterialTheme.colorScheme.primary,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                )
+                                                Text(
+                                                    text = songArtistName!!,
+                                                    fontSize = 18.sp,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.width(5.dp))
+
+                                            Column(
+                                                verticalArrangement = Arrangement.Center
+                                            ) {
+
+                                                Icon(
+                                                    modifier = Modifier
+                                                        .height(20.dp)
+                                                        .aspectRatio(1f)
+                                                        .clickable {
+                                                            menuOpened.value = true
+                                                        },
+                                                    painter = painterResource(id = R.drawable.icon_three_dots_solid),
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+
+                                                DropdownMenu(
+                                                    modifier = Modifier
+                                                        .background(MaterialTheme.colorScheme.surface),
+                                                    expanded = menuOpened.value,
+                                                    onDismissRequest = {menuOpened.value = false},
+                                                ) {
+
+                                                    DropdownMenuItem(
+                                                        text = { Text(text = remember { getAppString(context, R.string.GoToArtist) }) },
+                                                        onClick = {onGoToPage("floatingArtistScreen?artistID=${activityMainVM.selectedSong.value!!.artistID}")}
+                                                    )
+
+                                                    DropdownMenuItem(
+                                                        text = { Text(text = remember { getAppString(context, R.string.GoToAlbum) }) },
+                                                        onClick = {onGoToPage("floatingArtistAlbumScreen?albumID=${activityMainVM.selectedSong.value!!.albumID}")}
+                                                    )
+
+                                                    DropdownMenuItem(
+                                                        text = { Text(text = remember { getAppString(context, R.string.AddToPlaylist) }) },
+                                                        onClick = {onGoToPage("addToPlaylistScreen?songID=${activityMainVM.selectedSong.value!!.id}")}
+                                                    )
+                                                }
+                                            }
+                                        }
+
                                         Spacer(modifier = Modifier.height(10.dp))
 
                                         Slider(
@@ -573,9 +719,8 @@ fun Player(
                                             )
                                         )
 
-
-
                                         Spacer(modifier = Modifier.height(5.dp))
+
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -586,19 +731,17 @@ fun Player(
                                                 text = currentMinutesAndSecondsValue.value!!,
                                                 color = MaterialTheme.colorScheme.onSurface
                                             )
-                                            Spacer(modifier = Modifier
-                                                .fillMaxWidth()
-                                                .weight(1f))
+                                            Spacer(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .weight(1f)
+                                            )
                                             Text(
                                                 text = songMinutesAndSeconds!!,
                                                 color = MaterialTheme.colorScheme.onSurface
                                             )
                                         }
 
-
-
-
-                                        Spacer(modifier = Modifier.height(20.dp))
                                         Row(
                                             modifier = Modifier
                                                 .wrapContentHeight()
@@ -615,10 +758,10 @@ fun Player(
                                                 if (isMusicShuffled) {
                                                     Spacer(modifier = Modifier.height(5.dp)) //Needed to keep shuffle button in place when shuffle is enabled
                                                 }
-                                                Image(
-                                                    bitmap = remember { activityMainVM.shuffleIcon },
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.icon_shuffle_solid),
                                                     contentDescription = "",
-                                                    colorFilter = ColorFilter.tint(shuffleColor),
+                                                    tint = shuffleColor,
                                                     modifier = Modifier
                                                         .height(30.dp)
                                                         .clickable(
@@ -633,10 +776,10 @@ fun Player(
                                                 }
                                             }
 
-                                            Image(
-                                                bitmap = remember { activityMainVM.previousIcon },
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.icon_previous_solid),
                                                 contentDescription = "",
-                                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                                                tint = MaterialTheme.colorScheme.onSurface,
                                                 modifier = Modifier
                                                     .height(30.dp)
                                                     .clickable(
@@ -647,21 +790,22 @@ fun Player(
                                                         scope.launch { songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition()) }
                                                     }
                                             )
-                                            Image(
-                                                bitmap = currentPlayerIcon!!,
+                                            Icon(
+                                                painter = painterResource(id = currentPlayerIcon.value),
                                                 contentDescription = "",
-                                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                                                tint = MaterialTheme.colorScheme.onSurface,
                                                 modifier = Modifier
                                                     .height(60.dp)
+                                                    .aspectRatio(1f)
                                                     .clickable(
                                                         indication = null,
                                                         interactionSource = remember { MutableInteractionSource() }
                                                     ) { activityMainVM.pauseResumeMusic() }
                                             )
-                                            Image(
-                                                bitmap = remember { activityMainVM.nextIcon },
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.icon_next_solid),
                                                 contentDescription = "",
-                                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                                                tint = MaterialTheme.colorScheme.onSurface,
                                                 modifier = Modifier
                                                     .height(30.dp)
                                                     .clickable(
@@ -681,10 +825,10 @@ fun Player(
                                                 if (isMusicOnRepeat) {
                                                     Spacer(modifier = Modifier.height(5.dp)) //Needed to keep repeat button in place when repeat is enabled
                                                 }
-                                                Image(
-                                                    bitmap = remember { activityMainVM.repeatIcon },
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.icon_repeat_solid),
                                                     contentDescription = "",
-                                                    colorFilter = ColorFilter.tint(repeatColor),
+                                                    tint = repeatColor,
                                                     modifier = Modifier
                                                         .height(30.dp)
                                                         .clickable(
@@ -705,6 +849,7 @@ fun Player(
                                 LazyColumn(
                                     state = queueListState,
                                     modifier = Modifier.fillMaxSize(),
+                                    verticalArrangement = Arrangement.spacedBy(5.dp),
                                     content = {
 
                                         items(

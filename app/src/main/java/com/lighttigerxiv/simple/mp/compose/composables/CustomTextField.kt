@@ -105,7 +105,7 @@ fun CustomTextField(
                     text = placeholder,
                     color = contentColor,
                     textAlign = TextAlign.Center,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     modifier = Modifier
                         .fillMaxWidth()
                 )
@@ -129,7 +129,7 @@ fun CustomTextField(
                 textStyle = TextStyle.Default.copy(
                     color = contentColor,
                     textAlign = TextAlign.Center,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                 ),
                 cursorBrush = Brush.verticalGradient(
                     0.00f to MaterialTheme.colorScheme.primary,
@@ -175,8 +175,11 @@ fun CustomTextField(
                 tint = contentColor
             )
         }
+        if(!showClearIcon.value && text.isNotEmpty() && sideIcon != null){
+            Spacer(modifier = Modifier.width(20.dp))
+        }
         if(sideIcon != null && text.isEmpty()){
-            Spacer(modifier = Modifier.width(25.dp))
+            Spacer(modifier = Modifier.width(20.dp))
         }
     }
 }

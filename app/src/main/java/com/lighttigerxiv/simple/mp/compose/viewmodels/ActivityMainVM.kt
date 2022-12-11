@@ -13,7 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
-import androidx.preference.PreferenceManager
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.data.AppDatabase
 import com.lighttigerxiv.simple.mp.compose.data.Playlist
@@ -112,7 +113,7 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     val currentAlbumsList = MutableLiveData(recentHomeSongsList)
 
 
-    private val _playlists: MutableStateFlow<List<Playlist>> = MutableStateFlow(playlistDao.getAllPlaylists())
+    private val _playlists: MutableStateFlow<List<Playlist>> = MutableStateFlow(getAllPlaylists())
     val playlists = _playlists.asStateFlow()
     val playlistSongs = MutableLiveData(ArrayList<Song>())
     val currentPlaylistSongs = MutableLiveData(ArrayList<Song>())
@@ -151,8 +152,28 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     fun updatePlaylistImage(bitmapString: String, playlistID: Int){
 
         playlistDao.updatePlaylistImage(bitmapString.ifEmpty { null }, playlistID)
-        _playlists.value = playlistDao.getAllPlaylists()
+        _playlists.value = getAllPlaylists()
         filterPlaylistsPLSS()
+    }
+
+    private fun getAllPlaylists(): List<Playlist>{
+
+        playlistDao.getAllPlaylists().forEach { playlist->
+
+            val newSongs = ArrayList<Song>()
+
+            val type = object : TypeToken<List<Song>>(){}.type
+            val songs = Gson().fromJson<List<Song>>(playlist.songs, type )
+
+            songs.forEach { song->
+
+                if(songsList.contains(song)) newSongs.add(song)
+            }
+
+            playlistDao.updatePlaylistSongs( Gson().toJson(newSongs), playlist.id )
+        }
+
+        return playlistDao.getAllPlaylists()
     }
 
     //Callbacks
@@ -485,7 +506,7 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
             Playlist(name = name)
         )
 
-        _playlists.value = playlistDao.getAllPlaylists()
+        _playlists.value = getAllPlaylists()
         _currentPlaylistsPLSS.value = _playlists.value
     }
 
@@ -493,7 +514,7 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     fun deletePlaylist(playlistID: Int) {
 
         playlistDao.deletePlaylist(playlistID = playlistID)
-        _playlists.value = playlistDao.getAllPlaylists()
+        _playlists.value = getAllPlaylists()
         _currentPlaylistsPLSS.value = _playlists.value
     }
 
@@ -504,7 +525,7 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
             playlistID = playlistID
         )
 
-        _playlists.value = playlistDao.getAllPlaylists()
+        _playlists.value = getAllPlaylists()
     }
 
 
@@ -515,7 +536,7 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
             playlistID = playlistID
         )
 
-        _playlists.value = playlistDao.getAllPlaylists()
+        _playlists.value = getAllPlaylists()
         filterPlaylistsPLSS()
     }
 
@@ -562,8 +583,6 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     val filterAudioSetting = _filterAudioSetting.asStateFlow()
     private val _themeAccentSetting = MutableStateFlow(preferences.getString("ThemeAccent", "Default"))
     val themeAccentSetting = _themeAccentSetting.asStateFlow()
-    private val _languageSetting = MutableStateFlow(preferences.getString("Language", "System"))
-    val languageSetting = _languageSetting.asStateFlow()
 
     private val _surfaceColor = MutableStateFlow(Color(0xff000000))
     val surfaceColor = _surfaceColor.asStateFlow()
@@ -576,7 +595,6 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     val selectedDarkModeDialog = MutableLiveData(darkModeSetting.value)
     val etFilterAudioDialog = MutableLiveData(filterAudioSetting.value)
     val selectedThemeAccentDialog = MutableLiveData(themeAccentSetting.value)
-    val selectedLanguageInDialog = MutableLiveData(languageSetting.value)
 
 
     fun setThemeMode(){
@@ -606,28 +624,7 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
         _themeAccentSetting.value = theme
     }
 
-    fun setLanguage(language: String){
-        preferences.edit().putString("Language", language).apply()
-        _languageSetting.value = selectedLanguageInDialog.value
-    }
 
-    //------------------- Themes Screen ------------------------------
-    private val _showCommonThemesInThemesScreen = MutableStateFlow(true)
-    val showCommonThemesInThemesScreen = _showCommonThemesInThemesScreen.asStateFlow()
-    fun toggleShowCommonThemeInThemesScreen(){
-        _showCommonThemesInThemesScreen.value = !_showCommonThemesInThemesScreen.value
-    }
-
-    private val _showCatppuccinThemesInThemesScreen = MutableStateFlow(true)
-    val showCatppuccinThemesInThemesScreen = _showCatppuccinThemesInThemesScreen.asStateFlow()
-    fun toggleShowCatppuccinThemeInThemesScreen(){
-        _showCatppuccinThemesInThemesScreen.value = !_showCatppuccinThemesInThemesScreen.value
-    }
-
-    fun resetThemesScreen(){
-        _showCommonThemesInThemesScreen.value = true
-        _showCatppuccinThemesInThemesScreen.value = true
-    }
 
     //------------------------- Playlists Screen -------------------------
 

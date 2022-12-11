@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Base64
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
@@ -41,6 +42,7 @@ import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.composables.MiniPlayer
 import com.lighttigerxiv.simple.mp.compose.composables.Player
+import com.lighttigerxiv.simple.mp.compose.getAppString
 import com.lighttigerxiv.simple.mp.compose.navigation.BottomNavItem
 import com.lighttigerxiv.simple.mp.compose.navigation.BottomNavigationBar
 import com.lighttigerxiv.simple.mp.compose.navigation.screens.*
@@ -401,8 +403,6 @@ class MainActivity : ComponentActivity() {
                                     }
                                     composable("ThemesScreen") {
 
-                                        activityMainVM.resetThemesScreen()
-
                                         ThemesScreen(
                                             activityMainVM = activityMainVM,
                                             onBackClick = { navController.navigateUp() }
@@ -453,9 +453,15 @@ class MainActivity : ComponentActivity() {
                 val baos = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
                 val bitmapBytes = baos.toByteArray()
-                val bitmapString = Base64.encodeToString(bitmapBytes, Base64.DEFAULT)
 
-                activityMainVM.onPlaylistImageSelected(bitmapString)
+                if (bitmapBytes.size > 1048576) {
+                    Toast.makeText(applicationContext, getAppString(applicationContext, R.string.ImageTooBig), Toast.LENGTH_LONG).show()
+                } else {
+                    val bitmapString = Base64.encodeToString(bitmapBytes, Base64.DEFAULT)
+                    activityMainVM.onPlaylistImageSelected(bitmapString)
+                }
+
+
             } catch (_: Exception) {
             }
         }

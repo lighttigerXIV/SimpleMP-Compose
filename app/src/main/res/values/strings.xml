@@ -82,4 +82,5 @@
     <string name="Back">Back</string>
     <string name="Accents">Accents</string>
     <string name="Finish">Finish</string>
+    <string name="ImageTooBig">Image is too big. Consider compressing the image</string>
 </resources>

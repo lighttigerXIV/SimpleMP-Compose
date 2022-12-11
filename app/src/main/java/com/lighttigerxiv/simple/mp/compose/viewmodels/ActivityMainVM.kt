@@ -138,8 +138,8 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     var isOnEditModePlaylistScreen = MutableLiveData(false)
     private val _currentPlaylistImageString = MutableStateFlow("")
     val currentPlaylistImageString = _currentPlaylistImageString.asStateFlow()
-    fun setCurrentPlaylistImageString(value: String){
-        _currentPlaylistImageString.value = value
+    fun setCurrentPlaylistImageString(value: String?){
+        _currentPlaylistImageString.value = value ?: ""
     }
 
     fun loadPlaylistScreen(playlistID: Int) {
@@ -147,11 +147,11 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
         _currentPlaylistImageString.value = playlists.value.find { it.id == playlistID }!!.image ?: ""
     }
 
-    var onPlaylistImageSelected: (bitmapString: String) -> Unit = {}
+    var onPlaylistImageSelected: (bitmapString: String?) -> Unit = {}
 
-    fun updatePlaylistImage(bitmapString: String, playlistID: Int){
+    fun updatePlaylistImage(bitmapString: String?, playlistID: Int){
 
-        playlistDao.updatePlaylistImage(bitmapString.ifEmpty { null }, playlistID)
+        playlistDao.updatePlaylistImage(bitmapString, playlistID)
         _playlists.value = getAllPlaylists()
         filterPlaylistsPLSS()
     }
@@ -162,15 +162,17 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
 
             val newSongs = ArrayList<Song>()
 
-            val type = object : TypeToken<List<Song>>(){}.type
-            val songs = Gson().fromJson<List<Song>>(playlist.songs, type )
+            if(playlist.songs != null){
+                val type = object : TypeToken<List<Song>>(){}.type
+                val songs = Gson().fromJson<List<Song>>(playlist.songs, type )
 
-            songs.forEach { song->
+                songs.forEach { song->
 
-                if(songsList.contains(song)) newSongs.add(song)
+                    if(songsList.contains(song)) newSongs.add(song)
+                }
+
+                playlistDao.updatePlaylistSongs( Gson().toJson(newSongs), playlist.id )
             }
-
-            playlistDao.updatePlaylistSongs( Gson().toJson(newSongs), playlist.id )
         }
 
         return playlistDao.getAllPlaylists()

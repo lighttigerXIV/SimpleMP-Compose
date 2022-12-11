@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.lighttigerxiv.simple.mp.compose",
+  "applicationId": "com.lighttigerxiv.simple.mp",
   "variantName": "release",
   "elements": [
     {

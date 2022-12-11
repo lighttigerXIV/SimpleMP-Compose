@@ -74,4 +74,5 @@
     <string name="Back">Voltar</string>
     <string name="Accents">Cor De Realce</string>
     <string name="Finish">Completar</string>
+    <string name="ImageTooBig">Imagem muito grande. Considere comprimir a imagem</string>
 </resources>

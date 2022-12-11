@@ -6,8 +6,8 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,17 +15,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.BuildConfig
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
-import com.lighttigerxiv.simple.mp.compose.composables.BasicToolbar
+import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.CustomText
+import com.lighttigerxiv.simple.mp.compose.getAppString
+import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 
 @Composable
 fun AboutScreen(
+    activityMainVM: ActivityMainVM,
     onBackClick:() -> Unit,
 ){
 
@@ -34,12 +35,12 @@ fun AboutScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(activityMainVM.surfaceColor.collectAsState().value)
             .padding(SCREEN_PADDING)
     ) {
 
-        BasicToolbar(
-            backText = "Home",
+        CustomToolbar(
+            backText = remember { getAppString(context, R.string.Home) },
             onBackClick = {onBackClick()}
         )
 
@@ -55,7 +56,7 @@ fun AboutScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             CustomText(
-                text = "App Version",
+                text = remember { getAppString(context, R.string.AppVersion) },
                 weight = FontWeight.Bold
             )
 
@@ -66,7 +67,7 @@ fun AboutScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             CustomText(
-                text = "App Source",
+                text = remember { getAppString(context, R.string.AppSource) },
                 weight = FontWeight.Bold
             )
 
@@ -107,7 +108,7 @@ fun AboutScreen(
                     )
 
                     CustomText(
-                        text = "Get the project source on GitHub",
+                        text = remember { getAppString(context, R.string.GetAppSourceOnGitHub) },
                     )
                 }
             }
@@ -149,7 +150,7 @@ fun AboutScreen(
                     )
 
                     CustomText(
-                        text = "Get the project source on GitLab",
+                        text = remember { getAppString(context, R.string.GetAppSourceOnGitLab) },
                     )
                 }
             }

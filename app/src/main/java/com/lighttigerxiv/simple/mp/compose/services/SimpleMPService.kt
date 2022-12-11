@@ -4,6 +4,7 @@ import android.app.*
 import android.appwidget.AppWidgetManager
 import android.content.*
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.*
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.os.Binder
@@ -315,7 +316,7 @@ class SimpleMPService: Service() {
         val songArtist: String
         val songID: Long
         val songAlbumID: Long
-        val songAlbumArt: Bitmap
+        var songAlbumArt: Bitmap?
         val songDuration: Int
 
 
@@ -334,8 +335,12 @@ class SimpleMPService: Service() {
             songArtist = shuffledQueueList[currentSongPosition].artistName
             songID = shuffledQueueList[currentSongPosition].id
             songAlbumID = shuffledQueueList[currentSongPosition].albumID
-            songAlbumArt = GetSongs.getSongAlbumArt(context, songID, songAlbumID)
+            songAlbumArt = GetSongs.getSongAlbumArt(context, songID, songAlbumID)!!
             songDuration = shuffledQueueList[currentSongPosition].duration
+        }
+
+        if(songAlbumArt == null){
+            songAlbumArt = BitmapFactory.decodeResource(context.resources, R.drawable.no_album_art)
         }
 
         currentSong = getCurrentQueueList()[currentSongPosition]

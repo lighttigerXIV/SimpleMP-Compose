@@ -1,26 +1,31 @@
 package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
+import com.lighttigerxiv.simple.mp.compose.R
+import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.Song
-import com.lighttigerxiv.simple.mp.compose.composables.BasicToolbar
+import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
+import com.lighttigerxiv.simple.mp.compose.composables.CustomText
+import com.lighttigerxiv.simple.mp.compose.composables.PlayAndShuffleRow
 import com.lighttigerxiv.simple.mp.compose.composables.SongItem
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
@@ -34,19 +39,23 @@ fun AlbumScreen(
     onBackClicked: () -> Unit
 ){
 
+    val context = LocalContext.current
     val albumID = remember { backStackEntry.arguments?.getLong("albumID") }
     val album = remember { activityMainVM.currentAlbumsList.value!!.find{ it.albumID == albumID }!! }
-    val albumArt = remember { activityMainVM.songsImagesList.find { it.albumID == albumID }!!.albumArt.asImageBitmap() }
-    val albumName = remember { album.albumName }
+    val albumArt = remember { activityMainVM.songsImagesList.find { it.albumID == albumID }!!.albumArt }
+    val albumTitle = remember { album.albumName }
     val albumArtist = remember { album.artistName }
     val albumSongsList = remember { activityMainVM.recentHomeSongsList.filter { it.albumID == albumID } as ArrayList<Song> }
     val nestedScrollViewState = rememberNestedScrollViewState()
 
+
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainVM.surfaceColor.value!!)
-            .padding(14.dp)
+            .background(activityMainVM.surfaceColor.collectAsState().value)
+            .padding(SCREEN_PADDING)
     ){
 
         VerticalNestedScrollView(
@@ -56,13 +65,13 @@ fun AlbumScreen(
                 Column(
                     modifier = Modifier
                         .wrapContentHeight()
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ){
-                    BasicToolbar(backText = "Albums", onBackClick = {onBackClicked()})
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Spacer(modifier = Modifier.height(10.dp) )
+                    CustomToolbar(backText = "Albums", onBackClick = {onBackClicked()})
                     Image(
-                        bitmap = albumArt,
+                        bitmap = (albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record)).asImageBitmap(),
+                        colorFilter = if(albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                         contentDescription = "",
                         modifier = Modifier
                             .fillMaxWidth(0.6f)
@@ -70,57 +79,47 @@ fun AlbumScreen(
                             .aspectRatio(1f)
                             .align(Alignment.CenterHorizontally)
                     )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    CustomText(
+                        text = albumTitle,
+                        weight = FontWeight.Bold,
+                        size = 18.sp
+                    )
+
+                    CustomText(
+                        text = albumArtist
+                    )
+
                     Spacer(modifier = Modifier.height(20.dp))
                 }
-
             },
             content = {
 
                 Column(modifier = Modifier.fillMaxSize()) {
-                    Spacer(modifier = Modifier.height(10.dp))
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
                     ) {
-                        Column(modifier = Modifier
-                            .fillMaxWidth(0.7f)
-                        ) {
-                            Text(
-                                text = albumName,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Text(
-                                text = albumArtist,
-                                fontSize = 16.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                        IconButton(
-                            onClick = { activityMainVM.selectSong(albumSongsList, 0) },
+
+                        Column(
                             modifier = Modifier
-                                .height(60.dp)
-                                .width(60.dp)
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(MaterialTheme.colorScheme.primary)
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Icon(
-                                bitmap = activityMainVM.miniPlayerPlayIcon,
-                                contentDescription = "",
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                                modifier = Modifier.padding(20.dp)
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            PlayAndShuffleRow(
+                                surfaceColor = activityMainVM.surfaceColor.collectAsState().value,
+                                onPlayClick = {activityMainVM.unshuffleAndPlay(albumSongsList, 0)},
+                                onSuffleClick = {activityMainVM.shuffleAndPlay(albumSongsList)}
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Divider(color = MaterialTheme.colorScheme.surfaceVariant)
                     LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(5.dp),
                         content = {
 
                             item {

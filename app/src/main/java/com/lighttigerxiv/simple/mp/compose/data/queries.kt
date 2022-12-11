@@ -1,7 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.data
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
@@ -17,6 +16,9 @@ interface PlaylistDao{
 
     @Query("UPDATE playlist SET name = :playlistName WHERE id = :playlistID")
     fun updatePlaylistName( playlistName : String, playlistID: Int )
+
+    @Query("UPDATE playlist SET image = :imageString WHERE id = :playlistID")
+    fun updatePlaylistImage(imageString: String?, playlistID: Int )
 
 
     @Query("UPDATE playlist SET songs = :songsJson WHERE id = :playlistID")

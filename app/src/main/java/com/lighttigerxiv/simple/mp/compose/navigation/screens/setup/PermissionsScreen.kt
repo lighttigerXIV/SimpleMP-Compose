@@ -18,11 +18,14 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.lighttigerxiv.simple.mp.compose.getAppString
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityFirstSetupViewModel
 
 @Composable
@@ -34,10 +37,13 @@ fun PermissionsScreen(
     onRequestStoragePermission: () -> Unit = {}
 ) {
 
+    val context = LocalContext.current
+
+
     val storagePermissionText = when (activityFirstSetupViewModel.isStoragePermissionGranted.observeAsState().value!!) {
 
-        true -> "Granted"
-        false -> "Grant"
+        true -> remember{ getAppString(context, com.lighttigerxiv.simple.mp.compose.R.string.Granted)}
+        false -> remember{ getAppString(context, com.lighttigerxiv.simple.mp.compose.R.string.Grant ) }
     }
 
     val isButtonNextEnabled = when{
@@ -51,9 +57,6 @@ fun PermissionsScreen(
 
         else -> false
     }
-
-
-    println("Is button enabled -> $isButtonNextEnabled")
 
 
     Column(
@@ -73,7 +76,7 @@ fun PermissionsScreen(
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
-                text = "Permissions",
+                text = remember{ getAppString(context, com.lighttigerxiv.simple.mp.compose.R.string.Permissions ) },
                 fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
@@ -117,7 +120,7 @@ fun PermissionsScreen(
             ) {
 
                 Text(
-                    text = "Please enable storage permission in order to read all music files in your device",
+                    text = remember{ getAppString(context, com.lighttigerxiv.simple.mp.compose.R.string.EnableStorageExplanation ) },
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -162,8 +165,8 @@ fun PermissionsScreen(
 
                 val notificationPermissionText = when (activityFirstSetupViewModel.isNotificationPermissionGranted.observeAsState().value!!) {
 
-                    true -> "Granted"
-                    false -> "Grant"
+                    true -> remember{ getAppString(context, com.lighttigerxiv.simple.mp.compose.R.string.Granted ) }
+                    false -> remember{ getAppString(context, com.lighttigerxiv.simple.mp.compose.R.string.Grant ) }
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -183,7 +186,7 @@ fun PermissionsScreen(
                 ) {
 
                     Text(
-                        text = "Please enable notifications permission in order to make the app work properly when playing music",
+                        text = remember{ getAppString(context, com.lighttigerxiv.simple.mp.compose.R.string.EnableNotificationExplanation ) },
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -247,7 +250,7 @@ fun PermissionsScreen(
             ) {
 
                 Text(
-                    text = "Back",
+                    text = remember{ getAppString(context, com.lighttigerxiv.simple.mp.compose.R.string.Back ) },
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -263,8 +266,8 @@ fun PermissionsScreen(
             ) {
 
                 Text(
-                    text = "Next",
-                    color = MaterialTheme.colorScheme.onPrimary
+                    text = remember{ getAppString(context, com.lighttigerxiv.simple.mp.compose.R.string.Next ) },
+                    color = if(isButtonNextEnabled) MaterialTheme.colorScheme.onPrimary else Color.Black
                 )
             }
         }

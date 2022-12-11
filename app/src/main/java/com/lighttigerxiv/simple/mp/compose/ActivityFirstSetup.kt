@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModelProvider
@@ -29,7 +30,6 @@ class ActivityFirstSetup : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val themeViewModel = ViewModelProvider(this)[ThemeViewModel::class.java]
         val activityFirstSetupViewModel = ViewModelProvider(this)[ActivityFirstSetupViewModel::class.java]
 
         val requestPermissionLauncher =
@@ -40,21 +40,20 @@ class ActivityFirstSetup : ComponentActivity() {
                 activityFirstSetupViewModel.checkPermissions()
             }
 
-            val preferences = getSharedPreferences(packageName, Context.MODE_PRIVATE)
-            val themeMode = preferences.getString("ThemeMode", "System")!!
-            val themeAccent = preferences.getString("ThemeAccent", "Default")!!
-            val darkMode = preferences.getString("DarkMode", "Color")!!
+
+        val themeMode = activityFirstSetupViewModel.themeModeSetting!!
+        val darkMode = activityFirstSetupViewModel.darkModeSetting!!
 
         setContent {
             ComposeSimpleMPTheme(
                 useDarkTheme = isSystemInDarkTheme(),
                 themeMode = themeMode,
-                themeAccent = themeAccent,
+                themeAccent = activityFirstSetupViewModel.themeAccentSetting.collectAsState().value!!,
                 content = {
 
+                    val themeAccent = activityFirstSetupViewModel.themeAccentSetting.collectAsState().value
+
                     val surfaceColor = if (themeMode == "Dark" && darkMode == "Oled") {
-                        Color.Black
-                    } else if (themeMode == "Dark" && darkMode == "Oled" && isSystemInDarkTheme()) {
                         Color.Black
                     } else if (themeMode == "Light" && themeAccent == "Blue") {
                         Color(0xFFFEFBFF)

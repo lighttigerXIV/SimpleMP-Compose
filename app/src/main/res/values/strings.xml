@@ -1,13 +1,85 @@
 <resources>
     <string name="app_name">SimpleMP</string>
     <string name="Undefined">Undefined</string>
-    <string name="notificationChannelName">Playback</string>
-    <string name="notificationChannelDescription">Simple MP Playback</string>
+    <string name="notificationChannelName" translatable="false">Playback</string>
+    <string name="notificationChannelDescription" translatable="false">Simple MP Playback</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
-    <string name="emptyDescription">.</string>
-    <string name="imagineDragons">Imagine Dragons</string>
-    <string name="demons">Demons</string>
-    <string name="app_widget_description">Simple MP Widget</string>
+    <string name="emptyDescription" translatable="false">.</string>
+    <string name="imagineDragons" translatable="false">Imagine Dragons</string>
+    <string name="demons" translatable="false">Demons</string>
+    <string name="app_widget_description" translatable="false">Simple MP Widget</string>
     <string name="noMusicPlaying">No music playing. Click to open the app.</string>
+
+    <string name="SearchSongs">Search Songs</string>
+    <string name="SearchArtists">Search Artists</string>
+    <string name="SearchAlbums">Search Albums</string>
+    <string name="SearchPlaylists">Search Playlists</string>
+    <string name="SortByRecentlyAdded">Sort By Recently Added</string>
+    <string name="SortByOldestAdded">Sort By Oldest Added</string>
+    <string name="SortByAscendent">Sort By Ascendent</string>
+    <string name="SortByDescendent">Sort By Descendent</string>
+    <string name="Settings">Settings</string>
+    <string name="About">About</string>
+
+    <string name="AppVersion">App Version</string>
+    <string name="AppSource">App Source</string>
+    <string name="GetAppSourceOnGitHub">Get the app source on GitHub</string>
+    <string name="GetAppSourceOnGitLab">Get the app source on GitLab</string>
+    <string name="Home">Home</string>
+    <string name="Genres">Genres</string>
+    <string name="YourPlaylists">Your Playlists</string>
+    <string name="PlaylistName">Playlist name</string>
+    <string name="InsertPlaylistName">Insert playlist name</string>
+    <string name="Create">Create</string>
+    <string name="Play">Play</string>
+    <string name="Shuffle">Shuffle</string>
+    <string name="EditPlaylist">Edit Playlist</string>
+    <string name="DeletePlaylist">Delete Playlist</string>
+    <string name="ConfirmDeletePlaylist">Are you sure that you want to delete the playlist</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Delete">Delete</string>
+    <string name="NoSongsAdded">No songs added</string>
+    <string name="Artists">Artists</string>
+    <string name="Songs">Songs</string>
+    <string name="Albums">Albums</string>
+    <string name="Song">Song</string>
+    <string name="QueueList">Queue List</string>
+    <string name="GoToArtist">Go To Artist</string>
+    <string name="GoToAlbum">Go To Album</string>
+    <string name="AddToPlaylist">Add To Playlist</string>
+    <string name="Theming">Theming</string>
+    <string name="Theme">Theme</string>
+    <string name="DarkMode">Dark Mode</string>
+    <string name="AccentColor">Accent Color</string>
+    <string name="SelectThemeMode">Select Theme Mode</string>
+    <string name="SystemDefault">System Default</string>
+    <string name="LightMode">Light Mode</string>
+    <string name="Apply">Apply</string>
+    <string name="Audio">Audio</string>
+    <string name="FilterAudioBelow">Filter Audio Below</string>
+    <string name="SelectDarkMode">Select Dark Mode</string>
+    <string name="Color">Color</string>
+    <string name="Oled" translatable="false">Oled</string>
+    <string name="FilterAudio">Filter Audio</string>
+    <string name="InsertMinimumSeconds">Insert minimum seconds</string>
+    <string name="System">System</string>
+    <string name="Blue">Blue</string>
+    <string name="Red">Red</string>
+    <string name="Purple">Purple</string>
+    <string name="Orange">Orange</string>
+    <string name="Yellow">Yellow</string>
+    <string name="Green">Green</string>
+    <string name="Pink">Pink</string>
+    <string name="Common">Common</string>
+    <string name="WelcomeToSimpleMP">Welcome to Simple MP</string>
+    <string name="Next">Next</string>
+    <string name="Granted">Granted</string>
+    <string name="Grant">Grant</string>
+    <string name="Permissions">Permissions</string>
+    <string name="EnableStorageExplanation">Enable storage permission in order to read all music files in your device</string>
+    <string name="EnableNotificationExplanation">Enable notifications permission in order to show the music notification</string>
+    <string name="Back">Back</string>
+    <string name="Accents">Accents</string>
+    <string name="Finish">Finish</string>
 </resources>

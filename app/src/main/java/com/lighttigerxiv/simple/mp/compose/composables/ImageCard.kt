@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,15 +44,18 @@ fun ImageCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             Image(
-                bitmap = remember{ cardImage.asImageBitmap() },
+                bitmap = cardImage.asImageBitmap() ,
                 contentDescription = "",
                 colorFilter = imageTint,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
                     .padding(10.dp)
                     .clip(RoundedCornerShape(14.dp))
             )
             Text(
-                text = remember{ cardText },
+                text = cardText,
                 fontSize = 15.sp,
                 textAlign = TextAlign.Center,
                 maxLines = 1,

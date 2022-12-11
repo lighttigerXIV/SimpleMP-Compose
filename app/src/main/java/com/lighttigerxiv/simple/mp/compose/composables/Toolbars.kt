@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -20,12 +19,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.UsefulFunctions
+import com.lighttigerxiv.simple.mp.compose.getBitmapFromVectorDrawable
 
 @Composable
-fun BasicToolbar(
+fun CustomToolbar(
     backText: String,
-    onBackClick : ()-> Unit
+    onBackClick: ()-> Unit,
+    secondaryContent: @Composable (RowScope.() -> Unit)? = null
 ) {
 
     val context = LocalContext.current
@@ -45,7 +45,7 @@ fun BasicToolbar(
         ) {
 
             Image(
-                bitmap = remember { UsefulFunctions.getBitmapFromVectorDrawable(context, R.drawable.icon_back_solid).asImageBitmap() },
+                bitmap = remember { getBitmapFromVectorDrawable(context, R.drawable.icon_back_solid).asImageBitmap() },
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
@@ -61,5 +61,6 @@ fun BasicToolbar(
                 color = MaterialTheme.colorScheme.primary,
             )
         }
+        if(secondaryContent != null) secondaryContent()
     }
 }

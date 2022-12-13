@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -16,7 +15,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 
 @Composable
 fun BottomNavigationBar(
@@ -51,8 +49,8 @@ fun BottomNavigationBar(
                     itemRoute == "artistsScreen" && destinationRoute!!.startsWith("artistScreen") -> true
                     itemRoute == "artistsScreen" && destinationRoute!!.startsWith("artistAlbumScreen") -> true
                     itemRoute == "albumsScreen" && destinationRoute!!.startsWith("albumScreen") -> true
-                    itemRoute == "playlistsScreen" && destinationRoute!!.startsWith("genrePlaylistScreen") -> true
-                    itemRoute == "playlistsScreen" && destinationRoute!!.startsWith("playlistScreen") -> true
+                    itemRoute == "playlistsScreen" && destinationRoute!!.startsWith("GenrePlaylistScreen") -> true
+                    itemRoute == "playlistsScreen" && destinationRoute!!.startsWith("PlaylistScreen") -> true
                     else -> false
                 }
 
@@ -99,9 +97,5 @@ fun BottomNavigationBar(
                 )
             }
         }
-
-
-
-
     }
 }

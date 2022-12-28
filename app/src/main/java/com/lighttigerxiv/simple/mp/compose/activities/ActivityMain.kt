@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -63,7 +62,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         if (!getSharedPreferences(packageName, MODE_PRIVATE).getBoolean("setupCompleted", false)) {
 
             startActivity(
@@ -75,7 +73,6 @@ class MainActivity : ComponentActivity() {
 
         createNotificationChannel()
         activityMainVM = ViewModelProvider(this)[ActivityMainVM::class.java]
-
 
 
         setContent {
@@ -120,7 +117,11 @@ class MainActivity : ComponentActivity() {
                             Color(0xFFFFFBFF)
                         } else if (darkMode == "Oled" && themeMode == "Light" && isSystemInDarkTheme()) {
                             Color(0xFFFFFBFF)
-                        } else if (darkMode == "Oled" && themeAccent!!.startsWith("Catppuccin")) {
+                        } else if (darkMode == "Oled" && themeAccent!!.startsWith("Macchiato")) {
+                            Color.Black
+                        } else if (darkMode == "Oled" && themeAccent!!.startsWith("Frappe")) {
+                            Color.Black
+                        } else if (darkMode == "Oled" && themeAccent!!.startsWith("Mocha")) {
                             Color.Black
                         } else if (darkMode == "Oled" && isSystemInDarkTheme()) {
                             Color.Black
@@ -152,7 +153,6 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
-
 
                     Box(
                         modifier = Modifier

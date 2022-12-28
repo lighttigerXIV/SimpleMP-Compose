@@ -48,7 +48,6 @@ fun Player(
     val configuration = LocalConfiguration.current
     val songTitle = activityMainVM.selectedSongTitle.observeAsState().value
     val songArtistName = activityMainVM.selectedSongArtistName.observeAsState().value
-    val songAlbumArt = activityMainVM.selectedSongAlbumArt.observeAsState().value
     val songDuration = activityMainVM.selectedSongDuration.observeAsState().value
     val currentMediaPlayerPosition = activityMainVM.currentMediaPlayerPosition.collectAsState().value
     val songMinutesAndSeconds = activityMainVM.selectedSongMinutesAndSeconds.observeAsState().value

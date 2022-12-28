@@ -28,6 +28,7 @@ import com.lighttigerxiv.simple.mp.compose.Song
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SongItem(
+    modifier: Modifier = Modifier,
     song: Song,
     songAlbumArt: Bitmap?,
     highlight: Boolean = false,
@@ -53,7 +54,7 @@ fun SongItem(
     }
 
 
-    Row(modifier = Modifier
+    Row(modifier = modifier
         .fillMaxWidth()
         .height(70.dp)
         .clip(RoundedCornerShape(14.dp))
@@ -61,6 +62,7 @@ fun SongItem(
             onClick = {onSongClick()},
             onLongClick = {isPopupMenuExpanded.value = true}
         )
+
     ) {
 
         AsyncImage(

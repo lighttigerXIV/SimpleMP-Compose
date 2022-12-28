@@ -2,6 +2,7 @@ package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import android.annotation.SuppressLint
 import android.content.Context.MODE_PRIVATE
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,7 +26,7 @@ import com.lighttigerxiv.simple.mp.compose.getAppString
 import kotlinx.coroutines.launch
 
 @SuppressLint("FrequentlyChangedStateReadInComposition")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     activityMainVM: ActivityMainVM,
@@ -176,6 +177,7 @@ fun HomeScreen(
                         ) { song ->
 
                             SongItem(
+                                modifier = Modifier.animateItemPlacement(),
                                 song = song,
                                 songAlbumArt = remember { activityMainVM.compressedImagesList.find { it.albumID == song.albumID }!!.albumArt },
                                 highlight = song.path == activityMainVM.selectedSongPath.observeAsState().value,

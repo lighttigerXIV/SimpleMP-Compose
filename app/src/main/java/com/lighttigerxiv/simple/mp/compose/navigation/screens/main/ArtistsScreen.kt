@@ -3,6 +3,7 @@ package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -25,6 +26,7 @@ import com.lighttigerxiv.simple.mp.compose.composables.ImageCard
 import com.lighttigerxiv.simple.mp.compose.getAppString
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ArtistsScreen(
     activityMainVM: ActivityMainVM,
@@ -133,6 +135,7 @@ fun ArtistsScreen(
                     val albumArt = activityMainVM.songsImagesList.first { it.albumID == artist.albumID }.albumArt
 
                     ImageCard(
+                        modifier = Modifier.animateItemPlacement(),
                         cardImage = remember { albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record) },
                         imageTint = if(albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                         cardText = remember { artist.artistName },

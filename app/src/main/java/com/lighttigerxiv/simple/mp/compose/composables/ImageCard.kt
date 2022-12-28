@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun ImageCard(
+    modifier: Modifier = Modifier,
     cardImage: Bitmap,
     imageTint: ColorFilter? = null,
     cardText: String,
@@ -31,7 +32,7 @@ fun ImageCard(
 ){
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(14.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)

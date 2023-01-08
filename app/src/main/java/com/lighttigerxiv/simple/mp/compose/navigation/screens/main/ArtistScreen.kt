@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
-import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -22,8 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,31 +43,120 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.PlayAndShuffleRow
 import com.lighttigerxiv.simple.mp.compose.composables.SongItem
+import com.lighttigerxiv.simple.mp.compose.data.AppDatabase
 import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 import kotlinx.coroutines.launch
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.ByteArrayOutputStream
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ArtistScreen(
-    activityMainVM: ActivityMainVM,
+    mainVM: ActivityMainVM,
     backStackEntry: NavBackStackEntry,
     onBackClicked: () -> Unit,
+    onSelectArtistCover: (artistName: String, artistID: Long)-> Unit,
     onArtistAlbumOpened: (albumID: Long) -> Unit
 ) {
 
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val artistID = remember { backStackEntry.arguments?.getLong("artistID") }
-    val artist = remember { activityMainVM.songsList.find { it.artistID == artistID }!! }
+    val artistID = remember { backStackEntry.arguments?.getLong("artistID")!! }
+    val artist = remember { mainVM.songsList.find { it.artistID == artistID }!! }
     val artistName = remember { artist.artistName }
     val defaultArtistPicture = remember { BitmapFactory.decodeResource(context.resources, R.drawable.icon_person_regular_highres) }
     val artistPicture = remember { mutableStateOf(defaultArtistPicture) }
-    getArtistPicture(context, artistID!!, artistName, artistPicture)
-    val artistSongsList = remember { activityMainVM.songsList.filter { it.artistID == artistID } as ArrayList<Song> }
+
+
+    val artistsDao = AppDatabase.getInstance(context).artistsDao
+    val artistFromDB = artistsDao.getArtist(id = artistID)
+
+    if(artistFromDB == null){
+        artistsDao.addArtist(artistID)
+    }
+    else{
+
+        if(artistFromDB.alreadyRequested){
+            if(artistFromDB.image == null){
+                artistPicture.value = defaultArtistPicture
+            }
+            else{
+                val encodeByte = Base64.decode(artistFromDB.image, Base64.DEFAULT)
+                artistPicture.value = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
+            }
+        }
+        else{
+
+            val canDownloadArtistCover = mainVM.downloadArtistCoverSetting.collectAsState().value
+            val isInternetAvailable = CheckInternet.isNetworkAvailable(context)
+            val canDownloadOverData = mainVM.downloadOverDataSetting.collectAsState().value
+            val isMobileDataEnabled = CheckInternet.isOnMobileData(context)
+
+            if(isInternetAvailable && canDownloadArtistCover){
+                if((canDownloadOverData && isMobileDataEnabled) || (!canDownloadOverData && !isMobileDataEnabled)){
+                    getDiscogsRetrofit()
+                        .getArtistCover(
+                            token = "Discogs token=addIURHUBwvyDlSqWcNqPWkHXUbMgUzNgbpZGZnd",
+                            artist = artistName
+                        )
+                        .enqueue(object : Callback<String>{
+                            override fun onResponse(call: Call<String>, response: Response<String>) {
+                                if(response.code() == 200){
+
+                                    val data = Gson().fromJson(response.body(), DiscogsResponse::class.java)
+
+                                    if(data.results.isNotEmpty()){
+
+                                        try {
+                                            val imageUrl = data.results[0].cover_image
+
+                                            if(imageUrl.endsWith(".gif")){
+                                                artistsDao.updateArtistImage(image = null, id = artistID)
+                                                artistPicture.value = defaultArtistPicture
+                                            }
+                                            else{
+                                                Glide.with(context)
+                                                    .asBitmap()
+                                                    .load(imageUrl)
+                                                    .into(object : CustomTarget<Bitmap>() {
+                                                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+
+                                                            val baos = ByteArrayOutputStream()
+                                                            resource.compress(Bitmap.CompressFormat.PNG, 50, baos)
+                                                            val b = baos.toByteArray()
+                                                            val encodedImage = Base64.encodeToString(b, Base64.DEFAULT)
+
+                                                            artistsDao.updateArtistImage(image = encodedImage, id = artistID)
+                                                            artistPicture.value = resource
+                                                        }
+
+                                                        override fun onLoadCleared(placeholder: Drawable?) {}
+                                                    })
+                                            }
+
+
+                                        } catch (ignore: Exception) {}
+                                    }
+                                }
+                            }
+
+                            override fun onFailure(call: Call<String>, t: Throwable) {
+                                println("Error while getting artist cover")
+                            }
+                        })
+                }
+            }
+        }
+    }
+
+    val artistSongsList = remember { mainVM.songsList.filter { it.artistID == artistID } as ArrayList<Song> }
     val artistAlbumsList = remember { artistSongsList.distinctBy { it.albumID } }
+    val showMoreMenu = remember{ mutableStateOf(false) }
+
 
     val pagerState = rememberPagerState()
     val nestedScrollViewState = rememberNestedScrollViewState()
@@ -87,12 +177,56 @@ fun ArtistScreen(
                     .fillMaxWidth()
                     .wrapContentHeight()
             ) {
-                CustomToolbar(backText = remember { getAppString(context, R.string.Artists) }, onBackClick = { onBackClicked() })
+                CustomToolbar(
+                    backText = remember { getAppString(context, R.string.Artists) },
+                    onBackClick = { onBackClicked() },
+                    secondaryContent = {
+
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f))
+
+                        Column{
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(14))
+                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                    .padding(5.dp)
+                                    .clickable {
+                                        showMoreMenu.value = true
+                                    }
+                            ){
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_more_regular),
+                                    contentDescription = "",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier
+                                        .height(25.dp)
+                                        .aspectRatio(1f)
+                                )
+                            }
+
+                            DropdownMenu(
+                                expanded = showMoreMenu.value,
+                                onDismissRequest = { showMoreMenu.value = false }
+                            ){
+                                DropdownMenuItem(
+                                    text = { Text(text = remember { getAppString(context, R.string.ChangeArtistCover) }) },
+                                    onClick = {
+                                        mainVM.showHomePopupMenu.value = false
+                                        onSelectArtistCover(artistName, artistID)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                )
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Image(
                     bitmap = artistPicture.value.asImageBitmap(),
                     contentDescription = null,
+                    contentScale = ContentScale.Crop,
                     colorFilter = if (artistPicture.value == defaultArtistPicture) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
@@ -121,20 +255,20 @@ fun ArtistScreen(
 
                 androidx.compose.material.TabRow(
                     selectedTabIndex = pagerState.currentPage,
-                    contentColor = activityMainVM.surfaceColor.collectAsState().value,
+                    contentColor = mainVM.surfaceColor.collectAsState().value,
                     indicator = {}
                 ) {
 
                     val songsTabColor = when(pagerState.currentPage){
 
                         0-> MaterialTheme.colorScheme.surfaceVariant
-                        else-> activityMainVM.surfaceColor.collectAsState().value
+                        else-> mainVM.surfaceColor.collectAsState().value
                     }
 
                     val albumsTabColor = when(pagerState.currentPage){
 
                         1-> MaterialTheme.colorScheme.surfaceVariant
-                        else-> activityMainVM.surfaceColor.collectAsState().value
+                        else-> mainVM.surfaceColor.collectAsState().value
                     }
 
                     Tab(
@@ -144,7 +278,7 @@ fun ArtistScreen(
                         unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                         onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
                         modifier = Modifier
-                            .background(activityMainVM.surfaceColor.collectAsState().value)
+                            .background(mainVM.surfaceColor.collectAsState().value)
                             .padding(10.dp)
                             .clip(RoundedCornerShape(percent = 100))
                             .background(songsTabColor)
@@ -156,7 +290,7 @@ fun ArtistScreen(
                         selected = pagerState.currentPage == 1,
                         onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
                         modifier = Modifier
-                            .background(activityMainVM.surfaceColor.collectAsState().value)
+                            .background(mainVM.surfaceColor.collectAsState().value)
                             .padding(10.dp)
                             .clip(RoundedCornerShape(percent = 100))
                             .background(albumsTabColor)
@@ -179,9 +313,9 @@ fun ArtistScreen(
                             ) {
 
                                 PlayAndShuffleRow(
-                                    surfaceColor = activityMainVM.surfaceColor.collectAsState().value,
-                                    onPlayClick = {activityMainVM.unshuffleAndPlay(artistSongsList, 0)},
-                                    onSuffleClick = {activityMainVM.shuffleAndPlay(artistSongsList)}
+                                    surfaceColor = mainVM.surfaceColor.collectAsState().value,
+                                    onPlayClick = {mainVM.unshuffleAndPlay(artistSongsList, 0)},
+                                    onSuffleClick = {mainVM.shuffleAndPlay(artistSongsList)}
                                 )
 
                                 Spacer(modifier = Modifier.height(20.dp))
@@ -196,9 +330,9 @@ fun ArtistScreen(
 
                                             SongItem(
                                                 song = song,
-                                                songAlbumArt = remember { activityMainVM.songsImagesList.find { it.albumID == song.albumID }!!.albumArt },
-                                                highlight = song.path == activityMainVM.selectedSongPath.observeAsState().value,
-                                                onSongClick = { activityMainVM.selectSong(artistSongsList, artistSongsList.indexOf(song)) }
+                                                songAlbumArt = remember { mainVM.songsImagesList.find { it.albumID == song.albumID }!!.albumArt },
+                                                highlight = song.path == mainVM.selectedSongPath.observeAsState().value,
+                                                onSongClick = { mainVM.selectSong(artistSongsList, artistSongsList.indexOf(song)) }
                                             )
                                         }
                                     }
@@ -222,7 +356,7 @@ fun ArtistScreen(
 
                                             val albumSongAlbumID = album.albumID
                                             val albumName = album.albumName
-                                            val albumArt = activityMainVM.songsImagesList.first { it.albumID == albumSongAlbumID }.albumArt
+                                            val albumArt = mainVM.songsImagesList.first { it.albumID == albumSongAlbumID }.albumArt
 
                                             Box(
                                                 modifier = Modifier
@@ -272,65 +406,3 @@ fun ArtistScreen(
     )
 }
 
-fun getArtistPicture(
-    context: Context,
-    artistID: Long,
-    artistName: String,
-    artistPicture: MutableState<Bitmap>
-) {
-
-    val spArtists = context.getSharedPreferences("artists", Context.MODE_PRIVATE)
-    val artistPictureString = spArtists.getString(artistID.toString(), null)
-
-
-    if (artistPictureString != null) {
-
-        val encodeByte = Base64.decode(artistPictureString, Base64.DEFAULT)
-        artistPicture.value = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
-    } else {
-
-        if (CheckInternet.isNetworkAvailable(context)) {
-
-            val url = "https://www.theaudiodb.com/api/v1/json/2/search.php?s=$artistName"
-
-            MakeRequest(context, url, onResponse = { responseCode, responseJson ->
-
-                if (responseCode == 200) {
-
-                    val responseAudioDB = Gson().fromJson(responseJson, ResponseAudioDB::class.java)
-
-
-                    if (responseAudioDB != null) {
-
-                        if (responseAudioDB.artists?.get(0)?.strArtistThumb != null) {
-
-                            try {
-
-                                val artistImageURL = responseAudioDB.artists[0].strArtistThumb
-
-                                Glide.with(context)
-                                    .asBitmap()
-                                    .load(artistImageURL)
-                                    .into(object : CustomTarget<Bitmap>() {
-                                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-
-                                            val baos = ByteArrayOutputStream()
-                                            resource.compress(Bitmap.CompressFormat.PNG, 50, baos)
-                                            val b = baos.toByteArray()
-                                            val encodedImage = Base64.encodeToString(b, Base64.DEFAULT)
-
-                                            spArtists.edit().putString(artistID.toString(), encodedImage).apply()
-
-                                            artistPicture.value = resource
-                                        }
-
-                                        override fun onLoadCleared(placeholder: Drawable?) {}
-                                    })
-                            } catch (ignore: Exception) {}
-                        }
-                    }
-                }
-            }).get()
-        }
-    }
-}

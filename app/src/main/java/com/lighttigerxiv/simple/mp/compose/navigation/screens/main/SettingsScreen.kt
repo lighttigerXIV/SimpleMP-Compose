@@ -1,7 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
 
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -10,7 +9,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
@@ -29,7 +27,7 @@ import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
 
 @Composable
 fun SettingsScreen(
-    activityMainVM: ActivityMainVM,
+    mainVM: ActivityMainVM,
     onBackPressed: () -> Unit,
     onOpenScreen: (route: String) -> Unit
 ) {
@@ -39,12 +37,12 @@ fun SettingsScreen(
     val showDarkModeDialog = remember { mutableStateOf(false) }
     val showFilterAudioDialog = remember { mutableStateOf(false) }
     val showThemeAccentDialog = remember { mutableStateOf(false) }
-    val selectedThemeMode = activityMainVM.selectedThemeModeDialog.observeAsState().value
-    val selectedDarkMode = activityMainVM.selectedDarkModeDialog.observeAsState().value
-    val selectedThemeAccent = activityMainVM.selectedThemeAccentDialog.observeAsState().value
-    val etFilterAudioValue = activityMainVM.etFilterAudioDialog.observeAsState().value
+    val selectedThemeMode = mainVM.selectedThemeModeDialog.observeAsState().value
+    val selectedDarkMode = mainVM.selectedDarkModeDialog.observeAsState().value
+    val selectedThemeAccent = mainVM.selectedThemeAccentDialog.observeAsState().value
+    val etFilterAudioValue = mainVM.etFilterAudioDialog.observeAsState().value
     val restartAppSnackState = remember { SnackbarHostState() }
-    val surfaceColor = activityMainVM.surfaceColor.collectAsState().value
+    val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
     Box(
         modifier = Modifier
@@ -88,7 +86,7 @@ fun SettingsScreen(
                 DefaultSettingItem(
                     icon = painterResource(id = R.drawable.icon_theme_mode_regular),
                     settingText = remember { getAppString(context, R.string.Theme) },
-                    settingValue = activityMainVM.themeModeSetting.collectAsState().value!!,
+                    settingValue = mainVM.themeModeSetting.collectAsState().value!!,
                     onSettingClick = { showThemeModeDialog.value = true },
                 )
 
@@ -97,7 +95,7 @@ fun SettingsScreen(
                 DefaultSettingItem(
                     icon = painterResource(id = R.drawable.icon_moon_regular),
                     settingText = remember { getAppString(context, R.string.DarkMode) },
-                    settingValue = activityMainVM.darkModeSetting.collectAsState().value!!,
+                    settingValue = mainVM.darkModeSetting.collectAsState().value!!,
                     onSettingClick = { showDarkModeDialog.value = true }
                 )
 
@@ -106,7 +104,7 @@ fun SettingsScreen(
                 DefaultSettingItem(
                     icon = painterResource(id = R.drawable.icon_theme_regular),
                     settingText = remember { getAppString(context, R.string.AccentColor) },
-                    settingValue = activityMainVM.themeAccentSetting.collectAsState().value!!,
+                    settingValue = mainVM.themeAccentSetting.collectAsState().value!!,
                     onSettingClick = { onOpenScreen("ThemesScreen") }
                 )
             }
@@ -117,7 +115,7 @@ fun SettingsScreen(
                 Dialog(
                     onDismissRequest = {
                         showThemeModeDialog.value = false
-                        activityMainVM.selectedThemeModeDialog.value = activityMainVM.themeModeSetting.value
+                        mainVM.selectedThemeModeDialog.value = mainVM.themeModeSetting.value
                     }
                 ) {
                     Surface(
@@ -150,7 +148,7 @@ fun SettingsScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        activityMainVM.selectedThemeModeDialog.value =
+                                        mainVM.selectedThemeModeDialog.value =
                                             "System"
                                     }
                             ) {
@@ -158,7 +156,7 @@ fun SettingsScreen(
                                 RadioButton(
                                     selected = selectedThemeMode == "System",
                                     onClick = {
-                                        activityMainVM.selectedThemeModeDialog.value =
+                                        mainVM.selectedThemeModeDialog.value =
                                             "System"
                                     }
                                 )
@@ -177,7 +175,7 @@ fun SettingsScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        activityMainVM.selectedThemeModeDialog.value =
+                                        mainVM.selectedThemeModeDialog.value =
                                             "Light"
                                     }
                             ) {
@@ -185,7 +183,7 @@ fun SettingsScreen(
                                 RadioButton(
                                     selected = selectedThemeMode == "Light",
                                     onClick = {
-                                        activityMainVM.selectedThemeModeDialog.value =
+                                        mainVM.selectedThemeModeDialog.value =
                                             "Light"
                                     }
                                 )
@@ -204,7 +202,7 @@ fun SettingsScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        activityMainVM.selectedThemeModeDialog.value =
+                                        mainVM.selectedThemeModeDialog.value =
                                             "Dark"
                                     }
                             ) {
@@ -212,7 +210,7 @@ fun SettingsScreen(
                                 RadioButton(
                                     selected = selectedThemeMode == "Dark",
                                     onClick = {
-                                        activityMainVM.selectedThemeModeDialog.value =
+                                        mainVM.selectedThemeModeDialog.value =
                                             "Dark"
                                     }
                                 )
@@ -234,7 +232,7 @@ fun SettingsScreen(
                                 Button(
                                     onClick = {
                                         showThemeModeDialog.value = false
-                                        activityMainVM.selectedThemeModeDialog.value = activityMainVM.themeModeSetting.value
+                                        mainVM.selectedThemeModeDialog.value = mainVM.themeModeSetting.value
                                               },
                                     border = BorderStroke(
                                         1.dp,
@@ -257,7 +255,7 @@ fun SettingsScreen(
 
                                 Button(
                                     onClick = {
-                                        activityMainVM.setThemeMode(); showThemeModeDialog.value =
+                                        mainVM.setThemeMode(); showThemeModeDialog.value =
                                         false
                                     },
                                     colors = ButtonDefaults.buttonColors(
@@ -306,8 +304,45 @@ fun SettingsScreen(
                 DefaultSettingItem(
                     icon = painterResource(id = R.drawable.icon_filter_regular),
                     settingText = remember { getAppString(context, R.string.FilterAudioBelow) },
-                    settingValue = "${activityMainVM.filterAudioSetting.collectAsState().value} seconds",
+                    settingValue = "${mainVM.filterAudioSetting.collectAsState().value} seconds",
                     onSettingClick = { showFilterAudioDialog.value = true }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = remember { getAppString(context, R.string.Data) },
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 16.sp,
+                textAlign = TextAlign.Start,
+                maxLines = 1,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                
+                SwitchSettingItem(
+                    icon = painterResource(id = R.drawable.icon_database),
+                    settingText = remember{ getAppString(context, R.string.DownloadArtistCoverFromInternet) },
+                    settingValue = mainVM.downloadArtistCoverSetting.collectAsState().value,
+                    onToggle = {mainVM.toggleDownloadArtistCoverSetting()}
+                )
+
+                SwitchSettingItem(
+                    icon = painterResource(id = R.drawable.icon_database),
+                    settingText = remember{ getAppString(context, R.string.DownloadArtistCoverOnData) },
+                    settingValue = mainVM.downloadOverDataSetting.collectAsState().value,
+                    onToggle = {mainVM.toggleDownloadOverDataSetting()},
+                    enabled = mainVM.downloadArtistCoverSetting.collectAsState().value
                 )
             }
 
@@ -317,7 +352,7 @@ fun SettingsScreen(
                 Dialog(
                     onDismissRequest = {
                         showDarkModeDialog.value = false
-                        activityMainVM.selectedDarkModeDialog.value = activityMainVM.darkModeSetting.value
+                        mainVM.selectedDarkModeDialog.value = mainVM.darkModeSetting.value
                     }
                 ) {
                     Surface(
@@ -350,7 +385,7 @@ fun SettingsScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        activityMainVM.selectedDarkModeDialog.value =
+                                        mainVM.selectedDarkModeDialog.value =
                                             "Color"
                                     }
                             ) {
@@ -358,7 +393,7 @@ fun SettingsScreen(
                                 RadioButton(
                                     selected = selectedDarkMode == "Color",
                                     onClick = {
-                                        activityMainVM.selectedDarkModeDialog.value =
+                                        mainVM.selectedDarkModeDialog.value =
                                             "Color"
                                     }
                                 )
@@ -377,7 +412,7 @@ fun SettingsScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        activityMainVM.selectedDarkModeDialog.value =
+                                        mainVM.selectedDarkModeDialog.value =
                                             "Oled"
                                     }
                             ) {
@@ -385,7 +420,7 @@ fun SettingsScreen(
                                 RadioButton(
                                     selected = selectedDarkMode == "Oled",
                                     onClick = {
-                                        activityMainVM.selectedDarkModeDialog.value =
+                                        mainVM.selectedDarkModeDialog.value =
                                             "Oled"
                                     }
                                 )
@@ -407,7 +442,7 @@ fun SettingsScreen(
                                 Button(
                                     onClick = {
                                         showDarkModeDialog.value = false
-                                        activityMainVM.selectedDarkModeDialog.value = activityMainVM.darkModeSetting.value
+                                        mainVM.selectedDarkModeDialog.value = mainVM.darkModeSetting.value
                                     },
                                     border = BorderStroke(
                                         1.dp,
@@ -430,7 +465,7 @@ fun SettingsScreen(
 
                                 Button(
                                     onClick = {
-                                        activityMainVM.setDarkMode(); showDarkModeDialog.value =
+                                        mainVM.setDarkMode(); showDarkModeDialog.value =
                                         false
                                     },
                                     colors = ButtonDefaults.buttonColors(
@@ -457,7 +492,7 @@ fun SettingsScreen(
                 Dialog(
                     onDismissRequest = {
                         showFilterAudioDialog.value = false
-                        activityMainVM.etFilterAudioDialog.value = activityMainVM.filterAudioSetting.value
+                        mainVM.etFilterAudioDialog.value = mainVM.filterAudioSetting.value
                     }
                 ) {
 
@@ -491,7 +526,7 @@ fun SettingsScreen(
                                 placeholder = remember { getAppString(context, R.string.InsertMinimumSeconds) },
                                 textType = "number",
                                 onTextChange = {
-                                    activityMainVM.etFilterAudioDialog.value = it
+                                    mainVM.etFilterAudioDialog.value = it
                                 }
                             )
 
@@ -503,7 +538,7 @@ fun SettingsScreen(
                                 Button(
                                     onClick = {
                                         showFilterAudioDialog.value = false
-                                        activityMainVM.etFilterAudioDialog.value = activityMainVM.filterAudioSetting.value
+                                        mainVM.etFilterAudioDialog.value = mainVM.filterAudioSetting.value
                                     },
                                     border = BorderStroke(
                                         1.dp,
@@ -526,7 +561,7 @@ fun SettingsScreen(
 
                                 Button(
                                     onClick = {
-                                        activityMainVM.setFilterAudio()
+                                        mainVM.setFilterAudio()
                                         showFilterAudioDialog.value = false
                                     },
                                     colors = ButtonDefaults.buttonColors(
@@ -611,14 +646,14 @@ fun DefaultSettingItem(
     }
 }
 
+
 @Composable
-fun ThemeAccentItem(
-    activityMainVM: ActivityMainVM,
-    selectedThemeAccent: String,
-    text: String,
-    settingValue: String,
-    firstColor: Color,
-    secondColor: Color
+fun SwitchSettingItem(
+    icon: Painter,
+    settingText: String,
+    settingValue: Boolean,
+    onToggle: () -> Unit = {},
+    enabled: Boolean = true
 ) {
 
     Row(
@@ -626,45 +661,39 @@ fun ThemeAccentItem(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) { activityMainVM.selectedThemeAccentDialog.value = settingValue }
+            .clickable { if(enabled) onToggle() }
+            .padding(10.dp)
     ) {
 
-        RadioButton(
-            selected = selectedThemeAccent == settingValue,
-            onClick = { activityMainVM.selectedThemeAccentDialog.value = settingValue }
+        Image(
+            painter = icon,
+            contentDescription = "",
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            modifier = Modifier
+                .height(30.dp)
+                .width(30.dp)
         )
+
+        Spacer(modifier = Modifier.width(10.dp))
+
         Text(
-            text = text,
-            maxLines = 1,
-            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f, fill = true)
+                .weight(1f),
+            text = settingText,
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
         )
-        Row(
-            modifier = Modifier
-                .width(30.dp)
-                .height(30.dp)
-                .clip(RoundedCornerShape(percent = 100))
-
-        ) {
-            Box(
-                modifier = Modifier
-                    .height(30.dp)
-                    .fillMaxWidth(0.5f)
-                    .background(firstColor)
-            )
-            Box(
-                modifier = Modifier
-                    .height(30.dp)
-                    .fillMaxWidth()
-                    .background(secondColor)
-            )
-        }
+        
+        Spacer(Modifier.width(10.dp))
+        
+        Switch(
+            checked = settingValue,
+            onCheckedChange = {onToggle()},
+            enabled = enabled
+        )
     }
 }
-
 

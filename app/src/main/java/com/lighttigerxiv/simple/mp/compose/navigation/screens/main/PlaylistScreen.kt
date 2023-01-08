@@ -423,7 +423,6 @@ fun PlaylistScreen(
                                                 }
                                             }
                                         }
-
                                 )
                             }
 

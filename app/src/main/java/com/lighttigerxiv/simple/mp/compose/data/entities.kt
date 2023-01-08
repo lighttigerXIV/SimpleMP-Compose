@@ -11,3 +11,10 @@ data class Playlist(
     val image : String? = null,
     val songs: String? = null
 )
+
+@Entity
+data class Artist(
+    @PrimaryKey(autoGenerate = false) val id: Long,
+    val image: String? = null,
+    val alreadyRequested: Boolean = false
+)

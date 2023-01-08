@@ -6,13 +6,18 @@ import android.appwidget.AppWidgetManager
 import android.content.*
 import android.content.Context.MODE_PRIVATE
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.IBinder
+import android.util.Base64
 import android.widget.Toast
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.lighttigerxiv.simple.mp.compose.*
@@ -21,6 +26,10 @@ import com.lighttigerxiv.simple.mp.compose.data.Playlist
 import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -585,6 +594,10 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     val filterAudioSetting = _filterAudioSetting.asStateFlow()
     private val _themeAccentSetting = MutableStateFlow(preferences.getString("ThemeAccent", "Default"))
     val themeAccentSetting = _themeAccentSetting.asStateFlow()
+    private val _downloadArtistCoverSetting = MutableStateFlow(preferences.getBoolean("DownloadArtistCoverSetting", true))
+    val downloadArtistCoverSetting = _downloadArtistCoverSetting.asStateFlow()
+    private val _downloadOverDataSetting = MutableStateFlow(preferences.getBoolean("DownloadOverDataSetting", false))
+    val downloadOverDataSetting = _downloadOverDataSetting.asStateFlow()
 
     private val _surfaceColor = MutableStateFlow(Color(0xff000000))
     val surfaceColor = _surfaceColor.asStateFlow()
@@ -592,12 +605,10 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
         _surfaceColor.value = value
     }
 
-
     val selectedThemeModeDialog = MutableLiveData(themeModeSetting.value)
     val selectedDarkModeDialog = MutableLiveData(darkModeSetting.value)
     val etFilterAudioDialog = MutableLiveData(filterAudioSetting.value)
     val selectedThemeAccentDialog = MutableLiveData(themeAccentSetting.value)
-
 
     fun setThemeMode(){
 
@@ -626,7 +637,15 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
         _themeAccentSetting.value = theme
     }
 
+    fun toggleDownloadArtistCoverSetting(){
+        preferences.edit().putBoolean("DownloadArtistCoverSetting", !downloadArtistCoverSetting.value).apply()
+        _downloadArtistCoverSetting.value = !_downloadArtistCoverSetting.value
+    }
 
+    fun toggleDownloadOverDataSetting(){
+        preferences.edit().putBoolean("DownloadOverDataSetting", !downloadOverDataSetting.value).apply()
+        _downloadOverDataSetting.value = !_downloadOverDataSetting.value
+    }
 
     //------------------------- Playlists Screen -------------------------
 
@@ -647,5 +666,52 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
 
 
         _currentPlaylistsPLSS.value = newPlaylists
+    }
+
+    //------------------------- Select Artist Cover Screen (SACS)----------------------------------//
+
+    private val _onlineCoversSACS: MutableStateFlow<DiscogsResponse?> = MutableStateFlow(null)
+    val onlineCoversSACS = _onlineCoversSACS.asStateFlow()
+    private var loadingOnlineCovers = false
+
+    var onArtistImageSelected: (bitmapString: String?) -> Unit = {}
+
+    fun loadOnlineCovers(artistName: String){
+
+        if(!loadingOnlineCovers){
+            loadingOnlineCovers = true
+
+            if(CheckInternet.isNetworkAvailable(context)){
+                getDiscogsRetrofit()
+                    .getArtistCover(
+                        token = "Discogs token=addIURHUBwvyDlSqWcNqPWkHXUbMgUzNgbpZGZnd",
+                        artist = artistName
+                    )
+                    .enqueue(object : Callback<String> {
+                        override fun onResponse(call: Call<String>, response: Response<String>) {
+
+                            loadingOnlineCovers = false
+
+                            if(response.code() == 200){
+
+                                val data = Gson().fromJson(response.body(), DiscogsResponse::class.java)
+                                val filteredCovers = data.copy(results = data.results.filter { !it.cover_image.endsWith(".gif") })
+
+                                _onlineCoversSACS.value = filteredCovers
+                            }
+                        }
+
+                        override fun onFailure(call: Call<String>, t: Throwable) {
+                            loadingOnlineCovers = false
+                            println("Error while getting artist cover")
+                        }
+                    })
+            }
+        }
+    }
+
+    fun resetSACS(){
+        _onlineCoversSACS.value = null
+        loadingOnlineCovers = false
     }
 }

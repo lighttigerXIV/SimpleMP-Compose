@@ -18,12 +18,18 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -75,11 +81,15 @@ dependencies {
     implementation "androidx.compose.material3:material3:1.0.0-rc01"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.17.0"
     implementation "com.google.accompanist:accompanist-pager-indicators:0.17.0"
-    implementation "com.github.Tlaster:NestedScrollView:0.7.0"
+    implementation ("com.github.Tlaster:NestedScrollView:0.7.0")
     implementation 'com.google.code.gson:gson:2.9.1'
     implementation "com.github.skydoves:landscapist-glide:2.0.0"
     implementation "androidx.preference:preference-ktx:1.2.0"
-
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
     //Room Dependencies
     implementation("androidx.room:room-runtime:2.4.3")
     implementation("io.coil-kt:coil-compose:2.2.2")

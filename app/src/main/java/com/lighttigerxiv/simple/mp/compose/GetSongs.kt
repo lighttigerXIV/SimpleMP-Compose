@@ -8,8 +8,11 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Size
+import com.lighttigerxiv.simple.mp.compose.data.AppDatabase
+import com.lighttigerxiv.simple.mp.compose.data.ArtistsDao
 
 class GetSongs {
+
 
     companion object {
 

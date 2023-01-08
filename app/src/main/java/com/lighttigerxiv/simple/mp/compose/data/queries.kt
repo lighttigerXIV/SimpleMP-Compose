@@ -30,3 +30,16 @@ interface PlaylistDao{
     fun insertPlaylist(playlist: Playlist)
 
 }
+
+@Dao
+interface ArtistsDao{
+
+    @Query("SELECT * FROM artist WHERE id = :id")
+    fun getArtist(id: Long): Artist?
+
+    @Query("INSERT INTO artist (id, alreadyRequested) VALUES (:id, 0)")
+    fun addArtist(id: Long)
+
+    @Query("UPDATE artist SET image = :image, alreadyRequested = 1 WHERE id = :id")
+    fun updateArtistImage(image: String?, id: Long)
+}

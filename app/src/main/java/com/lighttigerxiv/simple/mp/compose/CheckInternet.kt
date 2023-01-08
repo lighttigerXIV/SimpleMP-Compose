@@ -23,5 +23,15 @@ class CheckInternet {
             }
             return false
         }
+
+        fun isOnMobileData(context: Context): Boolean{
+            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+
+            if(capabilities != null){
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) return true
+            }
+            return false
+        }
     }
 }

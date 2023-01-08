@@ -75,4 +75,13 @@
     <string name="Accents">Cor De Realce</string>
     <string name="Finish">Completar</string>
     <string name="ImageTooBig">Imagem muito grande. Considere comprimir a imagem</string>
+    <string name="ChangeArtistCover">Mudar capa de artista</string>
+    <string name="Artist">Artista</string>
+    <string name="SelectLocalCover">Selecionar imagem local</string>
+    <string name="OnlineResults">Resultados Online</string>
+    <string name="EnableInternetToGetCovers">Ative a internet para transferir imagens</string>
+    <string name="UseDefault">Usar padrão</string>
+    <string name="Data">Dados</string>
+    <string name="DownloadArtistCoverFromInternet">Transferir imagem do artista pela internet</string>
+    <string name="DownloadArtistCoverOnData">Transferir imagem do artista pelos dados móveis</string>
 </resources>

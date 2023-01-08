@@ -83,4 +83,13 @@
     <string name="Accents">Accents</string>
     <string name="Finish">Finish</string>
     <string name="ImageTooBig">Image is too big. Consider compressing the image</string>
+    <string name="ChangeArtistCover">Change artist cover</string>
+    <string name="Artist">Artist</string>
+    <string name="SelectLocalCover">Select local cover</string>
+    <string name="OnlineResults">Online Results</string>
+    <string name="EnableInternetToGetCovers">Enable internet to get covers</string>
+    <string name="UseDefault">Use default</string>
+    <string name="Data">Data</string>
+    <string name="DownloadArtistCoverFromInternet">Download artist cover from internet</string>
+    <string name="DownloadArtistCoverOnData">Download artist cover on mobile data</string>
 </resources>

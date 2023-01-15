@@ -137,8 +137,6 @@ fun ArtistScreen(
                                                         override fun onLoadCleared(placeholder: Drawable?) {}
                                                     })
                                             }
-
-
                                         } catch (ignore: Exception) {}
                                     }
                                 }

@@ -111,7 +111,7 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     var descendentAlbumsList = ArrayList(songsList)
 
     //Genres Songs
-    var genresList = ArrayList(recentHomeSongsList)
+    var genresList = ArrayList<String>()
 
     private val _currentHomeSongsList = MutableStateFlow(recentHomeSongsList)
     val currentHomeSongsList = _currentHomeSongsList.asStateFlow()
@@ -438,7 +438,8 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
         descendentAlbumsList = ArrayList(albumsList)
 
 
-        genresList = recentHomeSongsList.distinctBy { song -> song.genreID } as ArrayList<Song>
+        val genres = recentHomeSongsList.distinctBy { it.genre }
+        genres.forEach { genresList.add(it.genre) }
 
 
         //Sorts the songs

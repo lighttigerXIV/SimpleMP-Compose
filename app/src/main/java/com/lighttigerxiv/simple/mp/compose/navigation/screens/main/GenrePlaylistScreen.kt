@@ -5,12 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
@@ -31,18 +31,19 @@ import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 
 @Composable
 fun GenrePlaylistScreen(
-    activityMainVM: ActivityMainVM,
-    genreID: String,
+    mainVM: ActivityMainVM,
+    position: Int,
     onBackClicked : () -> Unit,
 ){
 
-    val genrePlaylist = remember{activityMainVM.songsList.filter { it.genreID == genreID.toLong() } as ArrayList<Song>}
-    val genreName = genrePlaylist[0].genre
+    val genre = mainVM.genresList[position]
+    val playlist = mainVM.songsList.filter { it.genre == genre } as ArrayList<Song>
+
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainVM.surfaceColor.collectAsState().value)
+            .background(mainVM.surfaceColor.collectAsState().value)
             .padding(SCREEN_PADDING)
     ) {
 
@@ -79,7 +80,7 @@ fun GenrePlaylistScreen(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = genreName,
+                        text = genre,
                         textAlign = TextAlign.Center,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
@@ -96,25 +97,24 @@ fun GenrePlaylistScreen(
                 ) {
 
                     PlayAndShuffleRow(
-                        surfaceColor = activityMainVM.surfaceColor.collectAsState().value,
-                        onPlayClick = {activityMainVM.unshuffleAndPlay(genrePlaylist, 0)},
-                        onSuffleClick = {activityMainVM.shuffleAndPlay(genrePlaylist)}
+                        surfaceColor = mainVM.surfaceColor.collectAsState().value,
+                        onPlayClick = {mainVM.unshuffleAndPlay(playlist, 0)},
+                        onSuffleClick = {mainVM.shuffleAndPlay(playlist)}
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(5.dp),
                         content = {
 
-                            items(
-                                genrePlaylist,
-                                key={ song-> song.id}
-                            ){ song->
-
+                            itemsIndexed(
+                                items = playlist,
+                                key = { _, song -> song.id}
+                            ){ index, song ->
                                 SongItem(
                                     song = song,
-                                    songAlbumArt = activityMainVM.songsImagesList.find { song.albumID == it.albumID }!!.albumArt,
-                                    highlight = activityMainVM.selectedSongPath.observeAsState().value == song.path,
-                                    onSongClick = {activityMainVM.selectSong(genrePlaylist, position = genrePlaylist.indexOf(song))}
+                                    songAlbumArt = mainVM.songsImagesList.find { song.albumID == it.albumID }!!.albumArt,
+                                    highlight = mainVM.selectedSongPath.observeAsState().value == song.path,
+                                    onSongClick = {mainVM.selectSong(playlist, position = index)}
                                 )
                             }
                         }

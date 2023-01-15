@@ -19,12 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -42,13 +39,13 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun PlaylistsScreen(
-    activityMainVM: ActivityMainVM,
-    onGenrePlaylistClick: (genreID: Long) -> Unit,
+    mainVM: ActivityMainVM,
+    onGenrePlaylistClick: (position: Int) -> Unit,
     onPlaylistClick: (playlistID: Int) -> Unit
 ) {
 
-    val genresList = activityMainVM.genresList
-    val playlists = activityMainVM.currentPlaylistsPLSS.collectAsState().value
+    val genresList = mainVM.genresList
+    val playlists = mainVM.currentPlaylistsPLSS.collectAsState().value
 
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
@@ -68,7 +65,7 @@ fun PlaylistsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainVM.surfaceColor.collectAsState().value)
+            .background(mainVM.surfaceColor.collectAsState().value)
     ) {
 
         Column(
@@ -84,20 +81,20 @@ fun PlaylistsScreen(
                         end = SCREEN_PADDING
                     ),
                 selectedTabIndex = pagerState.currentPage,
-                contentColor = activityMainVM.surfaceColor.collectAsState().value,
+                contentColor = mainVM.surfaceColor.collectAsState().value,
                 indicator = {},
             ) {
 
                 val genrePlaylistColor = when(pagerState.currentPage){
 
                     0-> MaterialTheme.colorScheme.surfaceVariant
-                    else-> activityMainVM.surfaceColor.collectAsState().value
+                    else-> mainVM.surfaceColor.collectAsState().value
                 }
 
                 val yourPlaylistsColor = when(pagerState.currentPage){
 
                     1-> MaterialTheme.colorScheme.surfaceVariant
-                    else-> activityMainVM.surfaceColor.collectAsState().value
+                    else-> mainVM.surfaceColor.collectAsState().value
                 }
 
                 Tab(
@@ -107,7 +104,7 @@ fun PlaylistsScreen(
                     unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                     onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
                     modifier = Modifier
-                        .background(activityMainVM.surfaceColor.collectAsState().value)
+                        .background(mainVM.surfaceColor.collectAsState().value)
                         .padding(10.dp)
                         .clip(RoundedCornerShape(percent = 100))
                         .background(genrePlaylistColor)
@@ -119,7 +116,7 @@ fun PlaylistsScreen(
                     selected = pagerState.currentPage == 1,
                     onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
                     modifier = Modifier
-                        .background(activityMainVM.surfaceColor.collectAsState().value)
+                        .background(mainVM.surfaceColor.collectAsState().value)
                         .padding(10.dp)
                         .clip(RoundedCornerShape(percent = 100))
                         .background(yourPlaylistsColor)
@@ -150,18 +147,17 @@ fun PlaylistsScreen(
                                 )
                         ) {
 
-                            items(
+                            itemsIndexed(
                                 items = genresList,
-                                key = { genre -> genre.genreID },
-                            ) { genre ->
+                                key = { _, genre -> genre },
+                            ) { index, genre ->
 
                                 ImageCard(
                                     cardImage = remember { getBitmapFromVectorDrawable(context, R.drawable.icon_playlists) },
                                     imageTint = ColorFilter.tint(MaterialTheme.colorScheme.primary),
-                                    cardText = remember { genre.genre },
+                                    cardText = remember { genre },
                                     onCardClicked = {
-
-                                        onGenrePlaylistClick(genre.genreID)
+                                        onGenrePlaylistClick(index)
                                     }
                                 )
                             }
@@ -169,7 +165,7 @@ fun PlaylistsScreen(
                     }
                     1 -> {
 
-                        val searchValue = activityMainVM.searchValuePLSS.collectAsState().value
+                        val searchValue = mainVM.searchValuePLSS.collectAsState().value
 
                         BottomSheetScaffold(
                             scaffoldState = createPlaylistsScaffoldState,
@@ -186,7 +182,7 @@ fun PlaylistsScreen(
 
                                 ) {
 
-                                    val playlistNameValue = activityMainVM.tfNewPlaylistNameValue.observeAsState().value!!
+                                    val playlistNameValue = mainVM.tfNewPlaylistNameValue.observeAsState().value!!
 
                                     Spacer(Modifier.height(2.dp))
                                     Row(
@@ -216,7 +212,7 @@ fun PlaylistsScreen(
                                     CustomTextField(
                                         text = playlistNameValue,
                                         placeholder = remember { getAppString(context, R.string.InsertPlaylistName) },
-                                        onTextChange = { activityMainVM.tfNewPlaylistNameValue.value = it },
+                                        onTextChange = { mainVM.tfNewPlaylistNameValue.value = it },
                                         textType = "text"
                                     )
 
@@ -230,7 +226,7 @@ fun PlaylistsScreen(
                                         Button(
                                             onClick = {
 
-                                                activityMainVM.createPlaylist( playlistNameValue )
+                                                mainVM.createPlaylist( playlistNameValue )
                                                 scope.launch { createPlaylistsScaffoldState.bottomSheetState.collapse() }
                                             },
                                             enabled = playlistNameValue.isNotEmpty()
@@ -249,7 +245,7 @@ fun PlaylistsScreen(
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .background(activityMainVM.surfaceColor.collectAsState().value)
+                                    .background(mainVM.surfaceColor.collectAsState().value)
                                     .padding(sheetPadding)
                                     .padding(
                                         start = SCREEN_PADDING,
@@ -266,8 +262,8 @@ fun PlaylistsScreen(
                                     CustomTextField(
                                         text = searchValue,
                                         onTextChange = {
-                                            activityMainVM.setSearchValuePLSS(it)
-                                            activityMainVM.filterPlaylistsPLSS()
+                                            mainVM.setSearchValuePLSS(it)
+                                            mainVM.filterPlaylistsPLSS()
                                             scope.launch { userPlaylistsGridState.scrollToItem(0) }
                                         },
                                         placeholder = remember { getAppString(context, R.string.SearchPlaylists) },
@@ -309,12 +305,12 @@ fun PlaylistsScreen(
 
                                                     if (playlist.songs != null) {
                                                         val playlistSongs = Gson().fromJson(playlist.songs, object : TypeToken<ArrayList<Song>>() {}.type) as ArrayList<Song>
-                                                        activityMainVM.playlistSongs.value = playlistSongs
-                                                        activityMainVM.currentPlaylistSongs.value = playlistSongs
+                                                        mainVM.playlistSongs.value = playlistSongs
+                                                        mainVM.currentPlaylistSongs.value = playlistSongs
                                                     } else {
                                                         val playlistSongs = ArrayList<Song>()
-                                                        activityMainVM.playlistSongs.value = playlistSongs
-                                                        activityMainVM.currentPlaylistSongs.value = playlistSongs
+                                                        mainVM.playlistSongs.value = playlistSongs
+                                                        mainVM.currentPlaylistSongs.value = playlistSongs
                                                     }
 
                                                     onPlaylistClick(playlist.id)

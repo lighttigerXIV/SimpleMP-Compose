@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.Context
 import android.graphics.*
+import android.media.MediaMetadata
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -26,40 +28,39 @@ class GetSongs {
                 val songsList = ArrayList<Song>()
 
 
-                if (cursor != null && cursor.count > 0) {
-                    if (cursor.moveToNext()) {
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
                         do {
 
-                            val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID))
-                            val songPath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
-                            val title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE))
-                            val albumName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM))
-                            val albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))
-                            val duration = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))
-                            val artistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST))
-                            val artistID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))
+                            try {
+                                val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID))
+                                val songPath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
+
+                                val retriever = MediaMetadataRetriever()
+                                retriever.setDataSource(songPath)
+
+                                val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+                                val albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+                                val albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))
+                                val duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                                val artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
+                                val artistID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))
+                                var genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE)
 
 
-                            val genreID = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.GENRE_ID))
-                            else
-                                cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Genres._ID))
+                                if (genre == null) genre = context.getString(R.string.Undefined)
+                                val year = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.YEAR))
 
+                                if( title != null && albumName != null && artistName != null && duration != null){
+                                    val song = Song(id, songPath, title, albumName, albumID, duration.toInt(), artistName, artistID, year, genre)
+                                    val filterDuration = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString("FilterAudio", "60")!!.toInt() * 1000
+                                    if (duration.toInt() > filterDuration) songsList.add(song)
+                                }
 
-                            var genre = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-                                cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.GENRE))
-                            else
-                                null
+                            } catch (exception: Exception){
+                                println("Exception -> $exception")
+                            }
 
-
-                            if (genre == null) genre = context.getString(R.string.Undefined)
-                            val year = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.YEAR))
-
-
-                            val song = Song(id, songPath, title, albumName, albumID, duration, artistName, artistID, year, genreID, genre)
-
-                            val filterDuration = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString("FilterAudio", "60")!!.toInt() * 1000
-                            if (duration > filterDuration) songsList.add(song)
                         } while (cursor.moveToNext())
                     }
                     cursor.close()

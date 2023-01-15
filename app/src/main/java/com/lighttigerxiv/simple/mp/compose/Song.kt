@@ -11,7 +11,6 @@ data class Song(
     val artistName: String,
     val artistID: Long,
     val year: Int,
-    val genreID: Long,
     val genre: String,
     var selected: Boolean = false
 )

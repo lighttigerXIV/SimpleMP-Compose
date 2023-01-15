@@ -258,9 +258,9 @@ class MainActivity : ComponentActivity() {
                                     }
                                     composable("playlistsScreen") {
                                         PlaylistsScreen(
-                                            activityMainVM = mainVM,
-                                            onGenrePlaylistClick = { playlistID ->
-                                                navController.navigate("GenrePlaylistScreen/$playlistID")
+                                            mainVM = mainVM,
+                                            onGenrePlaylistClick = { position ->
+                                                navController.navigate("GenrePlaylistScreen/$position")
                                             },
                                             onPlaylistClick = { playlistID ->
                                                 mainVM.loadPlaylistScreen(playlistID)
@@ -338,13 +338,16 @@ class MainActivity : ComponentActivity() {
                                             onBackClicked = { navController.navigateUp() }
                                         )
                                     }
-                                    composable("GenrePlaylistScreen/{genreID}") {
-                                        val genreID = it.arguments!!.getString("genreID")
-                                        GenrePlaylistScreen(
-                                            activityMainVM = mainVM,
-                                            genreID = genreID!!,
-                                            onBackClicked = { navController.navigateUp() }
-                                        )
+                                    composable("GenrePlaylistScreen/{position}") {
+                                        val position = it.arguments!!.getString("position")
+
+                                        if(position != null){
+                                            GenrePlaylistScreen(
+                                                mainVM = mainVM,
+                                                position = position.toInt(),
+                                                onBackClicked = { navController.navigateUp() }
+                                            )
+                                        }
                                     }
 
                                     composable("PlaylistScreen/{playlistID}") {

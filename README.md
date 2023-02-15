@@ -1,4 +1,5 @@
 # Simple MP (Simple Music Player)
+[<img alt="alt_text" target="_blank" height="80px" src="https://user-images.githubusercontent.com/35658492/219074388-5bf313a0-892b-4641-ac5c-d4fe0b2ed230.png" />](https://play.google.com/store/apps/details?id=com.lighttigerxiv.simple.mp)
 ### About
 Simple MP (Simple Music Player) is music player based on material you design.
 This app is for those who like a minimalist look too their apps.

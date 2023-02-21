@@ -22,11 +22,11 @@ import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.getAppString
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 
 @Composable
 fun AboutScreen(
-    activityMainVM: ActivityMainVM,
+    mainVM: MainVM,
     onBackClick:() -> Unit,
 ){
 
@@ -35,7 +35,7 @@ fun AboutScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainVM.surfaceColor.collectAsState().value)
+            .background(mainVM.surfaceColor.collectAsState().value)
             .padding(SCREEN_PADDING)
     ) {
 

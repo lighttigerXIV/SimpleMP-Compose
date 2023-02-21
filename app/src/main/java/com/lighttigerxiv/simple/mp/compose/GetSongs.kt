@@ -4,86 +4,74 @@ import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.Context
 import android.graphics.*
-import android.media.MediaMetadata
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import android.util.Size
-import com.lighttigerxiv.simple.mp.compose.data.AppDatabase
-import com.lighttigerxiv.simple.mp.compose.data.ArtistsDao
+
+
+@SuppressLint("Range")
+fun getSongs(context: Context, sortType: String): List<Song> {
+
+    val songs = ArrayList<Song>()
+    val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+    val cursor = context.contentResolver.query(uri, null, null, null, null)
+
+    if (cursor != null) {
+        while (cursor.moveToNext()) {
+
+            try {
+
+                val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID))
+                val songPath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
+
+                val retriever = MediaMetadataRetriever()
+                retriever.setDataSource(songPath)
+
+                val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+                val albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+                val albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))
+                val duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                val artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
+                val artistID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))
+                var genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE)
+
+
+                if (genre == null) genre = context.getString(R.string.Undefined)
+                val year = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.YEAR))
+
+                if (title != null && albumName != null && artistName != null && duration != null) {
+
+                    val song = Song(id, songPath, title, albumName, albumID, duration.toInt(), artistName, artistID, year, genre)
+                    val filterDuration = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString("FilterAudio", "60")!!.toInt() * 1000
+                    if (duration.toInt() > filterDuration) songs.add(song)
+
+                }
+
+            } catch (e: Exception) {
+                Log.e("Song Error", "Exception while getting song. Details -> ${e.message}")
+            }
+        }
+    }
+
+    cursor?.close()
+
+    when (sortType) {
+        "Recent" -> songs.reverse()
+        "Ascendent" -> songs.sortBy { it.title }
+        "Descendent" -> songs.sortByDescending { it.title }
+    }
+
+    return songs
+}
+
 
 class GetSongs {
 
 
     companion object {
-
-        @SuppressLint("Range")
-        fun getSongsList(context: Context, sortType: String): ArrayList<Song> {
-
-            try {
-
-                val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                val cursor = context.contentResolver.query(uri, null, null, null, null)
-                val songsList = ArrayList<Song>()
-
-
-                if (cursor != null) {
-                    while (cursor.moveToNext()) {
-                        do {
-
-                            try {
-                                val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID))
-                                val songPath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
-
-                                val retriever = MediaMetadataRetriever()
-                                retriever.setDataSource(songPath)
-
-                                val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-                                val albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
-                                val albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))
-                                val duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                                val artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
-                                val artistID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))
-                                var genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE)
-
-
-                                if (genre == null) genre = context.getString(R.string.Undefined)
-                                val year = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.YEAR))
-
-                                if( title != null && albumName != null && artistName != null && duration != null){
-                                    val song = Song(id, songPath, title, albumName, albumID, duration.toInt(), artistName, artistID, year, genre)
-                                    val filterDuration = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString("FilterAudio", "60")!!.toInt() * 1000
-                                    if (duration.toInt() > filterDuration) songsList.add(song)
-                                }
-
-                            } catch (exception: Exception){
-                                println("Exception -> $exception")
-                            }
-
-                        } while (cursor.moveToNext())
-                    }
-                    cursor.close()
-                }
-
-
-
-                when (sortType) {
-
-                    "Recent" -> songsList.reverse()
-                    "Ascendent" -> songsList.sortBy { it.title }
-                    "Descendent" -> songsList.sortByDescending { it.title }
-                }
-
-
-
-                return songsList
-            } catch (exc: Exception) {
-                println("Exception-> $exc")
-            }
-
-            return ArrayList()
-        }
 
         @Suppress("DEPRECATION")
         fun getSongAlbumArt(context: Context, songID: Long, albumID: Long): Bitmap? {
@@ -106,21 +94,22 @@ class GetSongs {
                     MediaStore.Images.Media.getBitmap(context.contentResolver, albumArtUri)
                 }
 
-            } catch (ignore: Exception) {}
+            } catch (ignore: Exception) {
+            }
 
             return albumArt
         }
 
         fun getAllAlbumsImages(context: Context, compressed: Boolean = false): ArrayList<SongArt> {
 
-            val songsList = getSongsList(context, sortType = "Recent")
+            val songsList = getSongs(context, sortType = "Recent")
             val songsImagesList = ArrayList<SongArt>()
 
             songsList.forEach { song ->
 
-                when{
+                when {
 
-                    compressed->{
+                    compressed -> {
 
                         val uncompressedAlbumArt = getSongAlbumArt(context, song.id, song.albumID)
                         val compressedAlbumArt = uncompressedAlbumArt?.let { Bitmap.createScaledBitmap(it, uncompressedAlbumArt.width / 3, uncompressedAlbumArt.height / 3, false) }
@@ -132,7 +121,7 @@ class GetSongs {
                             )
                         )
                     }
-                    else->{
+                    else -> {
 
                         songsImagesList.add(
                             SongArt(

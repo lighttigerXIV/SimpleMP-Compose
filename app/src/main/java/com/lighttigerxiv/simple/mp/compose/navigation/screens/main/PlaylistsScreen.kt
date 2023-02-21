@@ -33,13 +33,13 @@ import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.composables.ImageCard
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun PlaylistsScreen(
-    mainVM: ActivityMainVM,
+    mainVM: MainVM,
     onGenrePlaylistClick: (position: Int) -> Unit,
     onPlaylistClick: (playlistID: Int) -> Unit
 ) {

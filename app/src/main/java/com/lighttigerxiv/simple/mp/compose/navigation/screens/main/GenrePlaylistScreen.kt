@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -25,19 +24,19 @@ import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.PlayAndShuffleRow
 import com.lighttigerxiv.simple.mp.compose.composables.SongItem
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 
 @Composable
 fun GenrePlaylistScreen(
-    mainVM: ActivityMainVM,
+    mainVM: MainVM,
     position: Int,
     onBackClicked : () -> Unit,
 ){
 
     val genre = mainVM.genresList[position]
-    val playlist = mainVM.songsList.filter { it.genre == genre } as ArrayList<Song>
+    val playlist = mainVM.songs.collectAsState().value?.filter { it.genre == genre } as ArrayList<Song>
 
 
     Box(

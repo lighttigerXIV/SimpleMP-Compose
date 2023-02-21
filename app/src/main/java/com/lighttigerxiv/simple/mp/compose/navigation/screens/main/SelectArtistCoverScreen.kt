@@ -30,12 +30,12 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.data.AppDatabase
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 import java.io.ByteArrayOutputStream
 
 @Composable
 fun SelectArtistCoverScreen(
-    mainVM: ActivityMainVM,
+    mainVM: MainVM,
     artistName: String,
     artistID: Long,
     onGoBack: () -> Unit,

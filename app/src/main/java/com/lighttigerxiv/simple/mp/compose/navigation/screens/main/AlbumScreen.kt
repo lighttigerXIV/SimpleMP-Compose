@@ -22,30 +22,29 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
-import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.composables.PlayAndShuffleRow
 import com.lighttigerxiv.simple.mp.compose.composables.SongItem
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 
 
 @Composable
 fun AlbumScreen(
-    activityMainVM: ActivityMainVM,
+    mainVM: MainVM,
     backStackEntry: NavBackStackEntry,
     onBackClicked: () -> Unit
 ){
 
     val context = LocalContext.current
     val albumID = remember { backStackEntry.arguments?.getLong("albumID") }
-    val album = remember { activityMainVM.currentAlbumsList.value!!.find{ it.albumID == albumID }!! }
-    val albumArt = remember { activityMainVM.songsImagesList.find { it.albumID == albumID }!!.albumArt }
+    val album = remember { mainVM.currentAlbumsList.value!!.find{ it.albumID == albumID }!! }
+    val albumArt = remember { mainVM.songsImagesList.find { it.albumID == albumID }!!.albumArt }
     val albumTitle = remember { album.albumName }
-    val albumArtist = remember { album.artistName }
-    val albumSongsList = remember { activityMainVM.recentHomeSongsList.filter { it.albumID == albumID } as ArrayList<Song> }
+    val albumArtist = remember { album.artist }
+    val albumSongsList =  mainVM.songs.collectAsState().value!!.filter { it.albumID == albumID }
     val nestedScrollViewState = rememberNestedScrollViewState()
 
 
@@ -54,7 +53,7 @@ fun AlbumScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainVM.surfaceColor.collectAsState().value)
+            .background(mainVM.surfaceColor.collectAsState().value)
             .padding(SCREEN_PADDING)
     ){
 
@@ -112,9 +111,9 @@ fun AlbumScreen(
                             Spacer(modifier = Modifier.height(10.dp))
 
                             PlayAndShuffleRow(
-                                surfaceColor = activityMainVM.surfaceColor.collectAsState().value,
-                                onPlayClick = {activityMainVM.unshuffleAndPlay(albumSongsList, 0)},
-                                onSuffleClick = {activityMainVM.shuffleAndPlay(albumSongsList)}
+                                surfaceColor = mainVM.surfaceColor.collectAsState().value,
+                                onPlayClick = {mainVM.unshuffleAndPlay(albumSongsList, 0)},
+                                onSuffleClick = {mainVM.shuffleAndPlay(albumSongsList)}
                             )
                         }
                     }
@@ -135,9 +134,9 @@ fun AlbumScreen(
 
                                 SongItem(
                                     song = song,
-                                    songAlbumArt = remember { activityMainVM.songsImagesList.first { it.albumID == song.albumID }.albumArt },
-                                    highlight = song.path == activityMainVM.selectedSongPath.observeAsState().value,
-                                    onSongClick = { activityMainVM.selectSong(albumSongsList, albumSongsList.indexOf(song)) }
+                                    songAlbumArt = remember { mainVM.songsImagesList.first { it.albumID == song.albumID }.albumArt },
+                                    highlight = song.path == mainVM.selectedSongPath.observeAsState().value,
+                                    onSongClick = { mainVM.selectSong(albumSongsList, albumSongsList.indexOf(song)) }
                                 )
                             }
                         },

@@ -1,12 +1,8 @@
 package com.lighttigerxiv.simple.mp.compose
 
-import android.Manifest.permission.*
-import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -19,39 +15,33 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.lighttigerxiv.simple.mp.compose.navigation.screens.setup.PermissionsScreen
-import com.lighttigerxiv.simple.mp.compose.navigation.screens.setup.ThemesScreen
-import com.lighttigerxiv.simple.mp.compose.navigation.screens.setup.WelcomeScreen
+import com.lighttigerxiv.simple.mp.compose.screens.setup.permissions.PermissionsScreen
+import com.lighttigerxiv.simple.mp.compose.screens.setup.themes.ThemesScreen
+import com.lighttigerxiv.simple.mp.compose.screens.setup.permissions.PermissionsScreenVM
+import com.lighttigerxiv.simple.mp.compose.screens.setup.themes.ThemesScreenVM
+import com.lighttigerxiv.simple.mp.compose.screens.setup.welcome.WelcomeScreen
 import com.lighttigerxiv.simple.mp.compose.ui.theme.ComposeSimpleMPTheme
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityFirstSetupViewModel
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ThemeViewModel
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.ActivitySetupVM
 
 class ActivityFirstSetup : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val activityFirstSetupViewModel = ViewModelProvider(this)[ActivityFirstSetupViewModel::class.java]
-
-        val requestPermissionLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) {
-
-                activityFirstSetupViewModel.checkPermissions()
-            }
+        val setupVM = ViewModelProvider(this)[ActivitySetupVM::class.java]
+        val activityContext = this
 
 
-        val themeMode = activityFirstSetupViewModel.themeModeSetting!!
-        val darkMode = activityFirstSetupViewModel.darkModeSetting!!
+        val themeMode = setupVM.themeModeSetting!!
+        val darkMode = setupVM.darkModeSetting!!
 
         setContent {
             ComposeSimpleMPTheme(
                 useDarkTheme = isSystemInDarkTheme(),
                 themeMode = themeMode,
-                themeAccent = activityFirstSetupViewModel.themeAccentSetting.collectAsState().value!!,
+                themeAccent = setupVM.themeAccentSetting.collectAsState().value,
                 content = {
 
-                    val themeAccent = activityFirstSetupViewModel.themeAccentSetting.collectAsState().value
+                    val themeAccent = setupVM.themeAccentSetting.collectAsState().value
 
                     val surfaceColor = if (themeMode == "Dark" && darkMode == "Oled") {
                         Color.Black
@@ -84,41 +74,34 @@ class ActivityFirstSetup : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = "welcomeScreen",
+                        startDestination = "Welcome",
                         modifier = Modifier
                             .fillMaxSize()
                             .background(surfaceColor)
                     ) {
 
-                        composable("welcomeScreen") {
+                        composable("Welcome") {
                             WelcomeScreen(
                                 onNextClicked = {
-                                    navController.navigate("permissionsScreen")
+                                    navController.navigate("Permissions")
                                 }
                             )
                         }
 
-                        composable("permissionsScreen") {
+                        composable("Permissions") {
                             PermissionsScreen(
-                                activityFirstSetupViewModel = activityFirstSetupViewModel,
+                                permissionsVM = ViewModelProvider(activityContext)[PermissionsScreenVM::class.java],
                                 onBackClicked = { navController.navigateUp() },
-                                onNextClicked = { navController.navigate("themesScreen") },
-                                onRequestNotificationPermission = { requestPermissionLauncher.launch(POST_NOTIFICATIONS) },
-                                onRequestStoragePermission = {
-
-                                    if (Build.VERSION.SDK_INT >= 33)
-                                        requestPermissionLauncher.launch(READ_MEDIA_AUDIO)
-                                    else
-                                        requestPermissionLauncher.launch(READ_EXTERNAL_STORAGE)
-                                }
+                                onNextClicked = { navController.navigate("Themes") }
                             )
                         }
 
-                        composable("themesScreen") {
+                        composable("Themes") {
                             ThemesScreen(
-                                activityFirstSetupViewModel = activityFirstSetupViewModel,
+                                setupVM = setupVM,
+                                themesScreenVM = ViewModelProvider(activityContext)[ThemesScreenVM::class.java],
                                 onBackClicked = { navController.navigateUp() },
-                                onKillActivity = { finish() }
+                                onFinish = { finish() }
                             )
                         }
                     }

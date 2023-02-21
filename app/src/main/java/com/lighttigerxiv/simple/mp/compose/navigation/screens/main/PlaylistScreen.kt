@@ -38,7 +38,7 @@ import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.composables.PlayAndShuffleRow
 import com.lighttigerxiv.simple.mp.compose.getAppString
 import com.lighttigerxiv.simple.mp.compose.getBitmapFromVectorDrawable
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 import kotlinx.coroutines.launch
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
@@ -46,24 +46,24 @@ import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PlaylistScreen(
-    activityMainVM: ActivityMainVM,
+    mainVM: MainVM,
     arguments: Bundle,
     onBackClick: () -> Unit,
     onGetImage: () -> Unit
 ) {
 
     val playlistID = arguments.getString("playlistID")!!.toInt()
-    val playlist = activityMainVM.playlists.collectAsState().value.find { it.id == playlistID }
+    val playlist = mainVM.playlists.collectAsState().value.find { it.id == playlistID }
 
     if(playlist != null){
 
         val playlistName = playlist.name
-        val playlistSongs = activityMainVM.currentPlaylistSongs.observeAsState().value!!
-        val playlistImageString = activityMainVM.currentPlaylistImageString.collectAsState().value
+        val playlistSongs = mainVM.currentPlaylistSongs.observeAsState().value!!
+        val playlistImageString = mainVM.currentPlaylistImageString.collectAsState().value
         val showMenu = remember { mutableStateOf(false) }
         val showDeletePlaylistDialog = remember { mutableStateOf(false) }
-        val isOnEditMode = activityMainVM.isOnEditModePlaylistScreen.observeAsState().value!!
-        val tfPlaylistNameValue = activityMainVM.tfPlaylistNamePlaylistScreen.observeAsState().value!!
+        val isOnEditMode = mainVM.isOnEditModePlaylistScreen.observeAsState().value!!
+        val tfPlaylistNameValue = mainVM.tfPlaylistNamePlaylistScreen.observeAsState().value!!
         val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
         val scope = rememberCoroutineScope()
         val context = LocalContext.current
@@ -78,9 +78,9 @@ fun PlaylistScreen(
 
 
 
-        activityMainVM.onPlaylistImageSelected = { bitmapString ->
+        mainVM.onPlaylistImageSelected = { bitmapString ->
 
-            activityMainVM.setCurrentPlaylistImageString(bitmapString)
+            mainVM.setCurrentPlaylistImageString(bitmapString)
         }
 
         BottomSheetScaffold(
@@ -101,7 +101,7 @@ fun PlaylistScreen(
                                 topEnd = 14.dp
                             )
                         )
-                        .background(activityMainVM.surfaceColor.collectAsState().value)
+                        .background(mainVM.surfaceColor.collectAsState().value)
                         .padding(10.dp)
                 ) {
 
@@ -128,7 +128,7 @@ fun PlaylistScreen(
                             .fillMaxWidth()
                             .clickable {
                                 scope.launch { bottomSheetScaffoldState.bottomSheetState.collapse() }
-                                activityMainVM.setCurrentPlaylistImageString("")
+                                mainVM.setCurrentPlaylistImageString("")
                             },
                         text = "Remove Image"
                     )
@@ -148,7 +148,7 @@ fun PlaylistScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(activityMainVM.surfaceColor.collectAsState().value)
+                    .background(mainVM.surfaceColor.collectAsState().value)
                     .padding(bottomSheetScaffoldPaddding)
                     .padding(SCREEN_PADDING)
             ) {
@@ -182,10 +182,10 @@ fun PlaylistScreen(
                                                 .clip(RoundedCornerShape(14.dp))
                                                 .background(MaterialTheme.colorScheme.surfaceVariant)
                                                 .clickable {
-                                                    activityMainVM.tfPlaylistNamePlaylistScreen.value = playlistName
-                                                    activityMainVM.currentPlaylistSongs.value = activityMainVM.playlistSongs.value
-                                                    activityMainVM.setCurrentPlaylistImageString(playlist.image ?: "")
-                                                    activityMainVM.isOnEditModePlaylistScreen.value = false
+                                                    mainVM.tfPlaylistNamePlaylistScreen.value = playlistName
+                                                    mainVM.currentPlaylistSongs.value = mainVM.playlistSongs.value
+                                                    mainVM.setCurrentPlaylistImageString(playlist.image ?: "")
+                                                    mainVM.isOnEditModePlaylistScreen.value = false
                                                 }
                                                 .padding(10.dp)
                                         )
@@ -198,21 +198,21 @@ fun PlaylistScreen(
 
                                         Button(
                                             onClick = {
-                                                activityMainVM.updatePlaylistName(
+                                                mainVM.updatePlaylistName(
                                                     playlistID = playlist.id,
-                                                    playlistName = activityMainVM.tfPlaylistNamePlaylistScreen.value!!
+                                                    playlistName = mainVM.tfPlaylistNamePlaylistScreen.value!!
                                                 )
 
                                                 val newPlaylistSongsJson = Gson().toJson(playlistSongs)
 
-                                                activityMainVM.updatePlaylistSongs(
+                                                mainVM.updatePlaylistSongs(
                                                     songsJson = newPlaylistSongsJson,
                                                     playlistID = playlist.id
                                                 )
 
-                                                activityMainVM.updatePlaylistImage(playlistImageString, playlistID)
+                                                mainVM.updatePlaylistImage(playlistImageString, playlistID)
 
-                                                activityMainVM.isOnEditModePlaylistScreen.value = false
+                                                mainVM.isOnEditModePlaylistScreen.value = false
                                             },
                                             enabled = tfPlaylistNameValue.isNotEmpty(),
                                             colors = ButtonDefaults.buttonColors(
@@ -284,8 +284,8 @@ fun PlaylistScreen(
                                                     onClick = {
 
                                                         showMenu.value = false
-                                                        activityMainVM.tfPlaylistNamePlaylistScreen.value = playlistName
-                                                        activityMainVM.isOnEditModePlaylistScreen.value = true
+                                                        mainVM.tfPlaylistNamePlaylistScreen.value = playlistName
+                                                        mainVM.isOnEditModePlaylistScreen.value = true
                                                     }
                                                 )
 
@@ -361,7 +361,7 @@ fun PlaylistScreen(
                                                                         onClick = {
 
                                                                             onBackClick()
-                                                                            activityMainVM.deletePlaylist(playlistID = playlist.id)
+                                                                            mainVM.deletePlaylist(playlistID = playlist.id)
                                                                         },
                                                                         colors = ButtonDefaults.buttonColors(
                                                                             containerColor = MaterialTheme.colorScheme.primary
@@ -435,7 +435,7 @@ fun PlaylistScreen(
                                     CustomTextField(
                                         text = tfPlaylistNameValue,
                                         placeholder = remember { getAppString(context, R.string.InsertPlaylistName) },
-                                        onTextChange = { activityMainVM.tfPlaylistNamePlaylistScreen.value = it }
+                                        onTextChange = { mainVM.tfPlaylistNamePlaylistScreen.value = it }
                                     )
                                 }
                                 false -> {
@@ -465,9 +465,9 @@ fun PlaylistScreen(
 
                                 if (playlistSongs.isNotEmpty()) {
                                     PlayAndShuffleRow(
-                                        surfaceColor = activityMainVM.surfaceColor.collectAsState().value,
-                                        onPlayClick = { activityMainVM.unshuffleAndPlay(playlistSongs, 0) },
-                                        onSuffleClick = { activityMainVM.shuffleAndPlay(playlistSongs) }
+                                        surfaceColor = mainVM.surfaceColor.collectAsState().value,
+                                        onPlayClick = { mainVM.unshuffleAndPlay(playlistSongs, 0) },
+                                        onSuffleClick = { mainVM.shuffleAndPlay(playlistSongs) }
                                     )
                                 } else {
 
@@ -494,9 +494,9 @@ fun PlaylistScreen(
                                     ) { index, song ->
 
                                         val songTitle = remember { song.title }
-                                        val songArtist = remember { song.artistName }
-                                        val highlight = song.path == activityMainVM.selectedSongPath.observeAsState().value!!
-                                        val songAlbumArt = activityMainVM.songsImagesList.find { it.albumID == song.albumID }?.albumArt
+                                        val songArtist = remember { song.artist }
+                                        val highlight = song.path == mainVM.selectedSongPath.observeAsState().value!!
+                                        val songAlbumArt = mainVM.songsImagesList.find { it.albumID == song.albumID }?.albumArt
 
 
                                         val titleColor = when (highlight) {
@@ -516,7 +516,7 @@ fun PlaylistScreen(
                                             .clickable {
 
                                                 if (!isOnEditMode) {
-                                                    activityMainVM.selectSong(playlistSongs, index)
+                                                    mainVM.selectSong(playlistSongs, index)
                                                 }
                                             }
                                         ) {
@@ -588,10 +588,10 @@ fun PlaylistScreen(
                                                             .width(25.dp)
                                                             .clickable {
 
-                                                                val temp = ArrayList(activityMainVM.currentPlaylistSongs.value!!)
+                                                                val temp = ArrayList(mainVM.currentPlaylistSongs.value!!)
                                                                 temp.removeIf { it.id == song.id }
 
-                                                                activityMainVM.currentPlaylistSongs.value = temp
+                                                                mainVM.currentPlaylistSongs.value = temp
                                                             }
                                                     )
                                                 }

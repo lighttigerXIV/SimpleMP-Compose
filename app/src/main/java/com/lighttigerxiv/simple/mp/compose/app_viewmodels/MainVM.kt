@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.viewmodels
+package com.lighttigerxiv.simple.mp.compose.app_viewmodels
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -6,42 +6,87 @@ import android.appwidget.AppWidgetManager
 import android.content.*
 import android.content.Context.MODE_PRIVATE
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.os.IBinder
-import android.util.Base64
 import android.widget.Toast
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.data.AppDatabase
 import com.lighttigerxiv.simple.mp.compose.data.Playlist
 import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.ByteArrayOutputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ActivityMainVM(application: Application) : AndroidViewModel(application) {
+class MainVM(application: Application) : AndroidViewModel(application) {
+
+
+    //************************************************
+    // Variables
+    //************************************************
+
+
+    private val context = application
+
+    private val _songs = MutableStateFlow<List<Song>?>(null)
+    val songs = _songs.asStateFlow()
+
+
+    /*
+    private val _recentArtistSongs = MutableStateFlow<List<Song>?>(null)
+    val recentArtistSongs = _recentArtistSongs.asStateFlow()
+
+    private val _oldestArtistSongs = MutableStateFlow<List<Song>?>(null)
+    val oldestArtistSongs = _oldestArtistSongs.asStateFlow()
+
+    private val _ascendentArtistSongs = MutableStateFlow<List<Song>?>(null)
+    val ascendentArtistSongs = _ascendentArtistSongs.asStateFlow()
+
+    private val _descendentArtistSongs = MutableStateFlow<List<Song>?>(null)
+    val descendentArtistSongs = _recentArtistSongs.asStateFlow()
+
+    private val _recentAlbumsSongs = MutableStateFlow<List<Song>?>(null)
+    val recentAlbumsSongs = _recentAlbumsSongs.asStateFlow()
+
+    private val _oldestAlbumsSongs = MutableStateFlow<List<Song>?>(null)
+    val oldestAlbumsSongs = _oldestAlbumsSongs.asStateFlow()
+
+    private val _ascendentAlbumsSongs = MutableStateFlow<List<Song>?>(null)
+    val ascendentAlbumsSongs = _ascendentAlbumsSongs.asStateFlow()
+
+    private val _descendentAlbumsSongs = MutableStateFlow<List<Song>?>(null)
+    val descendentAlbumsSongs = _recentAlbumsSongs.asStateFlow()
+
+
+     */
+
+
+
+
+
 
     private val playlistDao = AppDatabase.getInstance(application).playlistDao
     private val preferences = application.getSharedPreferences(application.packageName, MODE_PRIVATE)
 
-    @SuppressLint("StaticFieldLeak")
-    private val context = application.applicationContext
 
-    val songsList = GetSongs.getSongsList(application, "Recent")
+
+
+    private val _surfaceColor = MutableStateFlow(Color(0xFF000000))
+    val surfaceColor = _surfaceColor.asStateFlow()
+    fun updateSurfaceColor(newValue:Color) {
+        _surfaceColor.update { newValue }
+    }
+
     val queueList = MutableLiveData(ArrayList<Song>())
     val upNextQueueList = MutableLiveData(ArrayList<Song>())
     var songsImagesList = GetSongs.getAllAlbumsImages(application)
@@ -50,23 +95,23 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
 
     private val _showNavigationBar = MutableStateFlow(true)
     val showNavigationBar = _showNavigationBar.asStateFlow()
-    fun setShowNavigationBar(value: Boolean){
+    fun updateShowNavigationBar(value: Boolean){
 
         try{
 
             if(smpService.isMusicPlayingOrPaused() && value){
-                miniPlayerHeight.value = 60.dp
+                _miniPlayerHeight.update { 60.dp }
             }
             else{
-                miniPlayerHeight.value = 0.dp
+                _miniPlayerHeight.update { 0.dp }
             }
         }
         catch(_: Exception){}
 
-        _showNavigationBar.value = value
+        _showNavigationBar.update { value }
     }
 
-    //--------------------------- Playback States ---------------------------
+
     private val _isMusicPlaying = MutableStateFlow(false)
     val isMusicPlaying = _isMusicPlaying.asStateFlow()
 
@@ -80,46 +125,12 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     val currentMediaPlayerPosition = _currentMediaPlayerPosition.asStateFlow()
 
 
-
-
-
-    //--------------------------- Home Screen (HMS) --------------------------------------
-
-
-
-    //-------------------------- Player Screen (PLS) --------------------------------------
-
-
-
-
-    //Home Songs
-    var recentHomeSongsList = ArrayList(songsList)
-    var oldestHomeSongsList = ArrayList(songsList)
-    var ascendentHomeSongsList = ArrayList(songsList)
-    var descendentHomeSongsList = ArrayList(songsList)
-
-    //Artists Songs
-    var recentArtistsList = ArrayList(songsList)
-    var oldestArtistsList = ArrayList(songsList)
-    var ascendentArtistsList = ArrayList(songsList)
-    var descendentArtistsList = ArrayList(songsList)
-
-    //Albums Songs
-    var recentAlbumsList = ArrayList(songsList)
-    var oldestAlbumsList = ArrayList(songsList)
-    var ascendentAlbumsList = ArrayList(songsList)
-    var descendentAlbumsList = ArrayList(songsList)
-
     //Genres Songs
     var genresList = ArrayList<String>()
 
-    private val _currentHomeSongsList = MutableStateFlow(recentHomeSongsList)
-    val currentHomeSongsList = _currentHomeSongsList.asStateFlow()
-    fun setCurrentHomeSongsList(v: ArrayList<Song>){
-        _currentHomeSongsList.value = v
-    }
-    val currentArtistsList = MutableLiveData(recentHomeSongsList)
-    val currentAlbumsList = MutableLiveData(recentHomeSongsList)
+
+    val currentArtistsList = MutableLiveData<List<Song>>(ArrayList())
+    val currentAlbumsList = MutableLiveData<List<Song>>(ArrayList())
 
 
     private val _playlists: MutableStateFlow<List<Playlist>> = MutableStateFlow(getAllPlaylists())
@@ -167,6 +178,7 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
 
     private fun getAllPlaylists(): List<Playlist>{
 
+        /*
         playlistDao.getAllPlaylists().forEach { playlist->
 
             val newSongs = ArrayList<Song>()
@@ -184,6 +196,8 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
             }
         }
 
+         */
+
         return playlistDao.getAllPlaylists()
     }
 
@@ -193,12 +207,10 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     var onMediaPlayerStopped: () -> Unit = {}
 
 
-    //Player Sates
-
-
-
     //Song Related
-    var selectedSong = MutableLiveData<Song?>(null)
+    private val _selectedSong = MutableStateFlow<Song?>(null)
+    val selectedSong = _selectedSong.asStateFlow()
+
     var selectedSongTitle = MutableLiveData("")
     var selectedSongArtistName = MutableLiveData("")
     var selectedSongPath = MutableLiveData("")
@@ -207,7 +219,11 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     var selectedSongCurrentMinutesAndSeconds = MutableLiveData("")
     var selectedSongAlbumArt = MutableLiveData<Bitmap?>(null)
 
-    var miniPlayerHeight = MutableLiveData(0.dp)
+    private val _miniPlayerHeight = MutableStateFlow(0.dp)
+    val miniPlayerHeight = _miniPlayerHeight.asStateFlow()
+    fun updateMiniPlayerHeight(newValue: Dp) {
+        _miniPlayerHeight.update { newValue }
+    }
 
 
     fun getCurrentSongPosition(): Int {
@@ -240,16 +256,16 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
 
             if (smpService.isMusicPlayingOrPaused()) {
 
-                selectedSong.value = smpService.currentSong
+                _selectedSong.update { smpService.currentSong }
                 selectedSongTitle.value = selectedSong.value!!.title
-                selectedSongArtistName.value = selectedSong.value!!.artistName
+                selectedSongArtistName.value = selectedSong.value!!.artist
                 selectedSongPath.value = selectedSong.value!!.path
                 selectedSongDuration.value = selectedSong.value!!.duration
                 _currentMediaPlayerPosition.value = smpService.getCurrentMediaPlayerPosition()
                 selectedSongMinutesAndSeconds.value = getMinutesAndSecondsFromPosition(selectedSongDuration.value!! / 1000)
                 selectedSongCurrentMinutesAndSeconds.value = "0:00"
                 updateCurrentSongAlbumArt()
-                miniPlayerHeight.value = 60.dp
+                _miniPlayerHeight.update { 60.dp }
 
 
                 queueList.value = smpService.getCurrentQueueList()
@@ -264,9 +280,9 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
 
             smpService.onSongSelected = { song ->
 
-                selectedSong.value = smpService.currentSong
+                _selectedSong.update { smpService.currentSong }
                 selectedSongTitle.value = selectedSong.value!!.title
-                selectedSongArtistName.value = selectedSong.value!!.artistName
+                selectedSongArtistName.value = selectedSong.value!!.artist
                 selectedSongPath.value = selectedSong.value!!.path
                 selectedSongDuration.value = selectedSong.value!!.duration
                 _currentMediaPlayerPosition.value = smpService.getCurrentMediaPlayerPosition()
@@ -280,6 +296,8 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
                 queueList.value = smpService.getCurrentQueueList()
                 upNextQueueList.value = smpService.getUpNextQueueList()
                 onSongSelected(song)
+
+                _miniPlayerHeight.update { 60.dp }
 
                 _isMusicPlaying.value = smpService.isMusicPlaying()
 
@@ -316,15 +334,15 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     }
 
 
-    fun selectSong(newQueueList: ArrayList<Song>, position: Int) {
+    fun selectSong(newQueueList: List<Song>, position: Int) {
 
-        if (newQueueList.size > 0) {
+        if (newQueueList.isNotEmpty()) {
 
             smpService.selectSong(getApplication(), newQueueList, position)
             onSongSelected(smpService.currentSong!!)
-            selectedSong.value = smpService.currentSong
+            _selectedSong.update { smpService.currentSong }
             selectedSongTitle.value = selectedSong.value!!.title
-            selectedSongArtistName.value = selectedSong.value!!.artistName
+            selectedSongArtistName.value = selectedSong.value!!.artist
             selectedSongPath.value = selectedSong.value!!.path
             selectedSongDuration.value = selectedSong.value!!.duration
             selectedSongMinutesAndSeconds.value = getMinutesAndSecondsFromPosition(selectedSongDuration.value!! / 1000)
@@ -333,14 +351,14 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun shuffleAndPlay(newQueueList: ArrayList<Song>){
+    fun shuffleAndPlay(newQueueList: List<Song>){
 
         if(isServiceBound){
             smpService.shuffleAndPlay(newQueueList, context)
         }
     }
 
-    fun unshuffleAndPlay(newQueueList: ArrayList<Song>, position: Int){
+    fun unshuffleAndPlay(newQueueList: List<Song>, position: Int){
 
         if(isServiceBound){
             if(smpService.isMusicShuffled) smpService.toggleShuffle()
@@ -350,7 +368,7 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     }
 
 
-    fun shuffle(newQueueList: ArrayList<Song>) {
+    fun shuffle(newQueueList: List<Song>) {
 
         smpService.shuffleAndPlay(newQueueList, getApplication())
     }
@@ -423,93 +441,9 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
         val serviceIntent = Intent(application, SimpleMPService::class.java)
         application.bindService(serviceIntent, simpleMPConnection, Context.BIND_AUTO_CREATE)
 
-
-        val artistsList = songsList.distinctBy { it.artistID }
-        recentArtistsList = ArrayList(artistsList)
-        oldestArtistsList = ArrayList(artistsList)
-        ascendentArtistsList = ArrayList(artistsList)
-        descendentArtistsList = ArrayList(artistsList)
-
-
-        val albumsList = songsList.distinctBy { it.albumID }
-        recentAlbumsList = ArrayList(albumsList)
-        oldestAlbumsList = ArrayList(albumsList)
-        ascendentAlbumsList = ArrayList(albumsList)
-        descendentAlbumsList = ArrayList(albumsList)
-
-
-        val genres = recentHomeSongsList.distinctBy { it.genre }
-        genres.forEach { genresList.add(it.genre) }
-
-
-        //Sorts the songs
-        val sharedPrefs = application.getSharedPreferences("sorting", MODE_PRIVATE)
-        val homeSort = sharedPrefs.getString("home", "Recent")
-        val artistsSort = sharedPrefs.getString("artists", "Recent")
-        val albumsSort = sharedPrefs.getString("albums", "Recent")
-
-
-        oldestHomeSongsList.reverse()
-        ascendentHomeSongsList.sortBy { it.title }
-        descendentHomeSongsList.sortByDescending { it.title }
-
-        oldestArtistsList.reverse()
-        ascendentArtistsList.sortBy { it.artistName }
-        descendentArtistsList.sortByDescending { it.artistName }
-
-        oldestAlbumsList.reverse()
-        ascendentAlbumsList.sortBy { it.albumName }
-        descendentAlbumsList.sortByDescending { it.albumName }
-
-
-        when (homeSort) {
-
-            "Recent" -> {
-                _currentHomeSongsList.value = recentHomeSongsList
-            }
-            "Oldest" -> {
-                _currentHomeSongsList.value = oldestHomeSongsList
-            }
-            "Ascendent" -> {
-                _currentHomeSongsList.value = ascendentHomeSongsList
-            }
-            "Descendent" -> {
-                _currentHomeSongsList.value = descendentHomeSongsList
-            }
-        }
-
-        when (artistsSort) {
-
-            "Recent" -> {
-                currentArtistsList.value = recentArtistsList
-            }
-            "Oldest" -> {
-                currentArtistsList.value = oldestArtistsList
-            }
-            "Ascendent" -> {
-                currentArtistsList.value = ascendentArtistsList
-            }
-            "Descendent" -> {
-                currentArtistsList.value = descendentArtistsList
-            }
-        }
-
-        when (albumsSort) {
-
-            "Recent" -> {
-                currentAlbumsList.value = recentAlbumsList
-            }
-            "Oldest" -> {
-                currentAlbumsList.value = oldestAlbumsList
-            }
-            "Ascendent" -> {
-                currentAlbumsList.value = ascendentAlbumsList
-            }
-            "Descendent" -> {
-                currentAlbumsList.value = descendentAlbumsList
-            }
-        }
+        _songs.update { getSongs(context, "Recent") }
     }
+
 
 
     fun createPlaylist(name: String) {
@@ -553,19 +487,12 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     }
 
 
-    fun filterHomeSongsList(sortType: String) {
 
-        when (sortType) {
 
-            "Recent" -> _currentHomeSongsList.value = recentHomeSongsList.filterNot { !it.title.lowercase().trim().contains(homeSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
-            "Oldest" -> _currentHomeSongsList.value = oldestHomeSongsList.filterNot { !it.title.lowercase().trim().contains(homeSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
-            "Ascendent" -> _currentHomeSongsList.value = ascendentHomeSongsList.filterNot { !it.title.lowercase().trim().contains(homeSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
-            "Descendent" -> _currentHomeSongsList.value = descendentHomeSongsList.filterNot { !it.title.lowercase().trim().contains(homeSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
-        }
-    }
 
     fun filterArtistsList(sortType: String) {
 
+        /*
         when (sortType) {
 
             "Recent" -> currentArtistsList.value = recentArtistsList.filterNot { !it.artistName.lowercase().trim().contains(artistsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
@@ -573,10 +500,13 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
             "Ascendent" -> currentArtistsList.value = ascendentArtistsList.filterNot { !it.artistName.lowercase().trim().contains(artistsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
             "Descendent" -> currentArtistsList.value = descendentArtistsList.filterNot { !it.artistName.lowercase().trim().contains(artistsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
         }
+
+         */
     }
 
     fun filterAlbumsList(sortType: String) {
 
+        /*
         when (sortType) {
 
             "Recent" -> currentAlbumsList.value = recentAlbumsList.filterNot { !it.albumName.lowercase().trim().contains(albumsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
@@ -584,27 +514,29 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
             "Ascendent" -> currentAlbumsList.value = ascendentAlbumsList.filterNot { !it.albumName.lowercase().trim().contains(albumsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
             "Descendent" -> currentAlbumsList.value = descendentAlbumsList.filterNot { !it.albumName.lowercase().trim().contains(albumsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
         }
+
+         */
     }
 
-    //-------------------------- Settings Screen ----------------------------
-    private val _themeModeSetting = MutableStateFlow(preferences.getString("ThemeMode", "System"))
+
+    private val _themeModeSetting = MutableStateFlow(preferences.getString("ThemeMode", "System")!!)
     val themeModeSetting = _themeModeSetting.asStateFlow()
-    private val _darkModeSetting = MutableStateFlow(preferences.getString("DarkMode", "Color"))
+
+    private val _darkModeSetting = MutableStateFlow(preferences.getString("DarkMode", "Color")!!)
     val darkModeSetting = _darkModeSetting.asStateFlow()
-    private val _filterAudioSetting = MutableStateFlow(preferences.getString("FilterAudio", "60"))
+
+    private val _filterAudioSetting = MutableStateFlow(preferences.getString("FilterAudio", "60")!!)
     val filterAudioSetting = _filterAudioSetting.asStateFlow()
-    private val _themeAccentSetting = MutableStateFlow(preferences.getString("ThemeAccent", "Default"))
+
+    private val _themeAccentSetting = MutableStateFlow(preferences.getString("ThemeAccent", "Default")!!)
     val themeAccentSetting = _themeAccentSetting.asStateFlow()
+
     private val _downloadArtistCoverSetting = MutableStateFlow(preferences.getBoolean("DownloadArtistCoverSetting", true))
     val downloadArtistCoverSetting = _downloadArtistCoverSetting.asStateFlow()
+
     private val _downloadOverDataSetting = MutableStateFlow(preferences.getBoolean("DownloadOverDataSetting", false))
     val downloadOverDataSetting = _downloadOverDataSetting.asStateFlow()
 
-    private val _surfaceColor = MutableStateFlow(Color(0xff000000))
-    val surfaceColor = _surfaceColor.asStateFlow()
-    fun setSurfaceColor(value: Color){
-        _surfaceColor.value = value
-    }
 
     val selectedThemeModeDialog = MutableLiveData(themeModeSetting.value)
     val selectedDarkModeDialog = MutableLiveData(darkModeSetting.value)
@@ -614,20 +546,20 @@ class ActivityMainVM(application: Application) : AndroidViewModel(application) {
     fun setThemeMode(){
 
         preferences.edit().putString("ThemeMode", selectedThemeModeDialog.value).apply()
-        _themeModeSetting.value = selectedThemeModeDialog.value
+        _themeModeSetting.value = selectedThemeModeDialog.value!!
     }
 
     fun setDarkMode(){
 
         preferences.edit().putString("DarkMode", selectedDarkModeDialog.value).apply()
-        _darkModeSetting.value = selectedDarkModeDialog.value
+        _darkModeSetting.value = selectedDarkModeDialog.value!!
     }
 
 
     fun setFilterAudio(){
 
         preferences.edit().putString("FilterAudio", etFilterAudioDialog.value).apply()
-        _filterAudioSetting.value = etFilterAudioDialog.value
+        _filterAudioSetting.value = etFilterAudioDialog.value!!
 
         Toast.makeText(context, "Setting will take effect on next app restart", Toast.LENGTH_LONG).show()
     }

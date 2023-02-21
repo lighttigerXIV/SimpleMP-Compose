@@ -1,36 +1,34 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens.setup
+package com.lighttigerxiv.simple.mp.compose.screens.setup.welcome
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import com.lighttigerxiv.simple.mp.compose.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material3.Button
 import androidx.compose.material.Text
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.lighttigerxiv.simple.mp.compose.getAppString
+import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
+import com.lighttigerxiv.simple.mp.compose.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.composables.text.TitleMedium
 
 @Composable
 fun WelcomeScreen(
     onNextClicked: () -> Unit = {}
 ) {
 
-    val context = LocalContext.current
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp)
+            .padding(SCREEN_PADDING)
     ) {
 
         Column(
@@ -42,21 +40,29 @@ fun WelcomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Image(
-                painter = painterResource( id = R.drawable.icon_launcher_playstore ),
-                contentDescription = "",
+            Column(
                 modifier = Modifier
-                    .height(100.dp)
-                    .width(100.dp)
+                    .height(80.dp)
+                    .width(80.dp)
                     .clip(RoundedCornerShape(percent = 100))
-            )
+                    .background(MaterialTheme.colorScheme.primary),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .height(60.dp),
+                    painter = painterResource(id = R.drawable.play_empty),
+                    contentDescription = "Logo Play Button",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
 
-            Spacer(Modifier.height(20.dp))
+            MediumHeightSpacer()
 
-            Text(
-                text = remember{ getAppString(context, R.string.WelcomeToSimpleMP )},
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 20.sp,
+            TitleMedium(
+                text = stringResource(id = R.string.WelcomeToSimpleMP),
+                color = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -82,7 +88,7 @@ fun WelcomeScreen(
             ) {
 
                 Text(
-                    text = remember{ getAppString(context, R.string.Next )},
+                    text = stringResource(id = R.string.Next),
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }

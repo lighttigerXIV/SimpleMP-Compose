@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose
 
-import com.google.gson.JsonObject
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call

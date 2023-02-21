@@ -21,18 +21,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 
 @Composable
 fun MiniPlayer(
-    activityMainVM: ActivityMainVM
+    mainVM: MainVM
 ) {
 
     val context = LocalContext.current
-    val songTitle = activityMainVM.selectedSong.value!!.title
-    val songArtistName = activityMainVM.selectedSong.value!!.artistName
-    val songAlbumArt = activityMainVM.selectedSongAlbumArt.value
-    val isMusicPlaying = activityMainVM.isMusicPlaying.collectAsState().value
+    val songTitle = mainVM.selectedSong.value!!.title
+    val songArtistName = mainVM.selectedSong.value!!.artist
+    val songAlbumArt = mainVM.selectedSongAlbumArt.value
+    val isMusicPlaying = mainVM.isMusicPlaying.collectAsState().value
     val currentPlayerIcon = remember{ mutableStateOf(if (isMusicPlaying)
         R.drawable.icon_pause_solid
     else
@@ -102,7 +102,7 @@ fun MiniPlayer(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ) {
-                        activityMainVM.pauseResumeMusic()
+                        mainVM.pauseResumeMusic()
                     },
                 painter = painterResource(id = currentPlayerIcon.value),
                 contentDescription = null,

@@ -23,13 +23,14 @@ import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.activities.MainActivity
 
 
+@Suppress("DEPRECATION")
 class SimpleMPService: Service() {
 
     private val mBinder = LocalBinder()
     private lateinit var notification: Notification
     private lateinit var notificationManager: NotificationManager
-    var queueList = ArrayList<Song>()
-    var shuffledQueueList = ArrayList<Song>()
+    private var queueList = ArrayList<Song>()
+    private var shuffledQueueList = ArrayList<Song>()
     var currentSongPosition: Int = 0
     var isMusicOnRepeat = false
     private lateinit var audioManager: AudioManager
@@ -172,9 +173,9 @@ class SimpleMPService: Service() {
 
     fun isMusicPlayingOrPaused(): Boolean{ return musicStarted }
 
-    fun selectSong( context: Context, newQueueList: ArrayList<Song>, position: Int){
+    fun selectSong( context: Context, newQueueList: List<Song>, position: Int){
 
-        queueList = newQueueList
+        queueList = newQueueList as ArrayList<Song>
 
         if(isMusicShuffled)
             playAndShuffle(context = context, position = position)
@@ -235,7 +236,7 @@ class SimpleMPService: Service() {
     fun getCurrentMediaPlayerPosition(): Int{ return mediaPlayer.currentPosition }
 
 
-    fun playAndShuffle(context: Context, position: Int){
+    private fun playAndShuffle(context: Context, position: Int){
 
         shuffledQueueList = ArrayList()
 
@@ -254,9 +255,9 @@ class SimpleMPService: Service() {
         playSong(context)
     }
 
-    fun shuffleAndPlay( newQueueList: ArrayList<Song>, context: Context){
+    fun shuffleAndPlay( newQueueList: List<Song>, context: Context){
 
-        queueList = newQueueList
+        queueList = newQueueList as ArrayList<Song>
 
         isMusicShuffled = true
 
@@ -323,7 +324,7 @@ class SimpleMPService: Service() {
         if( !isMusicShuffled ) {
 
             songTitle = queueList[currentSongPosition].title
-            songArtist = queueList[currentSongPosition].artistName
+            songArtist = queueList[currentSongPosition].artist
             songID = queueList[currentSongPosition].id
             songAlbumID = queueList[currentSongPosition].albumID
             songAlbumArt = GetSongs.getSongAlbumArt(context, songID, songAlbumID)
@@ -332,7 +333,7 @@ class SimpleMPService: Service() {
         else{
 
             songTitle = shuffledQueueList[currentSongPosition].title
-            songArtist = shuffledQueueList[currentSongPosition].artistName
+            songArtist = shuffledQueueList[currentSongPosition].artist
             songID = shuffledQueueList[currentSongPosition].id
             songAlbumID = shuffledQueueList[currentSongPosition].albumID
             songAlbumArt = GetSongs.getSongAlbumArt(context, songID, songAlbumID)!!
@@ -352,10 +353,7 @@ class SimpleMPService: Service() {
 
             audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-
             requestPlayWithFocus()
-
-
 
             //Open App
             val openAppIntent = Intent( context, MainActivity::class.java )
@@ -390,7 +388,7 @@ class SimpleMPService: Service() {
                 .setContentIntent( pendingOpenAppIntent )
                 .setStyle( androidx.media.app.NotificationCompat.MediaStyle()
                     .setMediaSession(mediaSession.sessionToken)
-                    .setShowActionsInCompactView(1, 2, 3)
+                    .setShowActionsInCompactView(0, 1, 2, 3)
                 )
                 .setSmallIcon(R.drawable.icon)
                 .addAction(R.drawable.icon_x_solid, "Stop Player", pendingStopIntent )

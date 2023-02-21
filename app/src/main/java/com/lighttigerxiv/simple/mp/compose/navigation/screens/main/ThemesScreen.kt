@@ -12,22 +12,22 @@ import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.ThemeSelector
 import com.lighttigerxiv.simple.mp.compose.getAppString
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 
 @Composable
 fun ThemesScreen(
-    activityMainVM: ActivityMainVM,
+    mainVM: MainVM,
     onBackClick: () -> Unit
 ) {
 
     val context = LocalContext.current
-    val themeAccent = activityMainVM.themeAccentSetting.collectAsState().value!!
+    val themeAccent = mainVM.themeAccentSetting.collectAsState().value!!
 
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(activityMainVM.surfaceColor.collectAsState().value)
+            .background(mainVM.surfaceColor.collectAsState().value)
             .padding(SCREEN_PADDING)
     ) {
 
@@ -46,7 +46,7 @@ fun ThemesScreen(
 
             ThemeSelector(
                 selectedTheme = themeAccent,
-                onThemeClick = {activityMainVM.setThemeAccent(it)}
+                onThemeClick = {mainVM.setThemeAccent(it)}
             )
         }
     }

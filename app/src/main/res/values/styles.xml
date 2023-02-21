@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.ComposeSimpleMP" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.ComposeSimpleMP" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/purple_700</item>
     </style>
 

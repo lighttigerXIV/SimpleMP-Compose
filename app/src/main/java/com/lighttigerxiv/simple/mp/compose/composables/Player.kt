@@ -33,34 +33,34 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.getAppString
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun Player(
-    activityMainVM: ActivityMainVM,
+    mainVM: MainVM,
     bottomSheetState: BottomSheetState,
     onGoToPage: (page: String) -> Unit
 ) {
 
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
-    val songTitle = activityMainVM.selectedSongTitle.observeAsState().value
-    val songArtistName = activityMainVM.selectedSongArtistName.observeAsState().value
-    val songDuration = activityMainVM.selectedSongDuration.observeAsState().value
-    val currentMediaPlayerPosition = activityMainVM.currentMediaPlayerPosition.collectAsState().value
-    val songMinutesAndSeconds = activityMainVM.selectedSongMinutesAndSeconds.observeAsState().value
-    val songCurrentMinutesAndSeconds = activityMainVM.selectedSongCurrentMinutesAndSeconds.observeAsState().value
+    val songTitle = mainVM.selectedSongTitle.observeAsState().value
+    val songArtistName = mainVM.selectedSongArtistName.observeAsState().value
+    val songDuration = mainVM.selectedSongDuration.observeAsState().value
+    val currentMediaPlayerPosition = mainVM.currentMediaPlayerPosition.collectAsState().value
+    val songMinutesAndSeconds = mainVM.selectedSongMinutesAndSeconds.observeAsState().value
+    val songCurrentMinutesAndSeconds = mainVM.selectedSongCurrentMinutesAndSeconds.observeAsState().value
     val menuOpened = remember{ mutableStateOf(false)}
 
     val queueListState = rememberLazyListState()
     val songsPagerState = rememberPagerState()
 
     //------ Playback States --------------//
-    val isMusicPlaying = activityMainVM.isMusicPlaying.collectAsState().value
-    val isMusicShuffled = activityMainVM.isMusicShuffled.collectAsState().value
-    val isMusicOnRepeat = activityMainVM.isMusicOnRepeat.collectAsState().value
+    val isMusicPlaying = mainVM.isMusicPlaying.collectAsState().value
+    val isMusicShuffled = mainVM.isMusicShuffled.collectAsState().value
+    val isMusicOnRepeat = mainVM.isMusicOnRepeat.collectAsState().value
 
 
     val currentPlayerIcon = remember{ mutableStateOf(if (isMusicPlaying)
@@ -75,8 +75,8 @@ fun Player(
     val interactionSource = remember { MutableInteractionSource() }
     val isDragged by interactionSource.collectIsDraggedAsState()
 
-    val queueList = activityMainVM.queueList.observeAsState().value!!
-    val upNextQueueList = activityMainVM.upNextQueueList.observeAsState().value!!
+    val queueList = mainVM.queueList.observeAsState().value!!
+    val upNextQueueList = mainVM.upNextQueueList.observeAsState().value!!
     val sliderValue = remember { mutableStateOf(currentMediaPlayerPosition / 1000.toFloat()) }
     val currentMinutesAndSecondsValue = remember { mutableStateOf(songCurrentMinutesAndSeconds) }
 
@@ -99,18 +99,18 @@ fun Player(
 
     LaunchedEffect(queueList) {
         try {
-            if (activityMainVM.getCurrentSongPosition() != -1) {
-                songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition())
+            if (mainVM.getCurrentSongPosition() != -1) {
+                songsPagerState.scrollToPage(mainVM.getCurrentSongPosition())
 
             }
         } catch (ignore: Exception) {
         }
     }
 
-    LaunchedEffect(activityMainVM.selectedSong.observeAsState().value) {
+    LaunchedEffect(mainVM.selectedSong.collectAsState().value) {
         scope.launch {
-            if (activityMainVM.getCurrentSongPosition() > -1)
-                songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition())
+            if (mainVM.getCurrentSongPosition() > -1)
+                songsPagerState.scrollToPage(mainVM.getCurrentSongPosition())
         }
     }
 
@@ -119,11 +119,11 @@ fun Player(
 
         if (bottomSheetState.isExpanded) {
 
-            if (songsPagerState.currentPage > activityMainVM.getCurrentSongPosition()) {
-                activityMainVM.selectNextSong()
+            if (songsPagerState.currentPage > mainVM.getCurrentSongPosition()) {
+                mainVM.selectNextSong()
             }
-            if (songsPagerState.currentPage < activityMainVM.getCurrentSongPosition()) {
-                activityMainVM.selectPreviousSong()
+            if (songsPagerState.currentPage < mainVM.getCurrentSongPosition()) {
+                mainVM.selectPreviousSong()
             }
         }
     }
@@ -224,7 +224,7 @@ fun Player(
 
                             0 -> {
 
-                                if (activityMainVM.selectedSong.value != null) {
+                                if (mainVM.selectedSong.collectAsState().value != null) {
                                     Row(
                                         modifier = Modifier.fillMaxSize()
                                     ) {
@@ -243,7 +243,7 @@ fun Player(
                                             ) { currentPage ->
 
                                                 val pagerSong = queueList[currentPage]
-                                                val pagerAlbumArt = activityMainVM.songsImagesList.find { it.albumID == pagerSong.albumID }?.albumArt
+                                                val pagerAlbumArt = mainVM.songsImagesList.find { it.albumID == pagerSong.albumID }?.albumArt
 
 
                                                 AsyncImage(
@@ -321,34 +321,36 @@ fun Player(
 
                                                         DropdownMenuItem(
                                                             text = { Text(text = remember { getAppString(context, R.string.GoToArtist) }) },
-                                                            onClick = {onGoToPage("floatingArtistScreen?artistID=${activityMainVM.selectedSong.value!!.artistID}")}
+                                                            onClick = {onGoToPage("floatingArtistScreen?artistID=${mainVM.selectedSong.value!!.artistID}")}
                                                         )
 
                                                         DropdownMenuItem(
                                                             text = { Text(text = remember { getAppString(context, R.string.GoToAlbum) }) },
-                                                            onClick = {onGoToPage("floatingArtistAlbumScreen?albumID=${activityMainVM.selectedSong.value!!.albumID}")}
+                                                            onClick = {onGoToPage("floatingArtistAlbumScreen?albumID=${mainVM.selectedSong.value!!.albumID}")}
                                                         )
 
                                                         DropdownMenuItem(
                                                             text = { Text(text = remember { getAppString(context, R.string.AddToPlaylist) }) },
-                                                            onClick = {onGoToPage("addToPlaylistScreen?songID=${activityMainVM.selectedSong.value!!.id}")}
+                                                            onClick = {onGoToPage("addToPlaylistScreen?songID=${mainVM.selectedSong.value!!.id}")}
                                                         )
                                                     }
                                                 }
                                             }
 
+                                            /*
+
                                             Slider(
                                                 value = sliderValue.value,
                                                 onValueChange = {
                                                     sliderValue.value = it
-                                                    currentMinutesAndSecondsValue.value = activityMainVM.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
+                                                    currentMinutesAndSecondsValue.value = mainVM.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
                                                 },
                                                 onValueChangeFinished = {
 
-                                                    if (activityMainVM.getIsMusicPaused())
-                                                        activityMainVM.pauseResumeMusic()
+                                                    if (mainVM.getIsMusicPaused())
+                                                        mainVM.pauseResumeMusic()
 
-                                                    activityMainVM.seekSongPosition(sliderValue.value.toInt())
+                                                    mainVM.seekSongPosition(sliderValue.value.toInt())
                                                 },
                                                 valueRange = 1f..(songDuration!! / 1000).toFloat(),
                                                 interactionSource = interactionSource,
@@ -358,6 +360,8 @@ fun Player(
                                                     inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant
                                                 )
                                             )
+
+                                             */
 
                                             Row(
                                                 modifier = Modifier
@@ -406,7 +410,7 @@ fun Player(
                                                                 indication = null,
                                                                 interactionSource = remember { MutableInteractionSource() }
                                                             ) {
-                                                                activityMainVM.toggleShuffle()
+                                                                mainVM.toggleShuffle()
                                                             }
                                                     )
                                                     if (isMusicShuffled) {
@@ -424,8 +428,8 @@ fun Player(
                                                             indication = null,
                                                             interactionSource = remember { MutableInteractionSource() }
                                                         ) {
-                                                            activityMainVM.selectPreviousSong()
-                                                            scope.launch { songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition()) }
+                                                            mainVM.selectPreviousSong()
+                                                            scope.launch { songsPagerState.scrollToPage(mainVM.getCurrentSongPosition()) }
                                                         }
                                                 )
                                                 Icon(
@@ -438,7 +442,7 @@ fun Player(
                                                         .clickable(
                                                             indication = null,
                                                             interactionSource = remember { MutableInteractionSource() }
-                                                        ) { activityMainVM.pauseResumeMusic() }
+                                                        ) { mainVM.pauseResumeMusic() }
                                                 )
                                                 Icon(
                                                     painter = painterResource(id = R.drawable.icon_next_solid),
@@ -450,8 +454,8 @@ fun Player(
                                                             indication = null,
                                                             interactionSource = remember { MutableInteractionSource() }
                                                         ) {
-                                                            activityMainVM.selectNextSong()
-                                                            scope.launch { songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition()) }
+                                                            mainVM.selectNextSong()
+                                                            scope.launch { songsPagerState.scrollToPage(mainVM.getCurrentSongPosition()) }
                                                         }
                                                 )
 
@@ -472,7 +476,7 @@ fun Player(
                                                             .clickable(
                                                                 indication = null,
                                                                 interactionSource = remember { MutableInteractionSource() }
-                                                            ) { activityMainVM.toggleRepeat() }
+                                                            ) { mainVM.toggleRepeat() }
                                                     )
                                                     if (isMusicOnRepeat) {
                                                         Dot()
@@ -498,8 +502,8 @@ fun Player(
 
                                             SongItem(
                                                 song = song,
-                                                songAlbumArt = remember { activityMainVM.compressedImagesList.find { it.albumID == song.albumID }?.albumArt },
-                                                highlight = activityMainVM.selectedSongPath.value!! == song.path
+                                                songAlbumArt = remember { mainVM.compressedImagesList.find { it.albumID == song.albumID }?.albumArt },
+                                                highlight = mainVM.selectedSongPath.value!! == song.path
                                             )
                                         }
                                     })
@@ -588,7 +592,7 @@ fun Player(
 
                                 Column {
 
-                                    if (activityMainVM.selectedSong.value != null) {
+                                    if (mainVM.selectedSong.collectAsState().value != null) {
 
                                         HorizontalPager(
                                             state = songsPagerState,
@@ -600,7 +604,7 @@ fun Player(
                                         ) { currentPage ->
 
                                             val pagerSong = queueList[currentPage]
-                                            val pagerAlbumArt = activityMainVM.songsImagesList.find { it.albumID == pagerSong.albumID }?.albumArt
+                                            val pagerAlbumArt = mainVM.songsImagesList.find { it.albumID == pagerSong.albumID }?.albumArt
 
 
                                             AsyncImage(
@@ -678,17 +682,17 @@ fun Player(
 
                                                     DropdownMenuItem(
                                                         text = { Text(text = remember { getAppString(context, R.string.GoToArtist) }) },
-                                                        onClick = {onGoToPage("floatingArtistScreen?artistID=${activityMainVM.selectedSong.value!!.artistID}")}
+                                                        onClick = {onGoToPage("floatingArtistScreen?artistID=${mainVM.selectedSong.value!!.artistID}")}
                                                     )
 
                                                     DropdownMenuItem(
                                                         text = { Text(text = remember { getAppString(context, R.string.GoToAlbum) }) },
-                                                        onClick = {onGoToPage("floatingArtistAlbumScreen?albumID=${activityMainVM.selectedSong.value!!.albumID}")}
+                                                        onClick = {onGoToPage("floatingArtistAlbumScreen?albumID=${mainVM.selectedSong.value!!.albumID}")}
                                                     )
 
                                                     DropdownMenuItem(
                                                         text = { Text(text = remember { getAppString(context, R.string.AddToPlaylist) }) },
-                                                        onClick = {onGoToPage("addToPlaylistScreen?songID=${activityMainVM.selectedSong.value!!.id}")}
+                                                        onClick = {onGoToPage("addToPlaylistScreen?songID=${mainVM.selectedSong.value!!.id}")}
                                                     )
                                                 }
                                             }
@@ -696,18 +700,19 @@ fun Player(
 
                                         Spacer(modifier = Modifier.height(10.dp))
 
+                                        /*
                                         Slider(
                                             value = sliderValue.value,
                                             onValueChange = {
                                                 sliderValue.value = it
-                                                currentMinutesAndSecondsValue.value = activityMainVM.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
+                                                currentMinutesAndSecondsValue.value = mainVM.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
                                             },
                                             onValueChangeFinished = {
 
-                                                if (activityMainVM.getIsMusicPaused())
-                                                    activityMainVM.pauseResumeMusic()
+                                                if (mainVM.getIsMusicPaused())
+                                                    mainVM.pauseResumeMusic()
 
-                                                activityMainVM.seekSongPosition(sliderValue.value.toInt())
+                                                mainVM.seekSongPosition(sliderValue.value.toInt())
                                             },
                                             valueRange = 1f..(songDuration!! / 1000).toFloat(),
                                             interactionSource = interactionSource,
@@ -717,6 +722,8 @@ fun Player(
                                                 inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         )
+
+                                         */
 
                                         Spacer(modifier = Modifier.height(5.dp))
 
@@ -767,7 +774,7 @@ fun Player(
                                                             indication = null,
                                                             interactionSource = remember { MutableInteractionSource() }
                                                         ) {
-                                                            activityMainVM.toggleShuffle()
+                                                            mainVM.toggleShuffle()
                                                         }
                                                 )
                                                 if (isMusicShuffled) {
@@ -785,8 +792,8 @@ fun Player(
                                                         indication = null,
                                                         interactionSource = remember { MutableInteractionSource() }
                                                     ) {
-                                                        activityMainVM.selectPreviousSong()
-                                                        scope.launch { songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition()) }
+                                                        mainVM.selectPreviousSong()
+                                                        scope.launch { songsPagerState.scrollToPage(mainVM.getCurrentSongPosition()) }
                                                     }
                                             )
                                             Icon(
@@ -799,7 +806,7 @@ fun Player(
                                                     .clickable(
                                                         indication = null,
                                                         interactionSource = remember { MutableInteractionSource() }
-                                                    ) { activityMainVM.pauseResumeMusic() }
+                                                    ) { mainVM.pauseResumeMusic() }
                                             )
                                             Icon(
                                                 painter = painterResource(id = R.drawable.icon_next_solid),
@@ -811,8 +818,8 @@ fun Player(
                                                         indication = null,
                                                         interactionSource = remember { MutableInteractionSource() }
                                                     ) {
-                                                        activityMainVM.selectNextSong()
-                                                        scope.launch { songsPagerState.scrollToPage(activityMainVM.getCurrentSongPosition()) }
+                                                        mainVM.selectNextSong()
+                                                        scope.launch { songsPagerState.scrollToPage(mainVM.getCurrentSongPosition()) }
                                                     }
                                             )
 
@@ -833,7 +840,7 @@ fun Player(
                                                         .clickable(
                                                             indication = null,
                                                             interactionSource = remember { MutableInteractionSource() }
-                                                        ) { activityMainVM.toggleRepeat() }
+                                                        ) { mainVM.toggleRepeat() }
                                                 )
                                                 if (isMusicOnRepeat) {
                                                     Dot()
@@ -858,8 +865,8 @@ fun Player(
 
                                             SongItem(
                                                 song = song,
-                                                songAlbumArt = remember { activityMainVM.compressedImagesList.find { it.albumID == song.albumID }!!.albumArt },
-                                                highlight = activityMainVM.selectedSongPath.value!! == song.path
+                                                songAlbumArt = remember { mainVM.compressedImagesList.find { it.albumID == song.albumID }!!.albumArt },
+                                                highlight = mainVM.selectedSongPath.value!! == song.path
                                             )
                                         }
                                     })
@@ -869,13 +876,13 @@ fun Player(
                 }
             }
         }
-        activityMainVM.onSongSecondPassed = { position ->
+        mainVM.onSongSecondPassed = { position ->
 
             if (!isDragged) {
                 sliderValue.value = position.toFloat()
             }
 
-            currentMinutesAndSecondsValue.value = activityMainVM.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
+            currentMinutesAndSecondsValue.value = mainVM.getMinutesAndSecondsFromPosition(sliderValue.value.toInt())
         }
     }
 }

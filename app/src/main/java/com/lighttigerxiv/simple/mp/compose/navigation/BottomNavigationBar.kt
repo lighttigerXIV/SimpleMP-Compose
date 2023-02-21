@@ -19,7 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 @Composable
 fun BottomNavigationBar(
     navController: NavController,
-    items: ArrayList<BottomNavItem>,
+    items: List<BottomNavItem>,
     onItemClick: (BottomNavItem) -> Unit
 ) {
 

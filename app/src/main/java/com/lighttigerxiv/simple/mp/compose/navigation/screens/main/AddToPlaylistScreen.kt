@@ -36,14 +36,14 @@ import com.lighttigerxiv.simple.mp.compose.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.getBitmapFromVectorDrawable
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddToPlaylistScreen(
-    activityMainVM: ActivityMainVM,
+    mainVM: MainVM,
     backStackEntry: NavBackStackEntry,
     previousPage: String,
     onBackClick: () -> Unit
@@ -51,8 +51,8 @@ fun AddToPlaylistScreen(
 
     val songID = backStackEntry.arguments?.getLong("songID")
     val createPlaylistSheetState = rememberBottomSheetScaffoldState()
-    val playlists = activityMainVM.playlists.collectAsState().value
-    val selectedSong = activityMainVM.songsList.find { it.id == songID }!!
+    val playlists = mainVM.playlists.collectAsState().value
+    val selectedSong = mainVM.songs.collectAsState().value?.find { it.id == songID }!!
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -135,7 +135,7 @@ fun AddToPlaylistScreen(
 
                 ) {
 
-                    val playlistNameValue = activityMainVM.tfNewPlaylistNameValue.observeAsState().value!!
+                    val playlistNameValue = mainVM.tfNewPlaylistNameValue.observeAsState().value!!
 
                     BottomSheetHandle()
 
@@ -149,7 +149,7 @@ fun AddToPlaylistScreen(
                     CustomTextField(
                         text = playlistNameValue,
                         placeholder = "Insert playlist name",
-                        onTextChange = { activityMainVM.tfNewPlaylistNameValue.value = it },
+                        onTextChange = { mainVM.tfNewPlaylistNameValue.value = it },
                         textType = "text"
                     )
 
@@ -163,7 +163,7 @@ fun AddToPlaylistScreen(
                         Button(
                             onClick = {
 
-                                activityMainVM.createPlaylist(playlistNameValue)
+                                mainVM.createPlaylist(playlistNameValue)
                                 scope.launch { createPlaylistSheetState.bottomSheetState.collapse() }
                             },
                             enabled = playlistNameValue.isNotEmpty()
@@ -181,7 +181,7 @@ fun AddToPlaylistScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(activityMainVM.surfaceColor.collectAsState().value)
+                    .background(mainVM.surfaceColor.collectAsState().value)
                     .padding(sheetPadding)
                     .padding(
                         start = SCREEN_PADDING,
@@ -233,7 +233,7 @@ fun AddToPlaylistScreen(
                                             playlistSongs.add(selectedSong)
                                             val newPlaylistSongsJson = Gson().toJson(playlistSongs)
 
-                                            activityMainVM.updatePlaylistSongs(songsJson = newPlaylistSongsJson, playlistID = playlist.id)
+                                            mainVM.updatePlaylistSongs(songsJson = newPlaylistSongsJson, playlistID = playlist.id)
 
                                             onBackClick()
                                         }

@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
+package com.lighttigerxiv.simple.mp.compose.screens.main.settings
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -23,11 +23,11 @@ import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.getAppString
-import com.lighttigerxiv.simple.mp.compose.viewmodels.ActivityMainVM
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 
 @Composable
 fun SettingsScreen(
-    mainVM: ActivityMainVM,
+    mainVM: MainVM,
     onBackPressed: () -> Unit,
     onOpenScreen: (route: String) -> Unit
 ) {
@@ -102,7 +102,7 @@ fun SettingsScreen(
 
 
                 DefaultSettingItem(
-                    icon = painterResource(id = R.drawable.icon_theme_regular),
+                    icon = painterResource(id = R.drawable.brush),
                     settingText = remember { getAppString(context, R.string.AccentColor) },
                     settingValue = mainVM.themeAccentSetting.collectAsState().value!!,
                     onSettingClick = { onOpenScreen("ThemesScreen") }

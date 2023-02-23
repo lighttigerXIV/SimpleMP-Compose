@@ -111,7 +111,7 @@ fun GenrePlaylistScreen(
                             ){ index, song ->
                                 SongItem(
                                     song = song,
-                                    songAlbumArt = mainVM.songsImagesList.find { song.albumID == it.albumID }!!.albumArt,
+                                    songAlbumArt = mainVM.songsImages.collectAsState().value?.find { song.albumID == it.albumID }!!.albumArt,
                                     highlight = mainVM.selectedSongPath.observeAsState().value == song.path,
                                     onSongClick = {mainVM.selectSong(playlist, position = index)}
                                 )

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -16,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelProvider
@@ -36,6 +34,11 @@ import com.lighttigerxiv.simple.mp.compose.getSurfaceColor
 import com.lighttigerxiv.simple.mp.compose.navigation.BottomNavItem
 import com.lighttigerxiv.simple.mp.compose.navigation.BottomNavigationBar
 import com.lighttigerxiv.simple.mp.compose.navigation.screens.main.*
+import com.lighttigerxiv.simple.mp.compose.screens.main.albums.AlbumsScreen
+import com.lighttigerxiv.simple.mp.compose.screens.main.albums.AlbumsScreenVM
+import com.lighttigerxiv.simple.mp.compose.screens.main.albums.album.AlbumScreen
+import com.lighttigerxiv.simple.mp.compose.screens.main.albums.album.AlbumScreenVM
+import com.lighttigerxiv.simple.mp.compose.screens.main.artists.ArtistsScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.artists.ArtistsScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.home.HomeScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.home.HomeScreenVM
@@ -160,7 +163,12 @@ fun MainScreen(
                     composable("Albums") {
                         AlbumsScreen(
                             mainVM = mainVM,
-                            onAlbumClicked = { albumID -> navController.navigate("albumScreen?albumID=$albumID") }
+                            albumsVM = ViewModelProvider(activityContext)[AlbumsScreenVM::class.java],
+                            onAlbumClicked = { albumID ->
+
+                                ViewModelProvider(activityContext)[AlbumScreenVM::class.java].clearScreen()
+                                navController.navigate("albumScreen?albumID=$albumID")
+                            }
                         )
                     }
 
@@ -198,15 +206,19 @@ fun MainScreen(
                     }
                     composable(
                         route = "ArtistAlbum/{albumID}",
-                        arguments = listOf(
-                            navArgument("albumID") { type = NavType.LongType }
-                        )
-                    ) { backStackEntry ->
-                        AlbumScreen(
-                            mainVM = mainVM,
-                            backStackEntry = backStackEntry,
-                            onBackClicked = { navController.navigateUp() },
-                        )
+                    ) {
+
+                        val albumID = it.arguments?.getString("ArtistID")?.toLongOrNull()
+
+                        if(albumID != null){
+
+                            AlbumScreen(
+                                mainVM = mainVM,
+                                albumVM = ViewModelProvider(activityContext)[AlbumScreenVM::class.java],
+                                albumID = albumID,
+                                onBackClicked = { navController.navigateUp() },
+                            )
+                        }
                     }
 
                     composable(
@@ -238,15 +250,19 @@ fun MainScreen(
 
                     composable(
                         route = "albumScreen?albumID={albumID}",
-                        arguments = listOf(
-                            navArgument("albumID") { type = NavType.LongType }
-                        )
-                    ) { backStackEntry ->
-                        AlbumScreen(
-                            mainVM = mainVM,
-                            backStackEntry = backStackEntry,
-                            onBackClicked = { navController.navigateUp() }
-                        )
+                    ) {
+
+                        val albumID = it.arguments?.getString("albumID")?.toLongOrNull()
+
+                        if(albumID != null){
+
+                            AlbumScreen(
+                                mainVM = mainVM,
+                                albumVM = ViewModelProvider(activityContext)[AlbumScreenVM::class.java],
+                                albumID = albumID,
+                                onBackClicked = { navController.navigateUp() }
+                            )
+                        }
                     }
                     composable("GenrePlaylistScreen/{position}") {
                         val position = it.arguments!!.getString("position")
@@ -312,28 +328,36 @@ fun MainScreen(
 
                     composable(
                         route = "floatingArtistAlbumScreen?albumID={albumID}",
-                        arguments = listOf(
-                            navArgument("albumID") { type = NavType.LongType }
-                        )
-                    ) { backStackEntry ->
-                        AlbumScreen(
-                            mainVM = mainVM,
-                            backStackEntry = backStackEntry,
-                            onBackClicked = { navController.navigateUp() }
-                        )
+                    ) {
+
+                        val albumID = it.arguments?.getString("albumID")?.toLongOrNull()
+
+                        if(albumID != null){
+
+                            AlbumScreen(
+                                mainVM = mainVM,
+                                albumVM = ViewModelProvider(activityContext)[AlbumScreenVM::class.java],
+                                albumID = albumID,
+                                onBackClicked = { navController.navigateUp() }
+                            )
+                        }
                     }
 
                     composable(
                         route = "floatingAlbumScreen?albumID={albumID}",
-                        arguments = listOf(
-                            navArgument("albumID") { type = NavType.LongType }
-                        )
-                    ) { backStackEntry ->
-                        AlbumScreen(
-                            mainVM = mainVM,
-                            backStackEntry = backStackEntry,
-                            onBackClicked = { navController.navigateUp() }
-                        )
+                    ) {
+
+                        val albumID = it.arguments?.getString("albumID")?.toLongOrNull()
+
+                        if(albumID != null){
+
+                            AlbumScreen(
+                                mainVM = mainVM,
+                                albumVM = ViewModelProvider(activityContext)[AlbumScreenVM::class.java],
+                                albumID = albumID,
+                                onBackClicked = { navController.navigateUp() }
+                            )
+                        }
                     }
 
                     composable(

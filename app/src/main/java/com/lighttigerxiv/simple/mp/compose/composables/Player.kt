@@ -243,7 +243,7 @@ fun Player(
                                             ) { currentPage ->
 
                                                 val pagerSong = queueList[currentPage]
-                                                val pagerAlbumArt = mainVM.songsImagesList.find { it.albumID == pagerSong.albumID }?.albumArt
+                                                val pagerAlbumArt = mainVM.songsImages.collectAsState().value?.find { it.albumID == pagerSong.albumID }?.albumArt
 
 
                                                 AsyncImage(
@@ -502,7 +502,7 @@ fun Player(
 
                                             SongItem(
                                                 song = song,
-                                                songAlbumArt = remember { mainVM.compressedImagesList.find { it.albumID == song.albumID }?.albumArt },
+                                                songAlbumArt = mainVM.compressedSongsImages.collectAsState().value?.find { it.albumID == song.albumID }?.albumArt ,
                                                 highlight = mainVM.selectedSongPath.value!! == song.path
                                             )
                                         }
@@ -604,7 +604,7 @@ fun Player(
                                         ) { currentPage ->
 
                                             val pagerSong = queueList[currentPage]
-                                            val pagerAlbumArt = mainVM.songsImagesList.find { it.albumID == pagerSong.albumID }?.albumArt
+                                            val pagerAlbumArt = mainVM.songsImages.collectAsState().value?.find { it.albumID == pagerSong.albumID }?.albumArt
 
 
                                             AsyncImage(
@@ -865,7 +865,7 @@ fun Player(
 
                                             SongItem(
                                                 song = song,
-                                                songAlbumArt = remember { mainVM.compressedImagesList.find { it.albumID == song.albumID }!!.albumArt },
+                                                songAlbumArt = mainVM.compressedSongsImages.collectAsState().value?.find { it.albumID == song.albumID }?.albumArt,
                                                 highlight = mainVM.selectedSongPath.value!! == song.path
                                             )
                                         }

@@ -496,7 +496,7 @@ fun PlaylistScreen(
                                         val songTitle = remember { song.title }
                                         val songArtist = remember { song.artist }
                                         val highlight = song.path == mainVM.selectedSongPath.observeAsState().value!!
-                                        val songAlbumArt = mainVM.songsImagesList.find { it.albumID == song.albumID }?.albumArt
+                                        val songAlbumArt = mainVM.songsImages.collectAsState().value?.find { it.albumID == song.albumID }?.albumArt
 
 
                                         val titleColor = when (highlight) {

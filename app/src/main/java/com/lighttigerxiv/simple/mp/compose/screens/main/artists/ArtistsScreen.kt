@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
+package com.lighttigerxiv.simple.mp.compose.screens.main.artists
 
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
@@ -25,7 +24,6 @@ import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.composables.ImageCard
 import com.lighttigerxiv.simple.mp.compose.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.getAppString
-import com.lighttigerxiv.simple.mp.compose.screens.main.artists.ArtistsScreenVM
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -176,7 +174,7 @@ fun ArtistsScreen(
                         key = { artist -> artist.artistID },
                     ) { artist ->
 
-                        val albumArt = mainVM.songsImagesList.first { it.albumID == artist.albumID }.albumArt
+                        val albumArt = mainVM.songsImages.collectAsState().value?.first { it.albumID == artist.albumID }?.albumArt
 
                         ImageCard(
                             modifier = Modifier.animateItemPlacement(),

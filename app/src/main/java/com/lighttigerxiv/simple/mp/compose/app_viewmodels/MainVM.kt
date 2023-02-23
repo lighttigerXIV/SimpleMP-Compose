@@ -89,8 +89,16 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     val queueList = MutableLiveData(ArrayList<Song>())
     val upNextQueueList = MutableLiveData(ArrayList<Song>())
-    var songsImagesList = GetSongs.getAllAlbumsImages(application)
-    var compressedImagesList = GetSongs.getAllAlbumsImages(application, compressed = true)
+
+    private val _songsImages = MutableStateFlow<List<SongArt>?>(null)
+    val songsImages = _songsImages.asStateFlow()
+
+    private val _compressedSongsImages = MutableStateFlow<List<SongArt>?>(null)
+    val compressedSongsImages= _compressedSongsImages.asStateFlow()
+
+
+
+
     lateinit var navController: NavController
 
     private val _showNavigationBar = MutableStateFlow(true)
@@ -382,7 +390,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     fun updateCurrentSongAlbumArt() {
 
-        selectedSongAlbumArt.value = songsImagesList.find { it.albumID == selectedSong.value!!.albumID }!!.albumArt
+        selectedSongAlbumArt.value = songsImages.value!!.find { it.albumID == selectedSong.value!!.albumID }!!.albumArt
     }
 
     fun toggleShuffle() {
@@ -442,6 +450,8 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         application.bindService(serviceIntent, simpleMPConnection, Context.BIND_AUTO_CREATE)
 
         _songs.update { getSongs(context, "Recent") }
+        _songsImages.update { getAllAlbumsImages(context) }
+        _compressedSongsImages.update { getAllAlbumsImages(context, compressed = true) }
     }
 
 

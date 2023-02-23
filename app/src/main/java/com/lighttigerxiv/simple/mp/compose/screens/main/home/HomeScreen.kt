@@ -246,7 +246,7 @@ fun HomeScreen(
                                 SongItem(
                                     modifier = Modifier.animateItemPlacement(),
                                     song = song,
-                                    songAlbumArt = remember { mainVM.compressedImagesList.find { it.albumID == song.albumID }!!.albumArt },
+                                    songAlbumArt = mainVM.compressedSongsImages.collectAsState().value?.find { it.albumID == song.albumID }?.albumArt,
                                     highlight = song.path == selectedSong?.path,
                                     menuEntries = menuEntries,
                                     onMenuClicked = { option ->

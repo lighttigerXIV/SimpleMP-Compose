@@ -335,7 +335,7 @@ fun ArtistScreen(
 
                                             SongItem(
                                                 song = song,
-                                                songAlbumArt = remember { mainVM.songsImagesList.find { it.albumID == song.albumID }!!.albumArt },
+                                                songAlbumArt = mainVM.songsImages.collectAsState().value?.find { it.albumID == song.albumID }!!.albumArt,
                                                 highlight = song.path == mainVM.selectedSongPath.observeAsState().value,
                                                 onSongClick = { mainVM.selectSong(artistSongsList, artistSongsList.indexOf(song)) }
                                             )
@@ -360,8 +360,8 @@ fun ArtistScreen(
                                         ) { album ->
 
                                             val albumSongAlbumID = album.albumID
-                                            val albumName = album.albumName
-                                            val albumArt = mainVM.songsImagesList.first { it.albumID == albumSongAlbumID }.albumArt
+                                            val albumName = album.album
+                                            val albumArt = mainVM.songsImages.collectAsState().value?.first { it.albumID == albumSongAlbumID }?.albumArt
 
                                             Box(
                                                 modifier = Modifier

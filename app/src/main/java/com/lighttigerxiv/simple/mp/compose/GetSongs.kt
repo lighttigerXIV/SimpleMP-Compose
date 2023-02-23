@@ -67,6 +67,42 @@ fun getSongs(context: Context, sortType: String): List<Song> {
     return songs
 }
 
+fun getAllAlbumsImages(context: Context, compressed: Boolean = false): ArrayList<SongArt> {
+
+    val songsList = getSongs(context, sortType = "Recent")
+    val songsImagesList = ArrayList<SongArt>()
+
+    songsList.forEach { song ->
+
+        when {
+
+            compressed -> {
+
+                val uncompressedAlbumArt = GetSongs.getSongAlbumArt(context, song.id, song.albumID)
+                val compressedAlbumArt = uncompressedAlbumArt?.let { Bitmap.createScaledBitmap(it, uncompressedAlbumArt.width / 3, uncompressedAlbumArt.height / 3, false) }
+
+                songsImagesList.add(
+                    SongArt(
+                        albumID = song.albumID,
+                        albumArt = compressedAlbumArt
+                    )
+                )
+            }
+            else -> {
+
+                songsImagesList.add(
+                    SongArt(
+                        albumID = song.albumID,
+                        albumArt = GetSongs.getSongAlbumArt(context, song.id, song.albumID)
+                    )
+                )
+            }
+        }
+    }
+
+    return songsImagesList
+}
+
 
 class GetSongs {
 
@@ -98,42 +134,6 @@ class GetSongs {
             }
 
             return albumArt
-        }
-
-        fun getAllAlbumsImages(context: Context, compressed: Boolean = false): ArrayList<SongArt> {
-
-            val songsList = getSongs(context, sortType = "Recent")
-            val songsImagesList = ArrayList<SongArt>()
-
-            songsList.forEach { song ->
-
-                when {
-
-                    compressed -> {
-
-                        val uncompressedAlbumArt = getSongAlbumArt(context, song.id, song.albumID)
-                        val compressedAlbumArt = uncompressedAlbumArt?.let { Bitmap.createScaledBitmap(it, uncompressedAlbumArt.width / 3, uncompressedAlbumArt.height / 3, false) }
-
-                        songsImagesList.add(
-                            SongArt(
-                                albumID = song.albumID,
-                                albumArt = compressedAlbumArt
-                            )
-                        )
-                    }
-                    else -> {
-
-                        songsImagesList.add(
-                            SongArt(
-                                albumID = song.albumID,
-                                albumArt = getSongAlbumArt(context, song.id, song.albumID)
-                            )
-                        )
-                    }
-                }
-            }
-
-            return songsImagesList
         }
     }
 }

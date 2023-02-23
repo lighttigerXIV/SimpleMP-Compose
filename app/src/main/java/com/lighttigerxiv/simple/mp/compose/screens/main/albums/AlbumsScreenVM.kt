@@ -75,7 +75,7 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
 
             _ascendentAlbums.update { albums.sortedBy { it.album } }
 
-            _recentAlbums.update { albums.sortedByDescending { it.album } }
+            _descendentAlbums.update { albums.sortedByDescending { it.album } }
 
             _currentAlbums.update {
                 when (sortType) {

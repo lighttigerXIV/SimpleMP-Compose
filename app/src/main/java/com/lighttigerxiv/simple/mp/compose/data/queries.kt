@@ -9,7 +9,7 @@ import androidx.room.Transaction
 interface PlaylistDao{
 
     @Query("SELECT * FROM playlist")
-    fun getAllPlaylists(): List<Playlist>
+    fun getPlaylists(): List<Playlist>
 
     @Query("DELETE FROM playlist WHERE id = :playlistID")
     fun deletePlaylist( playlistID : Int )

@@ -40,44 +40,8 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     private val _songs = MutableStateFlow<List<Song>?>(null)
     val songs = _songs.asStateFlow()
-
-
-    /*
-    private val _recentArtistSongs = MutableStateFlow<List<Song>?>(null)
-    val recentArtistSongs = _recentArtistSongs.asStateFlow()
-
-    private val _oldestArtistSongs = MutableStateFlow<List<Song>?>(null)
-    val oldestArtistSongs = _oldestArtistSongs.asStateFlow()
-
-    private val _ascendentArtistSongs = MutableStateFlow<List<Song>?>(null)
-    val ascendentArtistSongs = _ascendentArtistSongs.asStateFlow()
-
-    private val _descendentArtistSongs = MutableStateFlow<List<Song>?>(null)
-    val descendentArtistSongs = _recentArtistSongs.asStateFlow()
-
-    private val _recentAlbumsSongs = MutableStateFlow<List<Song>?>(null)
-    val recentAlbumsSongs = _recentAlbumsSongs.asStateFlow()
-
-    private val _oldestAlbumsSongs = MutableStateFlow<List<Song>?>(null)
-    val oldestAlbumsSongs = _oldestAlbumsSongs.asStateFlow()
-
-    private val _ascendentAlbumsSongs = MutableStateFlow<List<Song>?>(null)
-    val ascendentAlbumsSongs = _ascendentAlbumsSongs.asStateFlow()
-
-    private val _descendentAlbumsSongs = MutableStateFlow<List<Song>?>(null)
-    val descendentAlbumsSongs = _recentAlbumsSongs.asStateFlow()
-
-
-     */
-
-
-
-
-
-
     private val playlistDao = AppDatabase.getInstance(application).playlistDao
     private val preferences = application.getSharedPreferences(application.packageName, MODE_PRIVATE)
-
 
 
 
@@ -206,7 +170,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
          */
 
-        return playlistDao.getAllPlaylists()
+        return playlistDao.getPlaylists()
     }
 
     //Callbacks

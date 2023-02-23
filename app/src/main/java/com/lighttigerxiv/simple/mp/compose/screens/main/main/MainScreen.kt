@@ -42,6 +42,8 @@ import com.lighttigerxiv.simple.mp.compose.screens.main.artists.ArtistsScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.artists.ArtistsScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.home.HomeScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.home.HomeScreenVM
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreen
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.SettingsScreen
 import kotlinx.coroutines.launch
 
@@ -175,6 +177,7 @@ fun MainScreen(
                     composable("Playlists") {
                         PlaylistsScreen(
                             mainVM = mainVM,
+                            playlistsVM = ViewModelProvider(activityContext)[PlaylistsScreenVM::class.java],
                             onGenrePlaylistClick = { position ->
                                 navController.navigate("GenrePlaylistScreen/$position")
                             },

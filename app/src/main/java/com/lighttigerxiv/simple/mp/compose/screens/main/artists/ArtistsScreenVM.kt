@@ -74,7 +74,8 @@ class ArtistsScreenVM(application: Application) : AndroidViewModel(application) 
 
             _ascendentArtists.update { artists.sortedBy { it.artist } }
 
-            _recentArtists.update { artists.sortedByDescending { it.artist } }
+            _descendentArtists.update { artists.sortedByDescending { it.artist } }
+
 
             _currentArtists.update {
                 when (sortType) {

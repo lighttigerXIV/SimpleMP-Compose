@@ -92,4 +92,6 @@
     <string name="Data">Data</string>
     <string name="DownloadArtistCoverFromInternet">Download artist cover from internet</string>
     <string name="DownloadArtistCoverOnData">Download artist cover on mobile data</string>
+    <string name="Playlists">Playlists</string>
+    <string name="SongAlreadyInPlaylist">Song already in playlist</string>
 </resources>

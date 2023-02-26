@@ -3,8 +3,9 @@ package com.lighttigerxiv.simple.mp.compose.screens.main.playlists
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
-import com.lighttigerxiv.simple.mp.compose.data.AppDatabase
-import com.lighttigerxiv.simple.mp.compose.data.Playlist
+import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
+import com.lighttigerxiv.simple.mp.compose.data.mongodb.items.Playlist
+import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.PlaylistsQueries
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,7 +18,7 @@ class PlaylistsScreenVM(application: Application) : AndroidViewModel(application
 
     val context = application
 
-    private val playlistDao = AppDatabase.getInstance(application).playlistDao
+    private val playlistsQueries = PlaylistsQueries(getMongoRealm())
 
     private val _screenLoaded = MutableStateFlow(false)
     val screenLoaded = _screenLoaded.asStateFlow()
@@ -27,19 +28,25 @@ class PlaylistsScreenVM(application: Application) : AndroidViewModel(application
 
     private val _playlists = MutableStateFlow<List<Playlist>?>(null)
     val playlists = _playlists.asStateFlow()
+    fun updatePlaylists(newValue: List<Playlist>){
+        _playlists.update { newValue }
+    }
 
     private val _currentPlaylists = MutableStateFlow<List<Playlist>?>(null)
     val currentPlaylists = _currentPlaylists.asStateFlow()
+    fun updateCurrentPlaylists(newValue: List<Playlist>){
+        _currentPlaylists.update { newValue }
+    }
 
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
-    fun updateSearchText(newValue:String) {
+    fun updateSearchText(newValue: String) {
         _searchText.update { newValue }
     }
 
     private val _playlistNameText = MutableStateFlow("")
     val playlistNameText = _playlistNameText.asStateFlow()
-    fun updatePlaylistNameText(newValue:String) {
+    fun updatePlaylistNameText(newValue: String) {
         _playlistNameText.update { newValue }
     }
 
@@ -48,12 +55,12 @@ class PlaylistsScreenVM(application: Application) : AndroidViewModel(application
     // Function
     //************************************************
 
-    fun loadScreen(mainVM: MainVM){
+    fun loadScreen(mainVM: MainVM) {
 
         val songs = mainVM.songs.value
         val newGenres = ArrayList<String>()
 
-        if(songs != null){
+        if (songs != null) {
 
             songs.forEach {
                 newGenres.add(it.genre)
@@ -61,7 +68,7 @@ class PlaylistsScreenVM(application: Application) : AndroidViewModel(application
 
             _genres.update { newGenres.distinctBy { it } }
 
-            _playlists.update { playlistDao.getPlaylists() }
+            _playlists.update { playlistsQueries.getPlaylists() }
 
             _currentPlaylists.update { playlists.value }
 
@@ -69,13 +76,23 @@ class PlaylistsScreenVM(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun createPlaylist(name: String) {
+    suspend fun createPlaylist() {
 
-        playlistDao.insertPlaylist(
-            Playlist(name = name)
-        )
+        playlistsQueries.createPlaylist(playlistNameText.value)
 
-        _playlists.update { playlistDao.getPlaylists() }
+        _playlists.update { playlistsQueries.getPlaylists() }
         _currentPlaylists.update { playlists.value }
+    }
+
+    fun filterPlaylists() {
+
+        if (playlists.value != null) {
+
+            _currentPlaylists.update {
+                playlists.value!!.filter {
+                    it.name.lowercase().trim().contains(searchText.value.lowercase().trim())
+                }
+            }
+        }
     }
 }

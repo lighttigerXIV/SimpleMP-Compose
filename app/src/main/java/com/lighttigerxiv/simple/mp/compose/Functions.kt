@@ -1,13 +1,9 @@
 package com.lighttigerxiv.simple.mp.compose
 
 import android.content.Context
-import android.content.ContextWrapper
-import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.os.Build
-import android.os.LocaleList
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -15,7 +11,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import com.lighttigerxiv.simple.mp.compose.app_viewmodels.SettingsVM
-import java.util.*
+import org.mongodb.kbson.BsonObjectId
+import org.mongodb.kbson.ObjectId
 
 
 fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap {
@@ -76,4 +73,9 @@ fun getSurfaceColor(settingsVM: SettingsVM): Color{
     } else {
         MaterialTheme.colorScheme.surface
     }
+}
+
+fun Long.toMongoHex(): String{
+
+    return BsonObjectId(this).toHexString()
 }

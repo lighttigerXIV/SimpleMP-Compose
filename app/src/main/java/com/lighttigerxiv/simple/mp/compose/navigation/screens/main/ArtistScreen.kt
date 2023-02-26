@@ -200,7 +200,7 @@ fun ArtistScreen(
                                     }
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.icon_more_regular),
+                                    painter = painterResource(id = R.drawable.menu),
                                     contentDescription = "",
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier
@@ -216,7 +216,7 @@ fun ArtistScreen(
                                 DropdownMenuItem(
                                     text = { Text(text = remember { getAppString(context, R.string.ChangeArtistCover) }) },
                                     onClick = {
-                                        mainVM.showHomePopupMenu.value = false
+                                        //mainVM.showHomePopupMenu.value = false
                                         onSelectArtistCover(artistName, artistID)
                                     }
                                 )

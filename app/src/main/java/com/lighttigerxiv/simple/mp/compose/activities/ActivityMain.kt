@@ -56,7 +56,10 @@ class MainActivity : ComponentActivity() {
 
                     mainVM.updateSurfaceColor(getSurfaceColor(settingsVM = settingsVM))
 
-                    rememberSystemUiController().setStatusBarColor(surfaceColor)
+                    rememberSystemUiController().apply {
+                        setStatusBarColor(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant)
+                        setNavigationBarColor(androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant)
+                    }
 
                     MainScreen(
                         mainVM = mainVM,

@@ -45,7 +45,7 @@ fun CustomToolbar(
         ) {
 
             Image(
-                bitmap = remember { getBitmapFromVectorDrawable(context, R.drawable.icon_back_solid).asImageBitmap() },
+                bitmap = remember { getBitmapFromVectorDrawable(context, R.drawable.back).asImageBitmap() },
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),

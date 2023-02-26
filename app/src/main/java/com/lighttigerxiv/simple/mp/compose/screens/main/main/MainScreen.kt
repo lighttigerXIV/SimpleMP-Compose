@@ -30,10 +30,11 @@ import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 import com.lighttigerxiv.simple.mp.compose.app_viewmodels.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.composables.MiniPlayer
 import com.lighttigerxiv.simple.mp.compose.composables.Player
-import com.lighttigerxiv.simple.mp.compose.getSurfaceColor
 import com.lighttigerxiv.simple.mp.compose.navigation.BottomNavItem
 import com.lighttigerxiv.simple.mp.compose.navigation.BottomNavigationBar
 import com.lighttigerxiv.simple.mp.compose.navigation.screens.main.*
+import com.lighttigerxiv.simple.mp.compose.screens.main.add_to_playlist.AddToPlaylistScreen
+import com.lighttigerxiv.simple.mp.compose.screens.main.add_to_playlist.AddToPlaylistScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.albums.AlbumsScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.albums.AlbumsScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.albums.album.AlbumScreen
@@ -44,6 +45,9 @@ import com.lighttigerxiv.simple.mp.compose.screens.main.home.HomeScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.home.HomeScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.genre_playlists.GenrePlaylistScreen
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.PlaylistScreen
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.PlaylistScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.SettingsScreen
 import kotlinx.coroutines.launch
 
@@ -87,6 +91,7 @@ fun MainScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(surfaceColor)
     ) {
 
 
@@ -103,7 +108,7 @@ fun MainScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(getSurfaceColor(settingsVM = settingsVM))
+                        .background(surfaceColor)
                 ) {
 
                     if (
@@ -135,7 +140,7 @@ fun MainScreen(
                     }
                 }
             },
-            content = {scaffoldInnerPadding->
+            content = { scaffoldInnerPadding ->
 
                 NavHost(
                     modifier = Modifier
@@ -144,13 +149,15 @@ fun MainScreen(
                     navController = navController,
                     startDestination = "Home",
 
-                ){
+                    ) {
 
                     composable("Home") {
                         HomeScreen(
                             mainVM = mainVM,
                             homeScreenVM = ViewModelProvider(activityContext)[HomeScreenVM::class.java],
-                            openPage = { page -> navController.navigate(page) }
+                            openPage = { page ->
+                                navController.navigate(page)
+                            }
                         )
                     }
 
@@ -178,11 +185,12 @@ fun MainScreen(
                         PlaylistsScreen(
                             mainVM = mainVM,
                             playlistsVM = ViewModelProvider(activityContext)[PlaylistsScreenVM::class.java],
-                            onGenrePlaylistClick = { position ->
-                                navController.navigate("GenrePlaylistScreen/$position")
+                            onGenrePlaylistClick = {
+                                navController.navigate("GenrePlaylistScreen/$it")
                             },
                             onPlaylistClick = { playlistID ->
-                                mainVM.loadPlaylistScreen(playlistID)
+
+                                ViewModelProvider(activityContext)[PlaylistScreenVM::class.java].clearScreen()
                                 navController.navigate("PlaylistScreen/$playlistID")
                             }
                         )
@@ -213,7 +221,7 @@ fun MainScreen(
 
                         val albumID = it.arguments?.getString("ArtistID")?.toLongOrNull()
 
-                        if(albumID != null){
+                        if (albumID != null) {
 
                             AlbumScreen(
                                 mainVM = mainVM,
@@ -231,12 +239,12 @@ fun MainScreen(
                         val artistName = backStackEntry.arguments?.getString("artistName")
                         val artistID = backStackEntry.arguments?.getString("artistID")
 
-                        if(artistName != null && artistID != null){
+                        if (artistName != null && artistID != null) {
                             SelectArtistCoverScreen(
                                 mainVM = mainVM,
                                 artistName = artistName,
                                 artistID = artistID.toLong(),
-                                onGoBack = {navController.navigateUp()},
+                                onGoBack = { navController.navigateUp() },
                                 onGetImage = {
                                     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                                         addCategory(Intent.CATEGORY_OPENABLE)
@@ -257,7 +265,7 @@ fun MainScreen(
 
                         val albumID = it.arguments?.getString("albumID")?.toLongOrNull()
 
-                        if(albumID != null){
+                        if (albumID != null) {
 
                             AlbumScreen(
                                 mainVM = mainVM,
@@ -267,13 +275,13 @@ fun MainScreen(
                             )
                         }
                     }
-                    composable("GenrePlaylistScreen/{position}") {
-                        val position = it.arguments!!.getString("position")
+                    composable("GenrePlaylistScreen/{genre}") {
+                        val genre = it.arguments?.getString("genre")
 
-                        if(position != null){
+                        if (genre != null) {
                             GenrePlaylistScreen(
                                 mainVM = mainVM,
-                                position = position.toInt(),
+                                genre = genre,
                                 onBackClicked = { navController.navigateUp() }
                             )
                         }
@@ -281,34 +289,45 @@ fun MainScreen(
 
                     composable("PlaylistScreen/{playlistID}") {
 
-                        PlaylistScreen(
-                            mainVM = mainVM,
-                            arguments = it.arguments!!,
-                            onBackClick = { navController.navigateUp() },
-                            onGetImage = {
-                                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                                    addCategory(Intent.CATEGORY_OPENABLE)
-                                    type = "image/*"
-                                    addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
-                                    addFlags(FLAG_GRANT_READ_URI_PERMISSION)
-                                }
+                        val playlistID = it.arguments?.getString("playlistID")
 
-                                //startActivityForResult(intent, 1)
-                            }
-                        )
+                        if (playlistID != null) {
+
+                            PlaylistScreen(
+                                mainVM = mainVM,
+                                playlistsVM = ViewModelProvider(activityContext)[PlaylistsScreenVM::class.java],
+                                playlistVM = ViewModelProvider(activityContext)[PlaylistScreenVM::class.java],
+                                playlistID = playlistID,
+                                onGoBack = { navController.navigateUp() },
+                                onGetImage = {
+                                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                                        addCategory(Intent.CATEGORY_OPENABLE)
+                                        type = "image/*"
+                                        addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+                                        addFlags(FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+
+                                    //startActivityForResult(intent, 1)
+                                }
+                            )
+                        }
                     }
                     composable(
-                        route = "addToPlaylistScreen?songID={songID}",
-                        arguments = listOf(
-                            navArgument("songID") { type = NavType.LongType }
-                        )
-                    ) { backStackEntry ->
-                        AddToPlaylistScreen(
-                            mainVM = mainVM,
-                            backStackEntry = backStackEntry,
-                            previousPage = "Home",
-                            onBackClick = { navController.navigateUp() }
-                        )
+                        route = "AddToPlaylistScreen/{songID}"
+                    ) {
+
+                        val songID = it.arguments?.getString("songID")?.toLongOrNull()
+
+                        if(songID != null){
+                            AddToPlaylistScreen(
+                                mainVM = mainVM,
+                                songID = songID,
+                                playlistsVM = ViewModelProvider(activityContext)[PlaylistsScreenVM::class.java],
+                                addToPlaylistVM = ViewModelProvider(activityContext)[AddToPlaylistScreenVM::class.java],
+                                previousPage = "Home",
+                                onBackClick = { navController.navigateUp() }
+                            )
+                        }
                     }
 
                     composable(
@@ -335,7 +354,7 @@ fun MainScreen(
 
                         val albumID = it.arguments?.getString("albumID")?.toLongOrNull()
 
-                        if(albumID != null){
+                        if (albumID != null) {
 
                             AlbumScreen(
                                 mainVM = mainVM,
@@ -352,7 +371,7 @@ fun MainScreen(
 
                         val albumID = it.arguments?.getString("albumID")?.toLongOrNull()
 
-                        if(albumID != null){
+                        if (albumID != null) {
 
                             AlbumScreen(
                                 mainVM = mainVM,
@@ -370,12 +389,12 @@ fun MainScreen(
                         val artistName = backStackEntry.arguments?.getString("artistName")
                         val artistID = backStackEntry.arguments?.getLong("artistID")
 
-                        if(artistName != null && artistID != null){
+                        if (artistName != null && artistID != null) {
                             SelectArtistCoverScreen(
                                 mainVM = mainVM,
                                 artistName = artistName,
                                 artistID = artistID,
-                                onGoBack = {navController.navigateUp()},
+                                onGoBack = { navController.navigateUp() },
                                 onGetImage = {
                                     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                                         addCategory(Intent.CATEGORY_OPENABLE)

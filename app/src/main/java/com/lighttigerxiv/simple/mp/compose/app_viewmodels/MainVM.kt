@@ -40,7 +40,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     private val _songs = MutableStateFlow<List<Song>?>(null)
     val songs = _songs.asStateFlow()
-    private val playlistDao = AppDatabase.getInstance(application).playlistDao
     private val preferences = application.getSharedPreferences(application.packageName, MODE_PRIVATE)
 
 
@@ -60,10 +59,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     private val _compressedSongsImages = MutableStateFlow<List<SongArt>?>(null)
     val compressedSongsImages= _compressedSongsImages.asStateFlow()
 
-
-
-
-    lateinit var navController: NavController
 
     private val _showNavigationBar = MutableStateFlow(true)
     val showNavigationBar = _showNavigationBar.asStateFlow()
@@ -104,9 +99,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     val currentArtistsList = MutableLiveData<List<Song>>(ArrayList())
     val currentAlbumsList = MutableLiveData<List<Song>>(ArrayList())
 
-
-    private val _playlists: MutableStateFlow<List<Playlist>> = MutableStateFlow(getAllPlaylists())
-    val playlists = _playlists.asStateFlow()
     val playlistSongs = MutableLiveData(ArrayList<Song>())
     val currentPlaylistSongs = MutableLiveData(ArrayList<Song>())
 
@@ -122,9 +114,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     private var isServiceBound = false
 
 
-    //Home Screen
-    var showHomePopupMenu = MutableLiveData(false)
-
     //Playlist Screen
     var tfPlaylistNamePlaylistScreen = MutableLiveData("")
     var isOnEditModePlaylistScreen = MutableLiveData(false)
@@ -134,44 +123,8 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         _currentPlaylistImageString.value = value ?: ""
     }
 
-    fun loadPlaylistScreen(playlistID: Int) {
 
-        _currentPlaylistImageString.value = playlists.value.find { it.id == playlistID }!!.image ?: ""
-    }
 
-    var onPlaylistImageSelected: (bitmapString: String?) -> Unit = {}
-
-    fun updatePlaylistImage(bitmapString: String?, playlistID: Int){
-
-        playlistDao.updatePlaylistImage(bitmapString, playlistID)
-        _playlists.value = getAllPlaylists()
-        filterPlaylistsPLSS()
-    }
-
-    private fun getAllPlaylists(): List<Playlist>{
-
-        /*
-        playlistDao.getAllPlaylists().forEach { playlist->
-
-            val newSongs = ArrayList<Song>()
-
-            if(playlist.songs != null){
-                val type = object : TypeToken<List<Song>>(){}.type
-                val songs = Gson().fromJson<List<Song>>(playlist.songs, type )
-
-                songs.forEach { song->
-
-                    if(songsList.contains(song)) newSongs.add(song)
-                }
-
-                playlistDao.updatePlaylistSongs( Gson().toJson(newSongs), playlist.id )
-            }
-        }
-
-         */
-
-        return playlistDao.getPlaylists()
-    }
 
     //Callbacks
     var onSongSelected: (Song) -> Unit = {}
@@ -420,79 +373,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
 
 
-    fun createPlaylist(name: String) {
-
-        playlistDao.insertPlaylist(
-            Playlist(name = name)
-        )
-
-        _playlists.value = getAllPlaylists()
-        _currentPlaylistsPLSS.value = _playlists.value
-    }
-
-
-    fun deletePlaylist(playlistID: Int) {
-
-        playlistDao.deletePlaylist(playlistID = playlistID)
-        _playlists.value = getAllPlaylists()
-        _currentPlaylistsPLSS.value = _playlists.value
-    }
-
-    fun updatePlaylistName(playlistID: Int, playlistName: String) {
-
-        playlistDao.updatePlaylistName(
-            playlistName = playlistName,
-            playlistID = playlistID
-        )
-
-        _playlists.value = getAllPlaylists()
-    }
-
-
-    fun updatePlaylistSongs(songsJson: String, playlistID: Int) {
-
-        playlistDao.updatePlaylistSongs(
-            songsJson = songsJson,
-            playlistID = playlistID
-        )
-
-        _playlists.value = getAllPlaylists()
-        filterPlaylistsPLSS()
-    }
-
-
-
-
-
-    fun filterArtistsList(sortType: String) {
-
-        /*
-        when (sortType) {
-
-            "Recent" -> currentArtistsList.value = recentArtistsList.filterNot { !it.artistName.lowercase().trim().contains(artistsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
-            "Oldest" -> currentArtistsList.value = oldestArtistsList.filterNot { !it.artistName.lowercase().trim().contains(artistsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
-            "Ascendent" -> currentArtistsList.value = ascendentArtistsList.filterNot { !it.artistName.lowercase().trim().contains(artistsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
-            "Descendent" -> currentArtistsList.value = descendentArtistsList.filterNot { !it.artistName.lowercase().trim().contains(artistsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
-        }
-
-         */
-    }
-
-    fun filterAlbumsList(sortType: String) {
-
-        /*
-        when (sortType) {
-
-            "Recent" -> currentAlbumsList.value = recentAlbumsList.filterNot { !it.albumName.lowercase().trim().contains(albumsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
-            "Oldest" -> currentAlbumsList.value = oldestAlbumsList.filterNot { !it.albumName.lowercase().trim().contains(albumsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
-            "Ascendent" -> currentAlbumsList.value = ascendentAlbumsList.filterNot { !it.albumName.lowercase().trim().contains(albumsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
-            "Descendent" -> currentAlbumsList.value = descendentAlbumsList.filterNot { !it.albumName.lowercase().trim().contains(albumsSearchText.value!!.lowercase().trim()) } as ArrayList<Song>
-        }
-
-         */
-    }
-
-
     private val _themeModeSetting = MutableStateFlow(preferences.getString("ThemeMode", "System")!!)
     val themeModeSetting = _themeModeSetting.asStateFlow()
 
@@ -562,18 +442,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         _searchValuePLSS.value = v
     }
 
-    private val _currentPlaylistsPLSS: MutableStateFlow<List<Playlist>> = MutableStateFlow(playlists.value)
-    val currentPlaylistsPLSS = _currentPlaylistsPLSS.asStateFlow()
 
-    fun filterPlaylistsPLSS(){
-
-        val newPlaylists = playlists.value.filter {
-            it.name.lowercase().trim().contains(_searchValuePLSS.value.lowercase().trim())
-        }
-
-
-        _currentPlaylistsPLSS.value = newPlaylists
-    }
 
     //------------------------- Select Artist Cover Screen (SACS)----------------------------------//
 

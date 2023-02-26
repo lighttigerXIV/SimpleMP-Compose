@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.navigation.screens.main
+package com.lighttigerxiv.simple.mp.compose.screens.main.add_to_playlist
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,7 +14,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,21 +21,19 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavBackStackEntry
 import coil.compose.AsyncImage
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
-import com.lighttigerxiv.simple.mp.compose.Song
-import com.lighttigerxiv.simple.mp.compose.composables.BottomSheetHandle
-import com.lighttigerxiv.simple.mp.compose.composables.CustomText
-import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
-import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
-import com.lighttigerxiv.simple.mp.compose.getBitmapFromVectorDrawable
 import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
+import com.lighttigerxiv.simple.mp.compose.composables.*
+import com.lighttigerxiv.simple.mp.compose.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.composables.spacers.SmallWidthSpacer
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
@@ -44,23 +41,44 @@ import java.io.ByteArrayOutputStream
 @Composable
 fun AddToPlaylistScreen(
     mainVM: MainVM,
-    backStackEntry: NavBackStackEntry,
+    songID: Long,
+    playlistsVM: PlaylistsScreenVM,
+    addToPlaylistVM: AddToPlaylistScreenVM,
     previousPage: String,
     onBackClick: () -> Unit
 ) {
 
-    val songID = backStackEntry.arguments?.getLong("songID")
-    val createPlaylistSheetState = rememberBottomSheetScaffoldState()
-    val playlists = mainVM.playlists.collectAsState().value
-    val selectedSong = mainVM.songs.collectAsState().value?.find { it.id == songID }!!
+
+    //State
     val context = LocalContext.current
+
+    val sheetState = rememberBottomSheetScaffoldState()
+
     val scope = rememberCoroutineScope()
 
+    //Variables
+    val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
+    val screenLoaded = addToPlaylistVM.screenLoaded.collectAsState().value
+
+    val playlists = addToPlaylistVM.playlists.collectAsState().value
+
+    val playlistNameText = addToPlaylistVM.playlistNameText.collectAsState().value
+
+
+    if (!screenLoaded) {
+        addToPlaylistVM.loadScreen()
+    }
+
+    
+    if(screenLoaded){
+        CustomText(text = "Caralho")
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(surfaceColor)
     ) {
 
         Column(
@@ -83,37 +101,35 @@ fun AddToPlaylistScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        Row(
-                            modifier = Modifier
-                                .wrapContentWidth()
-                                .clip(RoundedCornerShape(100))
-                                .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(100))
-                                .clickable {
-                                    scope.launch { createPlaylistSheetState.bottomSheetState.expand() }
-                                }
-                                .padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-
-                            Icon(
+                        if (screenLoaded) {
+                            Row(
                                 modifier = Modifier
-                                    .width(15.dp)
-                                    .height(15.dp),
-                                painter = painterResource(id = R.drawable.icon_plus_solid),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
+                                    .wrapContentWidth()
+                                    .clip(RoundedCornerShape(100))
+                                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(100))
+                                    .clickable {
+                                        scope.launch {
+                                            sheetState.bottomSheetState.expand()
+                                        }
+                                    }
+                                    .padding(SMALL_SPACING),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
 
-                            Spacer(modifier = Modifier.width(10.dp))
+                                SmallIcon(id = R.drawable.plus)
 
-                            CustomText(
-                                text = "Create Playlist",
-                                color = MaterialTheme.colorScheme.primary,
-                                size = 14.sp,
-                                maxLines = 1
-                            )
+                                SmallWidthSpacer()
+
+                                CustomText(
+                                    text = "Create Playlist",
+                                    color = MaterialTheme.colorScheme.primary,
+                                    size = 14.sp,
+                                    maxLines = 1
+                                )
+                            }
                         }
+
                     }
                 }
             )
@@ -121,7 +137,7 @@ fun AddToPlaylistScreen(
 
 
         BottomSheetScaffold(
-            scaffoldState = createPlaylistSheetState,
+            scaffoldState = sheetState,
             sheetShape = RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp),
             sheetPeekHeight = 0.dp,
             sheetContent = {
@@ -135,11 +151,9 @@ fun AddToPlaylistScreen(
 
                 ) {
 
-                    val playlistNameValue = mainVM.tfNewPlaylistNameValue.observeAsState().value!!
-
                     BottomSheetHandle()
 
-                    Spacer(Modifier.height(10.dp))
+                    SmallHeightSpacer()
 
                     Text(
                         text = "Playlist Name",
@@ -147,13 +161,15 @@ fun AddToPlaylistScreen(
                     )
 
                     CustomTextField(
-                        text = playlistNameValue,
+                        text = playlistNameText,
                         placeholder = "Insert playlist name",
-                        onTextChange = { mainVM.tfNewPlaylistNameValue.value = it },
+                        onTextChange = {
+                            addToPlaylistVM.updatePlaylistNameText(it)
+                        },
                         textType = "text"
                     )
 
-                    Spacer(Modifier.height(10.dp))
+                    SmallHeightSpacer()
 
                     Row(
                         horizontalArrangement = Arrangement.End,
@@ -163,14 +179,18 @@ fun AddToPlaylistScreen(
                         Button(
                             onClick = {
 
-                                mainVM.createPlaylist(playlistNameValue)
-                                scope.launch { createPlaylistSheetState.bottomSheetState.collapse() }
+                                scope.launch {
+
+                                    addToPlaylistVM.createPlaylist()
+
+                                    sheetState.bottomSheetState.collapse()
+                                }
                             },
-                            enabled = playlistNameValue.isNotEmpty()
+                            enabled = playlistNameText.isNotEmpty()
                         ) {
 
                             Text(
-                                text = "Create"
+                                text = stringResource(id = R.string.Create)
                             )
                         }
                     }
@@ -181,7 +201,7 @@ fun AddToPlaylistScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(mainVM.surfaceColor.collectAsState().value)
+                    .background(surfaceColor)
                     .padding(sheetPadding)
                     .padding(
                         start = SCREEN_PADDING,
@@ -190,19 +210,17 @@ fun AddToPlaylistScreen(
                     )
             ) {
 
-                Spacer(
-                    modifier = Modifier.height(20.dp)
-                )
+                if (screenLoaded) {
+                    MediumHeightSpacer()
 
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(2.5.dp),
+                    ) {
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(2.5.dp),
-                    content = {
-
-                        items(playlists, key = { playlist -> playlist.id }) { playlist ->
-
-                            val playlistName = remember { playlist.name }
+                        items(
+                            items = playlists!!
+                        ) { playlist ->
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -210,39 +228,28 @@ fun AddToPlaylistScreen(
                                     .fillMaxWidth()
                                     .clickable {
 
-                                        var canContinue = true
-                                        val playlistSongs = if (playlist.songs != null)
-                                            Gson().fromJson(playlist.songs, object : TypeToken<ArrayList<Song>>() {}.type) as ArrayList<Song>
-                                        else
-                                            ArrayList()
+                                        scope.launch {
 
+                                            addToPlaylistVM.addSong(
+                                                songID = songID,
+                                                playlist = playlist,
+                                                onSuccess = {
+                                                    onBackClick()
+                                                },
+                                                onError = {
 
-                                        playlistSongs.forEach { song ->
-
-                                            if (song.id == songID) {
-                                                canContinue = false
-                                                Toast
-                                                    .makeText(context, "Song already in playlist", Toast.LENGTH_SHORT)
-                                                    .show()
-                                            }
-                                        }
-
-
-                                        if (canContinue) {
-
-                                            playlistSongs.add(selectedSong)
-                                            val newPlaylistSongsJson = Gson().toJson(playlistSongs)
-
-                                            mainVM.updatePlaylistSongs(songsJson = newPlaylistSongsJson, playlistID = playlist.id)
-
-                                            onBackClick()
+                                                    Toast
+                                                        .makeText(context, getAppString(context, id = R.string.SongAlreadyInPlaylist), Toast.LENGTH_SHORT)
+                                                        .show()
+                                                }
+                                            )
                                         }
                                     }
                             ) {
 
                                 val playlistImage = remember {
                                     if (playlist.image.isNullOrEmpty()) {
-                                        getBitmapFromVectorDrawable(context, R.drawable.icon_playlists)
+                                        getBitmapFromVectorDrawable(context, R.drawable.playlist)
                                     } else {
                                         val imageBytes = Base64.decode(playlist.image, Base64.DEFAULT)
                                         BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size).apply {
@@ -264,18 +271,17 @@ fun AddToPlaylistScreen(
                                         .background(MaterialTheme.colorScheme.surfaceVariant)
                                 )
 
-
-                                Spacer(modifier = Modifier.width(10.dp))
+                                SmallHeightSpacer()
 
                                 Text(
-                                    text = playlistName,
+                                    text = playlist.name,
                                     fontSize = 18.sp,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
                     }
-                )
+                }
             }
         }
     }

@@ -21,10 +21,6 @@ interface PlaylistDao{
     fun updatePlaylistImage(imageString: String?, playlistID: Int )
 
 
-    @Query("UPDATE playlist SET songs = :songsJson WHERE id = :playlistID")
-    fun updatePlaylistSongs( songsJson : String, playlistID: Int )
-
-
     @Transaction
     @Insert
     fun insertPlaylist(playlist: Playlist)

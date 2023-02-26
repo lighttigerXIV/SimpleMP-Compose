@@ -11,11 +11,12 @@ import kotlinx.coroutines.internal.synchronized
 @Database(
     entities = [
         Playlist::class,
-        Artist::class
+        Artist::class,
+        PlaylistSong::class
     ],
-    version = 3,
+    version = 4,
     autoMigrations = [
-        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4)
     ],
     exportSchema = true
 )

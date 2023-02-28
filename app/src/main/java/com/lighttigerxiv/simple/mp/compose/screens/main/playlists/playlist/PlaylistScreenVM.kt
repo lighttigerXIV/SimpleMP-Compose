@@ -1,10 +1,8 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist
 
 import android.app.Application
-import android.content.Context
-import android.content.res.Resources
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -15,7 +13,7 @@ import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.items.Playlist
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.PlaylistsQueries
-import com.lighttigerxiv.simple.mp.compose.getBitmapFromVectorDrawable
+import com.lighttigerxiv.simple.mp.compose.getBitmapFromVector
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
 import io.realm.kotlin.ext.toRealmList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,25 +37,29 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
     private val _playlistImage = MutableStateFlow<ImageBitmap?>(null)
     val playlistImage = _playlistImage.asStateFlow()
 
+    private val _tintImage = MutableStateFlow(false)
+    val tintImage = _tintImage.asStateFlow()
+
     private val _playlist = MutableStateFlow<Playlist?>(null)
     val playlist = _playlist.asStateFlow()
 
     private val _songs = MutableStateFlow<List<Song>?>(null)
     val songs = _songs.asStateFlow()
+    fun updateSongs(newValue: List<Song>) {
+        _songs.update { newValue }
+    }
 
     private val _currentSongs = MutableStateFlow<List<Song>?>(null)
     val currentSongs = _currentSongs.asStateFlow()
+    fun updateCurrentSongs(newValue: List<Song>) {
+        _currentSongs.update { newValue }
+    }
+
 
     private val _showMenu = MutableStateFlow(false)
     val showMenu = _showMenu.asStateFlow()
     fun updateShowMenu(newValue: Boolean) {
         _showMenu.update { newValue }
-    }
-
-    private val _showSelectImageDialog = MutableStateFlow(false)
-    val showSelectImageDialog = _showSelectImageDialog.asStateFlow()
-    fun updateShowSelectImageDialog(newValue: Boolean) {
-        _showSelectImageDialog.update { newValue }
     }
 
     private val _showDeleteDialog = MutableStateFlow(false)
@@ -79,10 +81,17 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
     }
 
     private val _saveButtonEnabled = MutableStateFlow(true)
-    val saveButtonEnabled= _saveButtonEnabled.asStateFlow()
-    fun updateSaveButtonEnabled(newValue:Boolean) {
+    val saveButtonEnabled = _saveButtonEnabled.asStateFlow()
+    fun updateSaveButtonEnabled(newValue: Boolean) {
         _saveButtonEnabled.update { newValue }
     }
+
+    private var updateImage = false
+
+    private var deleteImage = false
+
+    private var newImageString: String? = null
+
 
     //************************************************
     // Functions
@@ -106,14 +115,32 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
                 _playlistNameText.update { playlist.value!!.name }
 
                 _playlistImage.update {
-                    getBitmapFromVectorDrawable(context, R.drawable.playlist).asImageBitmap()
+
+                    if(playlist.value!!.image != null){
+
+                        val imageBytes = Base64.decode(playlist.value!!.image, Base64.DEFAULT)
+                        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size).asImageBitmap()
+
+                    } else{
+                        getBitmapFromVector(context, R.drawable.playlist).asImageBitmap()
+                    }
                 }
 
+                if(playlist.value!!.image == null){
+
+                    _tintImage.update { true }
+                } else{
+
+                    _tintImage.update { false }
+                }
+
+
                 val songsIDS = playlist.value!!.songs
+
                 val newSongs = ArrayList<Song>()
 
                 songsIDS.forEach { songID ->
-                    if(mainVM.songs.value!!.any { it.id == songID }){
+                    if (mainVM.songs.value!!.any { it.id == songID }) {
                         newSongs.add(mainVM.songs.value!!.first { it.id == songID })
                     }
                 }
@@ -121,11 +148,40 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
                 _songs.update { newSongs }
                 _currentSongs.update { newSongs }
 
-                Log.d("Playlist songs", playlist.value?.songs.toString())
-
                 _screenLoaded.update { true }
             }
         }
+    }
+
+    fun cancelEdit(){
+
+        deleteImage = false
+
+        updateImage = false
+
+        newImageString = null
+
+        _playlistImage.update {
+
+            if(playlist.value!!.image != null){
+
+                val imageBytes = Base64.decode(playlist.value!!.image, Base64.DEFAULT)
+                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size).asImageBitmap()
+
+            } else{
+                getBitmapFromVector(context, R.drawable.playlist).asImageBitmap()
+            }
+        }
+
+        if(playlist.value!!.image == null){
+
+            _tintImage.update { true }
+        } else{
+
+            _tintImage.update { false }
+        }
+
+        _currentSongs.update { songs.value }
     }
 
     suspend fun deletePlaylist(playlistID: String, playlistsVM: PlaylistsScreenVM) {
@@ -138,12 +194,40 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
         )
     }
 
-    fun removeSong(song: Song){
+    fun removeSong(song: Song) {
 
-        _currentSongs.update { songs.value!!.filter { it.id != song.id } }
+        _currentSongs.update { currentSongs.value!!.filter { it.id != song.id } }
     }
 
-    suspend fun savePlaylistChanges(playlistsVM: PlaylistsScreenVM){
+    fun deleteImage(){
+
+        updateImage = false
+
+        deleteImage = true
+
+        _playlistImage.update { getBitmapFromVector(context, R.drawable.playlist).asImageBitmap() }
+
+        _tintImage.update { true }
+    }
+
+    fun onImageReceived(bitmapString: String){
+
+        updateImage = true
+
+        deleteImage = false
+
+        newImageString = bitmapString
+
+        val imageBytes = Base64.decode(bitmapString, Base64.DEFAULT)
+
+        val imageBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size).asImageBitmap()
+
+        _tintImage.update { false }
+
+        _playlistImage.update { imageBitmap }
+    }
+
+    suspend fun savePlaylistChanges(playlistsVM: PlaylistsScreenVM) {
 
         val newSongs = ArrayList<Long>()
 
@@ -154,10 +238,15 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
         val updatedPlaylist = Playlist().apply {
             _id = playlist.value!!._id
             name = playlistNameText.value
-            image = null
+            image = if(updateImage && newImageString != null){
+                newImageString
+            }else if(deleteImage){
+                null
+            }else{
+                playlist.value!!.image
+            }
             songs = newSongs.toRealmList()
         }
-
 
         playlistsQueries.updatePlaylist(updatedPlaylist)
 
@@ -170,6 +259,10 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
                 it.name.lowercase().trim().contains(playlistsVM.searchText.value.lowercase().trim())
             }
         )
+
+        deleteImage = false
+
+        updateImage = false
     }
 
     fun clearScreen() {
@@ -180,6 +273,6 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
         _currentSongs.update { null }
         _showMenu.update { false }
         _showDeleteDialog.update { false }
-        _showSelectImageDialog.update { false }
+        _tintImage.update { false }
     }
 }

@@ -13,15 +13,17 @@ import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.composables.ThemeSelector
 import com.lighttigerxiv.simple.mp.compose.getAppString
 import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
+import com.lighttigerxiv.simple.mp.compose.app_viewmodels.SettingsVM
 
 @Composable
 fun ThemesScreen(
     mainVM: MainVM,
+    settingsVM: SettingsVM,
     onBackClick: () -> Unit
 ) {
 
     val context = LocalContext.current
-    val themeAccent = mainVM.themeAccentSetting.collectAsState().value!!
+    val themeAccent = settingsVM.themeAccentSetting.collectAsState().value
 
 
     Column(
@@ -46,7 +48,9 @@ fun ThemesScreen(
 
             ThemeSelector(
                 selectedTheme = themeAccent,
-                onThemeClick = {mainVM.setThemeAccent(it)}
+                onThemeClick = {
+                    settingsVM.updateThemeAccentSetting(it)
+                }
             )
         }
     }

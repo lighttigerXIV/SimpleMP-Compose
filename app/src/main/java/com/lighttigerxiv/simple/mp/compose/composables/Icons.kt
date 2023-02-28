@@ -1,6 +1,7 @@
 package com.lighttigerxiv.simple.mp.compose.composables
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +42,28 @@ fun MediumIcon(
         modifier = Modifier
             .height(30.dp)
             .width(30.dp),
+        contentScale = ContentScale.Fit,
+        painter = painterResource(id = id),
+        contentDescription = description,
+        colorFilter = ColorFilter.tint(color)
+    )
+}
+
+@Composable
+fun ClickableMediumIcon(
+    id: Int,
+    description: String? = null,
+    color: Color = MaterialTheme.colorScheme.primary,
+    onClick: () -> Unit
+){
+
+    Image(
+        modifier = Modifier
+            .height(30.dp)
+            .width(30.dp)
+            .clickable {
+                onClick()
+            },
         contentScale = ContentScale.Fit,
         painter = painterResource(id = id),
         contentDescription = description,

@@ -20,12 +20,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.google.gson.Gson
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
@@ -181,7 +179,7 @@ fun AddToPlaylistScreen(
 
                                 scope.launch {
 
-                                    addToPlaylistVM.createPlaylist()
+                                    addToPlaylistVM.createPlaylist(playlistsVM)
 
                                     sheetState.bottomSheetState.collapse()
                                 }
@@ -249,7 +247,7 @@ fun AddToPlaylistScreen(
 
                                 val playlistImage = remember {
                                     if (playlist.image.isNullOrEmpty()) {
-                                        getBitmapFromVectorDrawable(context, R.drawable.playlist)
+                                        getBitmapFromVector(context, R.drawable.playlist)
                                     } else {
                                         val imageBytes = Base64.decode(playlist.image, Base64.DEFAULT)
                                         BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size).apply {

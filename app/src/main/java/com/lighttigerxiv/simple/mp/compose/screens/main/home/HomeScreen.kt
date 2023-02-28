@@ -258,21 +258,21 @@ fun HomeScreen(
 
                                                 val artistID = song.artistID
 
-                                                openPage("FloatingArtistScreen/$artistID")
+                                                openPage("FloatingArtist/$artistID")
                                             }
 
                                             "Album" -> {
 
                                                 val albumID = song.albumID
 
-                                                openPage("FloatingAlbumScreen/$albumID")
+                                                openPage("FloatingAlbum/$albumID")
                                             }
 
                                             "Playlist" -> {
 
                                                 val songID = song.id.toString()
 
-                                                openPage("AddToPlaylistScreen/$songID")
+                                                openPage("AddToPlaylist/$songID")
                                             }
                                         }
                                     },

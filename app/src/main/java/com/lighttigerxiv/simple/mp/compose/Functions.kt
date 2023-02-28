@@ -12,10 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import com.lighttigerxiv.simple.mp.compose.app_viewmodels.SettingsVM
 import org.mongodb.kbson.BsonObjectId
-import org.mongodb.kbson.ObjectId
 
 
-fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap {
+fun getBitmapFromVector(context: Context, drawableId: Int): Bitmap {
     val drawable = ContextCompat.getDrawable(context, drawableId)
     val bitmap = Bitmap.createBitmap(
         500,

@@ -8,6 +8,7 @@ import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.items.Playlist
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.PlaylistsQueries
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
 import com.lighttigerxiv.simple.mp.compose.toMongoHex
 import io.realm.kotlin.types.RealmList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,11 +50,19 @@ class AddToPlaylistScreenVM(application: Application) : AndroidViewModel(applica
         _screenLoaded.update { true }
     }
 
-    fun createPlaylist() {
+    fun createPlaylist(playlistsVM: PlaylistsScreenVM) {
 
         playlistsQueries.createPlaylist(playlistNameText.value)
 
         _playlists.update { playlistsQueries.getPlaylists() }
+
+        _playlistNameText.update { "" }
+
+        playlistsVM.updatePlaylists(playlistsQueries.getPlaylists())
+
+        playlistsVM.updateCurrentPlaylists(playlistsQueries.getPlaylists().filter {
+            it.name.trim().lowercase().contains(playlistsVM.searchText.value.trim().lowercase())
+        })
     }
 
     suspend fun addSong(songID: Long, playlist: Playlist, onSuccess: () -> Unit, onError: () -> Unit) {

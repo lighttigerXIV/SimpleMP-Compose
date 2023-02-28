@@ -100,7 +100,7 @@ fun AlbumsScreen(
 
                         scope.launch { listState.scrollToItem(0) }
                     },
-                    sideIcon = R.drawable.icon_sort_solid,
+                    sideIcon = R.drawable.sort,
                     onSideIconClick = { albumsVM.updateMenuExpanded(true) }
                 )
                 DropdownMenu(

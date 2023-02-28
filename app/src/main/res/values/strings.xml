@@ -94,4 +94,10 @@
     <string name="DownloadArtistCoverOnData">Download artist cover on mobile data</string>
     <string name="Playlists">Playlists</string>
     <string name="SongAlreadyInPlaylist">Song already in playlist</string>
+    <string name="AddSongs">Add Songs</string>
+    <string name="Playlist">Playlist</string>
+    <string name="Add">Add</string>
+    <string name="Select">Select</string>
+    <string name="SelectImage">Select Image</string>
+    <string name="DeleteImage">Delete Image</string>
 </resources>

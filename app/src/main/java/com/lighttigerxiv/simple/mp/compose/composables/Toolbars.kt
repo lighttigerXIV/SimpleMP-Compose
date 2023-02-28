@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.getBitmapFromVectorDrawable
+import com.lighttigerxiv.simple.mp.compose.getBitmapFromVector
 
 @Composable
 fun CustomToolbar(
@@ -45,7 +45,7 @@ fun CustomToolbar(
         ) {
 
             Image(
-                bitmap = remember { getBitmapFromVectorDrawable(context, R.drawable.back).asImageBitmap() },
+                bitmap = remember { getBitmapFromVector(context, R.drawable.back).asImageBitmap() },
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),

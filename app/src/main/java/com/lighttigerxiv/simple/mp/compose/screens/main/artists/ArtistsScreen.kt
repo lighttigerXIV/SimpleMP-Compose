@@ -107,7 +107,7 @@ fun ArtistsScreen(
 
                             scope.launch { gridState.scrollToItem(0) }
                         },
-                        sideIcon = R.drawable.icon_sort_solid,
+                        sideIcon = R.drawable.sort,
                         onSideIconClick = {
                             artistsVM.updateMenuExpanded(true)
                         },

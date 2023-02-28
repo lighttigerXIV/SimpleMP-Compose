@@ -1,15 +1,11 @@
 package com.lighttigerxiv.simple.mp.compose.data.mongodb.queries
 
-import android.util.Log
-import com.lighttigerxiv.simple.mp.compose.Song
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.items.Playlist
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.ext.toRealmList
 import io.realm.kotlin.query.RealmResults
-import io.realm.kotlin.types.RealmList
 import org.mongodb.kbson.BsonObjectId
-import org.mongodb.kbson.ObjectId
 
 class PlaylistsQueries(
     private val realm: Realm
@@ -58,6 +54,26 @@ class PlaylistsQueries(
             val queryPlaylist = this.query<Playlist>("_id == $0", playlist._id).find().first()
 
             queryPlaylist.songs = songs.toRealmList()
+        }
+    }
+
+    suspend fun deletePlaylistImage(playlist: Playlist){
+
+        realm.write {
+
+            val queryPlaylist = this.query<Playlist>("_id == $0", playlist._id).find().first()
+
+            queryPlaylist.image = null
+        }
+    }
+
+    suspend fun updatePlaylistImage(playlist: Playlist, bitmapString: String){
+
+        realm.write {
+
+            val queryPlaylist = this.query<Playlist>("_id == $0", playlist._id).find().first()
+
+            queryPlaylist.image = bitmapString
         }
     }
 

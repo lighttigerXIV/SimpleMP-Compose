@@ -176,7 +176,7 @@ fun PlaylistsScreen(
                                 ) {genre ->
 
                                     ImageCard(
-                                        cardImage = remember { getBitmapFromVectorDrawable(context, R.drawable.playlist) },
+                                        cardImage = remember { getBitmapFromVector(context, R.drawable.playlist) },
                                         imageTint = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                                         cardText = remember { genre },
                                         onCardClicked = {
@@ -307,7 +307,7 @@ fun PlaylistsScreen(
                                             items(playlists!!) { playlist ->
 
                                                 val playlistImage = if (playlist.image.isNullOrEmpty()) {
-                                                    getBitmapFromVectorDrawable(context, R.drawable.playlist)
+                                                    getBitmapFromVector(context, R.drawable.playlist)
                                                 } else {
                                                     val imageBytes = Base64.decode(playlist.image, Base64.DEFAULT)
                                                     BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)

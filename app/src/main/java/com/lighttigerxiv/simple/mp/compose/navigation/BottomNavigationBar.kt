@@ -46,11 +46,11 @@ fun BottomNavigationBar(
                 val isItemSelected = when {
 
                     itemRoute == destinationRoute-> true
-                    itemRoute == "artistsScreen" && destinationRoute!!.startsWith("artistScreen") -> true
-                    itemRoute == "artistsScreen" && destinationRoute!!.startsWith("artistAlbumScreen") -> true
-                    itemRoute == "albumsScreen" && destinationRoute!!.startsWith("albumScreen") -> true
-                    itemRoute == "playlistsScreen" && destinationRoute!!.startsWith("GenrePlaylistScreen") -> true
-                    itemRoute == "playlistsScreen" && destinationRoute!!.startsWith("PlaylistScreen") -> true
+                    itemRoute == "Artists" && destinationRoute!!.startsWith("Artist") -> true
+                    itemRoute == "Artists" && destinationRoute!!.startsWith("ArtistAlbum") -> true
+                    itemRoute == "Albums" && destinationRoute!!.startsWith("Album") -> true
+                    itemRoute == "Playlists" && destinationRoute!!.startsWith("GenrePlaylist") -> true
+                    itemRoute == "Playlists" && destinationRoute!!.startsWith("Playlist") -> true
                     else -> false
                 }
 

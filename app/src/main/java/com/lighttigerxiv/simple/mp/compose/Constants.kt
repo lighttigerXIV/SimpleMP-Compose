@@ -15,3 +15,4 @@ val MEDIUM_TITLE_SIZE = 22.sp
 
 //Radius
 val MEDIUM_RADIUS = 14.dp
+

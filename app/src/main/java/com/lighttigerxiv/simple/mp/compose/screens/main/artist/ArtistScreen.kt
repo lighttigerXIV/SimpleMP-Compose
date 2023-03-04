@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,6 +68,8 @@ fun ArtistScreen(
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
     val screenLoaded = artistVM.screenLoaded.collectAsState().value
+
+    val selectedSong = mainVM.selectedSong.collectAsState().value
 
     val artistName = artistVM.artistName.collectAsState().value
 
@@ -281,7 +282,7 @@ fun ArtistScreen(
                                                 SongItem(
                                                     song = song,
                                                     songAlbumArt = mainVM.songsImages.collectAsState().value?.find { it.albumID == song.albumID }!!.albumArt,
-                                                    highlight = song.path == mainVM.selectedSongPath.observeAsState().value,
+                                                    highlight = song.path == selectedSong?.path,
                                                     onSongClick = { mainVM.selectSong(songs, songs.indexOf(song)) }
                                                 )
                                             }
@@ -329,7 +330,7 @@ fun ArtistScreen(
                                                         horizontalAlignment = Alignment.CenterHorizontally
                                                     ) {
                                                         Image(
-                                                            bitmap = remember { (albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record)).asImageBitmap() },
+                                                            bitmap = remember { (albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record)).asImageBitmap() },
                                                             colorFilter = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                                                             contentDescription = "",
                                                             modifier = Modifier

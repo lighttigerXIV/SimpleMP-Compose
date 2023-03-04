@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
@@ -37,6 +36,8 @@ fun GenrePlaylistScreen(
 ){
 
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
+
+    val selectedSong = mainVM.selectedSong.collectAsState().value
 
     val songs = mainVM.songs.collectAsState().value
 
@@ -121,7 +122,7 @@ fun GenrePlaylistScreen(
                                     SongItem(
                                         song = song,
                                         songAlbumArt = songsImages?.find { song.albumID == it.albumID }?.albumArt,
-                                        highlight = mainVM.selectedSongPath.observeAsState().value == song.path,
+                                        highlight = song.path == selectedSong?.path,
                                         onSongClick = {mainVM.selectSong(playlist, position = index)}
                                     )
                                 }

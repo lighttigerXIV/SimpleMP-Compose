@@ -64,7 +64,7 @@ fun SongItem(
         ) {
 
             AsyncImage(
-                model = remember{ songAlbumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record) },
+                model = remember{ songAlbumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record) },
                 contentDescription = "",
                 colorFilter = if(songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                 modifier = Modifier

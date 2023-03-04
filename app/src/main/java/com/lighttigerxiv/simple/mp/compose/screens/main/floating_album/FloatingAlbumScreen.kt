@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.screens.main.artist.artist_album
+package com.lighttigerxiv.simple.mp.compose.screens.main.floating_album
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
@@ -33,9 +33,9 @@ import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 
 @Composable
-fun ArtistAlbumScreen(
+fun FloatingAlbumScreen(
     mainVM: MainVM,
-    albumVM: ArtistAlbumScreenVM,
+    albumVM: FloatingAlbumScreenVM,
     albumID: Long,
     onBackClicked: () -> Unit
 ) {

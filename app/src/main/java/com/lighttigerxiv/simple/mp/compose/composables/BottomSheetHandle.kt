@@ -7,11 +7,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun BottomSheetHandle(){
-    Spacer(Modifier.height(2.dp))
+fun BottomSheetHandle(
+    width: Dp = 40.dp
+){
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -20,7 +23,7 @@ fun BottomSheetHandle(){
     ) {
         Row(
             modifier = Modifier
-                .width(40.dp)
+                .width(width)
                 .height(5.dp)
                 .clip(RoundedCornerShape(percent = 100))
                 .background(MaterialTheme.colorScheme.primary)

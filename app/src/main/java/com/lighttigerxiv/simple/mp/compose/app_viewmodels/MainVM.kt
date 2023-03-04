@@ -4,27 +4,19 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.appwidget.AppWidgetManager
 import android.content.*
-import android.content.Context.MODE_PRIVATE
 import android.graphics.Bitmap
 import android.os.IBinder
-import android.widget.Toast
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.navigation.NavController
-import com.google.gson.Gson
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainVM(application: Application) : AndroidViewModel(application) {
 
@@ -36,111 +28,82 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     private val context = application
 
-    private val _songs = MutableStateFlow<List<Song>?>(null)
-    val songs = _songs.asStateFlow()
-    private val preferences = application.getSharedPreferences(application.packageName, MODE_PRIVATE)
-
-
+    @SuppressLint("StaticFieldLeak")
+    private var smpService: SimpleMPService? = null
 
     private val _surfaceColor = MutableStateFlow(Color(0xFF000000))
     val surfaceColor = _surfaceColor.asStateFlow()
-    fun updateSurfaceColor(newValue:Color) {
+    fun updateSurfaceColor(newValue: Color) {
         _surfaceColor.update { newValue }
     }
 
-    val queueList = MutableLiveData(ArrayList<Song>())
-    val upNextQueueList = MutableLiveData(ArrayList<Song>())
+    private val _showNavigationBar = MutableStateFlow(true)
+    val showNavigationBar = _showNavigationBar.asStateFlow()
+    fun updateShowNavigationBar(newValue: Boolean) {
+
+        smpService?.let { smp ->
+
+            if (smp.isMusicPlayingOrPaused() && newValue) {
+                _miniPlayerHeight.update { 60.dp }
+            } else {
+                _miniPlayerHeight.update { 0.dp }
+            }
+        }
+
+        _showNavigationBar.update { newValue }
+    }
+
+
+    private val _songs = MutableStateFlow<List<Song>?>(null)
+    val songs = _songs.asStateFlow()
 
     private val _songsImages = MutableStateFlow<List<SongArt>?>(null)
     val songsImages = _songsImages.asStateFlow()
 
     private val _compressedSongsImages = MutableStateFlow<List<SongArt>?>(null)
-    val compressedSongsImages= _compressedSongsImages.asStateFlow()
+    val compressedSongsImages = _compressedSongsImages.asStateFlow()
 
+    private val _queue = MutableStateFlow<List<Song>?>(null)
+    val queue = _queue.asStateFlow()
 
-    private val _showNavigationBar = MutableStateFlow(true)
-    val showNavigationBar = _showNavigationBar.asStateFlow()
-    fun updateShowNavigationBar(value: Boolean){
+    private val _upNextQueue = MutableStateFlow<List<Song>?>(null)
+    val upNextQueue = _upNextQueue.asStateFlow()
 
-        try{
+    private val _songsPagerQueue = MutableStateFlow<List<Song>?>(null)
+    val songsPagerQueue = _songsPagerQueue.asStateFlow()
 
-            if(smpService.isMusicPlayingOrPaused() && value){
-                _miniPlayerHeight.update { 60.dp }
-            }
-            else{
-                _miniPlayerHeight.update { 0.dp }
-            }
-        }
-        catch(_: Exception){}
-
-        _showNavigationBar.update { value }
-    }
-
-
-    private val _isMusicPlaying = MutableStateFlow(false)
-    val isMusicPlaying = _isMusicPlaying.asStateFlow()
-
-    private val _isMusicShuffled = MutableStateFlow(false)
-    val isMusicShuffled = _isMusicShuffled.asStateFlow()
-
-    private val _isMusicOnRepeat = MutableStateFlow(false)
-    val isMusicOnRepeat = _isMusicOnRepeat.asStateFlow()
-
-    private val _currentMediaPlayerPosition = MutableStateFlow(0)
-    val currentMediaPlayerPosition = _currentMediaPlayerPosition.asStateFlow()
-
-
-    //Genres Songs
-    var genresList = ArrayList<String>()
-
-
-    val currentArtistsList = MutableLiveData<List<Song>>(ArrayList())
-    val currentAlbumsList = MutableLiveData<List<Song>>(ArrayList())
-
-    val playlistSongs = MutableLiveData(ArrayList<Song>())
-    val currentPlaylistSongs = MutableLiveData(ArrayList<Song>())
-
-
-    var homeSearchText = MutableLiveData("")
-    var artistsSearchText = MutableLiveData("")
-    var albumsSearchText = MutableLiveData("")
-
-    var tfNewPlaylistNameValue = MutableLiveData("")
-
-    @SuppressLint("StaticFieldLeak")
-    private lateinit var smpService: SimpleMPService
-    private var isServiceBound = false
-
-
-    //Playlist Screen
-    var tfPlaylistNamePlaylistScreen = MutableLiveData("")
-    var isOnEditModePlaylistScreen = MutableLiveData(false)
-    private val _currentPlaylistImageString = MutableStateFlow("")
-    val currentPlaylistImageString = _currentPlaylistImageString.asStateFlow()
-    fun setCurrentPlaylistImageString(value: String?){
-        _currentPlaylistImageString.value = value ?: ""
-    }
-
-
-
-
-    //Callbacks
-    var onSongSelected: (Song) -> Unit = {}
-    var onSongSecondPassed: (position: Int) -> Unit = {}
-    var onMediaPlayerStopped: () -> Unit = {}
-
-
-    //Song Related
     private val _selectedSong = MutableStateFlow<Song?>(null)
     val selectedSong = _selectedSong.asStateFlow()
 
-    var selectedSongTitle = MutableLiveData("")
-    var selectedSongArtistName = MutableLiveData("")
-    var selectedSongPath = MutableLiveData("")
-    var selectedSongDuration = MutableLiveData(0)
-    var selectedSongMinutesAndSeconds = MutableLiveData("")
-    var selectedSongCurrentMinutesAndSeconds = MutableLiveData("")
-    var selectedSongAlbumArt = MutableLiveData<Bitmap?>(null)
+    private val _songAlbumArt = MutableStateFlow<Bitmap?>(null)
+    val songAlbumArt = _songAlbumArt.asStateFlow()
+
+    private val _compressedSongAlbumArt = MutableStateFlow<Bitmap?>(null)
+    val compressedSongAlbumArt = _compressedSongAlbumArt.asStateFlow()
+
+    private val _songMinutesAndSecondsText = MutableStateFlow("")
+    val songMinutesAndSecondsText = _songMinutesAndSecondsText.asStateFlow()
+
+    private val _currentSongMinutesAndSecondsText = MutableStateFlow("")
+    val currentSongMinutesAndSecondsText = _currentSongMinutesAndSecondsText.asStateFlow()
+    fun updateCurrentSongMinutesAndSecondsText(newValue:String) {
+        _currentSongMinutesAndSecondsText.update { newValue }
+    }
+
+    private val _musicPlaying = MutableStateFlow(false)
+    val musicPlayling = _musicPlaying.asStateFlow()
+
+    private val _queueShuffled = MutableStateFlow(false)
+    val queueShuffled = _queueShuffled.asStateFlow()
+
+    private val _songOnRepeat = MutableStateFlow(false)
+    val songOnRepeat = _songOnRepeat.asStateFlow()
+
+    private val _songPosition = MutableStateFlow(0)
+    val songPosition = _songPosition.asStateFlow()
+
+    private val _songSeconds = MutableStateFlow(0f)
+    val songSeconds = _songSeconds.asStateFlow()
 
     private val _miniPlayerHeight = MutableStateFlow(0.dp)
     val miniPlayerHeight = _miniPlayerHeight.asStateFlow()
@@ -148,15 +111,23 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         _miniPlayerHeight.update { newValue }
     }
 
+    private val _playPauseIcon = MutableStateFlow<Bitmap?>(null)
+    val playPauseIcon = _playPauseIcon.asStateFlow()
 
-    fun getCurrentSongPosition(): Int {
 
-        return if (isServiceBound)
-            smpService.currentSongPosition
-        else
-            0
-    }
+    //************************************************
+    // Callbacks
+    //************************************************
 
+
+    var onSongSelected: () -> Unit = {}
+    var onSecondPassed: (seconds: Int) -> Unit = {}
+
+
+
+    //************************************************
+    // Functions
+    //************************************************
 
     private val simpleMPConnection = object : ServiceConnection {
 
@@ -165,199 +136,313 @@ class MainVM(application: Application) : AndroidViewModel(application) {
             val binder = service as SimpleMPService.LocalBinder
             smpService = binder.getService()
 
-            fun updateWidget(){
-                val intent = Intent(application, SimpleMPWidget::class.java)
-                intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+            smpService?.let { smp ->
 
-                val ids = AppWidgetManager.getInstance(application)
-                    .getAppWidgetIds(ComponentName(application, SimpleMPWidget::class.java))
+                _musicPlaying.update { smp.musicPlaying() }
 
-                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-                application.sendBroadcast(intent)
-            }
+                _queueShuffled.update { smp.queueShuffled }
+
+                _songOnRepeat.update { smp.songOnRepeat }
 
 
-            if (smpService.isMusicPlayingOrPaused()) {
+                if (smp.isMusicPlayingOrPaused()) {
 
-                _selectedSong.update { smpService.currentSong }
-                selectedSongTitle.value = selectedSong.value!!.title
-                selectedSongArtistName.value = selectedSong.value!!.artist
-                selectedSongPath.value = selectedSong.value!!.path
-                selectedSongDuration.value = selectedSong.value!!.duration
-                _currentMediaPlayerPosition.value = smpService.getCurrentMediaPlayerPosition()
-                selectedSongMinutesAndSeconds.value = getMinutesAndSecondsFromPosition(selectedSongDuration.value!! / 1000)
-                selectedSongCurrentMinutesAndSeconds.value = "0:00"
-                updateCurrentSongAlbumArt()
-                _miniPlayerHeight.update { 60.dp }
+                    _selectedSong.update { smp.currentSong }
 
+                    _songAlbumArt.update { getAlbumArt() }
 
-                queueList.value = smpService.getCurrentQueueList()
-            }
+                    _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
 
-            _isMusicPlaying.value = smpService.isMusicPlaying()
-            _isMusicShuffled.value = smpService.isMusicShuffled
-            _isMusicOnRepeat.value = smpService.isMusicOnRepeat
+                    _compressedSongAlbumArt.update { getAlbumArt(compressed = true) }
 
-            isServiceBound = true
+                    _songMinutesAndSecondsText.update { getMinutesAndSeconds(selectedSong.value!!.duration / 1000) }
 
+                    _currentSongMinutesAndSecondsText.update { getMinutesAndSeconds(smp.mediaPlayer.currentPosition / 1000) }
 
-            smpService.onSongSelected = { song ->
+                    _miniPlayerHeight.update { 60.dp }
 
-                _selectedSong.update { smpService.currentSong }
-                selectedSongTitle.value = selectedSong.value!!.title
-                selectedSongArtistName.value = selectedSong.value!!.artist
-                selectedSongPath.value = selectedSong.value!!.path
-                selectedSongDuration.value = selectedSong.value!!.duration
-                _currentMediaPlayerPosition.value = smpService.getCurrentMediaPlayerPosition()
-                selectedSongMinutesAndSeconds.value = getMinutesAndSecondsFromPosition(selectedSongDuration.value!! / 1000)
-                selectedSongCurrentMinutesAndSeconds.value = "0:00"
-                updateCurrentSongAlbumArt()
+                    _queue.update { smp.getQueue() }
 
-                _isMusicShuffled.value = smpService.isMusicShuffled
-                _isMusicOnRepeat.value = smpService.isMusicOnRepeat
+                    _songsPagerQueue.update { getSongsPagerQueue() }
 
-                queueList.value = smpService.getCurrentQueueList()
-                upNextQueueList.value = smpService.getUpNextQueueList()
-                onSongSelected(song)
+                    _songPosition.update { smp.currentSongPosition }
 
-                _miniPlayerHeight.update { 60.dp }
-
-                _isMusicPlaying.value = smpService.isMusicPlaying()
-
-                updateWidget()
-            }
+                    onSongSelected()
+                }
 
 
-            smpService.onSongSecondPassed = { mediaPlayerPosition ->
-                _currentMediaPlayerPosition.value = mediaPlayerPosition
-                selectedSongCurrentMinutesAndSeconds.value = getMinutesAndSecondsFromPosition(mediaPlayerPosition / 1000)
-                onSongSecondPassed(mediaPlayerPosition / 1000)
-                _isMusicPlaying.value = smpService.isMusicPlaying()
-            }
+                smp.onSongSelected = { song ->
 
-            smpService.onSongPaused = {
+                    _selectedSong.update { song }
 
-                _isMusicPlaying.value = smpService.isMusicPlaying()
-                updateWidget()
-            }
+                    _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
 
-            smpService.onSongResumed = {
+                    _songMinutesAndSecondsText.update { getMinutesAndSeconds(selectedSong.value!!.duration / 1000) }
 
-                _isMusicPlaying.value = smpService.isMusicPlaying()
-                updateWidget()
-            }
+                    _songAlbumArt.update { getAlbumArt() }
 
-            smpService.onMediaPlayerStopped = {
-                selectedSongPath.value = ""
-                onMediaPlayerStopped()
+                    _compressedSongAlbumArt.update { getAlbumArt(compressed = true) }
+
+                    _musicPlaying.update { smp.musicPlaying() }
+
+                    _songOnRepeat.update { smp.songOnRepeat }
+
+                    _miniPlayerHeight.update { 60.dp }
+
+                    _queue.update { smp.getQueue() }
+
+                    _upNextQueue.update { smp.getUpNextQueue() }
+
+                    _songsPagerQueue.update { getSongsPagerQueue() }
+
+                    _songPosition.update { smp.currentSongPosition }
+
+                    onSongSelected()
+
+                    updateWidget()
+                }
+
+
+                smp.onSecondPassed = {
+
+                    _musicPlaying.update { smp.musicPlaying() }
+
+                    _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
+                }
+
+                smp.onQueueShuffle = {
+
+                    _queueShuffled.update { smp.queueShuffled }
+
+                    _queue.update { smp.getQueue() }
+
+                    _upNextQueue.update { smp.getUpNextQueue() }
+                }
+
+
+                smp.onPause = {
+
+                    _musicPlaying.update { smp.musicPlaying() }
+
+                    updateWidget()
+                }
+
+
+                smp.onResume = {
+
+                    _musicPlaying.update { smp.musicPlaying() }
+
+                    _songPosition.update { smp.currentSongPosition }
+
+                    updateWidget()
+                }
+
+                smp.onSongRepeat = {
+
+                    _songOnRepeat.update { smp.songOnRepeat }
+                }
+
+                smp.onStop = {
+
+                    _selectedSong.update { null }
+                }
             }
         }
 
-        override fun onServiceDisconnected(name: ComponentName?) {}
+        override fun onServiceDisconnected(name: ComponentName?) {
+
+            Log.d("Service Disconnection", "Service was disconnected")
+        }
     }
 
+    private fun updateWidget() {
+        val intent = Intent(context, SimpleMPWidget::class.java).apply {
+            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        }
+
+        val ids = AppWidgetManager.getInstance(context)
+            .getAppWidgetIds(ComponentName(context, SimpleMPWidget::class.java))
+
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+
+        context.sendBroadcast(intent)
+    }
+
+    fun getMinutesAndSeconds(receivedSeconds: Int): String {
+
+        val minutes = ((receivedSeconds * 1000) / (1000 * 60 ) ) % 60
+
+        val seconds = receivedSeconds % 60
+
+        var stringSeconds = "$seconds"
+
+        if (seconds < 10) {
+
+            stringSeconds = "0$seconds"
+        }
+
+        return "$minutes:$stringSeconds"
+    }
+
+    private fun getAlbumArt(compressed: Boolean = false): Bitmap? {
+
+        return when (compressed) {
+
+            true -> {
+                compressedSongsImages.value?.first { it.albumID == selectedSong.value?.albumID }?.albumArt
+            }
+            false -> {
+                songsImages.value?.first { it.albumID == selectedSong.value?.albumID }?.albumArt
+            }
+        }
+    }
+
+    //************************************************
+    // Playback Function
+    //************************************************
 
     fun selectSong(newQueueList: List<Song>, position: Int) {
 
         if (newQueueList.isNotEmpty()) {
 
-            smpService.selectSong(getApplication(), newQueueList, position)
-            onSongSelected(smpService.currentSong!!)
-            _selectedSong.update { smpService.currentSong }
-            selectedSongTitle.value = selectedSong.value!!.title
-            selectedSongArtistName.value = selectedSong.value!!.artist
-            selectedSongPath.value = selectedSong.value!!.path
-            selectedSongDuration.value = selectedSong.value!!.duration
-            selectedSongMinutesAndSeconds.value = getMinutesAndSecondsFromPosition(selectedSongDuration.value!! / 1000)
-            selectedSongCurrentMinutesAndSeconds.value = "0:00"
-            updateCurrentSongAlbumArt()
+            smpService?.let { smp ->
+
+                smp.selectSong(getApplication(), newQueueList, position)
+
+                _selectedSong.update { smp.currentSong }
+
+                _songMinutesAndSecondsText.update { getMinutesAndSeconds(selectedSong.value!!.duration / 1000) }
+
+                _songAlbumArt.update { getAlbumArt() }
+
+                _compressedSongAlbumArt.update { getAlbumArt(compressed = true) }
+
+                _queue.update { smp.getQueue() }
+
+                _upNextQueue.update { smp.getUpNextQueue() }
+            }
         }
     }
 
-    fun shuffleAndPlay(newQueueList: List<Song>){
+    fun shuffleAndPlay(newQueueList: List<Song>) {
 
-        if(isServiceBound){
-            smpService.shuffleAndPlay(newQueueList, context)
-        }
+        smpService?.shuffleAndPlay(newQueueList, context)
     }
 
-    fun unshuffleAndPlay(newQueueList: List<Song>, position: Int){
+    fun unshuffleAndPlay(newQueueList: List<Song>, position: Int) {
 
-        if(isServiceBound){
-            if(smpService.isMusicShuffled) smpService.toggleShuffle()
+        smpService?.let { smp ->
 
-            smpService.selectSong(context, newQueueList, position)
+            if (smp.queueShuffled) {
+
+                smp.toggleShuffle()
+            }
+
+            smp.selectSong(context, newQueueList, position)
         }
     }
-
 
     fun shuffle(newQueueList: List<Song>) {
 
-        smpService.shuffleAndPlay(newQueueList, getApplication())
+        smpService?.shuffleAndPlay(newQueueList, getApplication())
     }
 
 
-    fun seekSongPosition(position: Int) {
-        if (isServiceBound) {
-            smpService.seekTo(position)
+    fun seekSongSeconds(seconds: Int) {
+
+        smpService?.let {smp->
+
+            smp.seekTo(seconds)
+
+            _musicPlaying.update { smp.musicPlaying() }
         }
-    }
 
-    fun updateCurrentSongAlbumArt() {
 
-        selectedSongAlbumArt.value = songsImages.value!!.find { it.albumID == selectedSong.value!!.albumID }!!.albumArt
     }
 
     fun toggleShuffle() {
-        smpService.toggleShuffle()
-        _isMusicPlaying.value = smpService.isMusicPlaying()
-        _isMusicShuffled.value = smpService.isMusicShuffled
-        queueList.value = smpService.getCurrentQueueList()
-        upNextQueueList.value = smpService.getUpNextQueueList()
+
+        smpService?.let { smp ->
+
+            smp.toggleShuffle()
+
+            _musicPlaying.update { smp.musicPlaying() }
+
+            _queueShuffled.update { smp.queueShuffled }
+
+            _queue.update { smp.getQueue() }
+
+            _upNextQueue.update { smp.getUpNextQueue() }
+
+            _songPosition.update { smp.currentSongPosition }
+        }
     }
 
     fun selectPreviousSong() {
-        smpService.selectPreviousSong(getApplication())
+
+        smpService?.selectPreviousSong(context)
     }
 
     fun selectNextSong() {
-        smpService.selectNextSong(getApplication())
+
+        smpService?.selectNextSong(context)
     }
 
     fun toggleRepeat() {
-        smpService.toggleRepeat()
-        _isMusicOnRepeat.value = smpService.isMusicOnRepeat
+
+        smpService?.let { smp ->
+
+            smp.toggleRepeat()
+
+            _songOnRepeat.update { smp.songOnRepeat }
+        }
     }
-
-
-    fun getMinutesAndSecondsFromPosition(position: Int): String {
-
-        val minutes = position.div(60)
-        val seconds = position.rem(60)
-
-        var stringSeconds = "$seconds"
-
-
-        if (seconds < 10)
-            stringSeconds = "0$seconds"
-
-
-        return "$minutes:$stringSeconds"
-    }
-
 
     fun pauseResumeMusic() {
-        if (isServiceBound) {
 
-            smpService.pauseResumeMusic(getApplication())
-        }
+        smpService?.pauseResumeMusic(context)
     }
 
 
     fun getIsMusicPaused(): Boolean {
-        return if (isServiceBound) !smpService.isMusicPlaying() else false
+
+        return if (smpService != null) smpService!!.musicPlaying() else false
     }
 
+    fun getSongsPagerQueue(): List<Song>{
+
+        val newQueue = ArrayList<Song>()
+
+        /*
+        val previousSong = try {
+            queue.value!![songPosition.value - 1]
+        }catch (_: Exception){
+            null
+        }
+
+        val currentSong = queue.value!![songPosition.value]
+
+        val nextSong = try {
+            queue.value!![songPosition.value + 1]
+        }catch (_: Exception){
+            null
+        }
+
+
+        if(previousSong != null){
+            newQueue.add(previousSong)
+        }
+
+        newQueue.add(currentSong)
+
+        if(nextSong != null){
+            newQueue.add(nextSong)
+        }
+
+         */
+
+        return newQueue
+    }
 
     init {
 

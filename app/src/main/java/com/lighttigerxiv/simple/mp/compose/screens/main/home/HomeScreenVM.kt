@@ -38,7 +38,7 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
 
     private val _currentSongs = MutableStateFlow<List<Song>?>(null)
     val currentSongs = _currentSongs.asStateFlow()
-    fun updateCurrentSongs(newValue: List<Song>?){
+    fun updateCurrentSongs(newValue: List<Song>?) {
         _currentSongs.update { newValue }
     }
 
@@ -102,5 +102,18 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
     fun updateSortType(sortType: String) {
 
         preferences.edit().putString("HomeSongsSortType", sortType).apply()
+    }
+
+    fun selectSong(song: Song, mainVM: MainVM) {
+
+        val newQueue = when (preferences.getString("HomeSongsSortType", "Recent")) {
+
+            "Recent" -> recentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) }
+            "Oldest" -> oldestSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) }
+            "Ascendent" -> ascendentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) }
+            else -> descendentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) }
+        }
+
+        mainVM.selectSong(newQueue, newQueue.indexOf(song))
     }
 }

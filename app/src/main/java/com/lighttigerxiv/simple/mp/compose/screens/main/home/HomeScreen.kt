@@ -278,7 +278,7 @@ fun HomeScreen(
                                     },
                                     onSongClick = {
 
-                                        mainVM.selectSong(songs!!, songs.indexOf(song))
+                                        homeScreenVM.selectSong(song, mainVM)
                                     }
                                 )
                             }

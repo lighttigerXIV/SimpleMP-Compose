@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +42,8 @@ fun AlbumScreen(
     val context = LocalContext.current
 
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
+
+    val selectedSong = mainVM.selectedSong.collectAsState().value
 
     val screenLoaded = albumVM.screenLoaded.collectAsState().value
 
@@ -88,7 +89,7 @@ fun AlbumScreen(
                         MediumHeightSpacer()
 
                         Image(
-                            bitmap = (albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record)).asImageBitmap(),
+                            bitmap = (albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record)).asImageBitmap(),
                             colorFilter = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                             contentDescription = "",
                             modifier = Modifier
@@ -156,7 +157,7 @@ fun AlbumScreen(
                                     SongItem(
                                         song = song,
                                         songAlbumArt = remember { songsImages?.first { it.albumID == song.albumID }?.albumArt },
-                                        highlight = song.path == mainVM.selectedSongPath.observeAsState().value,
+                                        highlight = song.path == selectedSong?.path,
                                         onSongClick = { mainVM.selectSong(songs, songs.indexOf(song)) }
                                     )
                                 }

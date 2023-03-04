@@ -88,7 +88,7 @@ internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManage
                 views.setTextViewText(R.id.artist_Widget, song.artist)
                 views.setImageViewBitmap(R.id.albumArt_Widget, GetSongs.getSongAlbumArt(context, song.id, song.albumID))
 
-                if(smpService.isMusicPlaying())
+                if(smpService.musicPlaying())
                     views.setImageViewBitmap(R.id.playPauseButton_Widget, ResourcesCompat.getDrawable(context.resources, R.drawable.icon_pause_notification, null)?.toBitmap())
                 else
                     views.setImageViewBitmap(R.id.playPauseButton_Widget, ResourcesCompat.getDrawable(context.resources, R.drawable.icon_play_notification, null)?.toBitmap())

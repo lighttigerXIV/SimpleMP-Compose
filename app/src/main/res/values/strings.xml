@@ -44,7 +44,7 @@
     <string name="Songs">Songs</string>
     <string name="Albums">Albums</string>
     <string name="Song">Song</string>
-    <string name="QueueList">Queue List</string>
+    <string name="Queue">Queue List</string>
     <string name="GoToArtist">Go To Artist</string>
     <string name="GoToAlbum">Go To Album</string>
     <string name="AddToPlaylist">Add To Playlist</string>

@@ -167,7 +167,7 @@ fun AlbumsScreen(
 
                     ImageCard(
                         modifier = Modifier.animateItemPlacement(),
-                        cardImage = remember { albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record) },
+                        cardImage = remember { albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record) },
                         imageTint = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                         cardText = remember { album.album },
                         onCardClicked = {

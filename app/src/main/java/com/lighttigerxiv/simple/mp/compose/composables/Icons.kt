@@ -18,7 +18,7 @@ fun SmallIcon(
     id: Int,
     description: String? = null,
     color: Color = MaterialTheme.colorScheme.primary
-){
+) {
 
     Image(
         modifier = Modifier
@@ -32,11 +32,33 @@ fun SmallIcon(
 }
 
 @Composable
+fun ClickableSmallIcon(
+    id: Int,
+    description: String? = null,
+    color: Color = MaterialTheme.colorScheme.primary,
+    onClick: () -> Unit
+) {
+
+    Image(
+        modifier = Modifier
+            .height(20.dp)
+            .width(20.dp)
+            .clickable {
+                onClick()
+            },
+        contentScale = ContentScale.Fit,
+        painter = painterResource(id = id),
+        contentDescription = description,
+        colorFilter = ColorFilter.tint(color)
+    )
+}
+
+@Composable
 fun MediumIcon(
     id: Int,
     description: String? = null,
     color: Color = MaterialTheme.colorScheme.primary
-){
+) {
 
     Image(
         modifier = Modifier
@@ -55,7 +77,7 @@ fun ClickableMediumIcon(
     description: String? = null,
     color: Color = MaterialTheme.colorScheme.primary,
     onClick: () -> Unit
-){
+) {
 
     Image(
         modifier = Modifier

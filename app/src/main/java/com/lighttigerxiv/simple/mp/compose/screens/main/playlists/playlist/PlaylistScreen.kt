@@ -567,7 +567,7 @@ fun PlaylistScreen(
 
 
                                             Image(
-                                                bitmap = remember { songAlbumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.icon_music_record) }.asImageBitmap(),
+                                                bitmap = remember { songAlbumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record) }.asImageBitmap(),
                                                 colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                                                 contentDescription = songTitle,
                                                 modifier = Modifier

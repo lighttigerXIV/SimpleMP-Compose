@@ -37,7 +37,7 @@
     <string name="Songs">Músicas</string>
     <string name="Albums">Álbums</string>
     <string name="Song">Música</string>
-    <string name="QueueList">Fila De Espera</string>
+    <string name="Queue">Fila De Espera</string>
     <string name="GoToArtist">Ver Artista</string>
     <string name="GoToAlbum">Ver Album</string>
     <string name="AddToPlaylist">Adicionar A Uma Playlist</string>

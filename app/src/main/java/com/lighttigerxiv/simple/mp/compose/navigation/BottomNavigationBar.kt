@@ -27,6 +27,7 @@ fun BottomNavigationBar(
 
     Row(
         modifier = Modifier
+
             .fillMaxWidth()
             .height(55.dp)
             .background(Color.Transparent),

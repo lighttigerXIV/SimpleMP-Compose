@@ -108,10 +108,10 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
 
         val newQueue = when (preferences.getString("HomeSongsSortType", "Recent")) {
 
-            "Recent" -> recentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) }
-            "Oldest" -> oldestSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) }
-            "Ascendent" -> ascendentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) }
-            else -> descendentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) }
+            "Recent" -> recentSongs.value!!
+            "Oldest" -> oldestSongs.value!!
+            "Ascendent" -> ascendentSongs.value!!
+            else -> descendentSongs.value!!
         }
 
         mainVM.selectSong(newQueue, newQueue.indexOf(song))

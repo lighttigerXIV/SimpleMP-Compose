@@ -8,7 +8,6 @@ import android.graphics.Bitmap
 import android.os.IBinder
 import android.util.Log
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import com.lighttigerxiv.simple.mp.compose.*
@@ -18,14 +17,10 @@ import com.lighttigerxiv.simple.mp.compose.functions.getAllAlbumsImages
 import com.lighttigerxiv.simple.mp.compose.functions.getSongs
 import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
 import com.lighttigerxiv.simple.mp.compose.widgets.SimpleMPWidget
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainVM(application: Application) : AndroidViewModel(application) {
 
@@ -78,20 +73,11 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     private val _upNextQueue = MutableStateFlow<List<Song>?>(null)
     val upNextQueue = _upNextQueue.asStateFlow()
 
-    private val _songsPagerQueue = MutableStateFlow<List<Song>?>(null)
-    val songsPagerQueue = _songsPagerQueue.asStateFlow()
-
-    private val _songsPagerArts = MutableStateFlow<List<Bitmap?>?>(null)
-    val songsPagerArts = _songsPagerArts.asStateFlow()
-
     private val _selectedSong = MutableStateFlow<Song?>(null)
     val selectedSong = _selectedSong.asStateFlow()
 
     private val _songAlbumArt = MutableStateFlow<Bitmap?>(null)
     val songAlbumArt = _songAlbumArt.asStateFlow()
-
-    private val _compressedSongAlbumArt = MutableStateFlow<Bitmap?>(null)
-    val compressedSongAlbumArt = _compressedSongAlbumArt.asStateFlow()
 
     private val _songMinutesAndSecondsText = MutableStateFlow("")
     val songMinutesAndSecondsText = _songMinutesAndSecondsText.asStateFlow()
@@ -119,12 +105,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     private val _miniPlayerHeight = MutableStateFlow(0.dp)
     val miniPlayerHeight = _miniPlayerHeight.asStateFlow()
-    fun updateMiniPlayerHeight(newValue: Dp) {
-        _miniPlayerHeight.update { newValue }
-    }
-
-    private val _playPauseIcon = MutableStateFlow<Bitmap?>(null)
-    val playPauseIcon = _playPauseIcon.asStateFlow()
 
 
     //************************************************
@@ -133,7 +113,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
 
     var onSongSelected: () -> Unit = {}
-    var onSecondPassed: (seconds: Int) -> Unit = {}
 
 
 
@@ -165,8 +144,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
                     _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
 
-                    _compressedSongAlbumArt.update { getAlbumArt(compressed = true) }
-
                     _songMinutesAndSecondsText.update { getMinutesAndSeconds(selectedSong.value!!.duration / 1000) }
 
                     _currentSongMinutesAndSecondsText.update { getMinutesAndSeconds(smp.mediaPlayer.currentPosition / 1000) }
@@ -179,15 +156,11 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
                     _songPosition.update { smp.currentSongPosition }
 
-                    _songsPagerQueue.update { getSongsPagerQueue() }
-
                     onSongSelected()
                 }
 
 
                 smp.onSongSelected = { song ->
-
-                    Log.d("Song was selected", song.toString())
 
                     _selectedSong.update { song }
 
@@ -196,10 +169,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                     _songMinutesAndSecondsText.update { getMinutesAndSeconds(selectedSong.value!!.duration / 1000) }
 
                     _songAlbumArt.update { getAlbumArt() }
-
-                    _compressedSongAlbumArt.update { getAlbumArt(compressed = true) }
-
-                    _musicPlaying.update { smp.musicPlaying() }
 
                     _songOnRepeat.update { smp.songOnRepeat }
 
@@ -211,8 +180,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
                     _songPosition.update { smp.currentSongPosition }
 
-                    _songsPagerQueue.update { getSongsPagerQueue() }
-
                     onSongSelected()
 
                     updateWidget()
@@ -220,8 +187,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
 
                 smp.onSecondPassed = {
-
-                    _musicPlaying.update { smp.musicPlaying() }
 
                     _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
                 }
@@ -235,8 +200,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                     _upNextQueue.update { smp.getUpNextQueue() }
 
                     _songPosition.update { smp.currentSongPosition }
-
-                    _songsPagerQueue.update { getSongsPagerQueue() }
                 }
 
 
@@ -265,6 +228,8 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                 smp.onStop = {
 
                     _selectedSong.update { null }
+
+                    _miniPlayerHeight.update { 0.dp }
                 }
             }
         }
@@ -334,8 +299,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                 _songMinutesAndSecondsText.update { getMinutesAndSeconds(selectedSong.value!!.duration / 1000) }
 
                 _songAlbumArt.update { getAlbumArt() }
-
-                _compressedSongAlbumArt.update { getAlbumArt(compressed = true) }
 
                 _queue.update { smp.getQueue() }
 
@@ -421,71 +384,15 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         smpService?.pauseResumeMusic(context)
     }
 
-    fun getSongsPagerQueue(): List<Song>{
-
-        val newQueue = ArrayList<Song>()
-
-        val newSongsPagerArts = ArrayList<Bitmap?>()
-
-        //If its the first song
-        if(songPosition.value == 0){
-
-            val currentSong = queue.value!![songPosition.value]
-
-            newQueue.add(currentSong)
-
-            newSongsPagerArts.add(songsImages.value?.first { it.albumID == currentSong.albumID }?.albumArt)
-        }
-
-        //If song has previous songs
-        if(songPosition.value > 0){
-
-            val previousSong = queue.value!![songPosition.value - 1]
-
-            val currentSong = queue.value!![songPosition.value]
-
-            newQueue.add(previousSong)
-
-            newQueue.add(currentSong)
-
-            newSongsPagerArts.add(songsImages.value?.first { it.albumID == previousSong.albumID }?.albumArt)
-
-            newSongsPagerArts.add(songsImages.value?.first { it.albumID == currentSong.albumID }?.albumArt)
-        }
-
-        //If there's a following song
-        if( (songPosition.value + 1) < queue.value!!.size){
-
-            val nextSong = queue.value!![songPosition.value + 1]
-
-            newQueue.add(nextSong)
-
-            newSongsPagerArts.add(songsImages.value?.first { it.albumID == nextSong.albumID }?.albumArt)
-        }
-
-        _songsPagerArts.update { newSongsPagerArts }
-
-        return newQueue
-    }
-
-    fun getSongsPagerPosition(): Int{
-
-        return songsPagerQueue.value!!.indexOfFirst { it.id == selectedSong.value!!.id }
-    }
-
     init {
 
         val serviceIntent = Intent(application, SimpleMPService::class.java)
         application.bindService(serviceIntent, simpleMPConnection, Context.BIND_AUTO_CREATE)
 
-        runBlocking {
-            withContext(Dispatchers.IO){
 
                 _songs.update { getSongs(context, "Recent") }
                 _songsImages.update { getAllAlbumsImages(context) }
                 _compressedSongsImages.update { getAllAlbumsImages(context, compressed = true) }
-            }
-        }
 
 
     }

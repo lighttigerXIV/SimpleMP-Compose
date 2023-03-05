@@ -21,12 +21,12 @@ fun BottomSheetHandle(
             .wrapContentHeight(),
         horizontalArrangement = Arrangement.Center
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .width(width)
                 .height(5.dp)
                 .clip(RoundedCornerShape(percent = 100))
                 .background(MaterialTheme.colorScheme.primary)
-        ) {}
+        )
     }
 }

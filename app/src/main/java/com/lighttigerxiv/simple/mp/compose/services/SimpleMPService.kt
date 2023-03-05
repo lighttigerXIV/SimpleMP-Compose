@@ -173,7 +173,7 @@ class SimpleMPService : Service() {
 
     fun selectSong(context: Context, newQueueList: List<Song>, position: Int) {
 
-        queueList = newQueueList as ArrayList<Song>
+        queueList = ArrayList(newQueueList)
 
         if (queueShuffled)
             playAndShuffle(context = context, position = position)

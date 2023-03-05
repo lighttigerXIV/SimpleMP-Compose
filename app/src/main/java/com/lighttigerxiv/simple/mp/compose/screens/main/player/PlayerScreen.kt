@@ -2,7 +2,6 @@ package com.lighttigerxiv.simple.mp.compose.screens.main.player
 
 import android.content.res.Configuration
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
@@ -33,6 +32,7 @@ import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.data.variables.XSMALL_SPACING
+import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallWidthSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
 import com.lighttigerxiv.simple.mp.compose.ui.composables.BottomSheetHandle
@@ -41,6 +41,7 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumWidthSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 
@@ -86,11 +87,9 @@ fun Player(
 
     val upNextQueue = mainVM.upNextQueue.collectAsState().value
 
-    val songsPagerQueue = mainVM.songsPagerQueue.collectAsState().value
-
-    val songsPagerArts = mainVM.songsPagerArts.collectAsState().value
-
     val compressedSongsImages = mainVM.compressedSongsImages.collectAsState().value
+
+    val songsImages = mainVM.songsImages.collectAsState().value
 
     val musicPlaying = mainVM.musicPlayling.collectAsState().value
 
@@ -138,28 +137,44 @@ fun Player(
         mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds((sliderValue).toInt()))
     }
 
-    LaunchedEffect(songsPagerQueue) {
+    LaunchedEffect(queue) {
 
         selectedSong?.let {
 
-            songsPager.scrollToPage(mainVM.getSongsPagerPosition())
+            songsPager.scrollToPage(mainVM.songPosition.value)
         }
     }
 
-    LaunchedEffect(songsPager.currentPage) {
+    LaunchedEffect(selectedSong){
 
-        selectedSong?.let {
+        if(mainVM.songPosition.value != songsPager.currentPage){
 
-            if (songsPager.currentPage > mainVM.getSongsPagerPosition()) {
-
-                mainVM.selectNextSong()
-            }
-
-            if (songsPager.currentPage < mainVM.getSongsPagerPosition()) {
-
-                mainVM.selectPreviousSong()
-            }
+            songsPager.scrollToPage(mainVM.songPosition.value)
         }
+    }
+
+
+    LaunchedEffect(songsPager) {
+        snapshotFlow(songsPager::isScrollInProgress)
+            .drop(1)
+            .collect { scrollInProgress ->
+
+                if (!scrollInProgress) {
+
+                    selectedSong?.let {
+
+                        if (songsPager.currentPage > mainVM.songPosition.value) {
+
+                            mainVM.selectNextSong()
+                        }
+
+                        if (songsPager.currentPage < mainVM.songPosition.value) {
+
+                            mainVM.selectPreviousSong()
+                        }
+                    }
+                }
+            }
     }
 
 
@@ -178,7 +193,7 @@ fun Player(
                 .padding(SCREEN_PADDING)
         ) {
 
-            if (selectedSong != null && queue != null && upNextQueue != null && songsPagerQueue != null && screenLoaded) {
+            if (selectedSong != null && queue != null && upNextQueue != null && screenLoaded) {
 
                 BottomSheetHandle(width = 100.dp)
 
@@ -201,7 +216,7 @@ fun Player(
                                 .clip(CircleShape),
                             text = {
                                 CustomText(
-                                    text = stringResource(id = R.string.Song),
+                                    text = getAppString(context, R.string.Song),
                                     color = if (highlightSongTitle)
                                         MaterialTheme.colorScheme.primary
                                     else
@@ -227,7 +242,7 @@ fun Player(
                                 .clip(CircleShape),
                             text = {
                                 CustomText(
-                                    text = stringResource(id = R.string.Queue),
+                                    text = getAppString(context, R.string.Queue),
                                     color = if (highlightQueueTitle)
                                         MaterialTheme.colorScheme.primary
                                     else
@@ -273,27 +288,26 @@ fun Player(
                                     verticalArrangement = Arrangement.Center
                                 ) {
 
-                                    NoScrollEffect {
 
-                                        HorizontalPager(
-                                            state = songsPager,
-                                            count = songsPagerQueue.size,
-                                            key = { it }
+                                    HorizontalPager(
+                                        state = songsPager,
+                                        count = queue.size,
+                                        itemSpacing = SMALL_SPACING,
+                                        key = {it},
 
-                                        ) { currentSongPage ->
+                                    ) { currentSongPage ->
 
-                                            val songAlbumArt = songsPagerArts!![currentSongPage]
+                                        val songAlbumArt = songsImages?.first { it.albumID == queue[currentSongPage].albumID }?.albumArt
 
-                                            Image(
-                                                modifier = Modifier
-                                                    .fillMaxHeight()
-                                                    .aspectRatio(1f)
-                                                    .clip(RoundedCornerShape(14.dp)),
-                                                bitmap = songAlbumArt?.asImageBitmap() ?: defaultAlbumArt.asImageBitmap(),
-                                                colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
-                                                contentDescription = "Album Art"
-                                            )
-                                        }
+                                        Image(
+                                            modifier = Modifier
+                                                .fillMaxHeight()
+                                                .aspectRatio(1f)
+                                                .clip(RoundedCornerShape(14.dp)),
+                                            bitmap = songAlbumArt?.asImageBitmap() ?: defaultAlbumArt.asImageBitmap(),
+                                            colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                                            contentDescription = "Album Art"
+                                        )
                                     }
                                 }
 
@@ -309,7 +323,11 @@ fun Player(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
 
-                                        Column {
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .weight(1f, fill = true)
+                                        ) {
 
                                             CustomText(
                                                 text = selectedSong.title,
@@ -324,19 +342,22 @@ fun Player(
                                             )
                                         }
 
-                                        Spacer(modifier = Modifier.weight(1f, fill = true))
-
                                         SmallWidthSpacer()
 
-                                        Column {
+                                        Column(
+                                            modifier = Modifier
+                                                .wrapContentSize()
+                                        ) {
 
                                             ClickableMediumIcon(
                                                 id = R.drawable.vertical_three_dots,
                                                 onClick = {
 
                                                     playerVM.updateMenuOpened(true)
-                                                }
+                                                },
+                                                color = MaterialTheme.colorScheme.onSurface
                                             )
+
 
                                             DropdownMenu(
                                                 modifier = Modifier
@@ -548,8 +569,8 @@ fun Player(
                         // Queue
                         //************************************************
                         if (selectedPage == 1) {
-                            
-                            if(upNextQueue.isEmpty()){
+
+                            if (upNextQueue.isEmpty()) {
 
                                 Column(
                                     modifier = Modifier
@@ -562,7 +583,7 @@ fun Player(
 
                                     CustomText(text = stringResource(id = R.string.Shrug))
                                 }
-                            } else{
+                            } else {
 
                                 androidx.compose.foundation.lazy.LazyColumn(
                                     modifier = Modifier
@@ -577,7 +598,7 @@ fun Player(
 
                                             SongItem(
                                                 song = song,
-                                                songAlbumArt = compressedSongsImages?.find { it.albumID == song.albumID }?.albumArt,
+                                                songAlbumArt = remember{compressedSongsImages?.find { it.albumID == song.albumID }?.albumArt},
                                                 highlight = selectedSong.path == song.path
                                             )
                                         }
@@ -610,13 +631,13 @@ fun Player(
 
                                 HorizontalPager(
                                     state = songsPager,
-                                    count = songsPagerQueue.size,
+                                    count = queue.size,
                                     key = { it },
                                     itemSpacing = SMALL_SPACING
 
                                 ) { currentSongPage ->
 
-                                    val songAlbumArt = songsPagerArts!![currentSongPage]
+                                    val songAlbumArt = songsImages?.first { it.albumID == queue[currentSongPage].albumID }?.albumArt
 
                                     Image(
                                         modifier = Modifier
@@ -725,7 +746,11 @@ fun Player(
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
 
-                                            Column {
+                                            Column(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .weight(1f, fill = true)
+                                            ) {
 
                                                 CustomText(
                                                     text = selectedSong.title,
@@ -740,8 +765,6 @@ fun Player(
                                                 )
                                             }
 
-                                            Spacer(modifier = Modifier.weight(1f, fill = true))
-
                                             SmallWidthSpacer()
 
                                             Column {
@@ -751,7 +774,8 @@ fun Player(
                                                     onClick = {
 
                                                         playerVM.updateMenuOpened(true)
-                                                    }
+                                                    },
+                                                    color = MaterialTheme.colorScheme.onSurface
                                                 )
 
                                                 DropdownMenu(
@@ -964,7 +988,7 @@ fun Player(
                                 //************************************************
                                 if (selectedPage == 1) {
 
-                                    if(upNextQueue.isEmpty()){
+                                    if (upNextQueue.isEmpty()) {
 
                                         Column(
                                             modifier = Modifier

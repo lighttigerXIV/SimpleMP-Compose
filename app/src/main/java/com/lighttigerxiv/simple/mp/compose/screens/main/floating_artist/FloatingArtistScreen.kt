@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,16 +22,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.SettingsVM
-import com.lighttigerxiv.simple.mp.compose.composables.CustomText
-import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
-import com.lighttigerxiv.simple.mp.compose.composables.PlayAndShuffleRow
-import com.lighttigerxiv.simple.mp.compose.composables.SongItem
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.SmallHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.getAppString
+import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
+import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
+import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
+import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
+import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 

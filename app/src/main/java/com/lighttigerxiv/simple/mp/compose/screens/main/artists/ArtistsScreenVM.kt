@@ -3,8 +3,8 @@ package com.lighttigerxiv.simple.mp.compose.screens.main.artists
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
-import com.lighttigerxiv.simple.mp.compose.Song
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

@@ -26,13 +26,16 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
-import com.lighttigerxiv.simple.mp.compose.composables.ImageCard
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
-import com.lighttigerxiv.simple.mp.compose.composables.SheetDraggingBar
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
+import com.lighttigerxiv.simple.mp.compose.ui.composables.ImageCard
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
+import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
+import com.lighttigerxiv.simple.mp.compose.ui.composables.SheetDraggingBar
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.functions.getAppString
+import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -164,6 +167,7 @@ fun PlaylistsScreen(
                         if (screenLoaded) {
                             LazyVerticalGrid(
                                 modifier = Modifier
+                                    .fillMaxSize()
                                     .padding(SCREEN_PADDING),
                                 columns = GridCells.Fixed(gridCellsCount),
                                 verticalArrangement = Arrangement.spacedBy(SMALL_SPACING),

@@ -17,13 +17,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
-import com.lighttigerxiv.simple.mp.compose.XSMALL_SPACING
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
-import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
-import com.lighttigerxiv.simple.mp.compose.composables.ImageCard
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.getAppString
+import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
+import com.lighttigerxiv.simple.mp.compose.data.variables.XSMALL_SPACING
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
+import com.lighttigerxiv.simple.mp.compose.ui.composables.ImageCard
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)

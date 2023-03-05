@@ -1,9 +1,8 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.settings
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.AndroidViewModel
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.SettingsVM
+import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

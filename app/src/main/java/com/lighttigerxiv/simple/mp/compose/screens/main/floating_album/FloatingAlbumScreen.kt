@@ -21,14 +21,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
-import com.lighttigerxiv.simple.mp.compose.composables.CustomText
-import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
-import com.lighttigerxiv.simple.mp.compose.composables.PlayAndShuffleRow
-import com.lighttigerxiv.simple.mp.compose.composables.SongItem
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
+import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
+import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
+import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 

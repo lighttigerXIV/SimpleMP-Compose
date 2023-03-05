@@ -2,8 +2,8 @@ package com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.add_
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import com.lighttigerxiv.simple.mp.compose.Song
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.PlaylistsQueries
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.PlaylistScreenVM

@@ -13,10 +13,15 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
 import com.lighttigerxiv.simple.mp.compose.*
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.SettingsVM
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
+import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.ArtistsQueries
+import com.lighttigerxiv.simple.mp.compose.data.responses.DiscogsResponse
+import com.lighttigerxiv.simple.mp.compose.functions.isNetworkAvailable
+import com.lighttigerxiv.simple.mp.compose.functions.isOnMobileData
+import com.lighttigerxiv.simple.mp.compose.retrofit.getDiscogsRetrofit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -93,9 +98,9 @@ class FloatingArtistScreenVM(application: Application) : AndroidViewModel(applic
         } else {
 
             val canDownloadArtistCover = settingsVM.downloadArtistCoverSetting.value
-            val isInternetAvailable = CheckInternet.isNetworkAvailable(context)
+            val isInternetAvailable = isNetworkAvailable(context)
             val canDownloadOverData = settingsVM.downloadOverDataSetting.value
-            val isMobileDataEnabled = CheckInternet.isOnMobileData(context)
+            val isMobileDataEnabled = isOnMobileData(context)
 
             if (isInternetAvailable && canDownloadArtistCover) {
                 if ((canDownloadOverData && isMobileDataEnabled) || (!canDownloadOverData && !isMobileDataEnabled)) {

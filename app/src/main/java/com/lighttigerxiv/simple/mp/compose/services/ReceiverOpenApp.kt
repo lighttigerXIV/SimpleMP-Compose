@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import com.lighttigerxiv.simple.mp.compose.activities.MainActivity
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainActivity
 
 class ReceiverOpenApp: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {

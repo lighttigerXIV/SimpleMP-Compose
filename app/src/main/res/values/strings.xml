@@ -100,4 +100,5 @@
     <string name="Select">Select</string>
     <string name="SelectImage">Select Image</string>
     <string name="DeleteImage">Delete Image</string>
+    <string name="Shrug" translatable="false">¯\\_(ツ)_/¯</string>
 </resources>

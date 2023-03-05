@@ -16,11 +16,11 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.KeyEvent
 import androidx.core.app.NotificationCompat
-import com.lighttigerxiv.simple.mp.compose.GetSongs
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.SimpleMPWidget
-import com.lighttigerxiv.simple.mp.compose.Song
-import com.lighttigerxiv.simple.mp.compose.activities.MainActivity
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainActivity
+import com.lighttigerxiv.simple.mp.compose.functions.getSongAlbumArt
+import com.lighttigerxiv.simple.mp.compose.widgets.SimpleMPWidget
 
 
 @Suppress("DEPRECATION")
@@ -192,8 +192,8 @@ class SimpleMPService : Service() {
             queueShuffled = true
 
             shuffledQueueList = ArrayList()
-            val tempShuffledPlaylist = ArrayList<Song>()
 
+            val tempShuffledPlaylist = ArrayList<Song>()
 
             //Adds the current song to first position
             queueList.forEach { song ->
@@ -210,12 +210,11 @@ class SimpleMPService : Service() {
             for (song in tempShuffledPlaylist)
                 shuffledQueueList.add(song)
 
-
             currentSongPosition = 0
+
         } else {
 
             queueShuffled = false
-
 
             for (i in queueList.indices) {
 
@@ -226,6 +225,8 @@ class SimpleMPService : Service() {
                 }
             }
         }
+
+        onQueueShuffle()
     }
 
 
@@ -234,17 +235,23 @@ class SimpleMPService : Service() {
         shuffledQueueList = ArrayList()
 
         val tempShuffledQueueList = ArrayList(queueList)
+
         val firstSong = queueList[position]
 
         tempShuffledQueueList.removeAt(position)
+
         tempShuffledQueueList.shuffle()
 
         shuffledQueueList.add(firstSong)
+
         tempShuffledQueueList.forEach { song ->
             shuffledQueueList.add(song)
         }
 
         currentSongPosition = 0
+
+        onQueueShuffle()
+
         playSong(context)
     }
 
@@ -255,8 +262,12 @@ class SimpleMPService : Service() {
         queueShuffled = true
 
         shuffledQueueList = ArrayList(queueList)
+
         shuffledQueueList.shuffle()
+
         currentSongPosition = 0
+
+        onQueueShuffle()
 
         playSong(context)
     }
@@ -324,7 +335,7 @@ class SimpleMPService : Service() {
             songArtist = queueList[currentSongPosition].artist
             songID = queueList[currentSongPosition].id
             songAlbumID = queueList[currentSongPosition].albumID
-            songAlbumArt = GetSongs.getSongAlbumArt(context, songID, songAlbumID)
+            songAlbumArt = getSongAlbumArt(context, songID, songAlbumID)
             songDuration = queueList[currentSongPosition].duration
         } else {
 
@@ -332,7 +343,7 @@ class SimpleMPService : Service() {
             songArtist = shuffledQueueList[currentSongPosition].artist
             songID = shuffledQueueList[currentSongPosition].id
             songAlbumID = shuffledQueueList[currentSongPosition].albumID
-            songAlbumArt = GetSongs.getSongAlbumArt(context, songID, songAlbumID)!!
+            songAlbumArt = getSongAlbumArt(context, songID, songAlbumID)
             songDuration = shuffledQueueList[currentSongPosition].duration
         }
 

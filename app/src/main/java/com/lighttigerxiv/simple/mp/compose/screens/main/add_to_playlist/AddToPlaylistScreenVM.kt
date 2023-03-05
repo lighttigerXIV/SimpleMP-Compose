@@ -1,20 +1,14 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.add_to_playlist
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import com.lighttigerxiv.simple.mp.compose.Song
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.items.Playlist
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.PlaylistsQueries
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
-import com.lighttigerxiv.simple.mp.compose.toMongoHex
-import io.realm.kotlin.types.RealmList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import org.mongodb.kbson.ObjectId
 
 class AddToPlaylistScreenVM(application: Application) : AndroidViewModel(application) {
 

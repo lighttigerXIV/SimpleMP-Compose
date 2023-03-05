@@ -2,6 +2,7 @@ package com.lighttigerxiv.simple.mp.compose.screens.main.main
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -10,10 +11,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -24,12 +25,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.SettingsVM
-import com.lighttigerxiv.simple.mp.compose.composables.MiniPlayer
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
+import com.lighttigerxiv.simple.mp.compose.ui.composables.MiniPlayer
 import com.lighttigerxiv.simple.mp.compose.navigation.BottomNavItem
 import com.lighttigerxiv.simple.mp.compose.navigation.BottomNavigationBar
-import com.lighttigerxiv.simple.mp.compose.navigation.screens.main.*
+import com.lighttigerxiv.simple.mp.compose.screens.main.about.AboutScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.add_to_playlist.AddToPlaylistScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.add_to_playlist.AddToPlaylistScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.albums.AlbumsScreen
@@ -61,7 +62,10 @@ import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.add_s
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.add_songs.AddSongsScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.SettingsScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.SettingsScreenVM
+import com.lighttigerxiv.simple.mp.compose.screens.main.settings.themes.ThemesScreen
 import kotlinx.coroutines.launch
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -109,6 +113,9 @@ fun MainScreen(
     }
 
 
+
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -143,8 +150,7 @@ fun MainScreen(
 
                         if (showNavigationBar) {
                             MiniPlayer(
-                                mainVM = mainVM,
-                                playerVM = ViewModelProvider(activityContext)[PlayerScreenVM::class.java]
+                                mainVM = mainVM
                             )
                         }
 
@@ -154,13 +160,25 @@ fun MainScreen(
                             Player(
                                 mainVM = mainVM,
                                 playerVM = ViewModelProvider(activityContext)[PlayerScreenVM::class.java],
-                                bottomSheetState = playerSheetState,
-                                onGoToPage = {
+                                onGoToPage = {page->
+
                                     scope.launch {
                                         playerSheetState.collapse()
                                     }
 
-                                    navController.navigate(it)
+                                    if(page.startsWith("FloatingArtist")){
+                                        ViewModelProvider(activityContext)[FloatingArtistScreenVM::class.java].clearScreen()
+                                    }
+
+                                    if (page.startsWith("FloatingAlbum")) {
+                                        ViewModelProvider(activityContext)[FloatingAlbumScreenVM::class.java].clearScreen()
+                                    }
+
+                                    if (page.startsWith("AddToPlaylist")) {
+                                        ViewModelProvider(activityContext)[AddToPlaylistScreenVM::class.java].clearScreen()
+                                    }
+
+                                    navController.navigate(page)
                                 }
                             )
                         }
@@ -185,12 +203,16 @@ fun MainScreen(
                             homeScreenVM = ViewModelProvider(activityContext)[HomeScreenVM::class.java],
                             openPage = { page ->
 
-                                if (page.startsWith("AddToPlaylist")) {
-                                    ViewModelProvider(activityContext)[AddToPlaylistScreenVM::class.java].clearScreen()
+                                if(page.startsWith("FloatingArtist")){
+                                    ViewModelProvider(activityContext)[FloatingArtistScreenVM::class.java].clearScreen()
                                 }
 
-                                if (page.startsWith("FloatingAlbum")){
+                                if (page.startsWith("FloatingAlbum")) {
                                     ViewModelProvider(activityContext)[FloatingAlbumScreenVM::class.java].clearScreen()
+                                }
+
+                                if (page.startsWith("AddToPlaylist")) {
+                                    ViewModelProvider(activityContext)[AddToPlaylistScreenVM::class.java].clearScreen()
                                 }
 
                                 navController.navigate(page)
@@ -227,7 +249,11 @@ fun MainScreen(
                             mainVM = mainVM,
                             playlistsVM = ViewModelProvider(activityContext)[PlaylistsScreenVM::class.java],
                             onGenrePlaylistClick = {
-                                navController.navigate("GenrePlaylist/$it")
+
+                                //Prevents crash with genres with "/"
+                                val encodedGenre = URLEncoder.encode(it, "UTF-8")
+
+                                navController.navigate("GenrePlaylist/$encodedGenre")
                             },
                             onPlaylistClick = { playlistID ->
 
@@ -256,8 +282,10 @@ fun MainScreen(
 
                                     navController.navigate("SelectArtistCover/artist=$artistName&artistID=$artistID")
                                 },
-                                onOpenAlbum = {
-                                        albumID -> navController.navigate("ArtistAlbum/$albumID")
+                                onOpenAlbum = { albumID ->
+
+                                    ViewModelProvider(activityContext)[ArtistAlbumScreenVM::class.java].clearScreen()
+                                    navController.navigate("ArtistAlbum/$albumID")
                                 }
                             )
                         }
@@ -293,7 +321,9 @@ fun MainScreen(
                                 artistVM = ViewModelProvider(activityContext)[ArtistScreenVM::class.java],
                                 artistName = artistName,
                                 artistID = artistID,
-                                onGoBack = { navController.navigateUp() },
+                                onGoBack = {
+                                    navController.navigateUp()
+                                },
                                 onGetArtistCover = {
                                     onGetArtistCover()
                                 }
@@ -307,7 +337,7 @@ fun MainScreen(
 
                         val albumID = it.arguments?.getString("albumID")?.toLongOrNull()
 
-                        albumID?.let{
+                        albumID?.let {
 
                             AlbumScreen(
                                 mainVM = mainVM,
@@ -318,9 +348,14 @@ fun MainScreen(
                         }
                     }
                     composable("GenrePlaylist/{genre}") {
-                        val genre = it.arguments?.getString("genre")
+                        var genre = it.arguments?.getString("genre")
 
-                        genre?.let{
+                        if(genre != null){
+
+                            genre = URLDecoder.decode(genre, "UTF-8")
+                        }
+
+                        genre?.let {
                             GenrePlaylistScreen(
                                 mainVM = mainVM,
                                 genre = genre,
@@ -333,7 +368,7 @@ fun MainScreen(
 
                         val playlistID = it.arguments?.getString("playlistID")
 
-                        playlistID?.let{
+                        playlistID?.let {
 
                             PlaylistScreen(
                                 mainVM = mainVM,
@@ -379,7 +414,7 @@ fun MainScreen(
 
                         val songID = it.arguments?.getString("songID")?.toLongOrNull()
 
-                        songID?.let{
+                        songID?.let {
                             AddToPlaylistScreen(
                                 mainVM = mainVM,
                                 songID = songID,

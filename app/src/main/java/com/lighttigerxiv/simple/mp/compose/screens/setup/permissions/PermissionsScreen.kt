@@ -23,12 +23,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.SmallHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.SmallWidthSpacer
-import com.lighttigerxiv.simple.mp.compose.composables.text.TitleMedium
+import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_RADIUS
+import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
+import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallWidthSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.text.TitleMedium
+import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 
 @Composable
 fun PermissionsScreen(

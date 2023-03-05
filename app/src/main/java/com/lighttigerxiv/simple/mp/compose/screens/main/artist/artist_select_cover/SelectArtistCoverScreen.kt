@@ -1,6 +1,7 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.artist.artist_select_cover
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.util.Base64
 import androidx.compose.foundation.Image
@@ -16,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -25,13 +27,16 @@ import androidx.compose.ui.unit.sp
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.composables.CustomText
-import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
+import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
+import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.functions.getAppString
+import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
 import com.lighttigerxiv.simple.mp.compose.screens.main.artist.ArtistScreenVM
 import java.io.ByteArrayOutputStream
 
@@ -54,6 +59,10 @@ fun SelectArtistCoverScreen(
 
     val covers = selectArtistCoverVM.covers.collectAsState().value
 
+    selectArtistCoverVM.onGoBack = {
+        onGoBack()
+    }
+
     if(!screenLoaded){
         selectArtistCoverVM.loadScreen(artistName, artistID, artistVM)
     }
@@ -71,6 +80,8 @@ fun SelectArtistCoverScreen(
             onBackClick = {onGoBack()},
         )
 
+        MediumHeightSpacer()
+
         if(screenLoaded){
 
             Column(
@@ -86,8 +97,6 @@ fun SelectArtistCoverScreen(
                         .clickable {
 
                             selectArtistCoverVM.clearArtistCover()
-
-                            onGoBack()
                         }
                         .padding(SMALL_SPACING),
                     horizontalArrangement = Arrangement.Center,
@@ -137,10 +146,10 @@ fun SelectArtistCoverScreen(
 
                             items(
                                 items = covers,
-                                key = {it.cover_image}
+                                key = {it.id}
                             ){ result ->
 
-                                val artistPicture = remember{ mutableStateOf(getBitmapFromVector(context, R.drawable.icon_loading)) }
+                                val artistPicture = remember{ mutableStateOf<Bitmap?>(null) }
 
                                 Image(
                                     modifier = Modifier
@@ -149,18 +158,26 @@ fun SelectArtistCoverScreen(
                                         .clip(RoundedCornerShape(14.dp))
                                         .clickable {
 
-                                            val baos = ByteArrayOutputStream()
-                                            artistPicture.value.compress(Bitmap.CompressFormat.PNG, 100, baos)
-                                            val b = baos.toByteArray()
-                                            val encodedImage = Base64.encodeToString(b, Base64.DEFAULT)
+                                            if(artistPicture.value != null){
 
-                                            selectArtistCoverVM.updateArtistCover(encodedImage)
+                                                val baos = ByteArrayOutputStream()
 
-                                            onGoBack()
+                                                artistPicture.value!!.compress(Bitmap.CompressFormat.PNG, 100, baos)
+
+                                                val b = baos.toByteArray()
+
+                                                val encodedImage = Base64.encodeToString(b, Base64.DEFAULT)
+
+                                                selectArtistCoverVM.updateArtistCover(encodedImage)
+                                            }
                                         },
-                                    bitmap = artistPicture.value.asImageBitmap(),
+                                    bitmap = if(artistPicture.value == null)
+                                        remember{ getBitmapFromVector(context, R.drawable.loading).asImageBitmap()}
+                                    else
+                                        artistPicture.value!!.asImageBitmap(),
                                     contentDescription = null,
-                                    contentScale = ContentScale.Crop
+                                    contentScale = ContentScale.Crop,
+                                    colorFilter = if(artistPicture.value == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null
                                 )
 
                                 try {

@@ -84,4 +84,12 @@
     <string name="Data">Dados</string>
     <string name="DownloadArtistCoverFromInternet">Transferir imagem do artista pela internet</string>
     <string name="DownloadArtistCoverOnData">Transferir imagem do artista pelos dados móveis</string>
+    <string name="Playlists">Playlists</string>
+    <string name="SongAlreadyInPlaylist">Musica já adicionada à playlist</string>
+    <string name="AddSongs">Adicionar Músicas</string>
+    <string name="Playlist">Playlist</string>
+    <string name="Add">Adicionar</string>
+    <string name="Select">Selecionar</string>
+    <string name="SelectImage">Selecionar Imagem</string>
+    <string name="DeleteImage">Eliminar Imagem</string>
 </resources>

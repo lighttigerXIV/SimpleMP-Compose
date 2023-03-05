@@ -26,12 +26,16 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
-import com.lighttigerxiv.simple.mp.compose.composables.*
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.SmallHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.SmallWidthSpacer
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
+import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallWidthSpacer
+import com.lighttigerxiv.simple.mp.compose.functions.getAppString
+import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
+import com.lighttigerxiv.simple.mp.compose.ui.composables.*
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 

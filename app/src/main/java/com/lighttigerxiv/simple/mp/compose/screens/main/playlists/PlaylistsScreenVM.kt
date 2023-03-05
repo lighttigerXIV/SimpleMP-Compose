@@ -2,7 +2,7 @@ package com.lighttigerxiv.simple.mp.compose.screens.main.playlists
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.items.Playlist
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.PlaylistsQueries

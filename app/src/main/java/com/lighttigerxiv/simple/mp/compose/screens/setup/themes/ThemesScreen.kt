@@ -20,14 +20,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
-import com.lighttigerxiv.simple.mp.compose.activities.MainActivity
-import com.lighttigerxiv.simple.mp.compose.composables.ThemeSelector
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.SmallHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.composables.text.TitleMedium
-import com.lighttigerxiv.simple.mp.compose.getAppString
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.ActivitySetupVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainActivity
+import com.lighttigerxiv.simple.mp.compose.ui.composables.ThemeSelector
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.text.TitleMedium
+import com.lighttigerxiv.simple.mp.compose.functions.getAppString
+import com.lighttigerxiv.simple.mp.compose.activities.setup.ActivitySetupVM
 
 @Composable
 fun ThemesScreen(

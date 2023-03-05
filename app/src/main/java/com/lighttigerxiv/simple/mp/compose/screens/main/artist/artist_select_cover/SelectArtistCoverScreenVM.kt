@@ -7,12 +7,13 @@ import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
-import com.lighttigerxiv.simple.mp.compose.CheckInternet
-import com.lighttigerxiv.simple.mp.compose.DiscogsResponse
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.ArtistsQueries
-import com.lighttigerxiv.simple.mp.compose.getDiscogsRetrofit
+import com.lighttigerxiv.simple.mp.compose.data.responses.DiscogsResponse
+import com.lighttigerxiv.simple.mp.compose.functions.isNetworkAvailable
+import com.lighttigerxiv.simple.mp.compose.functions.isOnMobileData
+import com.lighttigerxiv.simple.mp.compose.retrofit.getDiscogsRetrofit
 import com.lighttigerxiv.simple.mp.compose.screens.main.artist.ArtistScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,9 +61,9 @@ class SelectArtistCoverScreenVM(application: Application) : AndroidViewModel(app
 
         val canDownloadOverData = preferences.getBoolean("DownloadOverDataSetting", false)
 
-        val isInternetAvailable = CheckInternet.isNetworkAvailable(context)
+        val isInternetAvailable = isNetworkAvailable(context)
 
-        val isMobileDataEnabled = CheckInternet.isOnMobileData(context)
+        val isMobileDataEnabled = isOnMobileData(context)
 
         if(canDownloadCover && isInternetAvailable){
 
@@ -111,6 +112,8 @@ class SelectArtistCoverScreenVM(application: Application) : AndroidViewModel(app
                 artistVM!!.updateArtistCover(BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size))
             }
         }
+
+        onGoBack()
     }
 
     fun clearArtistCover(){
@@ -125,6 +128,8 @@ class SelectArtistCoverScreenVM(application: Application) : AndroidViewModel(app
                 artistVM!!.updateArtistCover(BitmapFactory.decodeResource(context.resources, R.drawable.person_hd))
             }
         }
+
+        onGoBack()
     }
 
     fun clearScreen(){
@@ -132,4 +137,10 @@ class SelectArtistCoverScreenVM(application: Application) : AndroidViewModel(app
         _screenLoaded.update { false }
         _covers.update { null }
     }
+
+    //************************************************
+    // Callbacks
+    //************************************************
+
+    var onGoBack: () -> Unit = {}
 }

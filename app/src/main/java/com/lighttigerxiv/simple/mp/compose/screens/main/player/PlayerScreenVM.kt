@@ -1,9 +1,8 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.player
 
 import android.app.Application
-import android.graphics.Bitmap
 import androidx.lifecycle.AndroidViewModel
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

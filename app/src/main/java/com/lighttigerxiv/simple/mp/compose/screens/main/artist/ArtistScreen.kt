@@ -31,14 +31,18 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
-import com.lighttigerxiv.simple.mp.compose.composables.PlayAndShuffleRow
-import com.lighttigerxiv.simple.mp.compose.composables.SongItem
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.SettingsVM
-import com.lighttigerxiv.simple.mp.compose.composables.CustomText
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
+import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
+import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
+import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
+import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
+import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.functions.getAppString
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import kotlinx.coroutines.launch
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
@@ -162,18 +166,26 @@ fun ArtistScreen(
 
                 SmallHeightSpacer()
 
-                Image(
-                    bitmap = artistCover.asImageBitmap(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    colorFilter = if (tintCover) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                Row(
                     modifier = Modifier
-                        .fillMaxWidth(0.6f)
-                        .aspectRatio(1f)
-                        .align(Alignment.CenterHorizontally)
-                        .padding(20.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                )
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+
+                    Image(
+                        bitmap = artistCover.asImageBitmap(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        colorFilter = if (tintCover) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                        modifier = Modifier
+                            .fillMaxWidth(0.6f)
+                            .aspectRatio(1f)
+                            .padding(5.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                    )
+                }
+
+                MediumHeightSpacer()
 
                 CustomText(
                     modifier = Modifier.fillMaxWidth(),

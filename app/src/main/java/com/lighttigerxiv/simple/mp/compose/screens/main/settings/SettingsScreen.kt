@@ -18,13 +18,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.SCREEN_PADDING
-import com.lighttigerxiv.simple.mp.compose.composables.CustomToolbar
-import com.lighttigerxiv.simple.mp.compose.composables.CustomTextField
-import com.lighttigerxiv.simple.mp.compose.getAppString
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.MainVM
-import com.lighttigerxiv.simple.mp.compose.app_viewmodels.SettingsVM
-import com.lighttigerxiv.simple.mp.compose.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
+import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
+import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
+import com.lighttigerxiv.simple.mp.compose.functions.getAppString
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
 
 @Composable
 fun SettingsScreen(

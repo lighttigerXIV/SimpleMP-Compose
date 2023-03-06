@@ -83,12 +83,13 @@ fun HomeScreen(
 
     ) {
 
-        if (screenLoaded) {
+        currentSongs?.let {
 
             Scaffold(
                 floatingActionButton = {
 
-                    if (currentSongs!!.isNotEmpty()) {
+
+                    if (currentSongs.isNotEmpty()) {
 
                         ExtendedFloatingActionButton(
                             onClick = {
@@ -238,7 +239,7 @@ fun HomeScreen(
                         content = {
 
                             items(
-                                items = currentSongs!!,
+                                items = currentSongs,
                                 key = { song -> song.id }
                             ) { song ->
 

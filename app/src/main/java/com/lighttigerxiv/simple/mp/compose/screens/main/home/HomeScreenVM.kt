@@ -73,7 +73,7 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
 
             _ascendentSongs.update { songs.sortedBy { it.title } }
 
-            _recentSongs.update { songs.sortedByDescending { it.title } }
+            _descendentSongs.update { songs.sortedByDescending { it.title } }
 
             _currentSongs.update {
                 when (sortType) {

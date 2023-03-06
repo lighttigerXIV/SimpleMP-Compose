@@ -93,6 +93,8 @@ class MainActivity : ComponentActivity() {
                             startActivityForResult(intent, 1)
                         }
                     )
+
+
                 }
             )
         }
@@ -138,7 +140,8 @@ class MainActivity : ComponentActivity() {
                 }
 
 
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
 
         //Select playlist cover
@@ -160,7 +163,7 @@ class MainActivity : ComponentActivity() {
                     val activityContext = this
 
                     runBlocking {
-                        withContext(Dispatchers.IO){
+                        withContext(Dispatchers.IO) {
 
                             val bitmapString = android.util.Base64.encodeToString(bitmapBytes, android.util.Base64.DEFAULT)
 
@@ -168,7 +171,8 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data)

@@ -57,7 +57,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         _showNavigationBar.update { newValue }
     }
 
-
     private val _songs = MutableStateFlow<List<Song>?>(null)
     val songs = _songs.asStateFlow()
 
@@ -84,7 +83,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     private val _currentSongMinutesAndSecondsText = MutableStateFlow("")
     val currentSongMinutesAndSecondsText = _currentSongMinutesAndSecondsText.asStateFlow()
-    fun updateCurrentSongMinutesAndSecondsText(newValue:String) {
+    fun updateCurrentSongMinutesAndSecondsText(newValue: String) {
         _currentSongMinutesAndSecondsText.update { newValue }
     }
 
@@ -113,7 +112,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
 
     var onSongSelected: () -> Unit = {}
-
 
 
     //************************************************
@@ -255,7 +253,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     fun getMinutesAndSeconds(receivedSeconds: Int): String {
 
-        val minutes = ((receivedSeconds * 1000) / (1000 * 60 ) ) % 60
+        val minutes = ((receivedSeconds * 1000) / (1000 * 60)) % 60
 
         val seconds = receivedSeconds % 60
 
@@ -333,7 +331,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     fun seekSongSeconds(seconds: Int) {
 
-        smpService?.let {smp->
+        smpService?.let { smp ->
 
             smp.seekTo(seconds)
 
@@ -384,16 +382,17 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         smpService?.pauseResumeMusic(context)
     }
 
+
     init {
 
-        val serviceIntent = Intent(application, SimpleMPService::class.java)
-        application.bindService(serviceIntent, simpleMPConnection, Context.BIND_AUTO_CREATE)
+        val serviceIntent = Intent(context, SimpleMPService::class.java)
 
+        context.bindService(serviceIntent, simpleMPConnection, Context.BIND_AUTO_CREATE)
 
-                _songs.update { getSongs(context, "Recent") }
-                _songsImages.update { getAllAlbumsImages(context) }
-                _compressedSongsImages.update { getAllAlbumsImages(context, compressed = true) }
+        _songs.update { getSongs(context, "Recent") }
 
+        _songsImages.update { getAllAlbumsImages(context) }
 
+        _compressedSongsImages.update { getAllAlbumsImages(context, compressed = true) }
     }
 }

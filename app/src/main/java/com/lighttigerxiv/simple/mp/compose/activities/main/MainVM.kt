@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.os.IBinder
 import android.util.Log
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import com.lighttigerxiv.simple.mp.compose.*
@@ -28,6 +29,12 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     //************************************************
     // Variables
     //************************************************
+
+    private val _navBarHeight = MutableStateFlow(55.dp)
+    val navBarHeight = _navBarHeight.asStateFlow()
+    fun updateNavbarHeight(newValue: Dp) {
+        _navBarHeight.update { newValue }
+    }
 
 
     private val context = application

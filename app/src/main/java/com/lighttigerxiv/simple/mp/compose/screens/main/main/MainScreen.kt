@@ -59,6 +59,7 @@ import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.add_s
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.SettingsScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.SettingsScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.themes.ThemesScreen
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import java.net.URLEncoder
@@ -92,6 +93,8 @@ fun MainScreen(
 
     val selectedSong = mainVM.selectedSong.collectAsState().value
 
+    val navBarHeight = mainVM.navBarHeight.collectAsState().value
+
 
     navController.addOnDestinationChangedListener { _, destination, _ ->
         when {
@@ -105,6 +108,17 @@ fun MainScreen(
             else -> {
                 if (!showNavigationBar) mainVM.updateShowNavigationBar(true)
             }
+        }
+    }
+
+    LaunchedEffect(playerSheetState.currentValue){
+
+        if (playerSheetState.currentValue == BottomSheetValue.Collapsed){
+
+            mainVM.updateNavbarHeight(55.dp)
+        }else{
+
+            mainVM.updateNavbarHeight(0.dp)
         }
     }
 
@@ -489,7 +503,6 @@ fun MainScreen(
             }
         )
 
-
         AnimatedVisibility(
             visible = showNavigationBar,
             exit = shrinkVertically(),
@@ -497,6 +510,7 @@ fun MainScreen(
         ) {
 
             BottomNavigationBar(
+                height = navBarHeight,
                 navController = navController,
                 items = getNavigationItems(context),
                 onItemClick = { bottomNavItem ->

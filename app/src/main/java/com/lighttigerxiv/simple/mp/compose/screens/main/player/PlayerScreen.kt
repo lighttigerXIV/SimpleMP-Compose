@@ -44,7 +44,6 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpa
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoScrollEffect(content: @Composable () -> Unit) {
@@ -71,9 +70,6 @@ fun Player(
 
     val screenLoaded = playerVM.screenLoaded.collectAsState().value
 
-    val songAndQueuePager = rememberPagerState()
-
-    val songsPager = rememberPagerState()
 
     val selectedSong = mainVM.selectedSong.collectAsState().value
 
@@ -86,6 +82,10 @@ fun Player(
     val queue = mainVM.queue.collectAsState().value
 
     val upNextQueue = mainVM.upNextQueue.collectAsState().value
+
+    val songAndQueuePager = rememberPagerState(2)
+
+    val songsPager = rememberPagerState(pageCount = queue?.size ?: 0)
 
     val compressedSongsImages = mainVM.compressedSongsImages.collectAsState().value
 
@@ -137,6 +137,7 @@ fun Player(
         mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds((sliderValue).toInt()))
     }
 
+
     LaunchedEffect(queue) {
 
         selectedSong?.let {
@@ -145,9 +146,9 @@ fun Player(
         }
     }
 
-    LaunchedEffect(selectedSong){
+    LaunchedEffect(selectedSong) {
 
-        if(mainVM.songPosition.value != songsPager.currentPage){
+        if (mainVM.songPosition.value != songsPager.currentPage) {
 
             songsPager.scrollToPage(mainVM.songPosition.value)
         }
@@ -266,9 +267,7 @@ fun Player(
                     HorizontalPager(
                         modifier = Modifier
                             .fillMaxSize(),
-                        count = 2,
                         state = songAndQueuePager,
-                        userScrollEnabled = false
                     ) { selectedPage ->
 
                         //************************************************
@@ -288,27 +287,27 @@ fun Player(
                                     verticalArrangement = Arrangement.Center
                                 ) {
 
+                                    NoScrollEffect {
 
-                                    HorizontalPager(
-                                        state = songsPager,
-                                        count = queue.size,
-                                        itemSpacing = SMALL_SPACING,
-                                        key = {it},
+                                        HorizontalPager(
+                                            state = songsPager,
+                                            itemSpacing = SMALL_SPACING
+                                        ) { currentSongPage ->
 
-                                    ) { currentSongPage ->
+                                            val songAlbumArt = songsImages?.first { it.albumID == queue[currentSongPage].albumID }?.albumArt
 
-                                        val songAlbumArt = songsImages?.first { it.albumID == queue[currentSongPage].albumID }?.albumArt
-
-                                        Image(
-                                            modifier = Modifier
-                                                .fillMaxHeight()
-                                                .aspectRatio(1f)
-                                                .clip(RoundedCornerShape(14.dp)),
-                                            bitmap = songAlbumArt?.asImageBitmap() ?: defaultAlbumArt.asImageBitmap(),
-                                            colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
-                                            contentDescription = "Album Art"
-                                        )
+                                            Image(
+                                                modifier = Modifier
+                                                    .fillMaxHeight()
+                                                    .aspectRatio(1f)
+                                                    .clip(RoundedCornerShape(14.dp)),
+                                                bitmap = songAlbumArt?.asImageBitmap() ?: defaultAlbumArt.asImageBitmap(),
+                                                colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                                                contentDescription = "Album Art"
+                                            )
+                                        }
                                     }
+
                                 }
 
                                 Column(
@@ -598,7 +597,7 @@ fun Player(
 
                                             SongItem(
                                                 song = song,
-                                                songAlbumArt = remember{compressedSongsImages?.find { it.albumID == song.albumID }?.albumArt},
+                                                songAlbumArt = remember { compressedSongsImages?.find { it.albumID == song.albumID }?.albumArt },
                                                 highlight = selectedSong.path == song.path
                                             )
                                         }
@@ -631,8 +630,6 @@ fun Player(
 
                                 HorizontalPager(
                                     state = songsPager,
-                                    count = queue.size,
-                                    key = { it },
                                     itemSpacing = SMALL_SPACING
 
                                 ) { currentSongPage ->
@@ -724,9 +721,7 @@ fun Player(
                             HorizontalPager(
                                 modifier = Modifier
                                     .fillMaxSize(),
-                                count = 2,
-                                state = songAndQueuePager,
-                                userScrollEnabled = false
+                                state = songAndQueuePager
                             ) { selectedPage ->
 
                                 //************************************************

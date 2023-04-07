@@ -63,7 +63,7 @@ fun PlaylistsScreen(
 
     val configuration = LocalConfiguration.current
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(2)
 
     val createPlaylistsScaffoldState = rememberBottomSheetScaffoldState()
 
@@ -151,7 +151,6 @@ fun PlaylistsScreen(
             HorizontalPager(
                 modifier = Modifier
                     .fillMaxSize(),
-                count = 2,
                 state = pagerState,
             ) { currentPage ->
 

@@ -12,12 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun BottomNavigationBar(
+    height: Dp,
     navController: NavController,
     items: List<BottomNavItem>,
     onItemClick: (BottomNavItem) -> Unit
@@ -29,7 +31,7 @@ fun BottomNavigationBar(
         modifier = Modifier
 
             .fillMaxWidth()
-            .height(55.dp)
+            .height(height)
             .background(Color.Transparent),
         horizontalArrangement = Arrangement.Center
     ){

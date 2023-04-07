@@ -65,7 +65,7 @@ fun ArtistScreen(
 
     val scope = rememberCoroutineScope()
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(2)
 
     val nestedScrollViewState = rememberNestedScrollViewState()
 
@@ -253,7 +253,6 @@ fun ArtistScreen(
                     MediumHeightSpacer()
 
                     HorizontalPager(
-                        count = 2,
                         state = pagerState,
                         modifier = Modifier.fillMaxSize()
                     ) { currentPage ->

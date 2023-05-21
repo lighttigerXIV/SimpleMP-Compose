@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallWidthSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
 
 @Composable
@@ -62,7 +62,7 @@ fun MiniPlayer(
                     .clip(RoundedCornerShape(7.dp))
             )
 
-            SmallWidthSpacer()
+            SmallHorizontalSpacer()
 
             Column(
                 modifier = Modifier
@@ -82,7 +82,7 @@ fun MiniPlayer(
                 )
             }
 
-            SmallWidthSpacer()
+            SmallHorizontalSpacer()
 
             Column(
                 modifier = Modifier
@@ -105,7 +105,7 @@ fun MiniPlayer(
                 )
             }
 
-            SmallWidthSpacer()
+            SmallHorizontalSpacer()
         }
     }
 }

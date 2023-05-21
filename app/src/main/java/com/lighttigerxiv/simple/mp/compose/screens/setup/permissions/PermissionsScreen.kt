@@ -29,7 +29,7 @@ import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallWidthSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.text.TitleMedium
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 
@@ -132,7 +132,7 @@ fun PermissionsScreen(
                                 .weight(weight = 1f, fill = true)
                         )
 
-                        SmallWidthSpacer()
+                        SmallHorizontalSpacer()
 
                         Row(
                             modifier = Modifier

@@ -59,7 +59,6 @@ import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.add_s
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.SettingsScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.SettingsScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.themes.ThemesScreen
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import java.net.URLEncoder
@@ -68,12 +67,12 @@ import java.net.URLEncoder
 @Composable
 fun MainScreen(
     mainVM: MainVM,
+    mainScreenVM: MainScreenVM,
     activityContext: ViewModelStoreOwner,
     onGetPlaylistImage: () -> Unit,
     onGetArtistCover: () -> Unit
 ) {
 
-    //States
     val context = LocalContext.current
 
     val scope = rememberCoroutineScope()
@@ -84,56 +83,46 @@ fun MainScreen(
 
     val playerSheetScaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = playerSheetState)
 
-    //Variables
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
-    val showNavigationBar = mainVM.showNavigationBar.collectAsState().value
+    val showNavigationBar = mainVM.showNavbar.collectAsState().value
 
     val miniPlayerHeight = mainVM.miniPlayerHeight.collectAsState().value
 
     val selectedSong = mainVM.selectedSong.collectAsState().value
 
-    val navBarHeight = mainVM.navBarHeight.collectAsState().value
+    val navbarOffset = mainScreenVM.navbarOffset.collectAsState().value
 
 
     navController.addOnDestinationChangedListener { _, destination, _ ->
         when {
-            destination.route == "About" -> mainVM.updateShowNavigationBar(false)
-            destination.route == "Settings" -> mainVM.updateShowNavigationBar(false)
-            destination.route!!.startsWith("Floating") -> mainVM.updateShowNavigationBar(false)
-            destination.route!!.startsWith("AddToPlaylist") -> mainVM.updateShowNavigationBar(false)
-            destination.route!!.startsWith("SelectArtistCover") -> mainVM.updateShowNavigationBar(false)
-            destination.route == "Themes" -> mainVM.updateShowNavigationBar(false)
-            destination.route!!.startsWith("AddSongsToPlaylist") -> mainVM.updateShowNavigationBar(false)
+            destination.route == "About" -> mainVM.updateShowNavbar(false)
+            destination.route == "Settings" -> mainVM.updateShowNavbar(false)
+            destination.route!!.startsWith("Floating") -> mainVM.updateShowNavbar(false)
+            destination.route!!.startsWith("AddToPlaylist") -> mainVM.updateShowNavbar(false)
+            destination.route!!.startsWith("SelectArtistCover") -> mainVM.updateShowNavbar(false)
+            destination.route == "Themes" -> mainVM.updateShowNavbar(false)
+            destination.route!!.startsWith("AddSongsToPlaylist") -> mainVM.updateShowNavbar(false)
             else -> {
-                if (!showNavigationBar) mainVM.updateShowNavigationBar(true)
+                if (!showNavigationBar) mainVM.updateShowNavbar(true)
             }
         }
     }
 
-    LaunchedEffect(playerSheetState.currentValue){
 
-        if (playerSheetState.currentValue == BottomSheetValue.Collapsed){
+    LaunchedEffect(playerSheetState){
+        snapshotFlow{playerSheetState.progress.fraction}
+            .collect{
 
-            mainVM.updateNavbarHeight(55.dp)
-        }else{
-
-            mainVM.updateNavbarHeight(0.dp)
-        }
+                mainScreenVM.changeNavbarOffset("%.1f".format(it).toFloat(), playerSheetState.targetValue)
+            }
     }
 
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(surfaceColor)
-    ) {
 
+    Column {
 
         BottomSheetScaffold(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f, fill = true),
             scaffoldState = playerSheetScaffoldState,
             sheetPeekHeight = miniPlayerHeight,
             sheetShape = RoundedCornerShape(
@@ -167,13 +156,13 @@ fun MainScreen(
                             Player(
                                 mainVM = mainVM,
                                 playerVM = ViewModelProvider(activityContext)[PlayerScreenVM::class.java],
-                                onGoToPage = {page->
+                                onGoToPage = { page ->
 
                                     scope.launch {
                                         playerSheetState.collapse()
                                     }
 
-                                    if(page.startsWith("FloatingArtist")){
+                                    if (page.startsWith("FloatingArtist")) {
                                         ViewModelProvider(activityContext)[FloatingArtistScreenVM::class.java].clearScreen()
                                     }
 
@@ -196,13 +185,11 @@ fun MainScreen(
 
                 NavHost(
                     modifier = Modifier
-                        .fillMaxSize()
                         .background(surfaceColor)
                         .padding(scaffoldInnerPadding),
                     navController = navController,
-                    startDestination = "Home",
-
-                    ) {
+                    startDestination = "Home"
+                ) {
 
                     composable("Home") {
                         HomeScreen(
@@ -210,7 +197,7 @@ fun MainScreen(
                             homeScreenVM = ViewModelProvider(activityContext)[HomeScreenVM::class.java],
                             openPage = { page ->
 
-                                if(page.startsWith("FloatingArtist")){
+                                if (page.startsWith("FloatingArtist")) {
                                     ViewModelProvider(activityContext)[FloatingArtistScreenVM::class.java].clearScreen()
                                 }
 
@@ -357,7 +344,7 @@ fun MainScreen(
                     composable("GenrePlaylist/{genre}") {
                         var genre = it.arguments?.getString("genre")
 
-                        if(genre != null){
+                        if (genre != null) {
 
                             genre = URLDecoder.decode(genre, "UTF-8")
                         }
@@ -500,7 +487,10 @@ fun MainScreen(
                         )
                     }
                 }
-            }
+            },
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f, fill = true)
         )
 
         AnimatedVisibility(
@@ -509,21 +499,21 @@ fun MainScreen(
             enter = expandVertically()
         ) {
 
+
             BottomNavigationBar(
-                height = navBarHeight,
                 navController = navController,
                 items = getNavigationItems(context),
-                onItemClick = { bottomNavItem ->
+                offset = (navbarOffset.value).dp
+            ) { bottomNavItem ->
 
-                    navController.navigate(bottomNavItem.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
+                navController.navigate(bottomNavItem.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
                     }
+                    launchSingleTop = true
+                    restoreState = true
                 }
-            )
+            }
         }
     }
 }

@@ -31,7 +31,7 @@ import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallWidthSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
@@ -50,15 +50,12 @@ fun AddToPlaylistScreen(
     onBackClick: () -> Unit
 ) {
 
-
-    //State
     val context = LocalContext.current
 
     val sheetState = rememberBottomSheetScaffoldState()
 
     val scope = rememberCoroutineScope()
 
-    //Variables
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
     val screenLoaded = addToPlaylistVM.screenLoaded.collectAsState().value
@@ -121,7 +118,7 @@ fun AddToPlaylistScreen(
 
                                 SmallIcon(id = R.drawable.plus)
 
-                                SmallWidthSpacer()
+                                SmallHorizontalSpacer()
 
                                 CustomText(
                                     text = "Create Playlist",

@@ -26,13 +26,13 @@ import coil.compose.AsyncImage
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
-import com.lighttigerxiv.simple.mp.compose.ui.composables.ClickableMediumIcon
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallWidthSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.XSmallHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.PlaylistScreenVM
+import com.lighttigerxiv.simple.mp.compose.ui.composables.SmallIcon
 import kotlinx.coroutines.launch
 
 @Composable
@@ -114,7 +114,7 @@ fun AddSongsScreen(
                                     .width(70.dp)
                             )
 
-                            SmallWidthSpacer()
+                            SmallHorizontalSpacer()
 
                             Column(
                                 modifier = Modifier
@@ -132,18 +132,14 @@ fun AddSongsScreen(
                                 )
                             }
 
-                            ClickableMediumIcon(
+                            SmallIcon(
                                 id = when (song.selected) {
 
                                     true -> R.drawable.check
 
                                     false -> R.drawable.plus
                                 },
-                                color = MaterialTheme.colorScheme.onSurface,
-                                onClick = {
-
-                                    addSongsVM.toggleSong(song.id)
-                                }
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
 

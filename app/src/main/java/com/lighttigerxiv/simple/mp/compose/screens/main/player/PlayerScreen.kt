@@ -33,16 +33,20 @@ import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.data.variables.XSMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallWidthSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
 import com.lighttigerxiv.simple.mp.compose.ui.composables.BottomSheetHandle
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ClickableMediumIcon
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
+import com.lighttigerxiv.simple.mp.compose.ui.composables.ReorderableSongItem
 import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumWidthSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.rememberReorderableLazyListState
+import org.burnoutcrew.reorderable.reorderable
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -69,7 +73,6 @@ fun Player(
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
     val screenLoaded = playerVM.screenLoaded.collectAsState().value
-
 
     val selectedSong = mainVM.selectedSong.collectAsState().value
 
@@ -116,6 +119,7 @@ fun Player(
     val queueState = rememberLazyListState()
 
     var sliderValue by remember { mutableStateOf(songSeconds) }
+
 
     val playPauseIcon = if (musicPlaying) {
         remember { getBitmapFromVector(context, R.drawable.icon_pause_round_solid) }
@@ -271,7 +275,7 @@ fun Player(
                     ) { selectedPage ->
 
                         //************************************************
-                        // Song
+                        // Portrait Song
                         //************************************************
                         if (selectedPage == 0) {
 
@@ -341,7 +345,7 @@ fun Player(
                                             )
                                         }
 
-                                        SmallWidthSpacer()
+                                        SmallHorizontalSpacer()
 
                                         Column(
                                             modifier = Modifier
@@ -565,7 +569,7 @@ fun Player(
                         }
 
                         //************************************************
-                        // Queue
+                        // Portrait Queue
                         //************************************************
                         if (selectedPage == 1) {
 
@@ -584,25 +588,28 @@ fun Player(
                                 }
                             } else {
 
+                                val state = rememberReorderableLazyListState( onMove = mainVM::onUpNextQueueMove)
+
                                 androidx.compose.foundation.lazy.LazyColumn(
+                                    state = state.listState,
                                     modifier = Modifier
-                                        .fillMaxSize(),
-                                    state = queueState,
-                                    content = {
+                                        .fillMaxSize()
+                                        .then(Modifier.reorderable(state))
+                                ) {
+                                    items(upNextQueue, { it.id }) { song ->
+                                        ReorderableItem(state, key = song.id) { isDragging ->
 
-                                        items(
-                                            items = upNextQueue,
-                                            key = { it.id }
-                                        ) { song ->
-
-                                            SongItem(
+                                            ReorderableSongItem(
                                                 song = song,
                                                 songAlbumArt = remember { compressedSongsImages?.find { it.albumID == song.albumID }?.albumArt },
-                                                highlight = selectedSong.path == song.path
+                                                state = state,
+                                                isDragging = isDragging
                                             )
+
+
                                         }
                                     }
-                                )
+                                }
                             }
                         }
                     }
@@ -760,7 +767,7 @@ fun Player(
                                                 )
                                             }
 
-                                            SmallWidthSpacer()
+                                            SmallHorizontalSpacer()
 
                                             Column {
 

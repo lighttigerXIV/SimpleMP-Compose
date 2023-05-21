@@ -3,6 +3,8 @@ package com.lighttigerxiv.simple.mp.compose.ui.composables
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -21,7 +24,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.XSmallHeightSpacer
+import org.burnoutcrew.reorderable.ReorderableLazyListState
+import org.burnoutcrew.reorderable.detectReorder
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -148,3 +154,88 @@ fun SongItem(
     }
 }
 
+@Composable
+fun ReorderableSongItem(
+    modifier: Modifier = Modifier,
+    song: Song,
+    songAlbumArt: Bitmap?,
+    state: ReorderableLazyListState,
+    isDragging: Boolean
+) {
+
+    val context = LocalContext.current
+    val songTitle = remember { song.title }
+    val songArtist = remember { song.artist }
+
+    Column{
+        Row(modifier = modifier
+            .fillMaxWidth()
+            .height(70.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background( if(isDragging) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+
+            AsyncImage(
+                model = remember{ songAlbumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record) },
+                contentDescription = "",
+                colorFilter = if(songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20))
+                    .height(70.dp)
+                    .width(70.dp)
+            )
+
+            Spacer(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(10.dp)
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f),
+                verticalArrangement = Arrangement.Top
+            ) {
+
+                Text(
+                    text = songTitle,
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Normal
+                )
+
+                Text(
+                    text = songArtist,
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            SmallHorizontalSpacer()
+
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Center
+            ) {
+
+                Image(
+                    modifier = Modifier
+                        .height(24.dp)
+                        .detectReorder(state),
+                    painter = painterResource(id = R.drawable.drag),
+                    contentDescription = "",
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+                )
+            }
+
+
+        }
+
+        XSmallHeightSpacer()
+    }
+}

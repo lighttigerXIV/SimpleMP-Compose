@@ -139,7 +139,7 @@ fun PlaylistScreen(
                             color = MaterialTheme.colorScheme.onSurface
                         )
 
-                        SmallWidthSpacer()
+                        SmallHorizontalSpacer()
 
                         CustomText(
                             text = stringResource(id = R.string.SelectImage)
@@ -166,7 +166,7 @@ fun PlaylistScreen(
                             color = MaterialTheme.colorScheme.onSurface
                         )
 
-                        SmallWidthSpacer()
+                        SmallHorizontalSpacer()
 
                         CustomText(
                             text = stringResource(id = R.string.DeleteImage)
@@ -404,7 +404,7 @@ fun PlaylistScreen(
                                                             )
                                                         }
 
-                                                        SmallWidthSpacer()
+                                                        SmallHorizontalSpacer()
 
                                                         Button(
                                                             onClick = {
@@ -578,7 +578,7 @@ fun PlaylistScreen(
                                                     .clip(RoundedCornerShape(20)),
                                             )
 
-                                            SmallWidthSpacer()
+                                            SmallHorizontalSpacer()
 
                                             Column(
                                                 modifier = Modifier

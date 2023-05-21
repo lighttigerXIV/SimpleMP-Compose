@@ -21,6 +21,7 @@ import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainActivity
 import com.lighttigerxiv.simple.mp.compose.functions.getSongAlbumArt
 import com.lighttigerxiv.simple.mp.compose.widgets.SimpleMPWidget
+import org.burnoutcrew.reorderable.ItemPosition
 
 
 @Suppress("DEPRECATION")
@@ -164,6 +165,15 @@ class SimpleMPService : Service() {
         }
 
         return upNextQueueList
+    }
+
+    fun updateQueue(from: ItemPosition, to: ItemPosition){
+
+        queueList = queueList.apply {
+            add(queueList.indexOfFirst { it.id == to.key }, removeAt(queueList.indexOfFirst { it.id == from.key }))
+        }
+
+
     }
 
 

@@ -8,7 +8,6 @@ import android.graphics.Bitmap
 import android.os.IBinder
 import android.util.Log
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import com.lighttigerxiv.simple.mp.compose.*
@@ -21,6 +20,7 @@ import com.lighttigerxiv.simple.mp.compose.widgets.SimpleMPWidget
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import org.burnoutcrew.reorderable.ItemPosition
 import java.util.*
 
 class MainVM(application: Application) : AndroidViewModel(application) {
@@ -29,13 +29,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     //************************************************
     // Variables
     //************************************************
-
-    private val _navBarHeight = MutableStateFlow(55.dp)
-    val navBarHeight = _navBarHeight.asStateFlow()
-    fun updateNavbarHeight(newValue: Dp) {
-        _navBarHeight.update { newValue }
-    }
-
 
     private val context = application
 
@@ -48,9 +41,9 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         _surfaceColor.update { newValue }
     }
 
-    private val _showNavigationBar = MutableStateFlow(true)
-    val showNavigationBar = _showNavigationBar.asStateFlow()
-    fun updateShowNavigationBar(newValue: Boolean) {
+    private val _showNavbar = MutableStateFlow(true)
+    val showNavbar = _showNavbar.asStateFlow()
+    fun updateShowNavbar(newValue: Boolean) {
 
         smpService?.let { smp ->
 
@@ -61,8 +54,9 @@ class MainVM(application: Application) : AndroidViewModel(application) {
             }
         }
 
-        _showNavigationBar.update { newValue }
+        _showNavbar.update { newValue }
     }
+
 
     private val _songs = MutableStateFlow<List<Song>?>(null)
     val songs = _songs.asStateFlow()
@@ -288,7 +282,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     }
 
     //************************************************
-    // Playback Function
+    // Playback Functions
     //************************************************
 
     fun selectSong(newQueueList: List<Song>, position: Int) {
@@ -309,6 +303,15 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
                 _upNextQueue.update { smp.getUpNextQueue() }
             }
+        }
+    }
+
+    fun onUpNextQueueMove(from: ItemPosition, to:ItemPosition){
+
+        smpService?.let {
+            smpService!!.updateQueue(from, to)
+            _queue.update { smpService!!.getQueue() }
+            _upNextQueue.update { smpService!!.getUpNextQueue() }
         }
     }
 

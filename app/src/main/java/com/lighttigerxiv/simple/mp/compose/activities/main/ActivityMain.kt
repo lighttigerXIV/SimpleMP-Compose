@@ -21,6 +21,7 @@ import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.functions.getSurfaceColor
 import com.lighttigerxiv.simple.mp.compose.screens.main.artist.artist_select_cover.SelectArtistCoverScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.main.MainScreen
+import com.lighttigerxiv.simple.mp.compose.screens.main.main.MainScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.PlaylistScreenVM
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.ui.theme.ComposeSimpleMPTheme
@@ -51,7 +52,9 @@ class MainActivity : ComponentActivity() {
 
 
         val mainVM = ViewModelProvider(this)[MainVM::class.java]
+        val mainScreenVM = ViewModelProvider(this)[MainScreenVM::class.java]
         val settingsVM = ViewModelProvider(this)[SettingsVM::class.java]
+
 
         setContent {
             ComposeSimpleMPTheme(
@@ -69,6 +72,7 @@ class MainActivity : ComponentActivity() {
 
                     MainScreen(
                         mainVM = mainVM,
+                        mainScreenVM = mainScreenVM,
                         activityContext = activityContext,
                         onGetPlaylistImage = {
 

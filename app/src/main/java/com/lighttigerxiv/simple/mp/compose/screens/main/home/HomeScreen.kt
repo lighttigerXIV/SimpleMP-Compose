@@ -77,8 +77,8 @@ fun HomeScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(surfaceColor)
+            //.fillMaxSize()
+            //.background(surfaceColor)
             .padding(SCREEN_PADDING)
 
     ) {

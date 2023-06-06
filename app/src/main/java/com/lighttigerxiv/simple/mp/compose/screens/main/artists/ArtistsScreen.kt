@@ -1,7 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.artists
 
 import android.content.res.Configuration
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,50 +15,42 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.XSMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.SORTS
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ImageCard
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
+import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ArtistsScreen(
     mainVM: MainVM,
-    artistsVM: ArtistsScreenVM,
-    onArtistClicked: (artistID: Long) -> Unit
+    vm: ArtistsScreenVM,
+    activityContext: ViewModelStoreOwner,
+    navController: NavHostController
 ) {
 
-    //States
     val scope = rememberCoroutineScope()
-
     val context = LocalContext.current
-
     val configuration = LocalConfiguration.current
-
     val gridState = rememberLazyGridState()
-
-    //Variables
-    val screenLoaded = artistsVM.screenLoaded.collectAsState().value
-
-    val searchText = artistsVM.searchText.collectAsState().value
-
-    val menuExpanded = artistsVM.menuExpanded.collectAsState().value
-
-    val artists = artistsVM.currentArtists.collectAsState().value
-
-    val recentArtists = artistsVM.recentArtists.collectAsState().value
-
-    val oldestArtists = artistsVM.oldestArtists.collectAsState().value
-
-    val ascendentArtists = artistsVM.ascendentArtists.collectAsState().value
-
-    val descendentArtists = artistsVM.descendentArtists.collectAsState().value
-
+    val screenLoaded = vm.screenLoaded.collectAsState().value
+    val searchText = vm.searchText.collectAsState().value
+    val menuExpanded = vm.menuExpanded.collectAsState().value
+    val artists = vm.currentArtists.collectAsState().value
+    val recentArtists = vm.recentArtists.collectAsState().value
+    val oldestArtists = vm.oldestArtists.collectAsState().value
+    val ascendentArtists = vm.ascendentArtists.collectAsState().value
+    val descendentArtists = vm.descendentArtists.collectAsState().value
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
 
@@ -71,7 +62,7 @@ fun ArtistsScreen(
 
 
     if (!screenLoaded) {
-        artistsVM.loadScreen(mainVM)
+        vm.loadScreen(mainVM)
     }
 
     Column(
@@ -101,21 +92,21 @@ fun ArtistsScreen(
                         textType = "text",
                         onTextChange = {
 
-                            artistsVM.updateSearchText(it)
+                            vm.updateSearchText(it)
 
-                            artistsVM.filterArtists()
+                            vm.filterArtists()
 
                             scope.launch { gridState.scrollToItem(0) }
                         },
                         sideIcon = R.drawable.sort,
                         onSideIconClick = {
-                            artistsVM.updateMenuExpanded(true)
+                            vm.updateMenuExpanded(true)
                         },
                     )
                     DropdownMenu(
                         expanded = menuExpanded,
                         onDismissRequest = {
-                            artistsVM.updateMenuExpanded(false)
+                            vm.updateMenuExpanded(false)
                         }
                     ) {
 
@@ -123,36 +114,52 @@ fun ArtistsScreen(
                             text = { Text(text = remember { getAppString(context, R.string.SortByRecentlyAdded) }) },
                             onClick = {
 
-                                artistsVM.updateSortType("Recent")
-
-                                artistsVM.updateCurrentArtists(recentArtists)
+                                vm.updateSortType(SORTS.RECENT)
+                                vm.updateCurrentArtists(recentArtists)
+                                scope.launch {
+                                    vm.updateMenuExpanded(false)
+                                    delay(200)
+                                    gridState.scrollToItem(index = 0)
+                                }
                             }
                         )
                         DropdownMenuItem(
                             text = { Text(text = remember { getAppString(context, R.string.SortByOldestAdded) }) },
                             onClick = {
 
-                                artistsVM.updateSortType("Oldest")
-
-                                artistsVM.updateCurrentArtists(oldestArtists)
+                                vm.updateSortType(SORTS.OLDEST)
+                                vm.updateCurrentArtists(oldestArtists)
+                                scope.launch {
+                                    vm.updateMenuExpanded(false)
+                                    delay(200)
+                                    gridState.scrollToItem(index = 0)
+                                }
                             }
                         )
                         DropdownMenuItem(
                             text = { Text(text = remember { getAppString(context, R.string.SortByAscendent) }) },
                             onClick = {
 
-                                artistsVM.updateSortType("Ascendent")
-
-                                artistsVM.updateCurrentArtists(ascendentArtists)
+                                vm.updateSortType(SORTS.ASCENDENT)
+                                vm.updateCurrentArtists(ascendentArtists)
+                                scope.launch {
+                                    vm.updateMenuExpanded(false)
+                                    delay(200)
+                                    gridState.scrollToItem(index = 0)
+                                }
                             }
                         )
                         DropdownMenuItem(
                             text = { Text(text = remember { getAppString(context, R.string.SortByDescendent) }) },
                             onClick = {
 
-                                artistsVM.updateSortType("Descendent")
-
-                                artistsVM.updateCurrentArtists(descendentArtists)
+                                vm.updateSortType(SORTS.DESCENDENT)
+                                vm.updateCurrentArtists(descendentArtists)
+                                scope.launch {
+                                    vm.updateMenuExpanded(false)
+                                    delay(200)
+                                    gridState.scrollToItem(index = 0)
+                                }
                             }
                         )
                     }
@@ -174,16 +181,15 @@ fun ArtistsScreen(
                         key = { artist -> artist.artistID },
                     ) { artist ->
 
-                        val albumArt = mainVM.songsImages.collectAsState().value?.first { it.albumID == artist.albumID }?.albumArt
+                        val albumArt = mainVM.songsCovers.collectAsState().value?.first { it.albumID == artist.albumID }?.albumArt
 
                         ImageCard(
                             modifier = Modifier.animateItemPlacement(),
-                            cardImage = remember { albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record) },
+                            cardImage = remember { albumArt ?: getBitmapFromVector(context, R.drawable.person) },
                             imageTint = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                             cardText = remember { artist.artist },
                             onCardClicked = {
-
-                                onArtistClicked(artist.artistID)
+                                vm.openArtist(activityContext, navController, artist.artistID)
                             }
                         )
                     }

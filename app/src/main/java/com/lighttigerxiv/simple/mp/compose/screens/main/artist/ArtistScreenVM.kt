@@ -8,6 +8,9 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.NavHostController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -19,9 +22,12 @@ import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.ArtistsQueries
 import com.lighttigerxiv.simple.mp.compose.data.responses.DiscogsResponse
+import com.lighttigerxiv.simple.mp.compose.data.variables.ROUTES
 import com.lighttigerxiv.simple.mp.compose.functions.isNetworkAvailable
 import com.lighttigerxiv.simple.mp.compose.functions.isOnMobileData
 import com.lighttigerxiv.simple.mp.compose.retrofit.getDiscogsRetrofit
+import com.lighttigerxiv.simple.mp.compose.screens.main.artist.artist_album.ArtistAlbumScreenVM
+import com.lighttigerxiv.simple.mp.compose.screens.main.artist.artist_select_cover.SelectArtistCoverScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -190,6 +196,16 @@ class ArtistScreenVM(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
+    }
+
+    fun openAlbumScreen(activityContext: ViewModelStoreOwner, navController: NavHostController, id: Long){
+        ViewModelProvider(activityContext)[ArtistAlbumScreenVM::class.java].clearScreen()
+        navController.navigate("${ROUTES.MAIN.ARTIST_ALBUM}${id}")
+    }
+
+    fun openSelectArtistCoverScreen(activityContext: ViewModelStoreOwner, navController: NavHostController, name: String, id: Long){
+        ViewModelProvider(activityContext)[SelectArtistCoverScreenVM::class.java].clearScreen()
+        navController.navigate("${ROUTES.MAIN.SELECT_ARTIST_COVER}name=${name}&id=${id}")
     }
 
     fun clearScreen() {

@@ -2,13 +2,19 @@ package com.lighttigerxiv.simple.mp.compose.screens.main.playlists
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.items.Playlist
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.PlaylistsQueries
+import com.lighttigerxiv.simple.mp.compose.data.variables.ROUTES
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.PlaylistScreenVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.net.URLEncoder
 
 class PlaylistsScreenVM(application: Application) : AndroidViewModel(application) {
 
@@ -76,7 +82,7 @@ class PlaylistsScreenVM(application: Application) : AndroidViewModel(application
         }
     }
 
-    suspend fun createPlaylist() {
+    fun createPlaylist() {
 
         playlistsQueries.createPlaylist(playlistNameText.value)
 
@@ -94,5 +100,15 @@ class PlaylistsScreenVM(application: Application) : AndroidViewModel(application
                 }
             }
         }
+    }
+
+    fun openGenrePlaylist(navController: NavHostController, genre: String){
+        val encodedGenre = URLEncoder.encode(genre, "UTF-8")
+        navController.navigate("${ROUTES.MAIN.GENRE_PLAYLIST}$encodedGenre")
+    }
+
+    fun openPlaylist(activityContext: ViewModelStoreOwner, navController: NavHostController, id: String){
+        ViewModelProvider(activityContext)[PlaylistScreenVM::class.java].clearScreen()
+        navController.navigate("${ROUTES.MAIN.PLAYLIST}${id}")
     }
 }

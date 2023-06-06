@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.add_songs
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -26,6 +25,7 @@ import coil.compose.AsyncImage
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
@@ -45,16 +45,11 @@ fun AddSongsScreen(
 ) {
 
     val context = LocalContext.current
-
     val scope = rememberCoroutineScope()
-
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
-
     val screenLoaded = addSongsVM.screenLoaded.collectAsState().value
-
     val songs = addSongsVM.songs.collectAsState().value
-
-    val songsImages = mainVM.compressedSongsImages.collectAsState().value
+    val songsCovers = mainVM.compressedSongsCovers.collectAsState().value
 
     if (!screenLoaded) {
         addSongsVM.loadScreen(playlistID, mainVM)
@@ -89,7 +84,7 @@ fun AddSongsScreen(
                     key = { it.id }
                 ) { song ->
 
-                    val songAlbumArt = songsImages?.find { it.albumID == song.albumID }?.albumArt
+                    val songAlbumArt = songsCovers?.find { it.albumID == song.albumID }?.albumArt
 
                     Column {
                         Row(
@@ -105,13 +100,15 @@ fun AddSongsScreen(
                         ) {
 
                             AsyncImage(
-                                model = remember { songAlbumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record) },
+                                model = remember { songAlbumArt ?: getBitmapFromVector(context, R.drawable.record) },
                                 contentDescription = null,
                                 colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(14.dp))
                                     .height(70.dp)
                                     .width(70.dp)
+
+
                             )
 
                             SmallHorizontalSpacer()

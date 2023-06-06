@@ -6,14 +6,19 @@ import android.util.Base64
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.items.Playlist
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.PlaylistsQueries
+import com.lighttigerxiv.simple.mp.compose.data.variables.ROUTES
 import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.add_songs.AddSongsScreenVM
 import io.realm.kotlin.ext.toRealmList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -262,6 +267,11 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
         deleteImage = false
 
         updateImage = false
+    }
+
+    fun openAddSongsScreen(activityContext: ViewModelStoreOwner, rootNavController: NavHostController, id: String){
+        ViewModelProvider(activityContext)[AddSongsScreenVM::class.java].clearScreen()
+        rootNavController.navigate("${ROUTES.ROOT.ADD_SONGS_TO_PLAYLIST}$id")
     }
 
     fun clearScreen() {

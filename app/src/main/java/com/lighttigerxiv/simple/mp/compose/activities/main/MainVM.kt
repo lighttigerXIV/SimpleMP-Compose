@@ -4,22 +4,32 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.appwidget.AppWidgetManager
 import android.content.*
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.IBinder
 import android.util.Log
+import androidx.compose.material.BottomSheetState
+import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
-import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongArt
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongCover
+import com.lighttigerxiv.simple.mp.compose.data.variables.SORTS
 import com.lighttigerxiv.simple.mp.compose.functions.getAllAlbumsImages
 import com.lighttigerxiv.simple.mp.compose.functions.getSongs
 import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
 import com.lighttigerxiv.simple.mp.compose.widgets.SimpleMPWidget
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.burnoutcrew.reorderable.ItemPosition
 import java.util.*
 
@@ -32,6 +42,10 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     private val context = application
 
+    private val _loadingSongs = MutableStateFlow(true)
+    val loadingSongs = _loadingSongs.asStateFlow()
+
+
     @SuppressLint("StaticFieldLeak")
     private var smpService: SimpleMPService? = null
 
@@ -41,31 +55,15 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         _surfaceColor.update { newValue }
     }
 
-    private val _showNavbar = MutableStateFlow(true)
-    val showNavbar = _showNavbar.asStateFlow()
-    fun updateShowNavbar(newValue: Boolean) {
-
-        smpService?.let { smp ->
-
-            if (smp.isMusicPlayingOrPaused() && newValue) {
-                _miniPlayerHeight.update { 60.dp }
-            } else {
-                _miniPlayerHeight.update { 0.dp }
-            }
-        }
-
-        _showNavbar.update { newValue }
-    }
-
 
     private val _songs = MutableStateFlow<List<Song>?>(null)
     val songs = _songs.asStateFlow()
 
-    private val _songsImages = MutableStateFlow<List<SongArt>?>(null)
-    val songsImages = _songsImages.asStateFlow()
+    private val _songsCovers = MutableStateFlow<List<SongCover>?>(null)
+    val songsCovers = _songsCovers.asStateFlow()
 
-    private val _compressedSongsImages = MutableStateFlow<List<SongArt>?>(null)
-    val compressedSongsImages = _compressedSongsImages.asStateFlow()
+    private val _compressedSongsCovers = MutableStateFlow<List<SongCover>?>(null)
+    val compressedSongsCovers = _compressedSongsCovers.asStateFlow()
 
     private val _queue = MutableStateFlow<List<Song>?>(null)
     val queue = _queue.asStateFlow()
@@ -74,10 +72,10 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     val upNextQueue = _upNextQueue.asStateFlow()
 
     private val _selectedSong = MutableStateFlow<Song?>(null)
-    val selectedSong = _selectedSong.asStateFlow()
+    val currentSong = _selectedSong.asStateFlow()
 
     private val _songAlbumArt = MutableStateFlow<Bitmap?>(null)
-    val songAlbumArt = _songAlbumArt.asStateFlow()
+    val currentSongAlbumArt = _songAlbumArt.asStateFlow()
 
     private val _songMinutesAndSecondsText = MutableStateFlow("")
     val songMinutesAndSecondsText = _songMinutesAndSecondsText.asStateFlow()
@@ -103,8 +101,14 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     private val _songSeconds = MutableStateFlow(0f)
     val songSeconds = _songSeconds.asStateFlow()
 
-    private val _miniPlayerHeight = MutableStateFlow(0.dp)
-    val miniPlayerHeight = _miniPlayerHeight.asStateFlow()
+    private val _miniPlayerPeekHeight = MutableStateFlow(0.dp)
+    val miniPlayerPeekHeight = _miniPlayerPeekHeight.asStateFlow()
+
+    private val _hideNavProgress = MutableStateFlow(0f)
+    val hideNavProgress = _hideNavProgress.asStateFlow()
+
+    private val _showMainPlayer = MutableStateFlow(false)
+    val showMainPlayer = _showMainPlayer.asStateFlow()
 
 
     //************************************************
@@ -123,112 +127,127 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
 
-            val binder = service as SimpleMPService.LocalBinder
-            smpService = binder.getService()
+            viewModelScope.launch {
+                withContext(Dispatchers.IO){
 
-            smpService?.let { smp ->
+                    delay(1)
 
-                _musicPlaying.update { smp.musicPlaying() }
+                    val binder = service as SimpleMPService.LocalBinder
+                    smpService = binder.getService()
 
-                _queueShuffled.update { smp.queueShuffled }
+                    smpService?.let { smp ->
 
-                _songOnRepeat.update { smp.songOnRepeat }
+                        _musicPlaying.update { smp.musicPlaying() }
 
+                        _queueShuffled.update { smp.queueShuffled }
 
-                if (smp.isMusicPlayingOrPaused()) {
+                        _songOnRepeat.update { smp.songOnRepeat }
 
-                    _selectedSong.update { smp.currentSong }
+                        _songs.update { getSongs(context, SORTS.RECENT) }
 
-                    _songAlbumArt.update { getAlbumArt() }
+                        _songsCovers.update { getAllAlbumsImages(songs.value, context) }
 
-                    _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
-
-                    _songMinutesAndSecondsText.update { getMinutesAndSeconds(selectedSong.value!!.duration / 1000) }
-
-                    _currentSongMinutesAndSecondsText.update { getMinutesAndSeconds(smp.mediaPlayer.currentPosition / 1000) }
-
-                    _miniPlayerHeight.update { 60.dp }
-
-                    _queue.update { smp.getQueue() }
-
-                    _upNextQueue.update { smp.getUpNextQueue() }
-
-                    _songPosition.update { smp.currentSongPosition }
-
-                    onSongSelected()
-                }
+                        _compressedSongsCovers.update { getAllAlbumsImages(songs.value, context, compressed = true) }
 
 
-                smp.onSongSelected = { song ->
+                        if (smp.isMusicPlayingOrPaused()) {
 
-                    _selectedSong.update { song }
+                            _selectedSong.update { smp.currentSong }
 
-                    _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
+                            _songAlbumArt.update { getAlbumArt() }
 
-                    _songMinutesAndSecondsText.update { getMinutesAndSeconds(selectedSong.value!!.duration / 1000) }
+                            _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
 
-                    _songAlbumArt.update { getAlbumArt() }
+                            _songMinutesAndSecondsText.update { getMinutesAndSeconds(currentSong.value!!.duration / 1000) }
 
-                    _songOnRepeat.update { smp.songOnRepeat }
+                            _currentSongMinutesAndSecondsText.update { getMinutesAndSeconds(smp.mediaPlayer.currentPosition / 1000) }
 
-                    _miniPlayerHeight.update { 60.dp }
+                            updateMiniPlayerPeekHeight()
 
-                    _queue.update { smp.getQueue() }
+                            _queue.update { smp.getQueue() }
 
-                    _upNextQueue.update { smp.getUpNextQueue() }
+                            _upNextQueue.update { smp.getUpNextQueue() }
 
-                    _songPosition.update { smp.currentSongPosition }
+                            _songPosition.update { smp.currentSongPosition }
 
-                    onSongSelected()
-
-                    updateWidget()
-                }
+                            onSongSelected()
+                        }
 
 
-                smp.onSecondPassed = {
+                        smp.onSongSelected = { song ->
 
-                    _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
-                }
+                            _selectedSong.update { song }
 
-                smp.onQueueShuffle = {
+                            _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
 
-                    _queueShuffled.update { smp.queueShuffled }
+                            _songMinutesAndSecondsText.update { getMinutesAndSeconds(currentSong.value!!.duration / 1000) }
 
-                    _queue.update { smp.getQueue() }
+                            _songAlbumArt.update { getAlbumArt() }
 
-                    _upNextQueue.update { smp.getUpNextQueue() }
+                            _songOnRepeat.update { smp.songOnRepeat }
 
-                    _songPosition.update { smp.currentSongPosition }
-                }
+                            updateMiniPlayerPeekHeight()
+
+                            _queue.update { smp.getQueue() }
+
+                            _upNextQueue.update { smp.getUpNextQueue() }
+
+                            _songPosition.update { smp.currentSongPosition }
+
+                            onSongSelected()
+
+                            updateWidget()
+                        }
 
 
-                smp.onPause = {
+                        smp.onSecondPassed = {
 
-                    _musicPlaying.update { smp.musicPlaying() }
+                            _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
+                        }
 
-                    updateWidget()
-                }
+                        smp.onQueueShuffle = {
+
+                            _queueShuffled.update { smp.queueShuffled }
+
+                            _queue.update { smp.getQueue() }
+
+                            _upNextQueue.update { smp.getUpNextQueue() }
+
+                            _songPosition.update { smp.currentSongPosition }
+                        }
 
 
-                smp.onResume = {
+                        smp.onPause = {
 
-                    _musicPlaying.update { smp.musicPlaying() }
+                            _musicPlaying.update { smp.musicPlaying() }
 
-                    _songPosition.update { smp.currentSongPosition }
+                            updateWidget()
+                        }
 
-                    updateWidget()
-                }
 
-                smp.onSongRepeat = {
+                        smp.onResume = {
 
-                    _songOnRepeat.update { smp.songOnRepeat }
-                }
+                            _musicPlaying.update { smp.musicPlaying() }
 
-                smp.onStop = {
+                            _songPosition.update { smp.currentSongPosition }
 
-                    _selectedSong.update { null }
+                            updateWidget()
+                        }
 
-                    _miniPlayerHeight.update { 0.dp }
+                        smp.onSongRepeat = {
+
+                            _songOnRepeat.update { smp.songOnRepeat }
+                        }
+
+                        smp.onStop = {
+
+                            _selectedSong.update { null }
+
+                            updateMiniPlayerPeekHeight()
+                        }
+
+                        _loadingSongs.update { false }
+                    }
                 }
             }
         }
@@ -273,10 +292,60 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         return when (compressed) {
 
             true -> {
-                compressedSongsImages.value?.first { it.albumID == selectedSong.value?.albumID }?.albumArt
+                compressedSongsCovers.value?.first { it.albumID == currentSong.value?.albumID }?.albumArt
             }
+
             false -> {
-                songsImages.value?.first { it.albumID == selectedSong.value?.albumID }?.albumArt
+                songsCovers.value?.first { it.albumID == currentSong.value?.albumID }?.albumArt
+            }
+        }
+    }
+
+
+    @OptIn(ExperimentalMaterialApi::class)
+    fun onSheetChange(progress: Float, sheetState: BottomSheetState) {
+
+        if (progress > 0 && sheetState.currentValue == BottomSheetValue.Collapsed && sheetState.targetValue == BottomSheetValue.Expanded) {
+            if (!showMainPlayer.value) {
+                _showMainPlayer.update { true }
+            }
+        }
+
+        if (progress == 1f && sheetState.targetValue == BottomSheetValue.Collapsed) {
+            if (showMainPlayer.value) {
+                _showMainPlayer.update { false }
+            }
+        }
+
+        if (progress == 1f && sheetState.targetValue == BottomSheetValue.Expanded) {
+            _showMainPlayer.update { true }
+        }
+
+        if (progress in 0.1f..1f) {
+            if (sheetState.targetValue == BottomSheetValue.Expanded) {
+                _hideNavProgress.update { 0 + progress }
+            } else {
+                _hideNavProgress.update { 1 - progress }
+            }
+        }
+    }
+
+    fun updateMiniPlayerPeekHeight(){
+
+        val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+        smpService?.let{
+            if(isPortrait && !smpService!!.isMusicPlayingOrPaused()){
+                _miniPlayerPeekHeight.update { 55.dp }
+            }
+            if(isPortrait && smpService!!.isMusicPlayingOrPaused()){
+                _miniPlayerPeekHeight.update { 115.dp }
+            }
+            if(!isPortrait && !smpService!!.isMusicPlayingOrPaused()){
+                _miniPlayerPeekHeight.update { 0.dp }
+            }
+            if(!isPortrait && smpService!!.isMusicPlayingOrPaused()){
+                _miniPlayerPeekHeight.update { 55.dp }
             }
         }
     }
@@ -295,7 +364,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
                 _selectedSong.update { smp.currentSong }
 
-                _songMinutesAndSecondsText.update { getMinutesAndSeconds(selectedSong.value!!.duration / 1000) }
+                _songMinutesAndSecondsText.update { getMinutesAndSeconds(currentSong.value!!.duration / 1000) }
 
                 _songAlbumArt.update { getAlbumArt() }
 
@@ -306,7 +375,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun onUpNextQueueMove(from: ItemPosition, to:ItemPosition){
+    fun onUpNextQueueMove(from: ItemPosition, to: ItemPosition) {
 
         smpService?.let {
             smpService!!.updateQueue(from, to)
@@ -392,17 +461,8 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         smpService?.pauseResumeMusic(context)
     }
 
-
     init {
-
         val serviceIntent = Intent(context, SimpleMPService::class.java)
-
         context.bindService(serviceIntent, simpleMPConnection, Context.BIND_AUTO_CREATE)
-
-        _songs.update { getSongs(context, "Recent") }
-
-        _songsImages.update { getAllAlbumsImages(context) }
-
-        _compressedSongsImages.update { getAllAlbumsImages(context, compressed = true) }
     }
 }

@@ -1,7 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.ui.composables
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,7 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.lighttigerxiv.simple.mp.compose.R
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
+import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.XSmallHeightSpacer
 import org.burnoutcrew.reorderable.ReorderableLazyListState
@@ -45,6 +48,7 @@ fun SongItem(
     val songTitle = remember { song.title }
     val songArtist = remember { song.artist }
     val isPopupMenuExpanded = remember { mutableStateOf(false) }
+    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
 
     val titleColor = when (highlight) {
         true -> MaterialTheme.colorScheme.primary
@@ -70,13 +74,19 @@ fun SongItem(
         ) {
 
             AsyncImage(
-                model = remember{ songAlbumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record) },
+                model = remember{ songAlbumArt ?: getBitmapFromVector(context, R.drawable.record) },
                 contentDescription = "",
                 colorFilter = if(songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                 modifier = Modifier
                     .clip(RoundedCornerShape(20))
                     .height(70.dp)
                     .width(70.dp)
+                    .modifyIf(songAlbumArt == null) {
+                        background(surfaceVariantColor)
+                    }
+                    .modifyIf(songAlbumArt == null) {
+                        padding(5.dp)
+                    }
             )
 
             Spacer(
@@ -156,6 +166,7 @@ fun SongItem(
 
 @Composable
 fun ReorderableSongItem(
+    mainVM: MainVM,
     modifier: Modifier = Modifier,
     song: Song,
     songAlbumArt: Bitmap?,
@@ -166,23 +177,30 @@ fun ReorderableSongItem(
     val context = LocalContext.current
     val songTitle = remember { song.title }
     val songArtist = remember { song.artist }
+    val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
     Column{
         Row(modifier = modifier
             .fillMaxWidth()
             .height(70.dp)
             .clip(RoundedCornerShape(14.dp))
-            .background( if(isDragging) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant)
+            .background(if (isDragging) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant)
         ) {
 
             AsyncImage(
-                model = remember{ songAlbumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record) },
+                model = remember{ songAlbumArt ?: getBitmapFromVector(context, R.drawable.record) },
                 contentDescription = "",
                 colorFilter = if(songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                 modifier = Modifier
                     .clip(RoundedCornerShape(20))
                     .height(70.dp)
                     .width(70.dp)
+                    .modifyIf(songAlbumArt == null) {
+                        background(surfaceColor)
+                    }
+                    .modifyIf(songAlbumArt == null) {
+                        padding(5.dp)
+                    }
             )
 
             Spacer(

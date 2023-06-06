@@ -1,7 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.albums
 
 import android.content.res.Configuration
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,44 +24,32 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ImageCard
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.SORTS
+import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AlbumsScreen(
     mainVM: MainVM,
-    albumsVM: AlbumsScreenVM,
+    vm: AlbumsScreenVM,
     onAlbumClicked: (albumID: Long) -> Unit
 ) {
 
-    //States
     val context = LocalContext.current
-
     val scope = rememberCoroutineScope()
-
     val listState = rememberLazyGridState()
-
-    //Variables
-
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
-
-    val screenLoaded = albumsVM.screenLoaded.collectAsState().value
-
-    val searchText = albumsVM.searchText.collectAsState().value
-
-    val menuExpanded = albumsVM.menuExpanded.collectAsState().value
-
-    val albums = albumsVM.currentAlbums.collectAsState().value
-
-    val recentAlbums = albumsVM.recentAlbums.collectAsState().value
-
-    val oldestAlbums = albumsVM.oldestAlbums.collectAsState().value
-
-    val ascendentAlbums = albumsVM.ascendentAlbums.collectAsState().value
-
-    val descendentAlbums = albumsVM.descendentAlbums.collectAsState().value
-
+    val screenLoaded = vm.screenLoaded.collectAsState().value
+    val searchText = vm.searchText.collectAsState().value
+    val menuExpanded = vm.menuExpanded.collectAsState().value
+    val albums = vm.currentAlbums.collectAsState().value
+    val recentAlbums = vm.recentAlbums.collectAsState().value
+    val oldestAlbums = vm.oldestAlbums.collectAsState().value
+    val ascendentAlbums = vm.ascendentAlbums.collectAsState().value
+    val descendentAlbums = vm.descendentAlbums.collectAsState().value
     val gridCellsCount = when (LocalConfiguration.current.orientation) {
         Configuration.ORIENTATION_PORTRAIT -> 2
         else -> 4
@@ -70,7 +57,7 @@ fun AlbumsScreen(
 
 
     if (!screenLoaded) {
-        albumsVM.loadScreen(mainVM)
+        vm.loadScreen(mainVM)
     }
 
 
@@ -94,54 +81,70 @@ fun AlbumsScreen(
                     textType = "text",
                     onTextChange = {
 
-                        albumsVM.updateSearchText(it)
+                        vm.updateSearchText(it)
 
-                        albumsVM.filterAlbums()
+                        vm.filterAlbums()
 
                         scope.launch { listState.scrollToItem(0) }
                     },
                     sideIcon = R.drawable.sort,
-                    onSideIconClick = { albumsVM.updateMenuExpanded(true) }
+                    onSideIconClick = { vm.updateMenuExpanded(true) }
                 )
                 DropdownMenu(
                     expanded = menuExpanded,
-                    onDismissRequest = { albumsVM.updateMenuExpanded(false) }
+                    onDismissRequest = { vm.updateMenuExpanded(false) }
                 ) {
 
                     DropdownMenuItem(
                         text = { Text(text = remember { getAppString(context, R.string.SortByRecentlyAdded) }) },
                         onClick = {
 
-                            albumsVM.updateSortType("Recent")
-
-                            albumsVM.updateCurrentAlbums(recentAlbums)
+                            vm.updateSortType(SORTS.RECENT)
+                            vm.updateCurrentAlbums(recentAlbums)
+                            scope.launch {
+                                vm.updateMenuExpanded(false)
+                                delay(200)
+                                listState.scrollToItem(index = 0)
+                            }
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(text = remember { getAppString(context, R.string.SortByOldestAdded) }) },
                         onClick = {
 
-                            albumsVM.updateSortType("Oldest")
-
-                            albumsVM.updateCurrentAlbums(oldestAlbums)
+                            vm.updateSortType(SORTS.OLDEST)
+                            vm.updateCurrentAlbums(oldestAlbums)
+                            scope.launch {
+                                vm.updateMenuExpanded(false)
+                                delay(200)
+                                listState.scrollToItem(index = 0)
+                            }
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(text = remember { getAppString(context, R.string.SortByAscendent) }) },
                         onClick = {
 
-                            albumsVM.updateSortType("Ascendent")
-
-                            albumsVM.updateCurrentAlbums(ascendentAlbums)
+                            vm.updateSortType(SORTS.ASCENDENT)
+                            vm.updateCurrentAlbums(ascendentAlbums)
+                            scope.launch {
+                                vm.updateMenuExpanded(false)
+                                delay(200)
+                                listState.scrollToItem(index = 0)
+                            }
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(text = remember { getAppString(context, R.string.SortByDescendent) }) },
                         onClick = {
 
-                            albumsVM.updateSortType("Descendent")
-
-                            albumsVM.updateCurrentAlbums(descendentAlbums)
+                            vm.updateSortType(SORTS.DESCENDENT)
+                            vm.updateCurrentAlbums(descendentAlbums)
+                            scope.launch {
+                                vm.updateMenuExpanded(false)
+                                delay(200)
+                                listState.scrollToItem(index = 0)
+                            }
                         }
                     )
                 }
@@ -163,11 +166,11 @@ fun AlbumsScreen(
                     key = { album -> album.albumID },
                 ) { album ->
 
-                    val albumArt = mainVM.songsImages.collectAsState().value?.first { it.albumID == album.albumID }?.albumArt
+                    val albumArt = mainVM.songsCovers.collectAsState().value?.first { it.albumID == album.albumID }?.albumArt
 
                     ImageCard(
                         modifier = Modifier.animateItemPlacement(),
-                        cardImage = remember { albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record) },
+                        cardImage = remember { albumArt ?: getBitmapFromVector(context, R.drawable.record) },
                         imageTint = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                         cardText = remember { album.album },
                         onCardClicked = {

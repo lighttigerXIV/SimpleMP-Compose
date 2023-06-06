@@ -19,8 +19,11 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.ROUTES
+import com.lighttigerxiv.simple.mp.compose.data.variables.SORTS
 import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @SuppressLint("FrequentlyChangedStateReadInComposition")
@@ -28,39 +31,24 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     mainVM: MainVM,
-    homeScreenVM: HomeScreenVM,
-    openPage: (page: String) -> Unit
+    vm: HomeScreenVM,
+    onOpenScreen: (screen: String) -> Unit
 ) {
 
-    //States
     val scope = rememberCoroutineScope()
-
-    //Variables
-    val surfaceColor = mainVM.surfaceColor.collectAsState().value
-
-    val screenLoaded = homeScreenVM.screenLoaded.collectAsState().value
-
-    val searchText = homeScreenVM.searchText.collectAsState().value
-
-    val menuExpanded = homeScreenVM.menuExpanded.collectAsState().value
-
+    val screenLoaded = vm.screenLoaded.collectAsState().value
+    val searchText = vm.searchText.collectAsState().value
+    val menuExpanded = vm.menuExpanded.collectAsState().value
     val songs = mainVM.songs.collectAsState().value
-
-    val currentSongs = homeScreenVM.currentSongs.collectAsState().value
-
-    val recentSongs = homeScreenVM.recentSongs.collectAsState().value
-
-    val oldestSongs = homeScreenVM.oldestSongs.collectAsState().value
-
-    val ascendentSongs = homeScreenVM.ascendentSongs.collectAsState().value
-
-    val descendentSongs = homeScreenVM.descendentSongs.collectAsState().value
-
-    val selectedSong = mainVM.selectedSong.collectAsState().value
-
+    val currentSongs = vm.currentSongs.collectAsState().value
+    val recentSongs = vm.recentSongs.collectAsState().value
+    val oldestSongs = vm.oldestSongs.collectAsState().value
+    val ascendentSongs = vm.ascendentSongs.collectAsState().value
+    val descendentSongs = vm.descendentSongs.collectAsState().value
+    val selectedSong = mainVM.currentSong.collectAsState().value
 
     if (!screenLoaded) {
-        homeScreenVM.loadScreen(mainVM)
+        vm.loadScreen(mainVM)
     }
 
 
@@ -77,8 +65,8 @@ fun HomeScreen(
 
     Column(
         modifier = Modifier
-            //.fillMaxSize()
-            //.background(surfaceColor)
+            .fillMaxSize()
+            .background(mainVM.surfaceColor.collectAsState().value)
             .padding(SCREEN_PADDING)
 
     ) {
@@ -116,7 +104,6 @@ fun HomeScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(surfaceColor)
                         .padding(scaffoldPadding)
                 ) {
 
@@ -131,9 +118,9 @@ fun HomeScreen(
                             placeholder = stringResource(id = R.string.SearchSongs),
                             onTextChange = {
 
-                                homeScreenVM.updateSearchText(it)
+                                vm.updateSearchText(it)
 
-                                homeScreenVM.filterSongs()
+                                vm.filterSongs()
 
                                 scope.launch {
                                     listState.scrollToItem(0)
@@ -141,13 +128,13 @@ fun HomeScreen(
                             },
                             sideIcon = R.drawable.menu,
                             onSideIconClick = {
-                                homeScreenVM.updateMenuExpanded(true)
+                                vm.updateMenuExpanded(true)
                             }
                         )
                         DropdownMenu(
                             expanded = menuExpanded,
                             onDismissRequest = {
-                                homeScreenVM.updateMenuExpanded(false)
+                                vm.updateMenuExpanded(false)
                             }
                         ) {
 
@@ -156,12 +143,13 @@ fun HomeScreen(
                                     Text(text = stringResource(id = R.string.SortByRecentlyAdded))
                                 },
                                 onClick = {
-
-                                    homeScreenVM.updateMenuExpanded(false)
-
-                                    homeScreenVM.updateSortType("Recent")
-
-                                    homeScreenVM.updateCurrentSongs(recentSongs)
+                                    vm.updateSortType(SORTS.RECENT)
+                                    vm.updateCurrentSongs(recentSongs)
+                                    scope.launch {
+                                        vm.updateMenuExpanded(false)
+                                        delay(200)
+                                        listState.scrollToItem(index = 0)
+                                    }
                                 }
                             )
                             DropdownMenuItem(
@@ -169,12 +157,13 @@ fun HomeScreen(
                                     Text(text = stringResource(id = R.string.SortByOldestAdded))
                                 },
                                 onClick = {
-
-                                    homeScreenVM.updateMenuExpanded(false)
-
-                                    homeScreenVM.updateSortType("Oldest")
-
-                                    homeScreenVM.updateCurrentSongs(oldestSongs)
+                                    vm.updateSortType(SORTS.OLDEST)
+                                    vm.updateCurrentSongs(oldestSongs)
+                                    scope.launch {
+                                        vm.updateMenuExpanded(false)
+                                        delay(200)
+                                        listState.scrollToItem(index = 0)
+                                    }
                                 }
                             )
                             DropdownMenuItem(
@@ -182,12 +171,13 @@ fun HomeScreen(
                                     Text(text = stringResource(id = R.string.SortByAscendent))
                                 },
                                 onClick = {
-
-                                    homeScreenVM.updateMenuExpanded(false)
-
-                                    homeScreenVM.updateSortType("Ascendent")
-
-                                    homeScreenVM.updateCurrentSongs(ascendentSongs)
+                                    vm.updateSortType(SORTS.ASCENDENT)
+                                    vm.updateCurrentSongs(ascendentSongs)
+                                    scope.launch {
+                                        vm.updateMenuExpanded(false)
+                                        delay(200)
+                                        listState.scrollToItem(index = 0)
+                                    }
                                 }
                             )
                             DropdownMenuItem(
@@ -195,12 +185,13 @@ fun HomeScreen(
                                     Text(text = stringResource(id = R.string.SortByDescendent))
                                 },
                                 onClick = {
-
-                                    homeScreenVM.updateMenuExpanded(false)
-
-                                    homeScreenVM.updateSortType("Descendent")
-
-                                    homeScreenVM.updateCurrentSongs(descendentSongs)
+                                    vm.updateSortType(SORTS.DESCENDENT)
+                                    vm.updateCurrentSongs(descendentSongs)
+                                    scope.launch {
+                                        vm.updateMenuExpanded(false)
+                                        delay(200)
+                                        listState.scrollToItem(index = 0)
+                                    }
                                 }
                             )
 
@@ -210,9 +201,8 @@ fun HomeScreen(
                                 },
                                 onClick = {
 
-                                    homeScreenVM.updateMenuExpanded(false)
-
-                                    openPage("Settings")
+                                    vm.updateMenuExpanded(false)
+                                    onOpenScreen(ROUTES.ROOT.SETTINGS)
                                 }
                             )
 
@@ -222,9 +212,9 @@ fun HomeScreen(
                                 },
                                 onClick = {
 
-                                    homeScreenVM.updateMenuExpanded(false)
+                                    vm.updateMenuExpanded(false)
 
-                                    openPage("About")
+                                    onOpenScreen(ROUTES.ROOT.ABOUT)
                                 }
                             )
                         }
@@ -246,38 +236,19 @@ fun HomeScreen(
                                 SongItem(
                                     modifier = Modifier.animateItemPlacement(),
                                     song = song,
-                                    songAlbumArt = mainVM.compressedSongsImages.collectAsState().value?.find { it.albumID == song.albumID }?.albumArt,
+                                    songAlbumArt = mainVM.compressedSongsCovers.collectAsState().value?.find { it.albumID == song.albumID }?.albumArt,
                                     highlight = song.path == selectedSong?.path,
                                     menuEntries = menuEntries,
                                     onMenuClicked = { option ->
 
                                         when (option) {
-
-                                            "Artist" -> {
-
-                                                val artistID = song.artistID
-
-                                                openPage("FloatingArtist/$artistID")
-                                            }
-
-                                            "Album" -> {
-
-                                                val albumID = song.albumID
-
-                                                openPage("FloatingAlbum/$albumID")
-                                            }
-
-                                            "Playlist" -> {
-
-                                                val songID = song.id.toString()
-
-                                                openPage("AddToPlaylist/$songID")
-                                            }
+                                            "Artist" -> onOpenScreen("${ROUTES.ROOT.FLOATING_ARTIST}${song.artistID}")
+                                            "Album" -> onOpenScreen("${ROUTES.ROOT.FLOATING_ALBUM}${song.albumID}")
+                                            "Playlist" -> onOpenScreen("${ROUTES.ROOT.ADD_SONG_TO_PLAYLIST}${song.id}")
                                         }
                                     },
                                     onSongClick = {
-
-                                        homeScreenVM.selectSong(song, mainVM)
+                                        vm.selectSong(song, mainVM)
                                     }
                                 )
                             }

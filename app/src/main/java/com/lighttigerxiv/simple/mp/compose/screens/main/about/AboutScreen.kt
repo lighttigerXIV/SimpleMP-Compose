@@ -112,48 +112,6 @@ fun AboutScreen(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .clickable {
-                        val intent = Intent(Intent.ACTION_VIEW).apply { data = Uri.parse("https://gitlab.com/lighttigerxiv/simplemp-compose") }
-                        context.startActivity(intent)
-                    }
-                    .padding(14.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Image(
-                    modifier = Modifier
-                        .height(30.dp)
-                        .width(30.dp),
-                    painter = painterResource(id = R.drawable.icon_gitlab),
-                    contentDescription = null
-                )
-
-                Spacer(modifier = Modifier.width(14.dp))
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f, fill = true)
-                ) {
-
-                    CustomText(
-                        text = "GitLab",
-                        weight = FontWeight.Bold
-                    )
-
-                    CustomText(
-                        text = remember { getAppString(context, R.string.GetAppSourceOnGitLab) },
-                    )
-                }
-            }
         }
     }
 }

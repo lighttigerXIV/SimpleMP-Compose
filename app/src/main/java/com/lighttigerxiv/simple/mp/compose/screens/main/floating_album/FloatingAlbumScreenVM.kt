@@ -42,7 +42,7 @@ class FloatingAlbumScreenVM(application: Application) : AndroidViewModel(applica
     fun loadScreen(mainVM: MainVM, albumID: Long){
 
         val songs = mainVM.songs.value
-        val songsImages = mainVM.songsImages.value
+        val songsImages = mainVM.songsCovers.value
 
         if(songs != null && songsImages != null){
 

@@ -25,6 +25,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
@@ -44,14 +46,13 @@ import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 fun PlaylistScreen(
     mainVM: MainVM,
     playlistsVM: PlaylistsScreenVM,
-    playlistVM: PlaylistScreenVM,
+    vm: PlaylistScreenVM,
+    activityContext: ViewModelStoreOwner,
+    navController: NavHostController,
+    rootNavController: NavHostController,
     playlistID: String,
-    onGoBack: () -> Unit,
-    onGetImage: () -> Unit,
-    onAddSongs: () -> Unit
+    onGetImage: () -> Unit
 ) {
-
-    //States
 
     val selectImageScaffoldState = rememberBottomSheetScaffoldState()
 
@@ -59,39 +60,37 @@ fun PlaylistScreen(
 
     val scope = rememberCoroutineScope()
 
-    //Variables
-
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
 
-    val screenLoaded = playlistVM.screenLoaded.collectAsState().value
+    val screenLoaded = vm.screenLoaded.collectAsState().value
 
-    val playlist = playlistVM.playlist.collectAsState().value
+    val playlist = vm.playlist.collectAsState().value
 
-    val playlistImage = playlistVM.playlistImage.collectAsState().value
+    val playlistImage = vm.playlistImage.collectAsState().value
 
-    val tintImage = playlistVM.tintImage.collectAsState().value
+    val tintImage = vm.tintImage.collectAsState().value
 
-    val songs = playlistVM.currentSongs.collectAsState().value
+    val songs = vm.currentSongs.collectAsState().value
 
-    val showMenu = playlistVM.showMenu.collectAsState().value
+    val showMenu = vm.showMenu.collectAsState().value
 
-    val showDeleteDialog = playlistVM.showDeleteDialog.collectAsState().value
+    val showDeleteDialog = vm.showDeleteDialog.collectAsState().value
 
-    val saveButtonEnabled = playlistVM.saveButtonEnabled.collectAsState().value
+    val saveButtonEnabled = vm.saveButtonEnabled.collectAsState().value
 
-    val onEditMode = playlistVM.onEditMode.collectAsState().value
+    val onEditMode = vm.onEditMode.collectAsState().value
 
-    val playlistNameText = playlistVM.playlistNameText.collectAsState().value
+    val playlistNameText = vm.playlistNameText.collectAsState().value
 
-    val selectedSong = mainVM.selectedSong.collectAsState().value
+    val selectedSong = mainVM.currentSong.collectAsState().value
 
-    val songsImages = mainVM.songsImages.collectAsState().value
+    val songsImages = mainVM.songsCovers.collectAsState().value
 
 
     if (!screenLoaded) {
-        playlistVM.loadScreen(playlistID, mainVM, playlistsVM)
+        vm.loadScreen(playlistID, mainVM, playlistsVM)
     }
 
     Column(
@@ -154,7 +153,7 @@ fun PlaylistScreen(
 
                                 scope.launch {
 
-                                    playlistVM.deleteImage()
+                                    vm.deleteImage()
 
                                     selectImageScaffoldState.bottomSheetState.collapse()
                                 }
@@ -205,14 +204,12 @@ fun PlaylistScreen(
 
                                                     scope.launch {
 
-                                                        playlistVM.cancelEdit()
-
-                                                        playlistVM.updateOnEditMode(false)
+                                                        vm.cancelEdit()
+                                                        vm.updateOnEditMode(false)
                                                     }
                                                 }
                                                 false -> {
-
-                                                    onGoBack()
+                                                    navController.navigateUp()
                                                 }
                                             }
                                         }
@@ -261,14 +258,14 @@ fun PlaylistScreen(
 
                                                         scope.launch {
 
-                                                            playlistVM.savePlaylistChanges(playlistsVM)
+                                                            vm.savePlaylistChanges(playlistsVM)
 
-                                                            playlistVM.updateOnEditMode(false)
+                                                            vm.updateOnEditMode(false)
                                                         }
                                                     }
 
                                                     false -> {
-                                                        playlistVM.updateShowMenu(true)
+                                                        vm.updateShowMenu(true)
                                                     }
                                                 }
                                             }
@@ -296,7 +293,7 @@ fun PlaylistScreen(
                                     DropdownMenu(
                                         expanded = showMenu,
                                         onDismissRequest = {
-                                            playlistVM.updateShowMenu(false)
+                                            vm.updateShowMenu(false)
                                         }
                                     ) {
 
@@ -308,9 +305,8 @@ fun PlaylistScreen(
                                             },
                                             onClick = {
 
-                                                playlistVM.updateShowMenu(false)
-
-                                                onAddSongs()
+                                                vm.updateShowMenu(false)
+                                                vm.openAddSongsScreen(activityContext, rootNavController, playlistID)
                                             }
                                         )
 
@@ -322,9 +318,9 @@ fun PlaylistScreen(
                                             },
                                             onClick = {
 
-                                                playlistVM.updateShowMenu(false)
+                                                vm.updateShowMenu(false)
 
-                                                playlistVM.updateOnEditMode(true)
+                                                vm.updateOnEditMode(true)
                                             }
                                         )
 
@@ -336,9 +332,9 @@ fun PlaylistScreen(
                                             },
                                             onClick = {
 
-                                                playlistVM.updateShowMenu(false)
+                                                vm.updateShowMenu(false)
 
-                                                playlistVM.updateShowDeleteDialog(true)
+                                                vm.updateShowDeleteDialog(true)
                                             }
                                         )
                                     }
@@ -347,7 +343,7 @@ fun PlaylistScreen(
 
                                         Dialog(
                                             onDismissRequest = {
-                                                playlistVM.updateShowDeleteDialog(false)
+                                                vm.updateShowDeleteDialog(false)
                                             }
                                         ) {
                                             Surface(
@@ -388,7 +384,7 @@ fun PlaylistScreen(
 
                                                         Button(
                                                             onClick = {
-                                                                playlistVM.updateShowDeleteDialog(false)
+                                                                vm.updateShowDeleteDialog(false)
                                                             },
                                                             border = BorderStroke(
                                                                 1.dp,
@@ -410,9 +406,8 @@ fun PlaylistScreen(
                                                             onClick = {
 
                                                                 scope.launch {
-                                                                    onGoBack()
-
-                                                                    playlistVM.deletePlaylist(playlistID, playlistsVM)
+                                                                    navController.navigateUp()
+                                                                    vm.deletePlaylist(playlistID, playlistsVM)
                                                                 }
                                                             },
                                                             colors = ButtonDefaults.buttonColors(
@@ -476,9 +471,9 @@ fun PlaylistScreen(
                                         placeholder = stringResource(id = R.string.InsertPlaylistName),
                                         onTextChange = {
 
-                                            playlistVM.updatePlaylistNameText(it)
+                                            vm.updatePlaylistNameText(it)
 
-                                            playlistVM.updateSaveButtonEnabled(it.isNotEmpty())
+                                            vm.updateSaveButtonEnabled(it.isNotEmpty())
                                         }
                                     )
                                 }
@@ -625,7 +620,7 @@ fun PlaylistScreen(
                                                             .width(25.dp)
                                                             .clickable {
 
-                                                                playlistVM.removeSong(song)
+                                                                vm.removeSong(song)
                                                             }
                                                     )
                                                 }

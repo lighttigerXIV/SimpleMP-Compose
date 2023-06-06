@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.artist.artist_album
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
@@ -46,7 +46,7 @@ fun ArtistAlbumScreen(
 
     val screenLoaded = albumVM.screenLoaded.collectAsState().value
 
-    val selectedSong = mainVM.selectedSong.collectAsState().value
+    val selectedSong = mainVM.currentSong.collectAsState().value
 
     val albumArt = albumVM.albumArt.collectAsState().value
 
@@ -56,7 +56,7 @@ fun ArtistAlbumScreen(
 
     val songs = albumVM.albumSongs.collectAsState().value
 
-    val songsImages = mainVM.songsImages.collectAsState().value
+    val songsImages = mainVM.songsCovers.collectAsState().value
 
 
     if (!screenLoaded) {
@@ -90,7 +90,7 @@ fun ArtistAlbumScreen(
                         MediumHeightSpacer()
 
                         Image(
-                            bitmap = (albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record)).asImageBitmap(),
+                            bitmap = (albumArt ?: getBitmapFromVector(context, R.drawable.record)).asImageBitmap(),
                             colorFilter = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                             contentDescription = "",
                             modifier = Modifier

@@ -39,26 +39,26 @@ class AlbumScreenVM(application: Application) : AndroidViewModel(application) {
     //************************************************
 
 
-    fun loadScreen(mainVM: MainVM, albumID: Long){
+    fun loadScreen(mainVM: MainVM, albumID: Long) {
 
         val songs = mainVM.songs.value
-        val songsImages = mainVM.songsImages.value
+        val songsImages = mainVM.songsCovers.value
 
-        if(songs != null && songsImages != null){
 
-            _albumArt.update { songsImages.find { it.albumID == albumID }?.albumArt }
 
-            _albumSongs.update { songs.filter { it.albumID == albumID } }
+        _albumArt.update { songsImages?.find { it.albumID == albumID }?.albumArt }
 
-            _albumName.update { albumSongs.value!![0].album }
+        _albumSongs.update { songs?.filter { it.albumID == albumID } }
 
-            _artistName.update { albumSongs.value!![0].artist }
+        _albumName.update { albumSongs.value!![0].album }
 
-            _screenLoaded.update { true }
-        }
+        _artistName.update { albumSongs.value!![0].artist }
+
+        _screenLoaded.update { true }
+
     }
 
-    fun clearScreen(){
+    fun clearScreen() {
 
         _albumArt.update { null }
 

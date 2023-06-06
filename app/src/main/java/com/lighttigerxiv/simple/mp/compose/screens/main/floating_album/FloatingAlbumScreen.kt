@@ -46,7 +46,7 @@ fun FloatingAlbumScreen(
 
     val screenLoaded = albumVM.screenLoaded.collectAsState().value
 
-    val selectedSong = mainVM.selectedSong.collectAsState().value
+    val selectedSong = mainVM.currentSong.collectAsState().value
 
     val albumArt = albumVM.albumArt.collectAsState().value
 
@@ -56,7 +56,7 @@ fun FloatingAlbumScreen(
 
     val songs = albumVM.albumSongs.collectAsState().value
 
-    val songsImages = mainVM.songsImages.collectAsState().value
+    val songsImages = mainVM.songsCovers.collectAsState().value
 
 
     if (!screenLoaded) {

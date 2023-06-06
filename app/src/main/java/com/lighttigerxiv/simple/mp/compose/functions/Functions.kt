@@ -19,10 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
-import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongArt
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongCover
+import com.lighttigerxiv.simple.mp.compose.data.variables.SORTS
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
+import java.io.File
 
 
 //************************************************
@@ -55,6 +59,7 @@ fun getSongs(context: Context, sortType: String): List<Song> {
                 var artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
                 val artistID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))
                 var genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE)
+                val modificationDate = File(songPath).lastModified()
 
 
                 if(title == null){
@@ -79,7 +84,7 @@ fun getSongs(context: Context, sortType: String): List<Song> {
 
                 if (title != null && albumName != null && artistName != null && duration != null) {
 
-                    val song = Song(id, songPath, title, albumName, albumID, duration.toInt(), artistName, artistID, year, genre)
+                    val song = Song(id, songPath, title, albumName, albumID, duration.toInt(), artistName, artistID, year, genre, modificationDate )
                     val filterDuration = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString("FilterAudio", "60")!!.toInt() * 1000
                     if (duration.toInt() > filterDuration) songs.add(song)
 
@@ -94,20 +99,20 @@ fun getSongs(context: Context, sortType: String): List<Song> {
     cursor?.close()
 
     when (sortType) {
-        "Recent" -> songs.reverse()
-        "Ascendent" -> songs.sortBy { it.title }
-        "Descendent" -> songs.sortByDescending { it.title }
+        SORTS.RECENT -> songs.sortByDescending { it.modificationDate }
+        SORTS.OLDEST -> songs.sortBy { it.modificationDate }
+        SORTS.ASCENDENT -> songs.sortBy { it.title }
+        SORTS.DESCENDENT -> songs.sortByDescending { it.title }
     }
 
     return songs
 }
 
-fun getAllAlbumsImages(context: Context, compressed: Boolean = false): ArrayList<SongArt> {
+fun getAllAlbumsImages(songs: List<Song>?, context: Context, compressed: Boolean = false): ArrayList<SongCover> {
 
-    val songsList = getSongs(context, sortType = "Recent")
-    val songsImagesList = ArrayList<SongArt>()
+    val songsImagesList = ArrayList<SongCover>()
 
-    songsList.forEach { song ->
+    songs?.forEach { song ->
 
         when {
 
@@ -117,7 +122,7 @@ fun getAllAlbumsImages(context: Context, compressed: Boolean = false): ArrayList
                 val compressedAlbumArt = uncompressedAlbumArt?.let { Bitmap.createScaledBitmap(it, uncompressedAlbumArt.width / 3, uncompressedAlbumArt.height / 3, false) }
 
                 songsImagesList.add(
-                    SongArt(
+                    SongCover(
                         albumID = song.albumID,
                         albumArt = compressedAlbumArt
                     )
@@ -126,7 +131,7 @@ fun getAllAlbumsImages(context: Context, compressed: Boolean = false): ArrayList
             else -> {
 
                 songsImagesList.add(
-                    SongArt(
+                    SongCover(
                         albumID = song.albumID,
                         albumArt = getSongAlbumArt(context, song.id, song.albumID)
                     )
@@ -220,6 +225,8 @@ fun getAppString(context: Context, id: Int): String{
     return context.getString(id)
 }
 
+
+
 @Composable
 fun getSurfaceColor(settingsVM: SettingsVM): Color{
 
@@ -255,5 +262,16 @@ fun getSurfaceColor(settingsVM: SettingsVM): Color{
         Color.Black
     } else {
         MaterialTheme.colorScheme.surface
+    }
+}
+
+fun openScreen(navController: NavHostController, route: String){
+
+    navController.navigate(route) {
+        popUpTo(navController.graph.findStartDestination().id) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
     }
 }

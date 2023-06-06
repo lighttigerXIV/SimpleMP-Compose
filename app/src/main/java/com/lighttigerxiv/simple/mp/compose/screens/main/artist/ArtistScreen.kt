@@ -1,7 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.artist
 
 import android.content.res.Configuration
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +25,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -42,7 +43,7 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
-import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
+import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
 import kotlinx.coroutines.launch
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
@@ -53,10 +54,10 @@ fun ArtistScreen(
     mainVM: MainVM,
     settingsVM: SettingsVM,
     artistID: Long,
-    artistVM: ArtistScreenVM,
-    onBackClicked: () -> Unit,
-    onSelectArtistCover: (artistName: String, artistID: Long) -> Unit,
-    onOpenAlbum: (albumID: Long) -> Unit
+    vm: ArtistScreenVM,
+    activityContext: ViewModelStoreOwner,
+    navController: NavHostController,
+    onBackClicked: () -> Unit
 ) {
 
     val context = LocalContext.current
@@ -71,21 +72,21 @@ fun ArtistScreen(
 
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
-    val screenLoaded = artistVM.screenLoaded.collectAsState().value
+    val screenLoaded = vm.screenLoaded.collectAsState().value
 
-    val selectedSong = mainVM.selectedSong.collectAsState().value
+    val selectedSong = mainVM.currentSong.collectAsState().value
 
-    val artistName = artistVM.artistName.collectAsState().value
+    val artistName = vm.artistName.collectAsState().value
 
-    val artistCover = artistVM.artistCover.collectAsState().value
+    val artistCover = vm.artistCover.collectAsState().value
 
-    val tintCover = artistVM.tintCover.collectAsState().value
+    val tintCover = vm.tintCover.collectAsState().value
 
-    val songs = artistVM.artistSongs.collectAsState().value
+    val songs = vm.artistSongs.collectAsState().value
 
-    val albums = artistVM.artistAlbums.collectAsState().value
+    val albums = vm.artistAlbums.collectAsState().value
 
-    val showMenu = artistVM.showMenu.collectAsState().value
+    val showMenu = vm.showMenu.collectAsState().value
 
     val gridCellsCount = when (configuration.orientation) {
 
@@ -94,7 +95,7 @@ fun ArtistScreen(
     }
 
     if (!screenLoaded) {
-        artistVM.loadScreen(artistID, mainVM, settingsVM)
+        vm.loadScreen(artistID, mainVM, settingsVM)
     }
 
 
@@ -129,7 +130,7 @@ fun ArtistScreen(
                                         .padding(5.dp)
                                         .clickable {
 
-                                            artistVM.updateShowMenu(true)
+                                            vm.updateShowMenu(true)
                                         }
                                 ) {
                                     Icon(
@@ -146,16 +147,15 @@ fun ArtistScreen(
                                     expanded = showMenu,
                                     onDismissRequest = {
 
-                                        artistVM.updateShowMenu(false)
+                                        vm.updateShowMenu(false)
                                     }
                                 ) {
                                     DropdownMenuItem(
                                         text = { Text(text = remember { getAppString(context, R.string.ChangeArtistCover) }) },
                                         onClick = {
 
-                                            artistVM.updateShowMenu(false)
-
-                                            onSelectArtistCover(artistName, artistID)
+                                            vm.updateShowMenu(false)
+                                            vm.openSelectArtistCoverScreen(activityContext, navController, artistName, artistID)
                                         }
                                     )
                                 }
@@ -292,7 +292,7 @@ fun ArtistScreen(
 
                                                 SongItem(
                                                     song = song,
-                                                    songAlbumArt = mainVM.songsImages.collectAsState().value?.find { it.albumID == song.albumID }!!.albumArt,
+                                                    songAlbumArt = mainVM.songsCovers.collectAsState().value?.find { it.albumID == song.albumID }!!.albumArt,
                                                     highlight = song.path == selectedSong?.path,
                                                     onSongClick = { mainVM.selectSong(songs, songs.indexOf(song)) }
                                                 )
@@ -323,7 +323,7 @@ fun ArtistScreen(
 
                                                 val albumSongAlbumID = album.albumID
                                                 val albumName = album.album
-                                                val albumArt = mainVM.songsImages.collectAsState().value?.first { it.albumID == albumSongAlbumID }?.albumArt
+                                                val albumArt = mainVM.songsCovers.collectAsState().value?.first { it.albumID == albumSongAlbumID }?.albumArt
 
                                                 Box(
                                                     modifier = Modifier
@@ -331,7 +331,7 @@ fun ArtistScreen(
                                                         .clip(RoundedCornerShape(14.dp))
                                                         .background(MaterialTheme.colorScheme.surfaceVariant)
                                                         .clickable {
-                                                            onOpenAlbum(album.albumID)
+                                                            vm.openAlbumScreen(activityContext, navController, album.albumID)
                                                         }
 
                                                 ) {
@@ -341,7 +341,7 @@ fun ArtistScreen(
                                                         horizontalAlignment = Alignment.CenterHorizontally
                                                     ) {
                                                         Image(
-                                                            bitmap = remember { (albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record)).asImageBitmap() },
+                                                            bitmap = remember { (albumArt ?: getBitmapFromVector(context, R.drawable.record)).asImageBitmap() },
                                                             colorFilter = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                                                             contentDescription = "",
                                                             modifier = Modifier

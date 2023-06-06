@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.ui.composables
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +20,7 @@ import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 
 @Composable
 fun MiniPlayer(
@@ -29,19 +29,15 @@ fun MiniPlayer(
 
 
     val context = LocalContext.current
-
-    val selectedSong = mainVM.selectedSong.collectAsState().value
-
-    val songAlbumArt = mainVM.songAlbumArt.collectAsState().value
-
+    val selectedSong = mainVM.currentSong.collectAsState().value
+    val songAlbumArt = mainVM.currentSongAlbumArt.collectAsState().value
     val musicPlaying = mainVM.musicPlayling.collectAsState().value
-
+    val surfaceColor = mainVM.surfaceColor.collectAsState().value
     val playPauseIcon = if (musicPlaying) {
         remember { getBitmapFromVector(context, R.drawable.icon_pause_solid) }
     } else {
         remember { getBitmapFromVector(context, R.drawable.icon_play_solid) }
     }
-
 
     Row(
         modifier = Modifier
@@ -54,12 +50,18 @@ fun MiniPlayer(
         if (selectedSong != null) {
 
             Image(
-                bitmap = (songAlbumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record)).asImageBitmap(),
+                bitmap = (songAlbumArt ?: getBitmapFromVector(context, R.drawable.record)).asImageBitmap(),
                 colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                 contentDescription = "Song Album Art",
                 modifier = Modifier
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(7.dp))
+                    .modifyIf(songAlbumArt == null) {
+                        background(surfaceColor)
+                    }
+                    .modifyIf(songAlbumArt == null) {
+                        padding(5.dp)
+                    }
             )
 
             SmallHorizontalSpacer()

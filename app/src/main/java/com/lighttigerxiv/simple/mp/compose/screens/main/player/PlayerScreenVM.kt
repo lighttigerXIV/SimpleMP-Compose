@@ -1,13 +1,12 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.player
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class PlayerScreenVM(application: Application) : AndroidViewModel(application) {
+class PlayerScreenVM() : ViewModel() {
 
     //************************************************
     // Variables
@@ -15,29 +14,35 @@ class PlayerScreenVM(application: Application) : AndroidViewModel(application) {
 
     var mainVM: MainVM? = null
 
-    private val _screenLoaded = MutableStateFlow(false)
-    val screenLoaded = _screenLoaded.asStateFlow()
-
-    private val _menuOpened = MutableStateFlow(false)
-    val menuOpened = _menuOpened.asStateFlow()
-    fun updateMenuOpened(newValue:Boolean) {
-        _menuOpened.update { newValue }
+    private val _showMenu = MutableStateFlow(false)
+    val showMenu = _showMenu.asStateFlow()
+    fun updateShowMenu(newValue:Boolean) {
+        _showMenu.update { newValue }
     }
+
+    private val _highlightSongTab = MutableStateFlow(true)
+    val highlightSongTab = _highlightSongTab.asStateFlow()
+
+    private val _highlightQueueTab = MutableStateFlow(false)
+    val highlightQueueTab = _highlightQueueTab.asStateFlow()
+
+
 
     //************************************************
     // Functions
     //************************************************
 
-    fun loadScreen(vm: MainVM){
+    fun highlightTab(tab: String){
 
-        mainVM = vm
+        if(tab == "song"){
+            _highlightSongTab.update { true }
+            _highlightQueueTab.update { false }
+        }
 
-        _screenLoaded.update { true }
+        if(tab == "queue"){
+            _highlightSongTab.update { false }
+            _highlightQueueTab.update { true }
+        }
     }
-
-    //************************************************
-    // Callbacks
-    //************************************************
-
 
 }

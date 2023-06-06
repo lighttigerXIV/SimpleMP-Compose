@@ -23,6 +23,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -42,22 +44,22 @@ import kotlinx.coroutines.launch
 @Composable
 fun PlaylistsScreen(
     mainVM: MainVM,
-    playlistsVM: PlaylistsScreenVM,
-    onGenrePlaylistClick: (genre: String) -> Unit,
-    onPlaylistClick: (playlistID: String) -> Unit
+    vm: PlaylistsScreenVM,
+    activityContext: ViewModelStoreOwner,
+    navController: NavHostController
 ) {
 
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
-    val screenLoaded = playlistsVM.screenLoaded.collectAsState().value
+    val screenLoaded = vm.screenLoaded.collectAsState().value
 
-    val genres = playlistsVM.genres.collectAsState().value
+    val genres = vm.genres.collectAsState().value
 
-    val playlists = playlistsVM.currentPlaylists.collectAsState().value
+    val playlists = vm.currentPlaylists.collectAsState().value
 
-    val searchText = playlistsVM.searchText.collectAsState().value
+    val searchText = vm.searchText.collectAsState().value
 
-    val playlistNameText = playlistsVM.playlistNameText.collectAsState().value
+    val playlistNameText = vm.playlistNameText.collectAsState().value
 
     val context = LocalContext.current
 
@@ -79,7 +81,7 @@ fun PlaylistsScreen(
 
 
     if (!screenLoaded) {
-        playlistsVM.loadScreen(mainVM)
+        vm.loadScreen(mainVM)
     }
 
     Column(
@@ -183,7 +185,7 @@ fun PlaylistsScreen(
                                         imageTint = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                                         cardText = remember { genre },
                                         onCardClicked = {
-                                            onGenrePlaylistClick(genre)
+                                            vm.openGenrePlaylist(navController, genre)
                                         }
                                     )
                                 }
@@ -226,7 +228,7 @@ fun PlaylistsScreen(
                                             text = playlistNameText,
                                             placeholder = remember { getAppString(context, R.string.InsertPlaylistName) },
                                             onTextChange = {
-                                                playlistsVM.updatePlaylistNameText(it)
+                                                vm.updatePlaylistNameText(it)
                                             },
                                             textType = "text"
                                         )
@@ -243,9 +245,9 @@ fun PlaylistsScreen(
 
                                                     scope.launch {
 
-                                                        playlistsVM.createPlaylist()
+                                                        vm.createPlaylist()
 
-                                                        playlistsVM.updatePlaylistNameText("")
+                                                        vm.updatePlaylistNameText("")
 
                                                         createPlaylistsScaffoldState.bottomSheetState.collapse()
                                                     }
@@ -280,9 +282,9 @@ fun PlaylistsScreen(
                                             text = searchText,
                                             onTextChange = {
 
-                                                playlistsVM.updateSearchText(it)
+                                                vm.updateSearchText(it)
 
-                                                playlistsVM.filterPlaylists()
+                                                vm.filterPlaylists()
 
                                                 scope.launch {
                                                     userPlaylistsGridState.scrollToItem(0)
@@ -324,7 +326,7 @@ fun PlaylistsScreen(
                                                     cardText = playlist.name,
                                                     onCardClicked = {
 
-                                                        onPlaylistClick(playlist._id.toHexString())
+                                                        vm.openPlaylist(activityContext, navController, playlist._id.toHexString())
                                                     }
                                                 )
                                             }

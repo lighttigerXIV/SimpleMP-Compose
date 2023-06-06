@@ -52,7 +52,7 @@ fun FloatingArtistScreen(
 
     val screenLoaded = artistVM.screenLoaded.collectAsState().value
 
-    val selectedSong = mainVM.selectedSong.collectAsState().value
+    val selectedSong = mainVM.currentSong.collectAsState().value
 
     val artistName = artistVM.artistName.collectAsState().value
 
@@ -143,7 +143,7 @@ fun FloatingArtistScreen(
 
                                 SongItem(
                                     song = song,
-                                    songAlbumArt = mainVM.songsImages.collectAsState().value?.find { it.albumID == song.albumID }!!.albumArt,
+                                    songAlbumArt = mainVM.songsCovers.collectAsState().value?.find { it.albumID == song.albumID }!!.albumArt,
                                     highlight = song.path == selectedSong?.path,
                                     onSongClick = { mainVM.selectSong(songs, songs.indexOf(song)) }
                                 )

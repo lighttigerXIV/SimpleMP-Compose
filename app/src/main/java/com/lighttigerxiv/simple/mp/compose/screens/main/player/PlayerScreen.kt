@@ -1,13 +1,12 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.player
 
+import android.content.Context
 import android.content.res.Configuration
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -15,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
@@ -26,166 +26,115 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongCover
+import com.lighttigerxiv.simple.mp.compose.data.variables.ROUTES
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.data.variables.XSMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import com.lighttigerxiv.simple.mp.compose.ui.composables.BottomSheetHandle
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ClickableMediumIcon
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ReorderableSongItem
-import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumWidthSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun NoScrollEffect(content: @Composable () -> Unit) {
-    CompositionLocalProvider(LocalOverscrollConfiguration provides null) {
-        content()
-    }
-}
-
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun Player(
     mainVM: MainVM,
-    playerVM: PlayerScreenVM,
-    onGoToPage: (page: String) -> Unit
+    vm: PlayerScreenVM,
+    selectedSong: Song,
+    queue: List<Song>?,
+    upNextQueue: List<Song>?,
+    onOpenPage: (page: String) -> Unit
 ) {
 
     val context = LocalContext.current
-
     val scope = rememberCoroutineScope()
-
     val localConfiguration = LocalConfiguration.current
-
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
-
-    val screenLoaded = playerVM.screenLoaded.collectAsState().value
-
-    val selectedSong = mainVM.selectedSong.collectAsState().value
-
     val songSeconds = mainVM.songSeconds.collectAsState().value
-
     val songMinutesAndSecondsText = mainVM.songMinutesAndSecondsText.collectAsState().value
-
     val currentSongMinutesAndSecondsText = mainVM.currentSongMinutesAndSecondsText.collectAsState().value
-
-    val queue = mainVM.queue.collectAsState().value
-
-    val upNextQueue = mainVM.upNextQueue.collectAsState().value
-
     val songAndQueuePager = rememberPagerState(2)
-
-    val songsPager = rememberPagerState(pageCount = queue?.size ?: 0)
-
-    val compressedSongsImages = mainVM.compressedSongsImages.collectAsState().value
-
-    val songsImages = mainVM.songsImages.collectAsState().value
-
+    val songsCoversPager = rememberPagerState(pageCount = queue?.size ?: 0)
+    val compressedSongsCovers = mainVM.compressedSongsCovers.collectAsState().value
+    val songsCovers = mainVM.songsCovers.collectAsState().value
     val musicPlaying = mainVM.musicPlayling.collectAsState().value
-
     val queueShuffled = mainVM.queueShuffled.collectAsState().value
-
     val songOnRepeat = mainVM.songOnRepeat.collectAsState().value
-
     val inPortrait = localConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT
-
-    val inLandscape = localConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    val highlightSongTitle = songAndQueuePager.currentPage == 0
-
-    val highlightQueueTitle = songAndQueuePager.currentPage == 1
-
-    val defaultAlbumArt = remember { BitmapFactory.decodeResource(context.resources, R.drawable.record) }
-
-    val sliderInteractionSource = remember { MutableInteractionSource() }
-
-    val draggingSlider by sliderInteractionSource.collectIsDraggedAsState()
-
-    val menuOpened = playerVM.menuOpened.collectAsState().value
-
-    val queueState = rememberLazyListState()
-
-    var sliderValue by remember { mutableStateOf(songSeconds) }
-
-
-    val playPauseIcon = if (musicPlaying) {
-        remember { getBitmapFromVector(context, R.drawable.icon_pause_round_solid) }
-    } else {
-        remember { getBitmapFromVector(context, R.drawable.icon_play_round_solid) }
-    }
-
-
-    if (!screenLoaded) {
-        playerVM.loadScreen(mainVM)
-    }
-
-    LaunchedEffect(songSeconds) {
-
-        if (!draggingSlider) {
-            sliderValue = songSeconds
-        }
-
-        mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds((sliderValue).toInt()))
-    }
-
+    val highlightSongTab = vm.highlightSongTab.collectAsState().value
+    val highlightQueueTab = vm.highlightQueueTab.collectAsState().value
+    val showMenu = vm.showMenu.collectAsState().value
 
     LaunchedEffect(queue) {
-
-        selectedSong?.let {
-
-            songsPager.scrollToPage(mainVM.songPosition.value)
-        }
+        songsCoversPager.scrollToPage(mainVM.songPosition.value)
     }
 
     LaunchedEffect(selectedSong) {
 
-        if (mainVM.songPosition.value != songsPager.currentPage) {
+        if (mainVM.songPosition.value != songsCoversPager.currentPage) {
 
-            songsPager.scrollToPage(mainVM.songPosition.value)
+            songsCoversPager.scrollToPage(mainVM.songPosition.value)
         }
     }
 
 
-    LaunchedEffect(songsPager) {
-        snapshotFlow(songsPager::isScrollInProgress)
+    LaunchedEffect(songsCoversPager) {
+        snapshotFlow(songsCoversPager::isScrollInProgress)
             .drop(1)
             .collect { scrollInProgress ->
 
                 if (!scrollInProgress) {
 
-                    selectedSong?.let {
+                    if (songsCoversPager.currentPage > mainVM.songPosition.value) {
 
-                        if (songsPager.currentPage > mainVM.songPosition.value) {
+                        mainVM.selectNextSong()
+                    }
 
-                            mainVM.selectNextSong()
-                        }
+                    if (songsCoversPager.currentPage < mainVM.songPosition.value) {
 
-                        if (songsPager.currentPage < mainVM.songPosition.value) {
-
-                            mainVM.selectPreviousSong()
-                        }
+                        mainVM.selectPreviousSong()
                     }
                 }
             }
     }
 
+    LaunchedEffect(songAndQueuePager){
+        snapshotFlow { songAndQueuePager.currentPage }
+            .collect{currentTab ->
+
+                if(currentTab == 0){
+                    vm.highlightTab("song")
+                }
+
+                if(currentTab == 1){
+                    vm.highlightTab("queue")
+                }
+            }
+    }
+
+
 
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
 
         val screenHeight = this.maxHeight
@@ -194,835 +143,503 @@ fun Player(
             modifier = Modifier
                 .height(screenHeight)
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(SCREEN_PADDING)
         ) {
 
-            if (selectedSong != null && queue != null && upNextQueue != null && screenLoaded) {
 
-                BottomSheetHandle(width = 100.dp)
+            if (inPortrait) {
+                PortraitPlayer(
+                    context,
+                    scope,
+                    vm,
+                    mainVM,
+                    surfaceColor,
+                    selectedSong,
+                    songsCovers,
+                    compressedSongsCovers,
+                    queue,
+                    upNextQueue,
+                    musicPlaying,
+                    songSeconds,
+                    songAndQueuePager,
+                    highlightSongTab,
+                    highlightQueueTab,
+                    songsCoversPager,
+                    showMenu,
+                    onOpenPage = {onOpenPage(it)},
+                    currentSongMinutesAndSecondsText,
+                    songMinutesAndSecondsText,
+                    queueShuffled,
+                    songOnRepeat
+                )
+            } else {
+                LandscapePlayer(
+                    context,
+                    scope,
+                    vm,
+                    mainVM,
+                    surfaceColor,
+                    selectedSong,
+                    songsCovers,
+                    compressedSongsCovers,
+                    queue,
+                    upNextQueue,
+                    musicPlaying,
+                    songSeconds,
+                    songAndQueuePager,
+                    highlightSongTab,
+                    highlightQueueTab,
+                    songsCoversPager,
+                    showMenu,
+                    onOpenPage = {onOpenPage(it)},
+                    currentSongMinutesAndSecondsText,
+                    songMinutesAndSecondsText,
+                    queueShuffled,
+                    songOnRepeat
+                )
+            }
+        }
+    }
+}
 
-                //************************************************
-                // Portrait Layout
-                //************************************************
 
-                if (inPortrait) {
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun PortraitPlayer(
+    context: Context,
+    scope: CoroutineScope,
+    vm: PlayerScreenVM,
+    mainVM: MainVM,
+    surfaceColor: Color,
+    selectedSong: Song,
+    songsCovers: List<SongCover>?,
+    compressedSongsCovers: List<SongCover>?,
+    queue: List<Song>?,
+    upNextQueue: List<Song>?,
+    musicPlaying: Boolean,
+    songSeconds: Float,
+    songAndQueuePager: PagerState,
+    highlightSongTab: Boolean,
+    highlightQueueTab: Boolean,
+    songsCoversPager: PagerState,
+    showMenu: Boolean,
+    onOpenPage: (page: String) -> Unit,
+    currentSongMinutesAndSecondsText: String,
+    songMinutesAndSecondsText: String,
+    queueShuffled: Boolean,
+    songOnRepeat: Boolean
+) {
 
-                    TabRow(
-                        selectedTabIndex = songAndQueuePager.currentPage,
-                        divider = {},
-                        indicator = {}
+    val defaultAlbumArt = remember { getBitmapFromVector(context, R.drawable.record).asImageBitmap() }
+    var secondsSliderValue by remember{ mutableStateOf(songSeconds) }
+    val secondsSliderInteractionSource = remember { MutableInteractionSource() }
+    val draggingSecondsSlider = secondsSliderInteractionSource.collectIsDraggedAsState().value
+
+    LaunchedEffect(songSeconds){
+        if (!draggingSecondsSlider) {
+            secondsSliderValue = songSeconds
+        }
+
+        mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds((secondsSliderValue).toInt()))
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        BottomSheetHandle(width = 100.dp)
+
+        TabRow(
+            selectedTabIndex = songAndQueuePager.currentPage,
+            divider = {},
+            indicator = {}
+        ) {
+
+            Tab(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(SMALL_SPACING)
+                    .clip(CircleShape),
+                text = {
+                    CustomText(
+                        text = getAppString(context, R.string.Song),
+                        color = if (highlightSongTab)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.onSurface,
+                        weight = if (highlightSongTab)
+                            FontWeight.Bold
+                        else
+                            FontWeight.Normal
+                    )
+                },
+                selected = songAndQueuePager.currentPage == 0,
+                onClick = {
+                    scope.launch {
+                        songAndQueuePager.animateScrollToPage(0)
+                    }
+                }
+            )
+
+            Tab(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(SMALL_SPACING)
+                    .clip(CircleShape),
+                text = {
+                    CustomText(
+                        text = getAppString(context, R.string.Queue),
+                        color = if (highlightQueueTab)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.onSurface,
+                        weight = if (highlightQueueTab)
+                            FontWeight.Bold
+                        else
+                            FontWeight.Normal
+                    )
+                },
+                selected = songAndQueuePager.currentPage == 1,
+                onClick = {
+                    scope.launch {
+                        songAndQueuePager.animateScrollToPage(1)
+                    }
+                }
+            )
+        }
+
+        HorizontalPager(
+            modifier = Modifier.fillMaxSize(),
+            state = songAndQueuePager
+        ) { selectedPage->
+
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+
+                //Song Tab
+                if(selectedPage == 0){
+
+                    Column(
+                        modifier = Modifier
+                            .weight(0.6f)
+                            .fillMaxWidth()
                     ) {
 
-                        Tab(
-                            modifier = Modifier
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .padding(SMALL_SPACING)
-                                .clip(CircleShape),
-                            text = {
-                                CustomText(
-                                    text = getAppString(context, R.string.Song),
-                                    color = if (highlightSongTitle)
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        MaterialTheme.colorScheme.onSurface,
-                                    weight = if (highlightSongTitle)
-                                        FontWeight.Bold
-                                    else
-                                        FontWeight.Normal
-                                )
-                            },
-                            selected = songAndQueuePager.currentPage == 0,
-                            onClick = {
-                                scope.launch {
-                                    songAndQueuePager.animateScrollToPage(0)
-                                }
-                            }
-                        )
+                        HorizontalPager(
+                            state = songsCoversPager,
+                            itemSpacing = SMALL_SPACING
+                        ) { currentCoverIndex->
 
-                        Tab(
-                            modifier = Modifier
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .padding(SMALL_SPACING)
-                                .clip(CircleShape),
-                            text = {
-                                CustomText(
-                                    text = getAppString(context, R.string.Queue),
-                                    color = if (highlightQueueTitle)
-                                        MaterialTheme.colorScheme.primary
-                                    else
-                                        MaterialTheme.colorScheme.onSurface,
-                                    weight = if (highlightQueueTitle)
-                                        FontWeight.Bold
-                                    else
-                                        FontWeight.Normal
-                                )
-                            },
-                            selected = songAndQueuePager.currentPage == 1,
-                            onClick = {
-                                scope.launch {
-                                    songAndQueuePager.animateScrollToPage(1)
-                                }
-                            }
-                        )
+                            val songAlbumArt = songsCovers?.first { it.albumID == queue!![currentCoverIndex].albumID }?.albumArt
+
+                            Image(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .aspectRatio(1f)
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .modifyIf(songAlbumArt == null) {
+                                        background(surfaceColor)
+                                    }
+                                    .modifyIf(songAlbumArt == null) {
+                                        padding(5.dp)
+                                    },
+                                bitmap = songAlbumArt?.asImageBitmap() ?: defaultAlbumArt,
+                                colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                                contentDescription = "Album Art"
+                            )
+                        }
                     }
 
-
-                    HorizontalPager(
+                    Column(
                         modifier = Modifier
-                            .fillMaxSize(),
-                        state = songAndQueuePager,
-                    ) { selectedPage ->
+                            .weight(0.4f)
+                            .fillMaxWidth()
+                    ) {
 
-                        //************************************************
-                        // Portrait Song
-                        //************************************************
-                        if (selectedPage == 0) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
 
                             Column(
                                 modifier = Modifier
-                                    .fillMaxSize()
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true)
                             ) {
 
-                                Column(
+                                CustomText(
+                                    text = selectedSong.title,
+                                    size = 18.sp,
+                                    weight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+
+                                CustomText(
+                                    text = selectedSong.artist,
+                                    size = 18.sp
+                                )
+                            }
+
+                            SmallHorizontalSpacer()
+
+                            Column(
+                                modifier = Modifier
+                                    .wrapContentSize()
+                            ) {
+
+                                ClickableMediumIcon(
+                                    id = R.drawable.vertical_three_dots,
+                                    onClick = {
+                                        vm.updateShowMenu(true)
+                                    },
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+
+
+                                DropdownMenu(
                                     modifier = Modifier
-                                        .weight(0.6f)
-                                        .fillMaxWidth(),
-                                    verticalArrangement = Arrangement.Center
+                                        .background(mainVM.surfaceColor.collectAsState().value),
+                                    expanded = showMenu,
+                                    onDismissRequest = {
+                                        vm.updateShowMenu(false)
+                                    },
                                 ) {
 
-                                    NoScrollEffect {
-
-                                        HorizontalPager(
-                                            state = songsPager,
-                                            itemSpacing = SMALL_SPACING
-                                        ) { currentSongPage ->
-
-                                            val songAlbumArt = songsImages?.first { it.albumID == queue[currentSongPage].albumID }?.albumArt
-
-                                            Image(
-                                                modifier = Modifier
-                                                    .fillMaxHeight()
-                                                    .aspectRatio(1f)
-                                                    .clip(RoundedCornerShape(14.dp)),
-                                                bitmap = songAlbumArt?.asImageBitmap() ?: defaultAlbumArt.asImageBitmap(),
-                                                colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
-                                                contentDescription = "Album Art"
-                                            )
-                                        }
-                                    }
-
-                                }
-
-                                Column(
-                                    modifier = Modifier
-                                        .weight(0.4f)
-                                        .fillMaxWidth()
-                                ) {
-
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .weight(1f, fill = true)
-                                        ) {
-
-                                            CustomText(
-                                                text = selectedSong.title,
-                                                size = 18.sp,
-                                                weight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.primary
-                                            )
-
-                                            CustomText(
-                                                text = selectedSong.artist,
-                                                size = 18.sp
-                                            )
-                                        }
-
-                                        SmallHorizontalSpacer()
-
-                                        Column(
-                                            modifier = Modifier
-                                                .wrapContentSize()
-                                        ) {
-
-                                            ClickableMediumIcon(
-                                                id = R.drawable.vertical_three_dots,
-                                                onClick = {
-
-                                                    playerVM.updateMenuOpened(true)
-                                                },
-                                                color = MaterialTheme.colorScheme.onSurface
-                                            )
-
-
-                                            DropdownMenu(
-                                                modifier = Modifier
-                                                    .background(surfaceColor),
-                                                expanded = menuOpened,
-                                                onDismissRequest = {
-
-                                                    playerVM.updateMenuOpened(false)
-                                                },
-                                            ) {
-
-                                                DropdownMenuItem(
-                                                    text = {
-                                                        CustomText(text = stringResource(id = R.string.GoToArtist))
-                                                    },
-                                                    onClick = {
-
-                                                        onGoToPage("FloatingArtist/${selectedSong.artistID}")
-
-                                                        playerVM.updateMenuOpened(false)
-                                                    }
-                                                )
-
-                                                DropdownMenuItem(
-                                                    text = {
-                                                        CustomText(text = stringResource(id = R.string.GoToAlbum))
-                                                    },
-                                                    onClick = {
-
-                                                        onGoToPage("FloatingAlbum/${selectedSong.albumID}")
-
-                                                        playerVM.updateMenuOpened(false)
-                                                    }
-                                                )
-
-                                                DropdownMenuItem(
-                                                    text = {
-                                                        CustomText(text = stringResource(id = R.string.AddToPlaylist))
-                                                    },
-                                                    onClick = {
-
-                                                        onGoToPage("AddToPlaylist/${selectedSong.id}")
-
-                                                        playerVM.updateMenuOpened(false)
-                                                    }
-                                                )
-                                            }
-                                        }
-                                    }
-
-                                    Slider(
-                                        value = sliderValue,
-                                        interactionSource = sliderInteractionSource,
-                                        onValueChange = {
-
-                                            sliderValue = it
-
-                                            mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds(it.toInt()))
+                                    DropdownMenuItem(
+                                        text = {
+                                            CustomText(text = stringResource(id = R.string.GoToArtist))
                                         },
-                                        onValueChangeFinished = {
+                                        onClick = {
 
-                                            if (!musicPlaying)
-                                                mainVM.pauseResumeMusic()
-
-                                            mainVM.seekSongSeconds(sliderValue.toInt())
-                                        },
-                                        valueRange = 1f..(selectedSong.duration / 1000).toFloat(),
-                                        colors = SliderDefaults.colors(
-                                            thumbColor = MaterialTheme.colorScheme.primary,
-                                            activeTrackColor = MaterialTheme.colorScheme.primary,
-                                            inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
+                                            onOpenPage("${ROUTES.ROOT.FLOATING_ARTIST}${selectedSong.artistID}")
+                                            vm.updateShowMenu(false)
+                                        }
                                     )
 
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .wrapContentHeight()
-                                    ) {
+                                    DropdownMenuItem(
+                                        text = {
+                                            CustomText(text = stringResource(id = R.string.GoToAlbum))
+                                        },
+                                        onClick = {
 
-                                        Text(
-                                            text = currentSongMinutesAndSecondsText,
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-
-                                        Spacer(modifier = Modifier.weight(1f, fill = true))
-
-                                        Text(
-                                            text = songMinutesAndSecondsText,
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-                                    }
-
-                                    Row(
-                                        modifier = Modifier
-                                            .wrapContentHeight()
-                                            .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceEvenly,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-
-                                        Column(
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            modifier = Modifier.wrapContentHeight()
-                                        ) {
-
-                                            if (queueShuffled) {
-                                                Spacer(modifier = Modifier.height(XSMALL_SPACING)) //Needed to keep shuffle button in place when shuffle is enabled
-                                            }
-
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.icon_shuffle_solid),
-                                                contentDescription = "",
-                                                tint = if (queueShuffled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                                                modifier = Modifier
-                                                    .height(30.dp)
-                                                    .clickable(
-                                                        indication = null,
-                                                        interactionSource = remember { MutableInteractionSource() }
-                                                    ) {
-
-                                                        mainVM.toggleShuffle()
-                                                    }
-                                            )
-
-                                            if (queueShuffled) {
-                                                Dot()
-                                            }
+                                            onOpenPage("${ROUTES.ROOT.FLOATING_ALBUM}${selectedSong.albumID}")
+                                            vm.updateShowMenu(false)
                                         }
+                                    )
 
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.icon_previous_solid),
-                                            contentDescription = "Select Previous Song",
-                                            tint = MaterialTheme.colorScheme.onSurface,
-                                            modifier = Modifier
-                                                .height(30.dp)
-                                                .clickable(
-                                                    indication = null,
-                                                    interactionSource = remember { MutableInteractionSource() }
-                                                ) {
-                                                    mainVM.selectPreviousSong()
-                                                }
-                                        )
+                                    DropdownMenuItem(
+                                        text = {
+                                            CustomText(text = stringResource(id = R.string.AddToPlaylist))
+                                        },
+                                        onClick = {
 
-                                        Icon(
-                                            bitmap = playPauseIcon.asImageBitmap(),
-                                            contentDescription = "Play/Pause Button",
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier
-                                                .height(60.dp)
-                                                .aspectRatio(1f)
-                                                .clickable(
-                                                    indication = null,
-                                                    interactionSource = remember { MutableInteractionSource() }
-                                                ) {
-                                                    mainVM.pauseResumeMusic()
-                                                }
-                                        )
+                                            onOpenPage("${ROUTES.ROOT.ADD_SONG_TO_PLAYLIST}${selectedSong.id}")
 
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.icon_next_solid),
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.onSurface,
-                                            modifier = Modifier
-                                                .height(30.dp)
-                                                .clickable(
-                                                    indication = null,
-                                                    interactionSource = remember { MutableInteractionSource() }
-                                                ) {
-
-                                                    mainVM.selectNextSong()
-                                                }
-                                        )
-
-                                        Column(
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            modifier = Modifier.wrapContentHeight()
-                                        ) {
-
-                                            if (songOnRepeat) {
-
-                                                Spacer(modifier = Modifier.height(XSMALL_SPACING)) //Needed to keep repeat button in place when repeat is enabled
-                                            }
-
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.icon_repeat_solid),
-                                                contentDescription = "Repeat Song",
-                                                tint = if (songOnRepeat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                                                modifier = Modifier
-                                                    .height(30.dp)
-                                                    .clickable(
-                                                        indication = null,
-                                                        interactionSource = remember { MutableInteractionSource() }
-                                                    ) {
-                                                        mainVM.toggleRepeat()
-                                                    }
-                                            )
-
-                                            if (songOnRepeat) {
-                                                Dot()
-                                            }
+                                            vm.updateShowMenu(false)
                                         }
-                                    }
+                                    )
                                 }
                             }
                         }
 
-                        //************************************************
-                        // Portrait Queue
-                        //************************************************
-                        if (selectedPage == 1) {
+                        Slider(
+                            value = secondsSliderValue,
+                            interactionSource = secondsSliderInteractionSource,
+                            onValueChange = {
 
-                            if (upNextQueue.isEmpty()) {
+                                secondsSliderValue = it
+                                mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds(it.toInt()))
+                            },
+                            onValueChangeFinished = {
 
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize(),
-                                    verticalArrangement = Arrangement.Top,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
+                                if (!musicPlaying)
+                                    mainVM.pauseResumeMusic()
 
-                                    SmallHeightSpacer()
+                                mainVM.seekSongSeconds(secondsSliderValue.toInt())
+                            },
+                            valueRange = 1f..(selectedSong.duration / 1000).toFloat(),
+                            colors = SliderDefaults.colors(
+                                thumbColor = MaterialTheme.colorScheme.primary,
+                                activeTrackColor = MaterialTheme.colorScheme.primary,
+                                inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
 
-                                    CustomText(text = stringResource(id = R.string.Shrug))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                        ) {
+
+                            Text(
+                                text = currentSongMinutesAndSecondsText,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+
+                            Spacer(modifier = Modifier.weight(1f, fill = true))
+
+                            Text(
+                                text = songMinutesAndSecondsText,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.wrapContentHeight()
+                            ) {
+
+                                if (queueShuffled) {
+                                    Spacer(modifier = Modifier.height(XSMALL_SPACING)) //Needed to keep shuffle button in place when shuffle is enabled
                                 }
-                            } else {
 
-                                val state = rememberReorderableLazyListState( onMove = mainVM::onUpNextQueueMove)
-
-                                androidx.compose.foundation.lazy.LazyColumn(
-                                    state = state.listState,
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_shuffle_solid),
+                                    contentDescription = "",
+                                    tint = if (queueShuffled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier
-                                        .fillMaxSize()
-                                        .then(Modifier.reorderable(state))
-                                ) {
-                                    items(upNextQueue, { it.id }) { song ->
-                                        ReorderableItem(state, key = song.id) { isDragging ->
+                                        .height(30.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
 
-                                            ReorderableSongItem(
-                                                song = song,
-                                                songAlbumArt = remember { compressedSongsImages?.find { it.albumID == song.albumID }?.albumArt },
-                                                state = state,
-                                                isDragging = isDragging
-                                            )
-
-
+                                            mainVM.toggleShuffle()
                                         }
+                                )
+
+                                if (queueShuffled) {
+                                    Dot()
+                                }
+                            }
+
+                            Icon(
+                                painter = painterResource(id = R.drawable.icon_previous_solid),
+                                contentDescription = "Select Previous Song",
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .height(30.dp)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) {
+                                        mainVM.selectPreviousSong()
                                     }
+                            )
+
+                            Icon(
+                                bitmap = if (musicPlaying) {
+                                    remember { getBitmapFromVector(context, R.drawable.icon_pause_round_solid) }
+                                } else {
+                                    remember { getBitmapFromVector(context, R.drawable.icon_play_round_solid) }
+                                }.asImageBitmap(),
+                                contentDescription = "Play/Pause Button",
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .height(60.dp)
+                                    .aspectRatio(1f)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) {
+                                        mainVM.pauseResumeMusic()
+                                    }
+                            )
+
+                            Icon(
+                                painter = painterResource(id = R.drawable.icon_next_solid),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .height(30.dp)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) {
+
+                                        mainVM.selectNextSong()
+                                    }
+                            )
+
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.wrapContentHeight()
+                            ) {
+
+                                if (songOnRepeat) {
+
+                                    Spacer(modifier = Modifier.height(XSMALL_SPACING)) //Needed to keep repeat button in place when repeat is enabled
+                                }
+
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_repeat_solid),
+                                    contentDescription = "Repeat Song",
+                                    tint = if (songOnRepeat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .height(30.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            mainVM.toggleRepeat()
+                                        }
+                                )
+
+                                if (songOnRepeat) {
+                                    Dot()
                                 }
                             }
                         }
+
                     }
+
                 }
 
-                //************************************************
-                // Landscape Layout
-                //************************************************
+                //Queue Tab
+                if(selectedPage == 1){
 
-                if (inLandscape) {
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
+                    if (upNextQueue!!.isEmpty()) {
 
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth(0.3f)
-                                .fillMaxHeight(),
-                            verticalArrangement = Arrangement.Center
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
-                            NoScrollEffect {
+                            SmallHeightSpacer()
 
-                                HorizontalPager(
-                                    state = songsPager,
-                                    itemSpacing = SMALL_SPACING
-
-                                ) { currentSongPage ->
-
-                                    val songAlbumArt = songsImages?.first { it.albumID == queue[currentSongPage].albumID }?.albumArt
-
-                                    Image(
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .aspectRatio(1f)
-                                            .clip(RoundedCornerShape(14.dp)),
-                                        bitmap = songAlbumArt?.asImageBitmap() ?: defaultAlbumArt.asImageBitmap(),
-                                        colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
-                                        contentDescription = "Album Art"
-                                    )
-                                }
-                            }
+                            CustomText(text = stringResource(id = R.string.Shrug))
                         }
+                    } else {
 
-                        MediumWidthSpacer()
+                        val state = rememberReorderableLazyListState( onMove = mainVM::onUpNextQueueMove)
 
-                        Column(
+                        androidx.compose.foundation.lazy.LazyColumn(
+                            state = state.listState,
                             modifier = Modifier
                                 .fillMaxSize()
+                                .then(Modifier.reorderable(state))
                         ) {
+                            items(upNextQueue, { it.id }) { song ->
+                                ReorderableItem(state, key = song.id) { isDragging ->
 
-                            TabRow(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                selectedTabIndex = songAndQueuePager.currentPage,
-                                divider = {},
-                                indicator = {}
-                            ) {
-
-                                Tab(
-                                    modifier = Modifier
-                                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                                        .padding(SMALL_SPACING)
-                                        .clip(CircleShape),
-                                    text = {
-                                        CustomText(
-                                            text = stringResource(id = R.string.Song),
-                                            color = if (highlightSongTitle)
-                                                MaterialTheme.colorScheme.primary
-                                            else
-                                                MaterialTheme.colorScheme.onSurface,
-                                            weight = if (highlightSongTitle)
-                                                FontWeight.Bold
-                                            else
-                                                FontWeight.Normal
-                                        )
-                                    },
-                                    selected = songAndQueuePager.currentPage == 0,
-                                    onClick = {
-                                        scope.launch {
-                                            songAndQueuePager.animateScrollToPage(0)
-                                        }
-                                    }
-                                )
-
-                                Tab(
-                                    modifier = Modifier
-                                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                                        .padding(SMALL_SPACING)
-                                        .clip(CircleShape),
-                                    text = {
-                                        CustomText(
-                                            text = stringResource(id = R.string.Queue),
-                                            color = if (highlightQueueTitle)
-                                                MaterialTheme.colorScheme.primary
-                                            else
-                                                MaterialTheme.colorScheme.onSurface,
-                                            weight = if (highlightQueueTitle)
-                                                FontWeight.Bold
-                                            else
-                                                FontWeight.Normal
-                                        )
-                                    },
-                                    selected = songAndQueuePager.currentPage == 1,
-                                    onClick = {
-                                        scope.launch {
-                                            songAndQueuePager.animateScrollToPage(1)
-                                        }
-                                    }
-                                )
-                            }
-
-
-                            HorizontalPager(
-                                modifier = Modifier
-                                    .fillMaxSize(),
-                                state = songAndQueuePager
-                            ) { selectedPage ->
-
-                                //************************************************
-                                // Song
-                                //************************************************
-                                if (selectedPage == 0) {
-
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxSize(),
-                                        verticalArrangement = Arrangement.Bottom
-                                    ) {
-
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth(),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-
-                                            Column(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .weight(1f, fill = true)
-                                            ) {
-
-                                                CustomText(
-                                                    text = selectedSong.title,
-                                                    size = 16.sp,
-                                                    weight = FontWeight.Bold,
-                                                    color = MaterialTheme.colorScheme.primary
-                                                )
-
-                                                CustomText(
-                                                    text = selectedSong.artist,
-                                                    size = 16.sp
-                                                )
-                                            }
-
-                                            SmallHorizontalSpacer()
-
-                                            Column {
-
-                                                ClickableMediumIcon(
-                                                    id = R.drawable.vertical_three_dots,
-                                                    onClick = {
-
-                                                        playerVM.updateMenuOpened(true)
-                                                    },
-                                                    color = MaterialTheme.colorScheme.onSurface
-                                                )
-
-                                                DropdownMenu(
-                                                    modifier = Modifier
-                                                        .background(surfaceColor),
-                                                    expanded = menuOpened,
-                                                    onDismissRequest = {
-
-                                                        playerVM.updateMenuOpened(false)
-                                                    },
-                                                ) {
-
-                                                    DropdownMenuItem(
-                                                        text = {
-                                                            CustomText(text = stringResource(id = R.string.GoToArtist))
-                                                        },
-                                                        onClick = {
-
-                                                            onGoToPage("FloatingArtist/${selectedSong.artistID}")
-
-                                                            playerVM.updateMenuOpened(false)
-                                                        }
-                                                    )
-
-                                                    DropdownMenuItem(
-                                                        text = {
-                                                            CustomText(text = stringResource(id = R.string.GoToAlbum))
-                                                        },
-                                                        onClick = {
-
-                                                            onGoToPage("FloatingAlbum/${selectedSong.albumID}")
-
-                                                            playerVM.updateMenuOpened(false)
-                                                        }
-                                                    )
-
-                                                    DropdownMenuItem(
-                                                        text = {
-                                                            CustomText(text = stringResource(id = R.string.AddToPlaylist))
-                                                        },
-                                                        onClick = {
-
-                                                            onGoToPage("AddToPlaylist/${selectedSong.id}")
-
-                                                            playerVM.updateMenuOpened(false)
-                                                        }
-                                                    )
-                                                }
-                                            }
-                                        }
-
-                                        Slider(
-                                            value = sliderValue,
-                                            interactionSource = sliderInteractionSource,
-                                            onValueChange = {
-
-                                                sliderValue = it
-
-                                                mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds(it.toInt()))
-                                            },
-                                            onValueChangeFinished = {
-
-                                                if (!musicPlaying)
-                                                    mainVM.pauseResumeMusic()
-
-                                                mainVM.seekSongSeconds(sliderValue.toInt())
-                                            },
-                                            valueRange = 1f..(selectedSong.duration / 1000).toFloat(),
-                                            colors = SliderDefaults.colors(
-                                                thumbColor = MaterialTheme.colorScheme.primary,
-                                                activeTrackColor = MaterialTheme.colorScheme.primary,
-                                                inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        )
-
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .wrapContentHeight()
-                                        ) {
-
-                                            Text(
-                                                text = currentSongMinutesAndSecondsText,
-                                                color = MaterialTheme.colorScheme.onSurface
-                                            )
-
-                                            Spacer(modifier = Modifier.weight(1f, fill = true))
-
-                                            Text(
-                                                text = songMinutesAndSecondsText,
-                                                color = MaterialTheme.colorScheme.onSurface
-                                            )
-                                        }
-
-                                        Row(
-                                            modifier = Modifier
-                                                .wrapContentHeight()
-                                                .fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceEvenly,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-
-                                            Column(
-                                                horizontalAlignment = Alignment.CenterHorizontally,
-                                                modifier = Modifier.wrapContentHeight()
-                                            ) {
-
-                                                if (queueShuffled) {
-                                                    Spacer(modifier = Modifier.height(XSMALL_SPACING)) //Needed to keep shuffle button in place when shuffle is enabled
-                                                }
-
-                                                Icon(
-                                                    painter = painterResource(id = R.drawable.icon_shuffle_solid),
-                                                    contentDescription = "",
-                                                    tint = if (queueShuffled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                                                    modifier = Modifier
-                                                        .height(25.dp)
-                                                        .clickable(
-                                                            indication = null,
-                                                            interactionSource = remember { MutableInteractionSource() }
-                                                        ) {
-
-                                                            mainVM.toggleShuffle()
-                                                        }
-                                                )
-
-                                                if (queueShuffled) {
-                                                    Dot()
-                                                }
-                                            }
-
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.icon_previous_solid),
-                                                contentDescription = "Select Previous Song",
-                                                tint = MaterialTheme.colorScheme.onSurface,
-                                                modifier = Modifier
-                                                    .height(25.dp)
-                                                    .clickable(
-                                                        indication = null,
-                                                        interactionSource = remember { MutableInteractionSource() }
-                                                    ) {
-                                                        mainVM.selectPreviousSong()
-                                                    }
-                                            )
-
-                                            Icon(
-                                                bitmap = playPauseIcon.asImageBitmap(),
-                                                contentDescription = "Play/Pause Button",
-                                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                modifier = Modifier
-                                                    .height(50.dp)
-                                                    .aspectRatio(1f)
-                                                    .clickable(
-                                                        indication = null,
-                                                        interactionSource = remember { MutableInteractionSource() }
-                                                    ) {
-                                                        mainVM.pauseResumeMusic()
-                                                    }
-                                            )
-
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.icon_next_solid),
-                                                contentDescription = null,
-                                                tint = MaterialTheme.colorScheme.onSurface,
-                                                modifier = Modifier
-                                                    .height(25.dp)
-                                                    .clickable(
-                                                        indication = null,
-                                                        interactionSource = remember { MutableInteractionSource() }
-                                                    ) {
-
-                                                        mainVM.selectNextSong()
-                                                    }
-                                            )
-
-                                            Column(
-                                                horizontalAlignment = Alignment.CenterHorizontally,
-                                                modifier = Modifier.wrapContentHeight()
-                                            ) {
-
-                                                if (songOnRepeat) {
-
-                                                    Spacer(modifier = Modifier.height(XSMALL_SPACING)) //Needed to keep repeat button in place when repeat is enabled
-                                                }
-
-                                                Icon(
-                                                    painter = painterResource(id = R.drawable.icon_repeat_solid),
-                                                    contentDescription = "Repeat Song",
-                                                    tint = if (songOnRepeat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                                                    modifier = Modifier
-                                                        .height(25.dp)
-                                                        .clickable(
-                                                            indication = null,
-                                                            interactionSource = remember { MutableInteractionSource() }
-                                                        ) {
-                                                            mainVM.toggleRepeat()
-                                                        }
-                                                )
-
-                                                if (songOnRepeat) {
-                                                    Dot()
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                                //************************************************
-                                // Queue
-                                //************************************************
-                                if (selectedPage == 1) {
-
-                                    if (upNextQueue.isEmpty()) {
-
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxSize(),
-                                            verticalArrangement = Arrangement.Top,
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-
-                                            SmallHeightSpacer()
-
-                                            CustomText(text = stringResource(id = R.string.Shrug))
-                                        }
-                                    }
-
-                                    androidx.compose.foundation.lazy.LazyColumn(
-                                        modifier = Modifier
-                                            .fillMaxSize(),
-                                        state = queueState,
-                                        content = {
-
-                                            items(
-                                                items = upNextQueue,
-                                                key = { it.id }
-                                            ) { song ->
-
-                                                SongItem(
-                                                    song = song,
-                                                    songAlbumArt = compressedSongsImages?.find { it.albumID == song.albumID }?.albumArt,
-                                                    highlight = selectedSong.path == song.path
-                                                )
-                                            }
-                                        }
+                                    ReorderableSongItem(
+                                        mainVM = mainVM,
+                                        song = song,
+                                        songAlbumArt = remember { compressedSongsCovers?.find { it.albumID == song.albumID }?.albumArt },
+                                        state = state,
+                                        isDragging = isDragging
                                     )
                                 }
                             }
@@ -1034,6 +651,458 @@ fun Player(
     }
 }
 
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun LandscapePlayer(
+    context: Context,
+    scope: CoroutineScope,
+    vm: PlayerScreenVM,
+    mainVM: MainVM,
+    surfaceColor: Color,
+    selectedSong: Song,
+    songsCovers: List<SongCover>?,
+    compressedSongsCovers: List<SongCover>?,
+    queue: List<Song>?,
+    upNextQueue: List<Song>?,
+    musicPlaying: Boolean,
+    songSeconds: Float,
+    songAndQueuePager: PagerState,
+    highlightSongTab: Boolean,
+    highlightQueueTab: Boolean,
+    songsCoversPager: PagerState,
+    showMenu: Boolean,
+    onOpenPage: (page: String) -> Unit,
+    currentSongMinutesAndSecondsText: String,
+    songMinutesAndSecondsText: String,
+    queueShuffled: Boolean,
+    songOnRepeat: Boolean
+) {
+
+    val defaultAlbumArt = remember { getBitmapFromVector(context, R.drawable.record).asImageBitmap() }
+    var secondsSliderValue by remember{ mutableStateOf(songSeconds) }
+    val secondsSliderInteractionSource = remember { MutableInteractionSource() }
+    val draggingSecondsSlider = secondsSliderInteractionSource.collectIsDraggedAsState().value
+
+    LaunchedEffect(songSeconds){
+        if (!draggingSecondsSlider) {
+            secondsSliderValue = songSeconds
+        }
+
+        mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds((secondsSliderValue).toInt()))
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        BottomSheetHandle(width = 100.dp)
+
+        TabRow(
+            selectedTabIndex = songAndQueuePager.currentPage,
+            divider = {},
+            indicator = {}
+        ) {
+
+            Tab(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(SMALL_SPACING)
+                    .clip(CircleShape),
+                text = {
+                    CustomText(
+                        text = getAppString(context, R.string.Song),
+                        color = if (highlightSongTab)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.onSurface,
+                        weight = if (highlightSongTab)
+                            FontWeight.Bold
+                        else
+                            FontWeight.Normal
+                    )
+                },
+                selected = songAndQueuePager.currentPage == 0,
+                onClick = {
+                    scope.launch {
+                        songAndQueuePager.animateScrollToPage(0)
+                    }
+                }
+            )
+
+            Tab(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(SMALL_SPACING)
+                    .clip(CircleShape),
+                text = {
+                    CustomText(
+                        text = getAppString(context, R.string.Queue),
+                        color = if (highlightQueueTab)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.onSurface,
+                        weight = if (highlightQueueTab)
+                            FontWeight.Bold
+                        else
+                            FontWeight.Normal
+                    )
+                },
+                selected = songAndQueuePager.currentPage == 1,
+                onClick = {
+                    scope.launch {
+                        songAndQueuePager.animateScrollToPage(1)
+                    }
+                }
+            )
+        }
+
+        HorizontalPager(
+            modifier = Modifier.fillMaxSize(),
+            state = songAndQueuePager
+        ) { selectedPage->
+
+            Row(
+                modifier = Modifier.fillMaxSize()
+            ) {
+
+                //Song Tab
+                if(selectedPage == 0){
+
+                    Row(
+                        modifier = Modifier
+                            .weight(0.4f)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+
+                        HorizontalPager(
+                            state = songsCoversPager,
+                            itemSpacing = SMALL_SPACING
+                        ) { currentCoverIndex->
+
+                            val songAlbumArt = songsCovers?.first { it.albumID == queue!![currentCoverIndex].albumID }?.albumArt
+
+                            Image(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .aspectRatio(1f)
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .modifyIf(songAlbumArt == null) {
+                                        background(surfaceColor)
+                                    }
+                                    .modifyIf(songAlbumArt == null) {
+                                        padding(5.dp)
+                                    },
+                                bitmap = songAlbumArt?.asImageBitmap() ?: defaultAlbumArt,
+                                colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                                contentDescription = "Album Art"
+                            )
+                        }
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .weight(0.6f)
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true)
+                            ) {
+
+                                CustomText(
+                                    text = selectedSong.title,
+                                    size = 18.sp,
+                                    weight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+
+                                CustomText(
+                                    text = selectedSong.artist,
+                                    size = 18.sp
+                                )
+                            }
+
+                            SmallHorizontalSpacer()
+
+                            Column(
+                                modifier = Modifier
+                                    .wrapContentSize()
+                            ) {
+
+                                ClickableMediumIcon(
+                                    id = R.drawable.vertical_three_dots,
+                                    onClick = {
+                                        vm.updateShowMenu(true)
+                                    },
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+
+
+                                DropdownMenu(
+                                    modifier = Modifier
+                                        .background(mainVM.surfaceColor.collectAsState().value),
+                                    expanded = showMenu,
+                                    onDismissRequest = {
+                                        vm.updateShowMenu(false)
+                                    },
+                                ) {
+
+                                    DropdownMenuItem(
+                                        text = {
+                                            CustomText(text = stringResource(id = R.string.GoToArtist))
+                                        },
+                                        onClick = {
+
+                                            onOpenPage("${ROUTES.ROOT.FLOATING_ARTIST}${selectedSong.artistID}")
+                                            vm.updateShowMenu(false)
+                                        }
+                                    )
+
+                                    DropdownMenuItem(
+                                        text = {
+                                            CustomText(text = stringResource(id = R.string.GoToAlbum))
+                                        },
+                                        onClick = {
+
+                                            onOpenPage("${ROUTES.ROOT.FLOATING_ALBUM}${selectedSong.albumID}")
+                                            vm.updateShowMenu(false)
+                                        }
+                                    )
+
+                                    DropdownMenuItem(
+                                        text = {
+                                            CustomText(text = stringResource(id = R.string.AddToPlaylist))
+                                        },
+                                        onClick = {
+
+                                            onOpenPage("${ROUTES.ROOT.ADD_SONG_TO_PLAYLIST}${selectedSong.id}")
+
+                                            vm.updateShowMenu(false)
+                                        }
+                                    )
+                                }
+                            }
+                        }
+
+                        Slider(
+                            value = secondsSliderValue,
+                            interactionSource = secondsSliderInteractionSource,
+                            onValueChange = {
+
+                                secondsSliderValue = it
+                                mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds(it.toInt()))
+                            },
+                            onValueChangeFinished = {
+
+                                if (!musicPlaying)
+                                    mainVM.pauseResumeMusic()
+
+                                mainVM.seekSongSeconds(secondsSliderValue.toInt())
+                            },
+                            valueRange = 1f..(selectedSong.duration / 1000).toFloat(),
+                            colors = SliderDefaults.colors(
+                                thumbColor = MaterialTheme.colorScheme.primary,
+                                activeTrackColor = MaterialTheme.colorScheme.primary,
+                                inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                        ) {
+
+                            Text(
+                                text = currentSongMinutesAndSecondsText,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+
+                            Spacer(modifier = Modifier.weight(1f, fill = true))
+
+                            Text(
+                                text = songMinutesAndSecondsText,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.wrapContentHeight()
+                            ) {
+
+                                if (queueShuffled) {
+                                    Spacer(modifier = Modifier.height(XSMALL_SPACING)) //Needed to keep shuffle button in place when shuffle is enabled
+                                }
+
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_shuffle_solid),
+                                    contentDescription = "",
+                                    tint = if (queueShuffled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .height(30.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+
+                                            mainVM.toggleShuffle()
+                                        }
+                                )
+
+                                if (queueShuffled) {
+                                    Dot()
+                                }
+                            }
+
+                            Icon(
+                                painter = painterResource(id = R.drawable.icon_previous_solid),
+                                contentDescription = "Select Previous Song",
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .height(30.dp)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) {
+                                        mainVM.selectPreviousSong()
+                                    }
+                            )
+
+                            Icon(
+                                bitmap = if (musicPlaying) {
+                                    remember { getBitmapFromVector(context, R.drawable.icon_pause_round_solid) }
+                                } else {
+                                    remember { getBitmapFromVector(context, R.drawable.icon_play_round_solid) }
+                                }.asImageBitmap(),
+                                contentDescription = "Play/Pause Button",
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .height(60.dp)
+                                    .aspectRatio(1f)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) {
+                                        mainVM.pauseResumeMusic()
+                                    }
+                            )
+
+                            Icon(
+                                painter = painterResource(id = R.drawable.icon_next_solid),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier
+                                    .height(30.dp)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) {
+
+                                        mainVM.selectNextSong()
+                                    }
+                            )
+
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.wrapContentHeight()
+                            ) {
+
+                                if (songOnRepeat) {
+
+                                    Spacer(modifier = Modifier.height(XSMALL_SPACING)) //Needed to keep repeat button in place when repeat is enabled
+                                }
+
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_repeat_solid),
+                                    contentDescription = "Repeat Song",
+                                    tint = if (songOnRepeat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .height(30.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            mainVM.toggleRepeat()
+                                        }
+                                )
+
+                                if (songOnRepeat) {
+                                    Dot()
+                                }
+                            }
+                        }
+
+                    }
+
+                }
+
+                //Queue Tab
+                if(selectedPage == 1){
+
+                    if (upNextQueue!!.isEmpty()) {
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            SmallHeightSpacer()
+
+                            CustomText(text = stringResource(id = R.string.Shrug))
+                        }
+                    } else {
+
+                        val state = rememberReorderableLazyListState( onMove = mainVM::onUpNextQueueMove)
+
+                        androidx.compose.foundation.lazy.LazyColumn(
+                            state = state.listState,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .then(Modifier.reorderable(state))
+                        ) {
+                            items(upNextQueue, { it.id }) { song ->
+                                ReorderableItem(state, key = song.id) { isDragging ->
+
+                                    ReorderableSongItem(
+                                        mainVM = mainVM,
+                                        song = song,
+                                        songAlbumArt = remember { compressedSongsCovers?.find { it.albumID == song.albumID }?.albumArt },
+                                        state = state,
+                                        isDragging = isDragging
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun Dot() {

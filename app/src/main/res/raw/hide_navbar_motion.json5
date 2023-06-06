@@ -1,0 +1,24 @@
+{
+  ConstraintSets: {
+    start: {
+      navbar: {
+        height: 55,
+        bottom: ['parent', 'bottom', 0]
+      },
+      player: {
+        height: "spread",
+        bottom: ['parent', 'bottom', 0]
+      }
+    },
+    end: {
+      navbar: {
+        height: 55,
+        bottom: ['parent', 'bottom', -55]
+      },
+      player: {
+        height: "spread",
+        bottom: ['parent', 'bottom', 0]
+      }
+    }
+  }
+}

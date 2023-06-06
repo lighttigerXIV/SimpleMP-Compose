@@ -38,11 +38,11 @@ fun GenrePlaylistScreen(
 
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
-    val selectedSong = mainVM.selectedSong.collectAsState().value
+    val selectedSong = mainVM.currentSong.collectAsState().value
 
     val songs = mainVM.songs.collectAsState().value
 
-    val songsImages = mainVM.songsImages.collectAsState().value
+    val songsImages = mainVM.songsCovers.collectAsState().value
 
     val playlist = songs?.filter { it.genre == genre }
 

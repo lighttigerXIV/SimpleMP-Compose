@@ -3,8 +3,14 @@ package com.lighttigerxiv.simple.mp.compose.screens.main.artists
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.ROUTES
+import com.lighttigerxiv.simple.mp.compose.data.variables.SORTS
+import com.lighttigerxiv.simple.mp.compose.screens.main.artist.ArtistScreenVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -61,7 +67,7 @@ class ArtistsScreenVM(application: Application) : AndroidViewModel(application) 
 
     fun loadScreen(mainVM: MainVM) {
 
-        val sortType = preferences.getString("ArtistsSortType", "Recent")
+        val sortType = preferences.getString("ArtistsSortType", SORTS.RECENT)
         val songs = mainVM.songs.value
 
         if (songs != null) {
@@ -79,9 +85,9 @@ class ArtistsScreenVM(application: Application) : AndroidViewModel(application) 
 
             _currentArtists.update {
                 when (sortType) {
-                    "Recent" -> recentArtists.value
-                    "Oldest" -> oldestArtists.value
-                    "Ascendent" -> ascendentArtists.value
+                    SORTS.RECENT -> recentArtists.value
+                    SORTS.OLDEST -> oldestArtists.value
+                    SORTS.ASCENDENT -> ascendentArtists.value
                     else -> descendentArtists.value
                 }
             }
@@ -92,17 +98,22 @@ class ArtistsScreenVM(application: Application) : AndroidViewModel(application) 
 
     fun filterArtists() {
 
-        when (preferences.getString("ArtistsSortType", "Recent")) {
+        when (preferences.getString("ArtistsSortType", SORTS.RECENT)) {
 
-            "Recent" -> _currentArtists.update { recentArtists.value!!.filter { it.artist.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            "Oldest" -> _currentArtists.update { oldestArtists.value!!.filter { it.artist.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            "Ascendent" -> _currentArtists.update { ascendentArtists.value!!.filter { it.artist.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            "Descendent" -> _currentArtists.update { descendentArtists.value!!.filter { it.artist.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            SORTS.RECENT -> _currentArtists.update { recentArtists.value!!.filter { it.artist.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            SORTS.OLDEST -> _currentArtists.update { oldestArtists.value!!.filter { it.artist.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            SORTS.ASCENDENT -> _currentArtists.update { ascendentArtists.value!!.filter { it.artist.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            SORTS.DESCENDENT -> _currentArtists.update { descendentArtists.value!!.filter { it.artist.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
         }
     }
 
     fun updateSortType(sortType: String) {
 
         preferences.edit().putString("ArtistsSortType", sortType).apply()
+    }
+
+    fun openArtist(activityContext: ViewModelStoreOwner, navController: NavHostController , id: Long){
+        ViewModelProvider(activityContext)[ArtistScreenVM::class.java].clearScreen()
+        navController.navigate("${ROUTES.MAIN.ARTIST}${id}")
     }
 }

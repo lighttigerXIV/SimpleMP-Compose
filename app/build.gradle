@@ -13,14 +13,13 @@ android {
         applicationId "com.lighttigerxiv.simple.mp"
         minSdk 26
         targetSdk 33
-        versionCode 8
-        versionName "BETA-1.4.0"
+        versionCode 10
+        versionName "BETA-1.5.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
         }
-
     }
 
     buildTypes {
@@ -94,4 +93,7 @@ dependencies {
 
     //Draggable List
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
+
+    //Motion Layout
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 }

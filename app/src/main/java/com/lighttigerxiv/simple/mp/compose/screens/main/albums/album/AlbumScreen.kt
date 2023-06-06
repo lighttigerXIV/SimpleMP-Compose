@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.albums.album
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,6 +24,8 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
 import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
@@ -40,22 +41,15 @@ fun AlbumScreen(
 ) {
 
     val context = LocalContext.current
-
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
-
-    val selectedSong = mainVM.selectedSong.collectAsState().value
-
+    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
+    val selectedSong = mainVM.currentSong.collectAsState().value
     val screenLoaded = albumVM.screenLoaded.collectAsState().value
-
     val albumArt = albumVM.albumArt.collectAsState().value
-
     val albumName = albumVM.albumName.collectAsState().value
-
     val artistName = albumVM.artistName.collectAsState().value
-
     val songs = albumVM.albumSongs.collectAsState().value
-
-    val songsImages = mainVM.songsImages.collectAsState().value
+    val songsCovers = mainVM.songsCovers.collectAsState().value
 
 
     if (!screenLoaded) {
@@ -89,7 +83,7 @@ fun AlbumScreen(
                         MediumHeightSpacer()
 
                         Image(
-                            bitmap = (albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record)).asImageBitmap(),
+                            bitmap = (albumArt ?: getBitmapFromVector(context, R.drawable.record)).asImageBitmap(),
                             colorFilter = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                             contentDescription = "",
                             modifier = Modifier
@@ -97,6 +91,12 @@ fun AlbumScreen(
                                 .clip(RoundedCornerShape(14.dp))
                                 .aspectRatio(1f)
                                 .align(Alignment.CenterHorizontally)
+                                .modifyIf(albumArt == null) {
+                                    background(surfaceVariantColor)
+                                }
+                                .modifyIf(albumArt == null) {
+                                    padding(5.dp)
+                                }
                         )
 
                         MediumHeightSpacer()
@@ -156,7 +156,7 @@ fun AlbumScreen(
 
                                     SongItem(
                                         song = song,
-                                        songAlbumArt = remember { songsImages?.first { it.albumID == song.albumID }?.albumArt },
+                                        songAlbumArt = remember { songsCovers?.first { it.albumID == song.albumID }?.albumArt },
                                         highlight = song.path == selectedSong?.path,
                                         onSongClick = { mainVM.selectSong(songs, songs.indexOf(song)) }
                                     )

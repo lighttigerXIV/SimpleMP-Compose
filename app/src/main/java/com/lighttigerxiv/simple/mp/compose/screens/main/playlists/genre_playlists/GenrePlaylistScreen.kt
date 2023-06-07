@@ -1,5 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.playlists.genre_playlists
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,10 +10,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,6 +40,8 @@ fun GenrePlaylistScreen(
     onBackClicked : () -> Unit,
 ){
 
+    val configuration = LocalConfiguration.current
+    val inPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
     val selectedSong = mainVM.currentSong.collectAsState().value
     val songs = mainVM.songs.collectAsState().value
@@ -43,7 +49,7 @@ fun GenrePlaylistScreen(
     val playlist = songs?.filter { it.genre == genre }
 
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(surfaceColor)
@@ -51,86 +57,179 @@ fun GenrePlaylistScreen(
     ) {
 
         if(playlist != null){
-            VerticalNestedScrollView(
-                state = rememberNestedScrollViewState(),
-                header = {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                    ) {
-                        CustomToolbar(
-                            backText = "Playlists",
-                            onBackClick = {onBackClicked()}
-                        )
 
-                        MediumHeightSpacer()
+            if(inPortrait){
 
-                        Row(
+                VerticalNestedScrollView(
+                    state = rememberNestedScrollViewState(),
+                    header = {
+                        Column(
                             modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
+                                .fillMaxWidth()
+                                .wrapContentHeight()
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.playlist_filled),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                            CustomToolbar(
+                                backText = "Playlists",
+                                onBackClick = {onBackClicked()}
+                            )
+
+                            MediumHeightSpacer()
+
+                            Row(
                                 modifier = Modifier
-                                    .fillMaxWidth(0.6f)
-                                    .aspectRatio(1f)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                                    .padding(SMALL_SPACING)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.playlist_filled),
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                                    modifier = Modifier
+                                        .fillMaxWidth(0.6f)
+                                        .aspectRatio(1f)
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                                        .padding(SMALL_SPACING)
+                                )
+                            }
+
+                            SmallHeightSpacer()
+
+                            Text(
+                                text = genre,
+                                textAlign = TextAlign.Center,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            MediumHeightSpacer()
+                        }
+                    },
+                    content = {
+
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+
+                            PlayAndShuffleRow(
+                                surfaceColor = mainVM.surfaceColor.collectAsState().value,
+                                onPlayClick = {mainVM.unshuffleAndPlay(playlist, 0)},
+                                onSuffleClick = {mainVM.shuffleAndPlay(playlist)}
+                            )
+
+                            MediumHeightSpacer()
+
+                            LazyColumn(
+                                content = {
+
+                                    itemsIndexed(
+                                        items = playlist,
+                                        key = { _, song -> song.id}
+                                    ){ index, song ->
+                                        SongItem(
+                                            song = song,
+                                            songAlbumArt = songsImages?.find { song.albumID == it.albumID }?.albumArt,
+                                            highlight = song.path == selectedSong?.path,
+                                            onSongClick = {mainVM.selectSong(playlist, position = index)}
+                                        )
+                                    }
+                                }
                             )
                         }
-
-                        SmallHeightSpacer()
-
-                        Text(
-                            text = genre,
-                            textAlign = TextAlign.Center,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        MediumHeightSpacer()
                     }
-                },
-                content = {
+                )
+            }else{
 
-                    Column(
-                        modifier = Modifier.fillMaxSize()
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(surfaceColor)
+                        .padding(SCREEN_PADDING)
+                ) {
+
+                    CustomToolbar(backText = stringResource(id = R.string.Albums), onBackClick = { onBackClicked() })
+
+                    MediumHeightSpacer()
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
                     ) {
 
-                        PlayAndShuffleRow(
-                            surfaceColor = mainVM.surfaceColor.collectAsState().value,
-                            onPlayClick = {mainVM.unshuffleAndPlay(playlist, 0)},
-                            onSuffleClick = {mainVM.shuffleAndPlay(playlist)}
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .fillMaxWidth()
+                                .weight(0.4f, fill = true),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
 
-                        MediumHeightSpacer()
 
-                        LazyColumn(
-                            content = {
+                                Image(
+                                    painter = painterResource(id = R.drawable.playlist_filled),
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                                    modifier = Modifier
+                                        .fillMaxHeight(0.7f)
+                                        .aspectRatio(1f)
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                                        .padding(SMALL_SPACING)
+                                )
 
-                                itemsIndexed(
-                                    items = playlist,
-                                    key = { _, song -> song.id}
-                                ){ index, song ->
-                                    SongItem(
-                                        song = song,
-                                        songAlbumArt = songsImages?.find { song.albumID == it.albumID }?.albumArt,
-                                        highlight = song.path == selectedSong?.path,
-                                        onSongClick = {mainVM.selectSong(playlist, position = index)}
-                                    )
+
+                            SmallHeightSpacer()
+
+                            Text(
+                                text = genre,
+                                textAlign = TextAlign.Center,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            MediumHeightSpacer()
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .fillMaxWidth()
+                                .weight(0.6f, fill = true)
+                        ) {
+
+                            PlayAndShuffleRow(
+                                surfaceColor = mainVM.surfaceColor.collectAsState().value,
+                                onPlayClick = {mainVM.unshuffleAndPlay(playlist, 0)},
+                                onSuffleClick = {mainVM.shuffleAndPlay(playlist)}
+                            )
+
+                            MediumHeightSpacer()
+
+                            LazyColumn(
+                                content = {
+
+                                    itemsIndexed(
+                                        items = playlist,
+                                        key = { _, song -> song.id}
+                                    ){ index, song ->
+                                        SongItem(
+                                            song = song,
+                                            songAlbumArt = songsImages?.find { song.albumID == it.albumID }?.albumArt,
+                                            highlight = song.path == selectedSong?.path,
+                                            onSongClick = {mainVM.selectSong(playlist, position = index)}
+                                        )
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
-            )
+            }
         }
     }
 }

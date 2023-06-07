@@ -13,8 +13,8 @@ android {
         applicationId "com.lighttigerxiv.simple.mp"
         minSdk 26
         targetSdk 33
-        versionCode 10
-        versionName "BETA-1.5.0"
+        versionCode 11
+        versionName "BETA-1.6.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

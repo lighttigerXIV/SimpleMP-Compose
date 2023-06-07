@@ -32,12 +32,13 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ImageCard
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.SheetDraggingBar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
-import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -181,7 +182,7 @@ fun PlaylistsScreen(
                                 ) {genre ->
 
                                     ImageCard(
-                                        cardImage = remember { getBitmapFromVector(context, R.drawable.playlist) },
+                                        cardImage = remember { getImage(context, R.drawable.playlist_filled, ImageSizes.MEDIUM) },
                                         imageTint = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                                         cardText = remember { genre },
                                         onCardClicked = {
@@ -312,7 +313,7 @@ fun PlaylistsScreen(
                                             items(playlists!!) { playlist ->
 
                                                 val playlistImage = if (playlist.image.isNullOrEmpty()) {
-                                                    getBitmapFromVector(context, R.drawable.playlist)
+                                                    getImage(context, R.drawable.playlist_filled, ImageSizes.MEDIUM)
                                                 } else {
                                                     val imageBytes = Base64.decode(playlist.image, Base64.DEFAULT)
                                                     BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)

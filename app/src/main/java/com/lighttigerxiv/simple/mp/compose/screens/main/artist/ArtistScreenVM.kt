@@ -22,7 +22,9 @@ import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.ArtistsQueries
 import com.lighttigerxiv.simple.mp.compose.data.responses.DiscogsResponse
-import com.lighttigerxiv.simple.mp.compose.data.variables.ROUTES
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
+import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.functions.isNetworkAvailable
 import com.lighttigerxiv.simple.mp.compose.functions.isOnMobileData
 import com.lighttigerxiv.simple.mp.compose.retrofit.getDiscogsRetrofit
@@ -61,7 +63,7 @@ class ArtistScreenVM(application: Application) : AndroidViewModel(application) {
     private val _artistName = MutableStateFlow("")
     val artistName = _artistName.asStateFlow()
 
-    private val _artistCover = MutableStateFlow(BitmapFactory.decodeResource(context.resources, R.drawable.person_hd))
+    private val _artistCover = MutableStateFlow(getImage(context, R.drawable.person, ImageSizes.LARGE))
     val artistCover = _artistCover.asStateFlow()
     fun updateArtistCover(newValue: Bitmap){
         _artistCover.update { newValue }
@@ -200,12 +202,12 @@ class ArtistScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun openAlbumScreen(activityContext: ViewModelStoreOwner, navController: NavHostController, id: Long){
         ViewModelProvider(activityContext)[ArtistAlbumScreenVM::class.java].clearScreen()
-        navController.navigate("${ROUTES.MAIN.ARTIST_ALBUM}${id}")
+        navController.navigate("${Routes.MAIN.ARTIST_ALBUM}${id}")
     }
 
     fun openSelectArtistCoverScreen(activityContext: ViewModelStoreOwner, navController: NavHostController, name: String, id: Long){
         ViewModelProvider(activityContext)[SelectArtistCoverScreenVM::class.java].clearScreen()
-        navController.navigate("${ROUTES.MAIN.SELECT_ARTIST_COVER}name=${name}&id=${id}")
+        navController.navigate("${Routes.MAIN.SELECT_ARTIST_COVER}name=${name}&id=${id}")
     }
 
     fun clearScreen() {
@@ -213,7 +215,7 @@ class ArtistScreenVM(application: Application) : AndroidViewModel(application) {
         _screenLoaded.update { false }
         _showMenu.update { false }
         _artistName.update { "" }
-        _artistCover.update { BitmapFactory.decodeResource(context.resources, R.drawable.person_hd) }
+        _artistCover.update { getImage(context, R.drawable.person, ImageSizes.LARGE) }
         _tintCover.update { true }
         _artistSongs.update { null }
         _artistAlbums.update { null }

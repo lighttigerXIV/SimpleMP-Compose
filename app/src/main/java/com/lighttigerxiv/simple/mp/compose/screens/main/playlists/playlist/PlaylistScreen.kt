@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,10 +29,12 @@ import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.text.TitleMedium
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
 import com.lighttigerxiv.simple.mp.compose.ui.composables.*
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.*
@@ -55,43 +56,28 @@ fun PlaylistScreen(
 ) {
 
     val selectImageScaffoldState = rememberBottomSheetScaffoldState()
-
     val context = LocalContext.current
-
     val scope = rememberCoroutineScope()
-
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
-
     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
-
     val screenLoaded = vm.screenLoaded.collectAsState().value
-
     val playlist = vm.playlist.collectAsState().value
-
     val playlistImage = vm.playlistImage.collectAsState().value
-
     val tintImage = vm.tintImage.collectAsState().value
-
     val songs = vm.currentSongs.collectAsState().value
-
     val showMenu = vm.showMenu.collectAsState().value
-
     val showDeleteDialog = vm.showDeleteDialog.collectAsState().value
-
     val saveButtonEnabled = vm.saveButtonEnabled.collectAsState().value
-
     val onEditMode = vm.onEditMode.collectAsState().value
-
     val playlistNameText = vm.playlistNameText.collectAsState().value
-
     val selectedSong = mainVM.currentSong.collectAsState().value
-
     val songsImages = mainVM.songsCovers.collectAsState().value
 
 
     if (!screenLoaded) {
         vm.loadScreen(playlistID, mainVM, playlistsVM)
     }
+
 
     Column(
         modifier = Modifier
@@ -154,7 +140,6 @@ fun PlaylistScreen(
                                 scope.launch {
 
                                     vm.deleteImage()
-
                                     selectImageScaffoldState.bottomSheetState.collapse()
                                 }
                             }
@@ -565,12 +550,18 @@ fun PlaylistScreen(
 
 
                                             Image(
-                                                bitmap = remember { songAlbumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record) }.asImageBitmap(),
+                                                bitmap = remember { songAlbumArt ?: getImage(context, R.drawable.cd, ImageSizes.LARGE) }.asImageBitmap(),
                                                 colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                                                 contentDescription = songTitle,
                                                 modifier = Modifier
                                                     .fillMaxHeight()
-                                                    .clip(RoundedCornerShape(20)),
+                                                    .clip(RoundedCornerShape(20))
+                                                    .modifyIf(songAlbumArt == null) {
+                                                        background(surfaceVariantColor)
+                                                    }
+                                                    .modifyIf(songAlbumArt == null) {
+                                                        padding(5.dp)
+                                                    },
                                             )
 
                                             SmallHorizontalSpacer()

@@ -36,9 +36,10 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.activities.setup.ActivityFirstSetup
-import com.lighttigerxiv.simple.mp.compose.data.variables.ROUTES
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
+import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
-import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.functions.getSurfaceColor
 import com.lighttigerxiv.simple.mp.compose.screens.main.about.AboutScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.add_song_to_playlist.AddToPlaylistScreen
@@ -126,7 +127,7 @@ class MainActivity : ComponentActivity() {
                                     modifier = Modifier
                                         .width(200.dp)
                                         .height(200.dp),
-                                    bitmap = remember{ getBitmapFromVector(context,R.drawable.play_empty).asImageBitmap() },
+                                    bitmap = remember{ getImage(context,R.drawable.play_empty, ImageSizes.LARGE).asImageBitmap() },
                                     contentDescription = null,
                                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                                 )
@@ -146,10 +147,10 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .fillMaxSize(),
                                 navController = rootNavController,
-                                startDestination = ROUTES.ROOT.MAIN
+                                startDestination = Routes.ROOT.MAIN
                             ) {
 
-                                composable(ROUTES.ROOT.MAIN) {
+                                composable(Routes.ROOT.MAIN) {
 
                                     MainScreen(
                                         mainVM = vm,
@@ -180,7 +181,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                composable("${ROUTES.ROOT.FLOATING_ARTIST}{id}") {
+                                composable("${Routes.ROOT.FLOATING_ARTIST}{id}") {
                                     val id = it.arguments?.getString("id")?.toLongOrNull()
 
                                     if (id != null) {
@@ -188,7 +189,7 @@ class MainActivity : ComponentActivity() {
                                             mainVM = vm,
                                             settingsVM = ViewModelProvider(activityContext)[SettingsVM::class.java],
                                             artistID = id,
-                                            artistVM = ViewModelProvider(activityContext)[FloatingArtistScreenVM::class.java],
+                                            vm = ViewModelProvider(activityContext)[FloatingArtistScreenVM::class.java],
                                             onBackClicked = {
                                                 rootNavController.navigateUp()
                                             }
@@ -196,7 +197,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
 
-                                composable("${ROUTES.ROOT.FLOATING_ALBUM}{albumID}") {
+                                composable("${Routes.ROOT.FLOATING_ALBUM}{albumID}") {
 
                                     val albumID = it.arguments?.getString("albumID")?.toLongOrNull()
 
@@ -211,7 +212,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
 
-                                composable(ROUTES.ROOT.SETTINGS) {
+                                composable(Routes.ROOT.SETTINGS) {
 
                                     SettingsScreen(
                                         mainVM = vm,
@@ -222,7 +223,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                composable(ROUTES.ROOT.ABOUT) {
+                                composable(Routes.ROOT.ABOUT) {
 
                                     AboutScreen(
                                         mainVM = vm,
@@ -230,7 +231,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                composable(ROUTES.ROOT.THEMES) {
+                                composable(Routes.ROOT.THEMES) {
 
                                     ThemesScreen(
                                         mainVM = vm,
@@ -239,7 +240,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                composable("${ROUTES.ROOT.ADD_SONGS_TO_PLAYLIST}{id}") {
+                                composable("${Routes.ROOT.ADD_SONGS_TO_PLAYLIST}{id}") {
 
                                     val id = it.arguments?.getString("id")
 
@@ -258,7 +259,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
 
-                                composable("${ROUTES.ROOT.ADD_SONG_TO_PLAYLIST}{id}") {
+                                composable("${Routes.ROOT.ADD_SONG_TO_PLAYLIST}{id}") {
 
                                     val id = it.arguments?.getString("id")?.toLongOrNull()
 

@@ -27,13 +27,14 @@ import coil.compose.AsyncImage
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
-import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
 import com.lighttigerxiv.simple.mp.compose.ui.composables.*
 import kotlinx.coroutines.launch
@@ -243,7 +244,7 @@ fun AddToPlaylistScreen(
 
                                 val playlistImage = remember {
                                     if (playlist.image.isNullOrEmpty()) {
-                                        getBitmapFromVector(context, R.drawable.playlist)
+                                        getImage(context, R.drawable.playlist_filled, ImageSizes.SMALL)
                                     } else {
                                         val imageBytes = Base64.decode(playlist.image, Base64.DEFAULT)
                                         BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size).apply {
@@ -260,9 +261,9 @@ fun AddToPlaylistScreen(
                                     modifier = Modifier
                                         .width(80.dp)
                                         .aspectRatio(1f)
-                                        .padding(5.dp)
                                         .clip(RoundedCornerShape(14.dp))
                                         .background(MaterialTheme.colorScheme.surfaceVariant)
+                                        .padding(5.dp)
                                 )
 
                                 SmallHeightSpacer()

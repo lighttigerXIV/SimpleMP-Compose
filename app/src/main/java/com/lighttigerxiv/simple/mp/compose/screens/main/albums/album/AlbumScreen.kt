@@ -24,7 +24,8 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
 import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
-import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
@@ -83,7 +84,7 @@ fun AlbumScreen(
                         MediumHeightSpacer()
 
                         Image(
-                            bitmap = (albumArt ?: getBitmapFromVector(context, R.drawable.record)).asImageBitmap(),
+                            bitmap = (albumArt ?: getImage(context, R.drawable.cd, ImageSizes.LARGE)).asImageBitmap(),
                             colorFilter = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                             contentDescription = "",
                             modifier = Modifier

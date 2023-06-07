@@ -19,8 +19,8 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
-import com.lighttigerxiv.simple.mp.compose.data.variables.ROUTES
-import com.lighttigerxiv.simple.mp.compose.data.variables.SORTS
+import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
+import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
 import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import kotlinx.coroutines.delay
@@ -143,7 +143,7 @@ fun HomeScreen(
                                     Text(text = stringResource(id = R.string.SortByRecentlyAdded))
                                 },
                                 onClick = {
-                                    vm.updateSortType(SORTS.RECENT)
+                                    vm.updateSortType(Sorts.RECENT)
                                     vm.updateCurrentSongs(recentSongs)
                                     scope.launch {
                                         vm.updateMenuExpanded(false)
@@ -157,7 +157,7 @@ fun HomeScreen(
                                     Text(text = stringResource(id = R.string.SortByOldestAdded))
                                 },
                                 onClick = {
-                                    vm.updateSortType(SORTS.OLDEST)
+                                    vm.updateSortType(Sorts.OLDEST)
                                     vm.updateCurrentSongs(oldestSongs)
                                     scope.launch {
                                         vm.updateMenuExpanded(false)
@@ -171,7 +171,7 @@ fun HomeScreen(
                                     Text(text = stringResource(id = R.string.SortByAscendent))
                                 },
                                 onClick = {
-                                    vm.updateSortType(SORTS.ASCENDENT)
+                                    vm.updateSortType(Sorts.ASCENDENT)
                                     vm.updateCurrentSongs(ascendentSongs)
                                     scope.launch {
                                         vm.updateMenuExpanded(false)
@@ -185,7 +185,7 @@ fun HomeScreen(
                                     Text(text = stringResource(id = R.string.SortByDescendent))
                                 },
                                 onClick = {
-                                    vm.updateSortType(SORTS.DESCENDENT)
+                                    vm.updateSortType(Sorts.DESCENDENT)
                                     vm.updateCurrentSongs(descendentSongs)
                                     scope.launch {
                                         vm.updateMenuExpanded(false)
@@ -202,7 +202,7 @@ fun HomeScreen(
                                 onClick = {
 
                                     vm.updateMenuExpanded(false)
-                                    onOpenScreen(ROUTES.ROOT.SETTINGS)
+                                    onOpenScreen(Routes.ROOT.SETTINGS)
                                 }
                             )
 
@@ -214,7 +214,7 @@ fun HomeScreen(
 
                                     vm.updateMenuExpanded(false)
 
-                                    onOpenScreen(ROUTES.ROOT.ABOUT)
+                                    onOpenScreen(Routes.ROOT.ABOUT)
                                 }
                             )
                         }
@@ -242,9 +242,9 @@ fun HomeScreen(
                                     onMenuClicked = { option ->
 
                                         when (option) {
-                                            "Artist" -> onOpenScreen("${ROUTES.ROOT.FLOATING_ARTIST}${song.artistID}")
-                                            "Album" -> onOpenScreen("${ROUTES.ROOT.FLOATING_ALBUM}${song.albumID}")
-                                            "Playlist" -> onOpenScreen("${ROUTES.ROOT.ADD_SONG_TO_PLAYLIST}${song.id}")
+                                            "Artist" -> onOpenScreen("${Routes.ROOT.FLOATING_ARTIST}${song.artistID}")
+                                            "Album" -> onOpenScreen("${Routes.ROOT.FLOATING_ALBUM}${song.albumID}")
+                                            "Playlist" -> onOpenScreen("${Routes.ROOT.ADD_SONG_TO_PLAYLIST}${song.id}")
                                         }
                                     },
                                     onSongClick = {

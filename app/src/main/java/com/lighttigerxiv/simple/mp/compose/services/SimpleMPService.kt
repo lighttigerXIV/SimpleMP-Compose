@@ -4,7 +4,6 @@ import android.app.*
 import android.appwidget.AppWidgetManager
 import android.content.*
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.media.*
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.os.Binder
@@ -20,6 +19,8 @@ import androidx.core.app.NotificationCompat
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainActivity
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.functions.getSongAlbumArt
 import com.lighttigerxiv.simple.mp.compose.widgets.SimpleMPWidget
 import org.burnoutcrew.reorderable.ItemPosition
@@ -173,8 +174,6 @@ class SimpleMPService : Service() {
         queueList = queueList.apply {
             add(queueList.indexOfFirst { it.id == to.key }, removeAt(queueList.indexOfFirst { it.id == from.key }))
         }
-
-
     }
 
 
@@ -361,7 +360,7 @@ class SimpleMPService : Service() {
             }
 
             if (songAlbumArt == null) {
-                songAlbumArt = BitmapFactory.decodeResource(context.resources, R.drawable.no_album_art)
+                songAlbumArt = getImage(context, R.drawable.cd_filled, ImageSizes.LARGE)
             }
 
             currentSong = getQueue()[currentSongPosition]
@@ -462,6 +461,7 @@ class SimpleMPService : Service() {
 
         } catch (exc:Exception){
             Log.e("Service Error", exc.toString())
+            selectNextSong(context)
         }
     }
 

@@ -25,7 +25,8 @@ import coil.compose.AsyncImage
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
-import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.XSmallHeightSpacer
@@ -74,7 +75,7 @@ fun SongItem(
         ) {
 
             AsyncImage(
-                model = remember{ songAlbumArt ?: getBitmapFromVector(context, R.drawable.record) },
+                model = remember{ songAlbumArt ?: getImage(context, R.drawable.cd, ImageSizes.SMALL) },
                 contentDescription = "",
                 colorFilter = if(songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                 modifier = Modifier
@@ -188,7 +189,7 @@ fun ReorderableSongItem(
         ) {
 
             AsyncImage(
-                model = remember{ songAlbumArt ?: getBitmapFromVector(context, R.drawable.record) },
+                model = remember{ songAlbumArt ?: getImage(context, R.drawable.cd, ImageSizes.SMALL) },
                 contentDescription = "",
                 colorFilter = if(songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                 modifier = Modifier

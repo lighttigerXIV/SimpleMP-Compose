@@ -37,13 +37,9 @@ fun GenrePlaylistScreen(
 ){
 
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
-
     val selectedSong = mainVM.currentSong.collectAsState().value
-
     val songs = mainVM.songs.collectAsState().value
-
     val songsImages = mainVM.songsCovers.collectAsState().value
-
     val playlist = songs?.filter { it.genre == genre }
 
 
@@ -76,7 +72,7 @@ fun GenrePlaylistScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.playlist),
+                                painter = painterResource(id = R.drawable.playlist_filled),
                                 contentDescription = null,
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
                                 modifier = Modifier

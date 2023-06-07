@@ -11,7 +11,7 @@ val MEDIUM_SPACING = 16.dp
 val MEDIUM_TITLE_SIZE = 22.sp
 val MEDIUM_RADIUS = 14.dp
 
-object ROUTES{
+object Routes{
     object ROOT{
         const val MAIN = "main"
         const val SETTINGS = "settings"
@@ -36,11 +36,16 @@ object ROUTES{
     }
 }
 
-object SORTS{
+object Sorts{
     const val RECENT = "recent"
     const val OLDEST = "oldest"
     const val ASCENDENT = "ascendent"
     const val DESCENDENT = "descendent"
 }
 
+object ImageSizes{
+    const val SMALL = 100
+    const val MEDIUM = 200
+    const val LARGE = 300
+}
 

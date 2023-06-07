@@ -1,7 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.artist.artist_select_cover
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.util.Base64
 import androidx.compose.foundation.Image
@@ -31,12 +30,13 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
-import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.artist.ArtistScreenVM
 import java.io.ByteArrayOutputStream
 
@@ -172,7 +172,7 @@ fun SelectArtistCoverScreen(
                                             }
                                         },
                                     bitmap = if(artistPicture.value == null)
-                                        remember{ getBitmapFromVector(context, R.drawable.loading).asImageBitmap()}
+                                        remember{ getImage(context, R.drawable.loading, ImageSizes.MEDIUM).asImageBitmap()}
                                     else
                                         artistPicture.value!!.asImageBitmap(),
                                     contentDescription = null,

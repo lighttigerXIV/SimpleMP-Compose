@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
-import com.lighttigerxiv.simple.mp.compose.data.variables.SORTS
+import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -63,7 +63,7 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun loadScreen(mainVM: MainVM) {
 
-        val sortType = preferences.getString("HomeSongsSortType", SORTS.RECENT)
+        val sortType = preferences.getString("HomeSongsSortType", Sorts.RECENT)
         val songs = mainVM.songs.value
 
         if (songs != null) {
@@ -78,9 +78,9 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
 
             _currentSongs.update {
                 when (sortType) {
-                    SORTS.RECENT -> recentSongs.value
-                    SORTS.OLDEST -> oldestSongs.value
-                    SORTS.ASCENDENT -> ascendentSongs.value
+                    Sorts.RECENT -> recentSongs.value
+                    Sorts.OLDEST -> oldestSongs.value
+                    Sorts.ASCENDENT -> ascendentSongs.value
                     else -> descendentSongs.value
                 }
             }
@@ -91,12 +91,12 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun filterSongs() {
 
-        when (preferences.getString("HomeSongsSortType", SORTS.RECENT)) {
+        when (preferences.getString("HomeSongsSortType", Sorts.RECENT)) {
 
-            SORTS.RECENT -> _currentSongs.update { recentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            SORTS.OLDEST -> _currentSongs.update { oldestSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            SORTS.ASCENDENT -> _currentSongs.update { ascendentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            SORTS.DESCENDENT -> _currentSongs.update { descendentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            Sorts.RECENT -> _currentSongs.update { recentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            Sorts.OLDEST -> _currentSongs.update { oldestSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            Sorts.ASCENDENT -> _currentSongs.update { ascendentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            Sorts.DESCENDENT -> _currentSongs.update { descendentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
         }
     }
 
@@ -107,11 +107,11 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun selectSong(song: Song, mainVM: MainVM) {
 
-        val newQueue = when (preferences.getString("HomeSongsSortType", SORTS.RECENT)) {
+        val newQueue = when (preferences.getString("HomeSongsSortType", Sorts.RECENT)) {
 
-            SORTS.RECENT -> recentSongs.value!!
-            SORTS.OLDEST -> oldestSongs.value!!
-            SORTS.ASCENDENT -> ascendentSongs.value!!
+            Sorts.RECENT -> recentSongs.value!!
+            Sorts.OLDEST -> oldestSongs.value!!
+            Sorts.ASCENDENT -> ascendentSongs.value!!
             else -> descendentSongs.value!!
         }
 

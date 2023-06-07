@@ -32,12 +32,13 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongCover
-import com.lighttigerxiv.simple.mp.compose.data.variables.ROUTES
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
+import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.data.variables.XSMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
-import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import com.lighttigerxiv.simple.mp.compose.ui.composables.BottomSheetHandle
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ClickableMediumIcon
@@ -230,7 +231,7 @@ fun PortraitPlayer(
     songOnRepeat: Boolean
 ) {
 
-    val defaultAlbumArt = remember { getBitmapFromVector(context, R.drawable.record).asImageBitmap() }
+    val defaultAlbumArt = remember { getImage(context, R.drawable.cd, ImageSizes.LARGE).asImageBitmap() }
     var secondsSliderValue by remember{ mutableStateOf(songSeconds) }
     val secondsSliderInteractionSource = remember { MutableInteractionSource() }
     val draggingSecondsSlider = secondsSliderInteractionSource.collectIsDraggedAsState().value
@@ -413,7 +414,7 @@ fun PortraitPlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${ROUTES.ROOT.FLOATING_ARTIST}${selectedSong.artistID}")
+                                            onOpenPage("${Routes.ROOT.FLOATING_ARTIST}${selectedSong.artistID}")
                                             vm.updateShowMenu(false)
                                         }
                                     )
@@ -424,7 +425,7 @@ fun PortraitPlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${ROUTES.ROOT.FLOATING_ALBUM}${selectedSong.albumID}")
+                                            onOpenPage("${Routes.ROOT.FLOATING_ALBUM}${selectedSong.albumID}")
                                             vm.updateShowMenu(false)
                                         }
                                     )
@@ -435,7 +436,7 @@ fun PortraitPlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${ROUTES.ROOT.ADD_SONG_TO_PLAYLIST}${selectedSong.id}")
+                                            onOpenPage("${Routes.ROOT.ADD_SONG_TO_PLAYLIST}${selectedSong.id}")
 
                                             vm.updateShowMenu(false)
                                         }
@@ -539,9 +540,9 @@ fun PortraitPlayer(
 
                             Icon(
                                 bitmap = if (musicPlaying) {
-                                    remember { getBitmapFromVector(context, R.drawable.icon_pause_round_solid) }
+                                    remember { getImage(context, R.drawable.icon_pause_round_solid, ImageSizes.MEDIUM) }
                                 } else {
-                                    remember { getBitmapFromVector(context, R.drawable.icon_play_round_solid) }
+                                    remember { getImage(context, R.drawable.icon_play_round_solid, ImageSizes.MEDIUM) }
                                 }.asImageBitmap(),
                                 contentDescription = "Play/Pause Button",
                                 tint = MaterialTheme.colorScheme.onSurface,
@@ -678,7 +679,7 @@ fun LandscapePlayer(
     songOnRepeat: Boolean
 ) {
 
-    val defaultAlbumArt = remember { getBitmapFromVector(context, R.drawable.record).asImageBitmap() }
+    val defaultAlbumArt = remember { getImage(context, R.drawable.cd, ImageSizes.LARGE).asImageBitmap() }
     var secondsSliderValue by remember{ mutableStateOf(songSeconds) }
     val secondsSliderInteractionSource = remember { MutableInteractionSource() }
     val draggingSecondsSlider = secondsSliderInteractionSource.collectIsDraggedAsState().value
@@ -866,7 +867,7 @@ fun LandscapePlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${ROUTES.ROOT.FLOATING_ARTIST}${selectedSong.artistID}")
+                                            onOpenPage("${Routes.ROOT.FLOATING_ARTIST}${selectedSong.artistID}")
                                             vm.updateShowMenu(false)
                                         }
                                     )
@@ -877,7 +878,7 @@ fun LandscapePlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${ROUTES.ROOT.FLOATING_ALBUM}${selectedSong.albumID}")
+                                            onOpenPage("${Routes.ROOT.FLOATING_ALBUM}${selectedSong.albumID}")
                                             vm.updateShowMenu(false)
                                         }
                                     )
@@ -888,7 +889,7 @@ fun LandscapePlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${ROUTES.ROOT.ADD_SONG_TO_PLAYLIST}${selectedSong.id}")
+                                            onOpenPage("${Routes.ROOT.ADD_SONG_TO_PLAYLIST}${selectedSong.id}")
 
                                             vm.updateShowMenu(false)
                                         }
@@ -992,9 +993,9 @@ fun LandscapePlayer(
 
                             Icon(
                                 bitmap = if (musicPlaying) {
-                                    remember { getBitmapFromVector(context, R.drawable.icon_pause_round_solid) }
+                                    remember { getImage(context, R.drawable.icon_pause_round_solid, ImageSizes.MEDIUM) }
                                 } else {
-                                    remember { getBitmapFromVector(context, R.drawable.icon_play_round_solid) }
+                                    remember { getImage(context, R.drawable.icon_play_round_solid, ImageSizes.MEDIUM) }
                                 }.asImageBitmap(),
                                 contentDescription = "Play/Pause Button",
                                 tint = MaterialTheme.colorScheme.onSurface,

@@ -18,7 +18,7 @@ import androidx.lifecycle.viewModelScope
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongCover
-import com.lighttigerxiv.simple.mp.compose.data.variables.SORTS
+import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
 import com.lighttigerxiv.simple.mp.compose.functions.getAllAlbumsImages
 import com.lighttigerxiv.simple.mp.compose.functions.getSongs
 import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
@@ -143,7 +143,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
                         _songOnRepeat.update { smp.songOnRepeat }
 
-                        _songs.update { getSongs(context, SORTS.RECENT) }
+                        _songs.update { getSongs(context, Sorts.RECENT) }
 
                         _songsCovers.update { getAllAlbumsImages(songs.value, context) }
 

@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
-import com.lighttigerxiv.simple.mp.compose.data.variables.SORTS
+import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -63,7 +63,7 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun loadScreen(mainVM: MainVM) {
 
-        val sortType = preferences.getString("AlbumsSortType", SORTS.RECENT)
+        val sortType = preferences.getString("AlbumsSortType", Sorts.RECENT)
         val songs = mainVM.songs.value
 
         if (songs != null) {
@@ -80,9 +80,9 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
 
             _currentAlbums.update {
                 when (sortType) {
-                    SORTS.RECENT -> recentAlbums.value
-                    SORTS.OLDEST -> oldestAlbums.value
-                    SORTS.ASCENDENT -> ascendentAlbums.value
+                    Sorts.RECENT -> recentAlbums.value
+                    Sorts.OLDEST -> oldestAlbums.value
+                    Sorts.ASCENDENT -> ascendentAlbums.value
                     else -> descendentAlbums.value
                 }
             }
@@ -93,12 +93,12 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun filterAlbums() {
 
-        when (preferences.getString("AlbumsSortType", SORTS.RECENT)) {
+        when (preferences.getString("AlbumsSortType", Sorts.RECENT)) {
 
-            SORTS.RECENT -> _currentAlbums.update { recentAlbums.value!!.filter { it.album.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            SORTS.OLDEST -> _currentAlbums.update { oldestAlbums.value!!.filter { it.album.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            SORTS.ASCENDENT -> _currentAlbums.update { ascendentAlbums.value!!.filter { it.album.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            SORTS.DESCENDENT -> _currentAlbums.update { descendentAlbums.value!!.filter { it.album.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            Sorts.RECENT -> _currentAlbums.update { recentAlbums.value!!.filter { it.album.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            Sorts.OLDEST -> _currentAlbums.update { oldestAlbums.value!!.filter { it.album.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            Sorts.ASCENDENT -> _currentAlbums.update { ascendentAlbums.value!!.filter { it.album.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            Sorts.DESCENDENT -> _currentAlbums.update { descendentAlbums.value!!.filter { it.album.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
         }
     }
 

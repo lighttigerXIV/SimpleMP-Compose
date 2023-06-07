@@ -24,7 +24,7 @@ import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongCover
-import com.lighttigerxiv.simple.mp.compose.data.variables.SORTS
+import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import java.io.File
 
@@ -99,10 +99,10 @@ fun getSongs(context: Context, sortType: String): List<Song> {
     cursor?.close()
 
     when (sortType) {
-        SORTS.RECENT -> songs.sortByDescending { it.modificationDate }
-        SORTS.OLDEST -> songs.sortBy { it.modificationDate }
-        SORTS.ASCENDENT -> songs.sortBy { it.title }
-        SORTS.DESCENDENT -> songs.sortByDescending { it.title }
+        Sorts.RECENT -> songs.sortByDescending { it.modificationDate }
+        Sorts.OLDEST -> songs.sortBy { it.modificationDate }
+        Sorts.ASCENDENT -> songs.sortBy { it.title }
+        Sorts.DESCENDENT -> songs.sortByDescending { it.title }
     }
 
     return songs
@@ -155,7 +155,7 @@ fun getSongAlbumArt(context: Context, songID: Long, albumID: Long): Bitmap? {
             val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
             val songUri = ContentUris.withAppendedId(uri, songID)
 
-            context.contentResolver.loadThumbnail(songUri, Size(600, 600), null)
+            context.contentResolver.loadThumbnail(songUri, Size(400, 400), null)
         } else {
 
             val sArtWorkUri = Uri.parse("content://media/external/audio/albumart")
@@ -209,11 +209,11 @@ fun isOnMobileData(context: Context): Boolean{
 //************************************************
 
 
-fun getBitmapFromVector(context: Context, drawableId: Int): Bitmap {
+fun getImage(context: Context, drawableId: Int, imageSize: Int): Bitmap {
     val drawable = ContextCompat.getDrawable(context, drawableId)
     val bitmap = Bitmap.createBitmap(
-        500,
-        500, Bitmap.Config.ARGB_8888
+        imageSize,
+        imageSize, Bitmap.Config.ARGB_8888
     )
     val canvas = Canvas(bitmap)
     drawable?.setBounds(0, 0, canvas.width, canvas.height)

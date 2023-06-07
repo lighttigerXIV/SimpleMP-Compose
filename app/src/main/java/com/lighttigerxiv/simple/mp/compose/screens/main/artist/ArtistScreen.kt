@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
@@ -22,7 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelStoreOwner
@@ -36,6 +34,7 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
 import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
@@ -43,7 +42,9 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
-import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
+import com.lighttigerxiv.simple.mp.compose.ui.composables.ImageCard
 import kotlinx.coroutines.launch
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
@@ -61,33 +62,20 @@ fun ArtistScreen(
 ) {
 
     val context = LocalContext.current
-
     val configuration = LocalConfiguration.current
-
     val scope = rememberCoroutineScope()
-
     val pagerState = rememberPagerState(2)
-
     val nestedScrollViewState = rememberNestedScrollViewState()
-
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
-
+    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
     val screenLoaded = vm.screenLoaded.collectAsState().value
-
     val selectedSong = mainVM.currentSong.collectAsState().value
-
     val artistName = vm.artistName.collectAsState().value
-
     val artistCover = vm.artistCover.collectAsState().value
-
     val tintCover = vm.tintCover.collectAsState().value
-
     val songs = vm.artistSongs.collectAsState().value
-
     val albums = vm.artistAlbums.collectAsState().value
-
     val showMenu = vm.showMenu.collectAsState().value
-
     val gridCellsCount = when (configuration.orientation) {
 
         Configuration.ORIENTATION_PORTRAIT -> 2
@@ -182,6 +170,12 @@ fun ArtistScreen(
                             .aspectRatio(1f)
                             .padding(5.dp)
                             .clip(RoundedCornerShape(14.dp))
+                            .modifyIf(tintCover) {
+                                background(surfaceVariantColor)
+                            }
+                            .modifyIf(tintCover) {
+                                padding(5.dp)
+                            }
                     )
                 }
 
@@ -325,42 +319,17 @@ fun ArtistScreen(
                                                 val albumName = album.album
                                                 val albumArt = mainVM.songsCovers.collectAsState().value?.first { it.albumID == albumSongAlbumID }?.albumArt
 
-                                                Box(
-                                                    modifier = Modifier
-                                                        .fillMaxSize()
-                                                        .clip(RoundedCornerShape(14.dp))
-                                                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                                                        .clickable {
-                                                            vm.openAlbumScreen(activityContext, navController, album.albumID)
-                                                        }
 
-                                                ) {
+                                                ImageCard(
+                                                    cardImage = remember { (albumArt ?: getImage(context, R.drawable.cd, ImageSizes.MEDIUM)) },
+                                                    cardText = albumName,
+                                                    imageTint = if(albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                                                    onCardClicked = {
+                                                        vm.openAlbumScreen(activityContext, navController, album.albumID)
+                                                    },
 
-                                                    Column(
-                                                        modifier = Modifier.fillMaxSize(),
-                                                        horizontalAlignment = Alignment.CenterHorizontally
-                                                    ) {
-                                                        Image(
-                                                            bitmap = remember { (albumArt ?: getBitmapFromVector(context, R.drawable.record)).asImageBitmap() },
-                                                            colorFilter = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
-                                                            contentDescription = "",
-                                                            modifier = Modifier
-                                                                .padding(10.dp)
-                                                                .clip(RoundedCornerShape(14.dp))
-                                                        )
-                                                        Text(
-                                                            text = albumName,
-                                                            fontSize = 15.sp,
-                                                            textAlign = TextAlign.Center,
-                                                            maxLines = 1,
-                                                            overflow = TextOverflow.Ellipsis,
-                                                            color = MaterialTheme.colorScheme.onSurface,
-                                                            fontWeight = FontWeight.Medium,
-                                                            modifier = Modifier.padding(2.dp)
-                                                        )
-                                                        Spacer(modifier = Modifier.height(10.dp))
-                                                    }
-                                                }
+                                                )
+
                                             }
                                         }
                                     )

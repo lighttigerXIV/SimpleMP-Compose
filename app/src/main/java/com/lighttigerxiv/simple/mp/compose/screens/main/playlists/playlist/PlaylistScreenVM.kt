@@ -15,8 +15,9 @@ import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.items.Playlist
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.PlaylistsQueries
-import com.lighttigerxiv.simple.mp.compose.data.variables.ROUTES
-import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
+import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.add_songs.AddSongsScreenVM
 import io.realm.kotlin.ext.toRealmList
@@ -126,7 +127,7 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
                         BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size).asImageBitmap()
 
                     } else{
-                        getBitmapFromVector(context, R.drawable.playlist).asImageBitmap()
+                        getImage(context, R.drawable.playlist_filled, ImageSizes.LARGE).asImageBitmap()
                     }
                 }
 
@@ -173,7 +174,7 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
                 BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size).asImageBitmap()
 
             } else{
-                getBitmapFromVector(context, R.drawable.playlist).asImageBitmap()
+                getImage(context, R.drawable.playlist_filled, ImageSizes.LARGE).asImageBitmap()
             }
         }
 
@@ -209,7 +210,7 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
 
         deleteImage = true
 
-        _playlistImage.update { getBitmapFromVector(context, R.drawable.playlist).asImageBitmap() }
+        _playlistImage.update { getImage(context, R.drawable.playlist_filled, ImageSizes.LARGE).asImageBitmap() }
 
         _tintImage.update { true }
     }
@@ -271,7 +272,7 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
 
     fun openAddSongsScreen(activityContext: ViewModelStoreOwner, rootNavController: NavHostController, id: String){
         ViewModelProvider(activityContext)[AddSongsScreenVM::class.java].clearScreen()
-        rootNavController.navigate("${ROUTES.ROOT.ADD_SONGS_TO_PLAYLIST}$id")
+        rootNavController.navigate("${Routes.ROOT.ADD_SONGS_TO_PLAYLIST}$id")
     }
 
     fun clearScreen() {

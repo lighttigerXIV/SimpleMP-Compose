@@ -18,8 +18,9 @@ import androidx.compose.ui.unit.dp
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
-import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 
 @Composable
@@ -34,9 +35,9 @@ fun MiniPlayer(
     val musicPlaying = mainVM.musicPlayling.collectAsState().value
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
     val playPauseIcon = if (musicPlaying) {
-        remember { getBitmapFromVector(context, R.drawable.icon_pause_solid) }
+        remember { getImage(context, R.drawable.icon_pause_solid, ImageSizes.SMALL) }
     } else {
-        remember { getBitmapFromVector(context, R.drawable.icon_play_solid) }
+        remember { getImage(context, R.drawable.icon_play_solid, ImageSizes.SMALL) }
     }
 
     Row(
@@ -50,7 +51,7 @@ fun MiniPlayer(
         if (selectedSong != null) {
 
             Image(
-                bitmap = (songAlbumArt ?: getBitmapFromVector(context, R.drawable.record)).asImageBitmap(),
+                bitmap = (songAlbumArt ?: getImage(context, R.drawable.cd, ImageSizes.SMALL)).asImageBitmap(),
                 colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                 contentDescription = "Song Album Art",
                 modifier = Modifier

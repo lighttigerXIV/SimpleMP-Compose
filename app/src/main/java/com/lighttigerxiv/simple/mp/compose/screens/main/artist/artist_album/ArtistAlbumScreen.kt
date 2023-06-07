@@ -22,7 +22,9 @@ import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
-import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
@@ -43,19 +45,13 @@ fun ArtistAlbumScreen(
     val context = LocalContext.current
 
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
-
+    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
     val screenLoaded = albumVM.screenLoaded.collectAsState().value
-
     val selectedSong = mainVM.currentSong.collectAsState().value
-
     val albumArt = albumVM.albumArt.collectAsState().value
-
     val albumName = albumVM.albumName.collectAsState().value
-
     val artistName = albumVM.artistName.collectAsState().value
-
     val songs = albumVM.albumSongs.collectAsState().value
-
     val songsImages = mainVM.songsCovers.collectAsState().value
 
 
@@ -90,7 +86,7 @@ fun ArtistAlbumScreen(
                         MediumHeightSpacer()
 
                         Image(
-                            bitmap = (albumArt ?: getBitmapFromVector(context, R.drawable.record)).asImageBitmap(),
+                            bitmap = (albumArt ?: getImage(context, R.drawable.cd, ImageSizes.LARGE)).asImageBitmap(),
                             colorFilter = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                             contentDescription = "",
                             modifier = Modifier
@@ -98,6 +94,12 @@ fun ArtistAlbumScreen(
                                 .clip(RoundedCornerShape(14.dp))
                                 .aspectRatio(1f)
                                 .align(Alignment.CenterHorizontally)
+                                .modifyIf(albumArt == null) {
+                                    background(surfaceVariantColor)
+                                }
+                                .modifyIf(albumArt == null) {
+                                    padding(5.dp)
+                                }
                         )
 
                         MediumHeightSpacer()

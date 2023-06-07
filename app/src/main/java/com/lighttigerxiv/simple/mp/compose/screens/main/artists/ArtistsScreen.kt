@@ -21,12 +21,13 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.XSMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
-import com.lighttigerxiv.simple.mp.compose.data.variables.SORTS
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
+import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ImageCard
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
-import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromVector
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -114,7 +115,7 @@ fun ArtistsScreen(
                             text = { Text(text = remember { getAppString(context, R.string.SortByRecentlyAdded) }) },
                             onClick = {
 
-                                vm.updateSortType(SORTS.RECENT)
+                                vm.updateSortType(Sorts.RECENT)
                                 vm.updateCurrentArtists(recentArtists)
                                 scope.launch {
                                     vm.updateMenuExpanded(false)
@@ -127,7 +128,7 @@ fun ArtistsScreen(
                             text = { Text(text = remember { getAppString(context, R.string.SortByOldestAdded) }) },
                             onClick = {
 
-                                vm.updateSortType(SORTS.OLDEST)
+                                vm.updateSortType(Sorts.OLDEST)
                                 vm.updateCurrentArtists(oldestArtists)
                                 scope.launch {
                                     vm.updateMenuExpanded(false)
@@ -140,7 +141,7 @@ fun ArtistsScreen(
                             text = { Text(text = remember { getAppString(context, R.string.SortByAscendent) }) },
                             onClick = {
 
-                                vm.updateSortType(SORTS.ASCENDENT)
+                                vm.updateSortType(Sorts.ASCENDENT)
                                 vm.updateCurrentArtists(ascendentArtists)
                                 scope.launch {
                                     vm.updateMenuExpanded(false)
@@ -153,7 +154,7 @@ fun ArtistsScreen(
                             text = { Text(text = remember { getAppString(context, R.string.SortByDescendent) }) },
                             onClick = {
 
-                                vm.updateSortType(SORTS.DESCENDENT)
+                                vm.updateSortType(Sorts.DESCENDENT)
                                 vm.updateCurrentArtists(descendentArtists)
                                 scope.launch {
                                     vm.updateMenuExpanded(false)
@@ -185,7 +186,7 @@ fun ArtistsScreen(
 
                         ImageCard(
                             modifier = Modifier.animateItemPlacement(),
-                            cardImage = remember { albumArt ?: getBitmapFromVector(context, R.drawable.person) },
+                            cardImage = remember { albumArt ?: getImage(context, R.drawable.person, ImageSizes.MEDIUM) },
                             imageTint = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                             cardText = remember { artist.artist },
                             onCardClicked = {

@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.floating_album
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,6 +22,9 @@ import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
@@ -43,6 +45,7 @@ fun FloatingAlbumScreen(
     val context = LocalContext.current
 
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
+    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
 
     val screenLoaded = albumVM.screenLoaded.collectAsState().value
 
@@ -90,7 +93,7 @@ fun FloatingAlbumScreen(
                         MediumHeightSpacer()
 
                         Image(
-                            bitmap = (albumArt ?: BitmapFactory.decodeResource(context.resources, R.drawable.record)).asImageBitmap(),
+                            bitmap = (albumArt ?: getImage(context, R.drawable.cd, ImageSizes.LARGE)).asImageBitmap(),
                             colorFilter = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                             contentDescription = "",
                             modifier = Modifier
@@ -98,6 +101,12 @@ fun FloatingAlbumScreen(
                                 .clip(RoundedCornerShape(14.dp))
                                 .aspectRatio(1f)
                                 .align(Alignment.CenterHorizontally)
+                                .modifyIf(albumArt == null) {
+                                    background(surfaceVariantColor)
+                                }
+                                .modifyIf(albumArt == null) {
+                                    padding(5.dp)
+                                }
                         )
 
                         SmallHeightSpacer()

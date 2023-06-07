@@ -32,6 +32,7 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 
@@ -40,7 +41,7 @@ fun FloatingArtistScreen(
     mainVM: MainVM,
     settingsVM: SettingsVM,
     artistID: Long,
-    artistVM: FloatingArtistScreenVM,
+    vm: FloatingArtistScreenVM,
     onBackClicked: () -> Unit
 ) {
 
@@ -49,22 +50,23 @@ fun FloatingArtistScreen(
     val nestedScrollViewState = rememberNestedScrollViewState()
 
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
+    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
 
-    val screenLoaded = artistVM.screenLoaded.collectAsState().value
+    val screenLoaded = vm.screenLoaded.collectAsState().value
 
     val selectedSong = mainVM.currentSong.collectAsState().value
 
-    val artistName = artistVM.artistName.collectAsState().value
+    val artistName = vm.artistName.collectAsState().value
 
-    val artistCover = artistVM.artistCover.collectAsState().value
+    val artistCover = vm.artistCover.collectAsState().value
 
-    val tintCover = artistVM.tintCover.collectAsState().value
+    val tintCover = vm.tintCover.collectAsState().value
 
-    val songs = artistVM.artistSongs.collectAsState().value
+    val songs = vm.artistSongs.collectAsState().value
 
 
     if (!screenLoaded) {
-        artistVM.loadScreen(artistID, mainVM, settingsVM)
+        vm.loadScreen(artistID, mainVM, settingsVM)
     }
 
 
@@ -98,6 +100,12 @@ fun FloatingArtistScreen(
                         .align(Alignment.CenterHorizontally)
                         .padding(20.dp)
                         .clip(RoundedCornerShape(14.dp))
+                        .modifyIf(tintCover) {
+                            background(surfaceVariantColor)
+                        }
+                        .modifyIf(tintCover) {
+                            padding(5.dp)
+                        }
                 )
 
                 CustomText(

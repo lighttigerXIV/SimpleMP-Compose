@@ -7,10 +7,9 @@ The app is open sorce so you can always go to the about page and open an issue r
 
 ### Download
 
-[![Releases](https://github.com/lighttigerXIV/SimpleMP-Compose/releases)]([https://github.com/lighttigerXIV/SimpleMP-Compose/releases](https://github-production-user-asset-6210df.s3.amazonaws.com/35658492/244201146-f882d864-4f26-4919-bc50-08d1ee2dd33b.svg))
+[<img height="100" src="https://github-production-user-asset-6210df.s3.amazonaws.com/35658492/244206777-debafcc4-6408-40e1-9224-f85d67baed86.svg">](https://github.com/lighttigerXIV/SimpleMP-Compose/releases)
 
-
-[![Play Store](https://github.com/lighttigerXIV/SimpleMP-Compose/releases)]([https://github.com/lighttigerXIV/SimpleMP-Compose/releases](https://github.com/lighttigerXIV/SimpleMP-Compose/assets/35658492/a3b7fc0b-1489-428c-bba0-b1c99a44db9a.svg))
+[<img height="100" src="https://github-production-user-asset-6210df.s3.amazonaws.com/35658492/244207413-05ded486-e3be-4724-ada4-ced065999793.svg">](https://play.google.com/store/apps/details?id=com.lighttigerxiv.simple.mp)
 
 ### Screenshots
 <p align="center">

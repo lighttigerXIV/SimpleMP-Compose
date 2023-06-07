@@ -10,6 +10,7 @@ import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
+import com.lighttigerxiv.simple.mp.compose.functions.unaccent
 import com.lighttigerxiv.simple.mp.compose.screens.main.artist.ArtistScreenVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -100,10 +101,10 @@ class ArtistsScreenVM(application: Application) : AndroidViewModel(application) 
 
         when (preferences.getString("ArtistsSortType", Sorts.RECENT)) {
 
-            Sorts.RECENT -> _currentArtists.update { recentArtists.value!!.filter { it.artist.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            Sorts.OLDEST -> _currentArtists.update { oldestArtists.value!!.filter { it.artist.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            Sorts.ASCENDENT -> _currentArtists.update { ascendentArtists.value!!.filter { it.artist.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            Sorts.DESCENDENT -> _currentArtists.update { descendentArtists.value!!.filter { it.artist.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            Sorts.RECENT -> _currentArtists.update { recentArtists.value!!.filter { it.artist.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Sorts.OLDEST -> _currentArtists.update { oldestArtists.value!!.filter { it.artist.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Sorts.ASCENDENT -> _currentArtists.update { ascendentArtists.value!!.filter { it.artist.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Sorts.DESCENDENT -> _currentArtists.update { descendentArtists.value!!.filter { it.artist.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
         }
     }
 

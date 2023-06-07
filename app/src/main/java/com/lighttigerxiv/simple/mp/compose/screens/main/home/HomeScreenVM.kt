@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
+import com.lighttigerxiv.simple.mp.compose.functions.unaccent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -93,10 +94,10 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
 
         when (preferences.getString("HomeSongsSortType", Sorts.RECENT)) {
 
-            Sorts.RECENT -> _currentSongs.update { recentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            Sorts.OLDEST -> _currentSongs.update { oldestSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            Sorts.ASCENDENT -> _currentSongs.update { ascendentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            Sorts.DESCENDENT -> _currentSongs.update { descendentSongs.value!!.filter { it.title.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            Sorts.RECENT -> _currentSongs.update { recentSongs.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Sorts.OLDEST -> _currentSongs.update { oldestSongs.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Sorts.ASCENDENT -> _currentSongs.update { ascendentSongs.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Sorts.DESCENDENT -> _currentSongs.update { descendentSongs.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
         }
     }
 

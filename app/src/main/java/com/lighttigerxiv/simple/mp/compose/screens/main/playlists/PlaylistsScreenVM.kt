@@ -10,6 +10,7 @@ import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.items.Playlist
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.PlaylistsQueries
 import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
+import com.lighttigerxiv.simple.mp.compose.functions.unaccent
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.PlaylistScreenVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -96,7 +97,7 @@ class PlaylistsScreenVM(application: Application) : AndroidViewModel(application
 
             _currentPlaylists.update {
                 playlists.value!!.filter {
-                    it.name.lowercase().trim().contains(searchText.value.lowercase().trim())
+                    it.name.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim())
                 }
             }
         }

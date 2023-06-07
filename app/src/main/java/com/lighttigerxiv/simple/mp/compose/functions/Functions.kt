@@ -27,6 +27,7 @@ import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongCover
 import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import java.io.File
+import java.text.Normalizer
 
 
 //************************************************
@@ -225,7 +226,12 @@ fun getAppString(context: Context, id: Int): String{
     return context.getString(id)
 }
 
+fun CharSequence.unaccent(): String {
+    val regex = "\\p{InCombiningDiacriticalMarks}+".toRegex()
 
+    val temp = Normalizer.normalize(this, Normalizer.Form.NFD)
+    return regex.replace(temp, "")
+}
 
 @Composable
 fun getSurfaceColor(settingsVM: SettingsVM): Color{

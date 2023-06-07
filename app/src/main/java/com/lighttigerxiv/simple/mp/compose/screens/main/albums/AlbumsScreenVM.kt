@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
+import com.lighttigerxiv.simple.mp.compose.functions.unaccent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -92,13 +93,11 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
     }
 
     fun filterAlbums() {
-
         when (preferences.getString("AlbumsSortType", Sorts.RECENT)) {
-
-            Sorts.RECENT -> _currentAlbums.update { recentAlbums.value!!.filter { it.album.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            Sorts.OLDEST -> _currentAlbums.update { oldestAlbums.value!!.filter { it.album.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            Sorts.ASCENDENT -> _currentAlbums.update { ascendentAlbums.value!!.filter { it.album.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
-            Sorts.DESCENDENT -> _currentAlbums.update { descendentAlbums.value!!.filter { it.album.lowercase().trim().contains(searchText.value.lowercase().trim()) } }
+            Sorts.RECENT -> _currentAlbums.update { recentAlbums.value!!.filter { it.album.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Sorts.OLDEST -> _currentAlbums.update { oldestAlbums.value!!.filter { it.album.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Sorts.ASCENDENT -> _currentAlbums.update { ascendentAlbums.value!!.filter { it.album.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Sorts.DESCENDENT -> _currentAlbums.update { descendentAlbums.value!!.filter { it.album.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
         }
     }
 

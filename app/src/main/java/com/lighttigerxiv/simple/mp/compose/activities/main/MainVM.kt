@@ -117,6 +117,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
 
     var onSongSelected: () -> Unit = {}
+    var onFinish: () -> Unit = {}
 
 
     //************************************************
@@ -244,6 +245,8 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                             _selectedSong.update { null }
 
                             updateMiniPlayerPeekHeight()
+
+                            onFinish()
                         }
 
                         _loadingSongs.update { false }

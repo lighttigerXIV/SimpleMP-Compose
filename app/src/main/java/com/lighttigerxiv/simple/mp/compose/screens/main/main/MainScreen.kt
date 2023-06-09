@@ -60,6 +60,7 @@ import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScree
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.genre_playlists.GenrePlaylistScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.PlaylistScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.PlaylistScreenVM
+import kotlinx.coroutines.launch
 import java.net.URLDecoder
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -73,6 +74,7 @@ fun MainScreen(
 ) {
 
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     val mainNavController = rememberNavController()
@@ -93,6 +95,12 @@ fun MainScreen(
             .collect {
                 mainVM.onSheetChange(it, playerSheetState)
             }
+    }
+
+    mainVM.onFinish = {
+        scope.launch {
+            playerSheetState.collapse()
+        }
     }
 
 

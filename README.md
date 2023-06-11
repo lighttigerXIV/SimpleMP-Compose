@@ -6,8 +6,10 @@ You can change it's theme either by having it pick the colors by your device or 
 The app is open sorce so you can always go to the about page and open an issue regarding a bug or a feature that really should be added.
 
 ### Download
-- [Releases](https://github.com/lighttigerXIV/SimpleMP-Compose/releases)
-- [Play Store](https://play.google.com/store/apps/details?id=com.lighttigerxiv.simple.mp)
+
+[<img height="100" src="https://github-production-user-asset-6210df.s3.amazonaws.com/35658492/244206777-debafcc4-6408-40e1-9224-f85d67baed86.svg">](https://github.com/lighttigerXIV/SimpleMP-Compose/releases)
+
+[<img height="100" src="https://github-production-user-asset-6210df.s3.amazonaws.com/35658492/244207413-05ded486-e3be-4724-ada4-ced065999793.svg">](https://play.google.com/store/apps/details?id=com.lighttigerxiv.simple.mp)
 
 ### Screenshots
 <p align="center">

@@ -13,16 +13,29 @@ The app is open sorce so you can always go to the about page and open an issue r
 
 ### Screenshots
 <p align="center">
-  <img alt="Light" src="https://user-images.githubusercontent.com/35658492/206914683-f52bdd42-7292-41d8-a7a6-a360d1f60b46.PNG" width="33%%">
-  <img alt="Light" src="https://user-images.githubusercontent.com/35658492/206914686-19db0eee-7fca-4a12-972f-a4466d67f08f.PNG" width="33%%">
-  <img alt="Light" src="https://user-images.githubusercontent.com/35658492/206914692-0527181d-6ed4-414d-870d-5f27d130f8c8.PNG" width="33%%">
+  <img alt="Light" src="https://github.com/lighttigerXIV/SimpleMP-Compose/assets/35658492/a5b2b28b-093b-439d-be1c-6f8498d31319" width="33%%">
+  <img alt="Light" src="https://github.com/lighttigerXIV/SimpleMP-Compose/assets/35658492/c8cc13b4-6283-452b-a956-9f426f56dbcb" width="33%%">
+  <img alt="Light" src="https://github.com/lighttigerXIV/SimpleMP-Compose/assets/35658492/e8099217-89ea-4ba4-94ab-e81d26c54b2a" width="33%%">
 </p>
 <p align="center">
-  <img alt="Light" src="https://user-images.githubusercontent.com/35658492/206914694-f9038dab-d86d-45db-aaf0-16ecc5a48a5e.PNG" width="33%%">
-  <img alt="Light" src="https://user-images.githubusercontent.com/35658492/206914696-13433018-c751-4100-b733-9ace89309169.PNG" width="33%%">
-  <img alt="Light" src="https://user-images.githubusercontent.com/35658492/206914701-393fd452-9406-41ff-a08b-883d99bd708a.PNG" width="33%%">
+  <img alt="Light" src="https://github.com/lighttigerXIV/SimpleMP-Compose/assets/35658492/5223d262-a617-42ab-b40a-96b2ba602542" width="33%%">
+  <img alt="Light" src="https://github.com/lighttigerXIV/SimpleMP-Compose/assets/35658492/51d100a9-e944-411b-8d83-e9047bb4e3b2" width="33%%">
+  <img alt="Light" src="https://github.com/lighttigerXIV/SimpleMP-Compose/assets/35658492/3e3d146c-f6cc-4ca8-9726-603c7de66db2" width="33%%">
 </p>
 <p align="center">
-  <img alt="Light" src="https://user-images.githubusercontent.com/35658492/206914705-76f4a6ef-fca1-4d48-be50-77d8963d0ddc.PNG" width="33%%">
-  <img alt="Light" src="https://user-images.githubusercontent.com/35658492/206914707-5d6f1f9b-ebd7-454e-b6b0-6404ce4933f3.PNG" width="33%%">
+  <img alt="Light" src="https://github.com/lighttigerXIV/SimpleMP-Compose/assets/35658492/6edce05e-c830-418c-80c5-7936568fb4b6" width="33%%">
+  <img alt="Light" src="https://github.com/lighttigerXIV/SimpleMP-Compose/assets/35658492/b3e9a3f2-7bdd-4f35-94de-fbea698a5ee4" width="33%%">
 </p>
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -202,7 +202,7 @@ fun HomeScreen(
                                 onClick = {
 
                                     vm.updateMenuExpanded(false)
-                                    onOpenScreen(Routes.ROOT.SETTINGS)
+                                    onOpenScreen(Routes.Root.SETTINGS)
                                 }
                             )
 
@@ -214,7 +214,7 @@ fun HomeScreen(
 
                                     vm.updateMenuExpanded(false)
 
-                                    onOpenScreen(Routes.ROOT.ABOUT)
+                                    onOpenScreen(Routes.Root.ABOUT)
                                 }
                             )
                         }
@@ -242,9 +242,9 @@ fun HomeScreen(
                                     onMenuClicked = { option ->
 
                                         when (option) {
-                                            "Artist" -> onOpenScreen("${Routes.ROOT.FLOATING_ARTIST}${song.artistID}")
-                                            "Album" -> onOpenScreen("${Routes.ROOT.FLOATING_ALBUM}${song.albumID}")
-                                            "Playlist" -> onOpenScreen("${Routes.ROOT.ADD_SONG_TO_PLAYLIST}${song.id}")
+                                            "Artist" -> onOpenScreen("${Routes.Root.FLOATING_ARTIST}${song.artistID}")
+                                            "Album" -> onOpenScreen("${Routes.Root.FLOATING_ALBUM}${song.albumID}")
+                                            "Playlist" -> onOpenScreen("${Routes.Root.ADD_SONG_TO_PLAYLIST}${song.id}")
                                         }
                                     },
                                     onSongClick = {

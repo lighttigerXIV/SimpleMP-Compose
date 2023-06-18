@@ -310,15 +310,15 @@ fun MainScaffold(
                         upNextQueue = upNextQueue,
                         onOpenPage = { route ->
 
-                            if (route.startsWith(Routes.ROOT.FLOATING_ARTIST)) {
+                            if (route.startsWith(Routes.Root.FLOATING_ARTIST)) {
                                 ViewModelProvider(activityContext)[FloatingArtistScreenVM::class.java].clearScreen()
                             }
 
-                            if (route.startsWith(Routes.ROOT.FLOATING_ALBUM)) {
+                            if (route.startsWith(Routes.Root.FLOATING_ALBUM)) {
                                 ViewModelProvider(activityContext)[FloatingAlbumScreenVM::class.java].clearScreen()
                             }
 
-                            if (route.startsWith(Routes.ROOT.ADD_SONG_TO_PLAYLIST)) {
+                            if (route.startsWith(Routes.Root.ADD_SONG_TO_PLAYLIST)) {
                                 ViewModelProvider(activityContext)[AddSongToPlaylistScreenVM::class.java].clearScreen()
                             }
 
@@ -336,25 +336,25 @@ fun MainScaffold(
                     .fillMaxSize()
                     .padding(scaffoldPadding),
                 navController = navController,
-                startDestination = Routes.MAIN.HOME
+                startDestination = Routes.Main.HOME
             ) {
 
-                composable(Routes.MAIN.HOME) {
+                composable(Routes.Main.HOME) {
 
                     HomeScreen(
                         mainVM = mainVM,
                         vm = ViewModelProvider(activityContext)[HomeScreenVM::class.java],
                         onOpenScreen = { route ->
 
-                            if (route.startsWith(Routes.ROOT.FLOATING_ARTIST)) {
+                            if (route.startsWith(Routes.Root.FLOATING_ARTIST)) {
                                 ViewModelProvider(activityContext)[FloatingArtistScreenVM::class.java].clearScreen()
                             }
 
-                            if (route.startsWith(Routes.ROOT.FLOATING_ALBUM)) {
+                            if (route.startsWith(Routes.Root.FLOATING_ALBUM)) {
                                 ViewModelProvider(activityContext)[FloatingAlbumScreenVM::class.java].clearScreen()
                             }
 
-                            if (route.startsWith(Routes.ROOT.ADD_SONG_TO_PLAYLIST)) {
+                            if (route.startsWith(Routes.Root.ADD_SONG_TO_PLAYLIST)) {
                                 ViewModelProvider(activityContext)[AddSongToPlaylistScreenVM::class.java].clearScreen()
                             }
 
@@ -363,7 +363,7 @@ fun MainScaffold(
                     )
                 }
 
-                composable(Routes.MAIN.ARTISTS) {
+                composable(Routes.Main.ARTISTS) {
                     ArtistsScreen(
                         mainVM,
                         ViewModelProvider(activityContext)[ArtistsScreenVM::class.java],
@@ -372,7 +372,7 @@ fun MainScaffold(
                     )
                 }
 
-                composable(Routes.MAIN.ALBUMS) {
+                composable(Routes.Main.ALBUMS) {
                     AlbumsScreen(
                         mainVM = mainVM,
                         vm = ViewModelProvider(activityContext)[AlbumsScreenVM::class.java],
@@ -384,7 +384,7 @@ fun MainScaffold(
                     )
                 }
 
-                composable(Routes.MAIN.PLAYLISTS) {
+                composable(Routes.Main.PLAYLISTS) {
                     PlaylistsScreen(
                         mainVM,
                         ViewModelProvider(activityContext)[PlaylistsScreenVM::class.java],
@@ -394,7 +394,7 @@ fun MainScaffold(
                 }
 
 
-                composable(route = "${Routes.MAIN.ARTIST}{id}")
+                composable(route = "${Routes.Main.ARTIST}{id}")
                 {
 
                     val id = it.arguments?.getString("id")?.toLongOrNull()
@@ -412,7 +412,7 @@ fun MainScaffold(
                     }
                 }
 
-                composable(route = "${Routes.MAIN.ARTIST_ALBUM}{id}") {
+                composable(route = "${Routes.Main.ARTIST_ALBUM}{id}") {
 
                     val id = it.arguments?.getString("id")?.toLongOrNull()
 
@@ -428,7 +428,7 @@ fun MainScaffold(
                 }
 
                 composable(
-                    route = "${Routes.MAIN.SELECT_ARTIST_COVER}name={name}&id={id}",
+                    route = "${Routes.Main.SELECT_ARTIST_COVER}name={name}&id={id}",
                 ) {
 
                     val name = it.arguments?.getString("name")
@@ -453,7 +453,7 @@ fun MainScaffold(
                 }
 
                 composable(
-                    route = "${Routes.MAIN.ALBUM}{albumID}",
+                    route = "${Routes.Main.ALBUM}{albumID}",
                 ) {
 
                     val albumID = it.arguments?.getString("albumID")?.toLongOrNull()
@@ -468,7 +468,7 @@ fun MainScaffold(
                         )
                     }
                 }
-                composable("${Routes.MAIN.GENRE_PLAYLIST}{genre}") {
+                composable("${Routes.Main.GENRE_PLAYLIST}{genre}") {
                     var genre = it.arguments?.getString("genre")
 
                     if (genre != null) {
@@ -485,7 +485,7 @@ fun MainScaffold(
                     }
                 }
 
-                composable("${Routes.MAIN.PLAYLIST}{playlistID}") {
+                composable("${Routes.Main.PLAYLIST}{playlistID}") {
 
                     val playlistID = it.arguments?.getString("playlistID")
 
@@ -516,7 +516,7 @@ fun getNavigationItems(context: Context): List<BottomNavItem> {
     itemsList.add(
         BottomNavItem(
             name = "Home",
-            route = Routes.MAIN.HOME,
+            route = Routes.Main.HOME,
             activeIcon = getImage(context, R.drawable.home_filled, ImageSizes.SMALL).asImageBitmap(),
             inactiveIcon = getImage(context, R.drawable.home, ImageSizes.SMALL).asImageBitmap()
         )
@@ -525,7 +525,7 @@ fun getNavigationItems(context: Context): List<BottomNavItem> {
     itemsList.add(
         BottomNavItem(
             name = "Artists",
-            route = Routes.MAIN.ARTISTS,
+            route = Routes.Main.ARTISTS,
             activeIcon = getImage(context, R.drawable.person_filled, ImageSizes.SMALL).asImageBitmap(),
             inactiveIcon = getImage(context, R.drawable.person, ImageSizes.SMALL).asImageBitmap()
         )
@@ -534,7 +534,7 @@ fun getNavigationItems(context: Context): List<BottomNavItem> {
     itemsList.add(
         BottomNavItem(
             name = "Albums",
-            route = Routes.MAIN.ALBUMS,
+            route = Routes.Main.ALBUMS,
             activeIcon = getImage(context, R.drawable.cd_filled, ImageSizes.SMALL).asImageBitmap(),
             inactiveIcon = getImage(context, R.drawable.cd, ImageSizes.SMALL).asImageBitmap()
         )
@@ -543,7 +543,7 @@ fun getNavigationItems(context: Context): List<BottomNavItem> {
     itemsList.add(
         BottomNavItem(
             name = "Playlists",
-            route = Routes.MAIN.PLAYLISTS,
+            route = Routes.Main.PLAYLISTS,
             activeIcon = getImage(context, R.drawable.playlist_filled, ImageSizes.SMALL).asImageBitmap(),
             inactiveIcon = getImage(context, R.drawable.playlist, ImageSizes.SMALL).asImageBitmap()
         )

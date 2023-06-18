@@ -23,8 +23,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_RADIUS
+import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
@@ -36,8 +38,7 @@ import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 @Composable
 fun PermissionsScreen(
     permissionsVM: PermissionsScreenVM,
-    onBackClicked: () -> Unit = {},
-    onNextClicked: () -> Unit = {}
+    navController: NavHostController
 ) {
 
     val context = LocalContext.current
@@ -245,7 +246,7 @@ fun PermissionsScreen(
 
                 Button(
                     onClick = {
-                        onBackClicked()
+                        navController.navigate(Routes.Setup.WELCOME)
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
@@ -261,7 +262,7 @@ fun PermissionsScreen(
                 Spacer(modifier = Modifier.width(5.dp))
 
                 Button(
-                    onClick = { onNextClicked() },
+                    onClick = { navController.navigate(Routes.Setup.OTHER) },
                     enabled = allPermissionsGranted,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary

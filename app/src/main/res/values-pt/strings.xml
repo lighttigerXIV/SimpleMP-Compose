@@ -69,6 +69,7 @@
     <string name="Granted">Permitido</string>
     <string name="Grant">Permitir</string>
     <string name="Permissions">Permissões</string>
+    <string name="OtherSettings">Outras Definições</string>
     <string name="EnableStorageExplanation">Ative a permissão de leitura de ficheiros para conseguir ver os ficheiros de música no dispositivo</string>
     <string name="EnableNotificationExplanation">Ative a permissão de notificações para conseguir mostrar a notificação da música</string>
     <string name="Back">Voltar</string>

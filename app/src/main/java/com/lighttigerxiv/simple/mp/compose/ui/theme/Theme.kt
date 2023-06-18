@@ -6,6 +6,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.lighttigerxiv.simple.mp.compose.data.variables.SettingsValues
 
 
 private val LightBlueColors = lightColorScheme(
@@ -874,85 +875,85 @@ fun ComposeSimpleMPTheme(
 
     val colors = when {
 
-        themeMode == "Dark" && themeAccent == "Blue" -> DarkBlueColors
-        themeMode == "Dark" && themeAccent == "Red" -> DarkRedColors
-        themeMode == "Dark" && themeAccent == "Purple" -> DarkPurpleColors
-        themeMode == "Dark" && themeAccent == "Yellow" -> DarkYellowColors
-        themeMode == "Dark" && themeAccent == "Orange" -> DarkOrangeColors
-        themeMode == "Dark" && themeAccent == "Green" -> DarkGreenColors
-        themeMode == "Dark" && themeAccent == "Pink" -> DarkPinkColors
-        themeAccent == "MacchiatoRosewater" -> MacchiatoRosewater
-        themeAccent == "MacchiatoFlamingo" -> MacchiatoFlamingo
-        themeAccent == "MacchiatoPink" -> MacchiatoPink
-        themeAccent == "MacchiatoMauve" -> MacchiatoMauve
-        themeAccent == "MacchiatoRed" -> MacchiatoRed
-        themeAccent == "MacchiatoMaroon" -> MacchiatoMaroon
-        themeAccent == "MacchiatoPeach" -> MacchiatoPeach
-        themeAccent == "MacchiatoYellow" -> MacchiatoYellow
-        themeAccent == "MacchiatoGreen" -> MacchiatoGreen
-        themeAccent == "MacchiatoTeal" -> MacchiatoTeal
-        themeAccent == "MacchiatoSky" -> MacchiatoSky
-        themeAccent == "MacchiatoSapphire" -> MacchiatoSapphire
-        themeAccent == "MacchiatoBlue" -> MacchiatoBlue
-        themeAccent == "MacchiatoLavender" -> MacchiatoLavender
-        themeAccent == "MochaRosewater" -> MochaRosewater
-        themeAccent == "MochaFlamingo" -> MochaFlamingo
-        themeAccent == "MochaPink" -> MochaPink
-        themeAccent == "MochaMauve" -> MochaMauve
-        themeAccent == "MochaRed" -> MochaRed
-        themeAccent == "MochaMaroon" -> MochaMaroon
-        themeAccent == "MochaPeach" -> MochaPeach
-        themeAccent == "MochaYellow" -> MochaYellow
-        themeAccent == "MochaGreen" -> MochaGreen
-        themeAccent == "MochaTeal" -> MochaTeal
-        themeAccent == "MochaSky" -> MochaSky
-        themeAccent == "MochaSapphire" -> MochaSapphire
-        themeAccent == "MochaBlue" -> MochaBlue
-        themeAccent == "MochaLavender" -> MochaLavender
-        themeAccent == "FrappeRosewater" -> FrappeRosewater
-        themeAccent == "FrappeFlamingo" -> FrappeFlamingo
-        themeAccent == "FrappePink" -> FrappePink
-        themeAccent == "FrappeMauve" -> FrappeMauve
-        themeAccent == "FrappeRed" -> FrappeRed
-        themeAccent == "FrappeMaroon" -> FrappeMaroon
-        themeAccent == "FrappePeach" -> FrappePeach
-        themeAccent == "FrappeYellow" -> FrappeYellow
-        themeAccent == "FrappeGreen" -> FrappeGreen
-        themeAccent == "FrappeTeal" -> FrappeTeal
-        themeAccent == "FrappeSky" -> FrappeSky
-        themeAccent == "FrappeSapphire" -> FrappeSapphire
-        themeAccent == "FrappeBlue" -> FrappeBlue
-        themeAccent == "FrappeLavender" -> FrappeLavender
+        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.BLUE -> DarkBlueColors
+        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.RED -> DarkRedColors
+        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.PURPLE -> DarkPurpleColors
+        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.YELLOW -> DarkYellowColors
+        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.ORANGE -> DarkOrangeColors
+        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.GREEN -> DarkGreenColors
+        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.PINK -> DarkPinkColors
+        themeAccent == SettingsValues.Themes.FRAPPE_ROSEWATER -> FrappeRosewater
+        themeAccent == SettingsValues.Themes.FRAPPE_FLAMINGO -> FrappeFlamingo
+        themeAccent == SettingsValues.Themes.FRAPPE_PINK -> FrappePink
+        themeAccent == SettingsValues.Themes.FRAPPE_MAUVE -> FrappeMauve
+        themeAccent == SettingsValues.Themes.FRAPPE_RED -> FrappeRed
+        themeAccent == SettingsValues.Themes.FRAPPE_MAROON -> FrappeMaroon
+        themeAccent == SettingsValues.Themes.FRAPPE_PEACH -> FrappePeach
+        themeAccent == SettingsValues.Themes.FRAPPE_YELLOW -> FrappeYellow
+        themeAccent == SettingsValues.Themes.FRAPPE_GREEN -> FrappeGreen
+        themeAccent == SettingsValues.Themes.FRAPPE_TEAL -> FrappeTeal
+        themeAccent == SettingsValues.Themes.FRAPPE_SKY -> FrappeSky
+        themeAccent == SettingsValues.Themes.FRAPPE_SAPPHIRE -> FrappeSapphire
+        themeAccent == SettingsValues.Themes.FRAPPE_BLUE -> FrappeBlue
+        themeAccent == SettingsValues.Themes.FRAPPE_LAVENDER -> FrappeLavender
+        themeAccent == SettingsValues.Themes.MACCHIATO_ROSEWATER -> MacchiatoRosewater
+        themeAccent == SettingsValues.Themes.MACCHIATO_FLAMINGO -> MacchiatoFlamingo
+        themeAccent == SettingsValues.Themes.MACCHIATO_PINK -> MacchiatoPink
+        themeAccent == SettingsValues.Themes.MACCHIATO_MAUVE -> MacchiatoMauve
+        themeAccent == SettingsValues.Themes.MACCHIATO_RED -> MacchiatoRed
+        themeAccent == SettingsValues.Themes.MACCHIATO_MAROON -> MacchiatoMaroon
+        themeAccent == SettingsValues.Themes.MACCHIATO_PEACH -> MacchiatoPeach
+        themeAccent == SettingsValues.Themes.MACCHIATO_YELLOW -> MacchiatoYellow
+        themeAccent == SettingsValues.Themes.MACCHIATO_GREEN -> MacchiatoGreen
+        themeAccent == SettingsValues.Themes.MACCHIATO_TEAL -> MacchiatoTeal
+        themeAccent == SettingsValues.Themes.MACCHIATO_SKY -> MacchiatoSky
+        themeAccent == SettingsValues.Themes.MACCHIATO_SAPPHIRE -> MacchiatoSapphire
+        themeAccent == SettingsValues.Themes.MACCHIATO_BLUE -> MacchiatoBlue
+        themeAccent == SettingsValues.Themes.MACCHIATO_LAVENDER -> MacchiatoLavender
+        themeAccent == SettingsValues.Themes.MOCHA_ROSEWATER -> MochaRosewater
+        themeAccent == SettingsValues.Themes.MOCHA_FLAMINGO -> MochaFlamingo
+        themeAccent == SettingsValues.Themes.MOCHA_PINK -> MochaPink
+        themeAccent == SettingsValues.Themes.MOCHA_MAUVE -> MochaMauve
+        themeAccent == SettingsValues.Themes.MOCHA_RED -> MochaRed
+        themeAccent == SettingsValues.Themes.MOCHA_MAROON -> MochaMaroon
+        themeAccent == SettingsValues.Themes.MOCHA_PEACH -> MochaPeach
+        themeAccent == SettingsValues.Themes.MOCHA_YELLOW -> MochaYellow
+        themeAccent == SettingsValues.Themes.MOCHA_GREEN -> MochaGreen
+        themeAccent == SettingsValues.Themes.MOCHA_TEAL -> MochaTeal
+        themeAccent == SettingsValues.Themes.MOCHA_SKY -> MochaSky
+        themeAccent == SettingsValues.Themes.MOCHA_SAPPHIRE -> MochaSapphire
+        themeAccent == SettingsValues.Themes.MOCHA_BLUE -> MochaBlue
+        themeAccent == SettingsValues.Themes.MOCHA_LAVENDER -> MochaLavender
 
-        supportsMaterialYou && themeMode == "Dark" -> dynamicDarkColorScheme(context)
+        supportsMaterialYou && themeMode == SettingsValues.ThemeMode.DARK -> dynamicDarkColorScheme(context)
 
-        themeMode == "Light" && themeAccent == "Blue" -> LightBlueColors
-        themeMode == "Light" && themeAccent == "Red" -> LightRedColors
-        themeMode == "Light" && themeAccent == "Purple" -> LightPurpleColors
-        themeMode == "Light" && themeAccent == "Yellow" -> LightYellowColors
-        themeMode == "Light" && themeAccent == "Orange" -> LightOrangeColors
-        themeMode == "Light" && themeAccent == "Green" -> LightGreenColors
-        themeMode == "Light" && themeAccent == "Pink" -> LightPinkColors
+        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.BLUE -> LightBlueColors
+        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.RED -> LightRedColors
+        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.PURPLE -> LightPurpleColors
+        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.YELLOW -> LightYellowColors
+        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.ORANGE -> LightOrangeColors
+        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.GREEN -> LightGreenColors
+        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.PINK -> LightPinkColors
 
-        supportsMaterialYou && themeMode == "Light" -> dynamicLightColorScheme(context)
+        supportsMaterialYou && themeMode == SettingsValues.ThemeMode.LIGHT -> dynamicLightColorScheme(context)
 
-        themeAccent == "Blue" && useDarkTheme -> DarkBlueColors
-        themeAccent == "Red" && useDarkTheme -> DarkRedColors
-        themeAccent == "Purple" && useDarkTheme -> DarkPurpleColors
-        themeAccent == "Yellow" && useDarkTheme -> DarkYellowColors
-        themeAccent == "Orange" && useDarkTheme -> DarkOrangeColors
-        themeAccent == "Green" && useDarkTheme -> DarkGreenColors
-        themeAccent == "Pink" && useDarkTheme -> DarkPinkColors
+        themeAccent == SettingsValues.Themes.BLUE && useDarkTheme -> DarkBlueColors
+        themeAccent == SettingsValues.Themes.RED && useDarkTheme -> DarkRedColors
+        themeAccent == SettingsValues.Themes.PURPLE && useDarkTheme -> DarkPurpleColors
+        themeAccent == SettingsValues.Themes.YELLOW && useDarkTheme -> DarkYellowColors
+        themeAccent == SettingsValues.Themes.ORANGE && useDarkTheme -> DarkOrangeColors
+        themeAccent == SettingsValues.Themes.GREEN && useDarkTheme -> DarkGreenColors
+        themeAccent == SettingsValues.Themes.PINK && useDarkTheme -> DarkPinkColors
 
         supportsMaterialYou && useDarkTheme -> dynamicDarkColorScheme(context)
 
-        themeAccent == "Blue" && !useDarkTheme -> LightBlueColors
-        themeAccent == "Red" && !useDarkTheme -> LightRedColors
-        themeAccent == "Purple" && !useDarkTheme -> LightPurpleColors
-        themeAccent == "Yellow" && !useDarkTheme -> LightYellowColors
-        themeAccent == "Orange" && !useDarkTheme -> LightOrangeColors
-        themeAccent == "Green" && !useDarkTheme -> LightGreenColors
-        themeAccent == "Pink" && !useDarkTheme -> LightPinkColors
+        themeAccent == SettingsValues.Themes.BLUE && !useDarkTheme -> LightBlueColors
+        themeAccent == SettingsValues.Themes.RED && !useDarkTheme -> LightRedColors
+        themeAccent == SettingsValues.Themes.PURPLE && !useDarkTheme -> LightPurpleColors
+        themeAccent == SettingsValues.Themes.YELLOW && !useDarkTheme -> LightYellowColors
+        themeAccent == SettingsValues.Themes.ORANGE && !useDarkTheme -> LightOrangeColors
+        themeAccent == SettingsValues.Themes.GREEN && !useDarkTheme -> LightGreenColors
+        themeAccent == SettingsValues.Themes.PINK && !useDarkTheme -> LightPinkColors
 
         supportsMaterialYou && !useDarkTheme -> dynamicLightColorScheme(context)
 
@@ -963,8 +964,8 @@ fun ComposeSimpleMPTheme(
 
     when (themeMode) {
 
-        "Dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        "Light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        SettingsValues.ThemeMode.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        SettingsValues.ThemeMode.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
 

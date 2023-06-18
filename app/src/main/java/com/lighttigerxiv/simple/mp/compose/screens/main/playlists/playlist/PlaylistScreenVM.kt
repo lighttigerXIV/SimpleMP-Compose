@@ -272,7 +272,7 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
 
     fun openAddSongsScreen(activityContext: ViewModelStoreOwner, rootNavController: NavHostController, id: String){
         ViewModelProvider(activityContext)[AddSongsScreenVM::class.java].clearScreen()
-        rootNavController.navigate("${Routes.ROOT.ADD_SONGS_TO_PLAYLIST}$id")
+        rootNavController.navigate("${Routes.Root.ADD_SONGS_TO_PLAYLIST}$id")
     }
 
     fun clearScreen() {

@@ -53,11 +53,11 @@ fun BottomNavigationBar(
                     val isItemSelected = when {
 
                         itemRoute == destinationRoute-> true
-                        itemRoute == Routes.MAIN.ARTISTS && destinationRoute!!.startsWith(Routes.MAIN.ARTIST) -> true
-                        itemRoute == Routes.MAIN.ARTISTS && destinationRoute!!.startsWith(Routes.MAIN.ARTIST_ALBUM) -> true
-                        itemRoute == Routes.MAIN.ALBUMS && destinationRoute!!.startsWith(Routes.MAIN.ALBUM) -> true
-                        itemRoute == Routes.MAIN.PLAYLISTS && destinationRoute!!.startsWith(Routes.MAIN.GENRE_PLAYLIST) -> true
-                        itemRoute == Routes.MAIN.PLAYLISTS && destinationRoute!!.startsWith(Routes.MAIN.PLAYLIST) -> true
+                        itemRoute == Routes.Main.ARTISTS && destinationRoute!!.startsWith(Routes.Main.ARTIST) -> true
+                        itemRoute == Routes.Main.ARTISTS && destinationRoute!!.startsWith(Routes.Main.ARTIST_ALBUM) -> true
+                        itemRoute == Routes.Main.ALBUMS && destinationRoute!!.startsWith(Routes.Main.ALBUM) -> true
+                        itemRoute == Routes.Main.PLAYLISTS && destinationRoute!!.startsWith(Routes.Main.GENRE_PLAYLIST) -> true
+                        itemRoute == Routes.Main.PLAYLISTS && destinationRoute!!.startsWith(Routes.Main.PLAYLIST) -> true
                         else -> false
                     }
 
@@ -132,11 +132,11 @@ fun BottomNavigationBar(
                 val isItemSelected = when {
 
                     itemRoute == destinationRoute-> true
-                    itemRoute == Routes.MAIN.ARTISTS && destinationRoute!!.startsWith(Routes.MAIN.ARTIST) -> true
-                    itemRoute == Routes.MAIN.ARTISTS && destinationRoute!!.startsWith(Routes.MAIN.ARTIST_ALBUM) -> true
-                    itemRoute == Routes.MAIN.ALBUMS && destinationRoute!!.startsWith(Routes.MAIN.ALBUM) -> true
-                    itemRoute == Routes.MAIN.PLAYLISTS && destinationRoute!!.startsWith(Routes.MAIN.GENRE_PLAYLIST) -> true
-                    itemRoute == Routes.MAIN.PLAYLISTS && destinationRoute!!.startsWith(Routes.MAIN.PLAYLIST) -> true
+                    itemRoute == Routes.Main.ARTISTS && destinationRoute!!.startsWith(Routes.Main.ARTIST) -> true
+                    itemRoute == Routes.Main.ARTISTS && destinationRoute!!.startsWith(Routes.Main.ARTIST_ALBUM) -> true
+                    itemRoute == Routes.Main.ALBUMS && destinationRoute!!.startsWith(Routes.Main.ALBUM) -> true
+                    itemRoute == Routes.Main.PLAYLISTS && destinationRoute!!.startsWith(Routes.Main.GENRE_PLAYLIST) -> true
+                    itemRoute == Routes.Main.PLAYLISTS && destinationRoute!!.startsWith(Routes.Main.PLAYLIST) -> true
                     else -> false
                 }
 

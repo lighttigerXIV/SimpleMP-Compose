@@ -12,7 +12,15 @@ val MEDIUM_TITLE_SIZE = 22.sp
 val MEDIUM_RADIUS = 14.dp
 
 object Routes{
-    object ROOT{
+
+    object Setup{
+        const val WELCOME = "welcome"
+        const val PERMISSIONS = "permissions"
+        const val OTHER = "other"
+        const val THEMES = "themes"
+    }
+
+    object Root{
         const val MAIN = "main"
         const val SETTINGS = "settings"
         const val ABOUT = "about"
@@ -22,7 +30,7 @@ object Routes{
         const val ADD_SONGS_TO_PLAYLIST = "add_songs_to_playlist/"
         const val ADD_SONG_TO_PLAYLIST = "add_song_to_playlist/"
     }
-    object MAIN{
+    object Main{
         const val HOME = "home"
         const val ARTISTS = "artists"
         const val ARTIST = "artist/"
@@ -33,6 +41,82 @@ object Routes{
         const val PLAYLISTS = "playlists"
         const val GENRE_PLAYLIST = "genre_playlist/"
         const val PLAYLIST = "playlist/"
+    }
+}
+
+object Settings{
+    const val THEME_MODE = "ThemeMode"
+    const val DARK_MODE = "DarkMode"
+    const val FILTER_AUDIO = "FilterAudio"
+    const val THEME_ACCENT = "ThemeAccent"
+    const val DOWNLOAD_COVER = "DownloadArtistCover"
+    const val DOWNLOAD_OVER_DATA = "DownloadOverData"
+}
+
+object SettingsValues{
+    object ThemeMode{
+        const val SYSTEM = "System"
+        const val LIGHT = "Light"
+        const val DARK = "Dark"
+    }
+
+    object DarkMode{
+        const val COLOR = "Color"
+        const val OLED = "Oled"
+    }
+
+    object Themes{
+        const val DEFAULT = "Default"
+        const val SYSTEM = "System"
+        const val BLUE = "Blue"
+        const val RED = "Red"
+        const val PURPLE = "Purple"
+        const val ORANGE = "Orange"
+        const val YELLOW = "Yellow"
+        const val GREEN = "Green"
+        const val PINK = "Pink"
+        const val FRAPPE_ROSEWATER = "FrappeRosewater"
+        const val FRAPPE_FLAMINGO = "FrappeFlamingo"
+        const val FRAPPE_PINK = "FrappePink"
+        const val FRAPPE_MAUVE = "FrappeMauve"
+        const val FRAPPE_RED = "FrappeRed"
+        const val FRAPPE_MAROON = "FrappeMaroon"
+        const val FRAPPE_PEACH = "FrappePeach"
+        const val FRAPPE_YELLOW = "FrappeYellow"
+        const val FRAPPE_GREEN = "FrappeGreen"
+        const val FRAPPE_TEAL = "FrappeTeal"
+        const val FRAPPE_SKY = "FrappeSky"
+        const val FRAPPE_SAPPHIRE = "FrappeSapphire"
+        const val FRAPPE_BLUE = "FrappeBlue"
+        const val FRAPPE_LAVENDER = "FrappeLavender"
+        const val MACCHIATO_ROSEWATER = "MacchiatoRosewater"
+        const val MACCHIATO_FLAMINGO = "MacchiatoFlamingo"
+        const val MACCHIATO_PINK = "MacchiatoPink"
+        const val MACCHIATO_MAUVE = "MacchiatoMauve"
+        const val MACCHIATO_RED = "MacchiatoRed"
+        const val MACCHIATO_MAROON = "MacchiatoMaroon"
+        const val MACCHIATO_PEACH = "MacchiatoPeach"
+        const val MACCHIATO_YELLOW = "MacchiatoYellow"
+        const val MACCHIATO_GREEN = "MacchiatoGreen"
+        const val MACCHIATO_TEAL = "MacchiatoTeal"
+        const val MACCHIATO_SKY = "MacchiatoSky"
+        const val MACCHIATO_SAPPHIRE = "MacchiatoSapphire"
+        const val MACCHIATO_BLUE = "MacchiatoBlue"
+        const val MACCHIATO_LAVENDER = "MacchiatoLavender"
+        const val MOCHA_ROSEWATER = "MochaRosewater"
+        const val MOCHA_FLAMINGO = "MochaFlamingo"
+        const val MOCHA_PINK = "MochaPink"
+        const val MOCHA_MAUVE = "MochaMauve"
+        const val MOCHA_RED = "MochaRed"
+        const val MOCHA_MAROON = "MochaMaroon"
+        const val MOCHA_PEACH = "MochaPeach"
+        const val MOCHA_YELLOW = "MochaYellow"
+        const val MOCHA_GREEN = "MochaGreen"
+        const val MOCHA_TEAL = "MochaTeal"
+        const val MOCHA_SKY = "MochaSky"
+        const val MOCHA_SAPPHIRE = "MochaSapphire"
+        const val MOCHA_BLUE = "MochaBlue"
+        const val MOCHA_LAVENDER = "MochaLavender"
     }
 }
 

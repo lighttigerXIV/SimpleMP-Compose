@@ -77,6 +77,7 @@
     <string name="Granted">Granted</string>
     <string name="Grant">Grant</string>
     <string name="Permissions">Permissions</string>
+    <string name="OtherSettings">Other Settings</string>
     <string name="EnableStorageExplanation">Enable storage permission in order to read all music files in your device</string>
     <string name="EnableNotificationExplanation">Enable notifications permission in order to show the music notification</string>
     <string name="Back">Back</string>

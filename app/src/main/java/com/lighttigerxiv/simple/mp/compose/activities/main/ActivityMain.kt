@@ -35,7 +35,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.activities.setup.ActivityFirstSetup
+import com.lighttigerxiv.simple.mp.compose.activities.setup.ActivitySetup
 import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
         if (!getSharedPreferences(packageName, MODE_PRIVATE).getBoolean("setupCompleted", false)) {
 
             startActivity(
-                Intent(applicationContext, ActivityFirstSetup::class.java)
+                Intent(applicationContext, ActivitySetup::class.java)
             )
 
             finish()
@@ -147,10 +147,10 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .fillMaxSize(),
                                 navController = rootNavController,
-                                startDestination = Routes.ROOT.MAIN
+                                startDestination = Routes.Root.MAIN
                             ) {
 
-                                composable(Routes.ROOT.MAIN) {
+                                composable(Routes.Root.MAIN) {
 
                                     MainScreen(
                                         mainVM = vm,
@@ -181,7 +181,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                composable("${Routes.ROOT.FLOATING_ARTIST}{id}") {
+                                composable("${Routes.Root.FLOATING_ARTIST}{id}") {
                                     val id = it.arguments?.getString("id")?.toLongOrNull()
 
                                     if (id != null) {
@@ -197,7 +197,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
 
-                                composable("${Routes.ROOT.FLOATING_ALBUM}{albumID}") {
+                                composable("${Routes.Root.FLOATING_ALBUM}{albumID}") {
 
                                     val albumID = it.arguments?.getString("albumID")?.toLongOrNull()
 
@@ -212,7 +212,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
 
-                                composable(Routes.ROOT.SETTINGS) {
+                                composable(Routes.Root.SETTINGS) {
 
                                     SettingsScreen(
                                         mainVM = vm,
@@ -223,7 +223,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                composable(Routes.ROOT.ABOUT) {
+                                composable(Routes.Root.ABOUT) {
 
                                     AboutScreen(
                                         mainVM = vm,
@@ -231,7 +231,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                composable(Routes.ROOT.THEMES) {
+                                composable(Routes.Root.THEMES) {
 
                                     ThemesScreen(
                                         mainVM = vm,
@@ -240,7 +240,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                composable("${Routes.ROOT.ADD_SONGS_TO_PLAYLIST}{id}") {
+                                composable("${Routes.Root.ADD_SONGS_TO_PLAYLIST}{id}") {
 
                                     val id = it.arguments?.getString("id")
 
@@ -259,7 +259,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
 
-                                composable("${Routes.ROOT.ADD_SONG_TO_PLAYLIST}{id}") {
+                                composable("${Routes.Root.ADD_SONG_TO_PLAYLIST}{id}") {
 
                                     val id = it.arguments?.getString("id")?.toLongOrNull()
 

@@ -115,6 +115,6 @@ class ArtistsScreenVM(application: Application) : AndroidViewModel(application) 
 
     fun openArtist(activityContext: ViewModelStoreOwner, navController: NavHostController , id: Long){
         ViewModelProvider(activityContext)[ArtistScreenVM::class.java].clearScreen()
-        navController.navigate("${Routes.MAIN.ARTIST}${id}")
+        navController.navigate("${Routes.Main.ARTIST}${id}")
     }
 }

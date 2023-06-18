@@ -202,12 +202,12 @@ class ArtistScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun openAlbumScreen(activityContext: ViewModelStoreOwner, navController: NavHostController, id: Long){
         ViewModelProvider(activityContext)[ArtistAlbumScreenVM::class.java].clearScreen()
-        navController.navigate("${Routes.MAIN.ARTIST_ALBUM}${id}")
+        navController.navigate("${Routes.Main.ARTIST_ALBUM}${id}")
     }
 
     fun openSelectArtistCoverScreen(activityContext: ViewModelStoreOwner, navController: NavHostController, name: String, id: Long){
         ViewModelProvider(activityContext)[SelectArtistCoverScreenVM::class.java].clearScreen()
-        navController.navigate("${Routes.MAIN.SELECT_ARTIST_COVER}name=${name}&id=${id}")
+        navController.navigate("${Routes.Main.SELECT_ARTIST_COVER}name=${name}&id=${id}")
     }
 
     fun clearScreen() {

@@ -16,13 +16,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.text.TitleMedium
 
 @Composable
 fun WelcomeScreen(
-    onNextClicked: () -> Unit = {}
+    navController: NavHostController
 ) {
 
     Column(
@@ -80,7 +82,7 @@ fun WelcomeScreen(
 
             Button(
                 onClick = {
-                    onNextClicked()
+                    navController.navigate(Routes.Setup.PERMISSIONS)
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary

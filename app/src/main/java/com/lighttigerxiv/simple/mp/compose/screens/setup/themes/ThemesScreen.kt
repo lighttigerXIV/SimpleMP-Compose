@@ -14,9 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.lighttigerxiv.simple.mp.compose.R
@@ -28,6 +28,8 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpa
 import com.lighttigerxiv.simple.mp.compose.ui.composables.text.TitleMedium
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.activities.setup.ActivitySetupVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
+import com.lighttigerxiv.simple.mp.compose.functions.getImage
 
 @Composable
 fun ThemesScreen(
@@ -74,7 +76,7 @@ fun ThemesScreen(
                         .height(80.dp)
                         .width(80.dp),
                     contentScale = ContentScale.Fit,
-                    painter = painterResource(id = R.drawable.brush_hd),
+                    bitmap = remember{ getImage(context, R.drawable.brush_filled, ImageSizes.LARGE).asImageBitmap() },
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )

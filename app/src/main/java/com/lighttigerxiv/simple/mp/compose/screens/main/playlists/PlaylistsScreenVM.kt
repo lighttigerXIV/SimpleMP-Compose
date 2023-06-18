@@ -105,11 +105,11 @@ class PlaylistsScreenVM(application: Application) : AndroidViewModel(application
 
     fun openGenrePlaylist(navController: NavHostController, genre: String){
         val encodedGenre = URLEncoder.encode(genre, "UTF-8")
-        navController.navigate("${Routes.MAIN.GENRE_PLAYLIST}$encodedGenre")
+        navController.navigate("${Routes.Main.GENRE_PLAYLIST}$encodedGenre")
     }
 
     fun openPlaylist(activityContext: ViewModelStoreOwner, navController: NavHostController, id: String){
         ViewModelProvider(activityContext)[PlaylistScreenVM::class.java].clearScreen()
-        navController.navigate("${Routes.MAIN.PLAYLIST}${id}")
+        navController.navigate("${Routes.Main.PLAYLIST}${id}")
     }
 }

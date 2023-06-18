@@ -414,7 +414,7 @@ fun PortraitPlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${Routes.ROOT.FLOATING_ARTIST}${selectedSong.artistID}")
+                                            onOpenPage("${Routes.Root.FLOATING_ARTIST}${selectedSong.artistID}")
                                             vm.updateShowMenu(false)
                                         }
                                     )
@@ -425,7 +425,7 @@ fun PortraitPlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${Routes.ROOT.FLOATING_ALBUM}${selectedSong.albumID}")
+                                            onOpenPage("${Routes.Root.FLOATING_ALBUM}${selectedSong.albumID}")
                                             vm.updateShowMenu(false)
                                         }
                                     )
@@ -436,7 +436,7 @@ fun PortraitPlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${Routes.ROOT.ADD_SONG_TO_PLAYLIST}${selectedSong.id}")
+                                            onOpenPage("${Routes.Root.ADD_SONG_TO_PLAYLIST}${selectedSong.id}")
 
                                             vm.updateShowMenu(false)
                                         }
@@ -867,7 +867,7 @@ fun LandscapePlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${Routes.ROOT.FLOATING_ARTIST}${selectedSong.artistID}")
+                                            onOpenPage("${Routes.Root.FLOATING_ARTIST}${selectedSong.artistID}")
                                             vm.updateShowMenu(false)
                                         }
                                     )
@@ -878,7 +878,7 @@ fun LandscapePlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${Routes.ROOT.FLOATING_ALBUM}${selectedSong.albumID}")
+                                            onOpenPage("${Routes.Root.FLOATING_ALBUM}${selectedSong.albumID}")
                                             vm.updateShowMenu(false)
                                         }
                                     )
@@ -889,7 +889,7 @@ fun LandscapePlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${Routes.ROOT.ADD_SONG_TO_PLAYLIST}${selectedSong.id}")
+                                            onOpenPage("${Routes.Root.ADD_SONG_TO_PLAYLIST}${selectedSong.id}")
 
                                             vm.updateShowMenu(false)
                                         }

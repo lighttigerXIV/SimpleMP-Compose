@@ -23,6 +23,8 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
+import com.lighttigerxiv.simple.mp.compose.data.variables.SettingsValues
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
 
@@ -36,33 +38,19 @@ fun SettingsScreen(
 ) {
 
     val context = LocalContext.current
-
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
-
     val screenLoaded = settingsScreenVM.screenLoaded.collectAsState().value
-
     val showThemeModeDialog = settingsScreenVM.showThemeModeDialog.collectAsState().value
-
     val showDarkModeDialog = settingsScreenVM.showDarkModeDialog.collectAsState().value
-
     val showFilterAudioDialog = settingsScreenVM.showFilterAudioDialog.collectAsState().value
-
     val themeModeSetting = settingsVM.themeModeSetting.collectAsState().value
-
     val darkModeSetting = settingsVM.darkModeSetting.collectAsState().value
-
     val themeAccentSetting = settingsVM.themeAccentSetting.collectAsState().value
-
     val filterAudioSetting = settingsVM.filterAudioSetting.collectAsState().value
-
     val downloadArtistCoverSetting = settingsVM.downloadArtistCoverSetting.collectAsState().value
-
     val downloadOverDataSetting = settingsVM.downloadOverDataSetting.collectAsState().value
-
     val selectedThemeMode = settingsScreenVM.selectedThemeMode.collectAsState().value
-
     val selectedDarkMode = settingsScreenVM.selectedDarkMode.collectAsState().value
-
     val filterAudioText = settingsScreenVM.filterAudioText.collectAsState().value
 
 
@@ -131,7 +119,7 @@ fun SettingsScreen(
                 icon = painterResource(id = R.drawable.brush),
                 settingText = remember { getAppString(context, R.string.AccentColor) },
                 settingValue = themeAccentSetting,
-                onSettingClick = { onOpenScreen("Themes") }
+                onSettingClick = { onOpenScreen(Routes.Root.THEMES) }
             )
         }
 
@@ -176,15 +164,15 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    settingsScreenVM.updateSelectedThemeMode("System")
+                                    settingsScreenVM.updateSelectedThemeMode(SettingsValues.ThemeMode.SYSTEM)
                                 }
                         ) {
 
                             RadioButton(
-                                selected = selectedThemeMode == "System",
+                                selected = selectedThemeMode == SettingsValues.ThemeMode.SYSTEM,
                                 onClick = {
 
-                                    settingsScreenVM.updateSelectedThemeMode("System")
+                                    settingsScreenVM.updateSelectedThemeMode(SettingsValues.ThemeMode.SYSTEM)
                                 }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
@@ -202,14 +190,14 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    settingsScreenVM.updateSelectedThemeMode("Light")
+                                    settingsScreenVM.updateSelectedThemeMode(SettingsValues.ThemeMode.LIGHT)
                                 }
                         ) {
 
                             RadioButton(
-                                selected = selectedThemeMode == "Light",
+                                selected = selectedThemeMode == SettingsValues.ThemeMode.LIGHT,
                                 onClick = {
-                                    settingsScreenVM.updateSelectedThemeMode("Light")
+                                    settingsScreenVM.updateSelectedThemeMode(SettingsValues.ThemeMode.LIGHT)
                                 }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
@@ -227,14 +215,14 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    settingsScreenVM.updateSelectedThemeMode("Dark")
+                                    settingsScreenVM.updateSelectedThemeMode(SettingsValues.ThemeMode.DARK)
                                 }
                         ) {
 
                             RadioButton(
-                                selected = selectedThemeMode == "Dark",
+                                selected = selectedThemeMode == SettingsValues.ThemeMode.DARK,
                                 onClick = {
-                                    settingsScreenVM.updateSelectedThemeMode("Dark")
+                                    settingsScreenVM.updateSelectedThemeMode(SettingsValues.ThemeMode.DARK)
                                 }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
@@ -424,15 +412,15 @@ fun SettingsScreen(
                                 .fillMaxWidth()
                                 .clickable {
 
-                                    settingsScreenVM.updateSelectedDarkMode("Color")
+                                    settingsScreenVM.updateSelectedDarkMode(SettingsValues.DarkMode.COLOR)
                                 }
                         ) {
 
                             RadioButton(
-                                selected = selectedDarkMode == "Color",
+                                selected = selectedDarkMode == SettingsValues.DarkMode.COLOR,
                                 onClick = {
 
-                                    settingsScreenVM.updateSelectedDarkMode("Color")
+                                    settingsScreenVM.updateSelectedDarkMode(SettingsValues.DarkMode.COLOR)
                                 }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
@@ -450,14 +438,14 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    settingsScreenVM.updateSelectedDarkMode("Oled")
+                                    settingsScreenVM.updateSelectedDarkMode(SettingsValues.DarkMode.OLED)
                                 }
                         ) {
 
                             RadioButton(
-                                selected = selectedDarkMode == "Oled",
+                                selected = selectedDarkMode == SettingsValues.DarkMode.OLED,
                                 onClick = {
-                                    settingsScreenVM.updateSelectedDarkMode("Oled")
+                                    settingsScreenVM.updateSelectedDarkMode(SettingsValues.DarkMode.OLED)
                                 }
                             )
                             Spacer(modifier = Modifier.width(10.dp))

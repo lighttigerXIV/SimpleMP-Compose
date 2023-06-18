@@ -35,7 +35,7 @@
         </receiver>
 
         <activity
-            android:name=".activities.setup.ActivityFirstSetup"
+            android:name=".activities.setup.ActivitySetup"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

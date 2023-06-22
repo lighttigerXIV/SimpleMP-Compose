@@ -15,7 +15,6 @@ The app is open sorce so you can always go to the about page and open an issue r
 
 
 
-
 ### Screenshots
 <p align="center">
   <img alt="Light" src="https://github.com/lighttigerXIV/SimpleMP-Compose/assets/35658492/a5b2b28b-093b-439d-be1c-6f8498d31319" width="33%%">

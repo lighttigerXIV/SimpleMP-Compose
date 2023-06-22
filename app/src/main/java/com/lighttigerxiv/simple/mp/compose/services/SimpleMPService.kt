@@ -174,6 +174,12 @@ class SimpleMPService : Service() {
         queueList = queueList.apply {
             add(queueList.indexOfFirst { it.id == to.key }, removeAt(queueList.indexOfFirst { it.id == from.key }))
         }
+
+        if(queueShuffled){
+            shuffledQueueList = shuffledQueueList.apply {
+                add(shuffledQueueList.indexOfFirst { it.id == to.key }, removeAt(shuffledQueueList.indexOfFirst { it.id == from.key }))
+            }
+        }
     }
 
 

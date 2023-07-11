@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.ui.composables
 
-import android.graphics.Bitmap
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,21 +32,24 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.XSmallHeightSp
 import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
 
+
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SongItem(
+fun NewSongItem(
     modifier: Modifier = Modifier,
+    mainVM: MainVM,
     song: Song,
-    songAlbumArt: Bitmap?,
-    highlight: Boolean = false,
     menuEntries: ArrayList<String> = ArrayList(),
     onSongClick: () -> Unit = {},
     onMenuClicked: (option: String) -> Unit = {}
 ) {
 
     val context = LocalContext.current
-    val songTitle = remember { song.title }
-    val songArtist = remember { song.artist }
+    val title = remember { song.title }
+    val artistName = remember { mainVM.getSongArtist(song).name }
+    val art = remember{ mainVM.getSongArt(song) }
+    val highlight = song.path == mainVM.currentSong.collectAsState().value?.path
     val isPopupMenuExpanded = remember { mutableStateOf(false) }
     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
 
@@ -57,7 +59,7 @@ fun SongItem(
     }
 
 
-    val titleWeight = when (highlight){
+    val titleWeight = when (highlight) {
         true -> FontWeight.Medium
         else -> FontWeight.Normal
     }
@@ -75,17 +77,17 @@ fun SongItem(
         ) {
 
             AsyncImage(
-                model = remember{ songAlbumArt ?: getImage(context, R.drawable.cd, ImageSizes.SMALL) },
+                model = remember { art ?: getImage(context, R.drawable.cd, ImageSizes.SMALL) },
                 contentDescription = "",
-                colorFilter = if(songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                colorFilter = if (art == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                 modifier = Modifier
                     .clip(RoundedCornerShape(20))
                     .height(70.dp)
                     .width(70.dp)
-                    .modifyIf(songAlbumArt == null) {
+                    .modifyIf(art == null) {
                         background(surfaceVariantColor)
                     }
-                    .modifyIf(songAlbumArt == null) {
+                    .modifyIf(art == null) {
                         padding(5.dp)
                     }
             )
@@ -104,7 +106,7 @@ fun SongItem(
             ) {
 
                 Text(
-                    text = songTitle,
+                    text = title,
                     fontSize = 16.sp,
                     color = titleColor,
                     maxLines = 1,
@@ -113,7 +115,7 @@ fun SongItem(
                 )
 
                 Text(
-                    text = songArtist,
+                    text = artistName,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
@@ -165,41 +167,43 @@ fun SongItem(
     }
 }
 
+
 @Composable
 fun ReorderableSongItem(
     mainVM: MainVM,
     modifier: Modifier = Modifier,
     song: Song,
-    songAlbumArt: Bitmap?,
     state: ReorderableLazyListState,
     isDragging: Boolean
 ) {
 
     val context = LocalContext.current
-    val songTitle = remember { song.title }
-    val songArtist = remember { song.artist }
+    val title = remember { song.title }
+    val artistName = remember { mainVM.getSongArtist(song).name }
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
+    val art = remember{ mainVM.getSongArt(song) }
 
-    Column{
-        Row(modifier = modifier
-            .fillMaxWidth()
-            .height(70.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(if (isDragging) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant)
+    Column {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(70.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(if (isDragging) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant)
         ) {
 
             AsyncImage(
-                model = remember{ songAlbumArt ?: getImage(context, R.drawable.cd, ImageSizes.SMALL) },
+                model = remember { art ?: getImage(context, R.drawable.cd, ImageSizes.SMALL) },
                 contentDescription = "",
-                colorFilter = if(songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                colorFilter = if (art == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                 modifier = Modifier
                     .clip(RoundedCornerShape(20))
                     .height(70.dp)
                     .width(70.dp)
-                    .modifyIf(songAlbumArt == null) {
+                    .modifyIf(art == null) {
                         background(surfaceColor)
                     }
-                    .modifyIf(songAlbumArt == null) {
+                    .modifyIf(art == null) {
                         padding(5.dp)
                     }
             )
@@ -218,7 +222,7 @@ fun ReorderableSongItem(
             ) {
 
                 Text(
-                    text = songTitle,
+                    text = title,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
@@ -227,7 +231,7 @@ fun ReorderableSongItem(
                 )
 
                 Text(
-                    text = songArtist,
+                    text = artistName,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,

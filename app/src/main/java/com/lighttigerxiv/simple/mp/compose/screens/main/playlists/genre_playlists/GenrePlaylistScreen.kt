@@ -24,12 +24,12 @@ import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
-import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.NewSongItem
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 
@@ -43,9 +43,7 @@ fun GenrePlaylistScreen(
     val configuration = LocalConfiguration.current
     val inPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
-    val selectedSong = mainVM.currentSong.collectAsState().value
-    val songs = mainVM.songs.collectAsState().value
-    val songsImages = mainVM.songsCovers.collectAsState().value
+    val songs = mainVM.songsData.collectAsState().value?.songs
     val playlist = songs?.filter { it.genre == genre }
 
 
@@ -73,7 +71,7 @@ fun GenrePlaylistScreen(
                                 onBackClick = {onBackClicked()}
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
 
                             Row(
                                 modifier = Modifier
@@ -93,7 +91,7 @@ fun GenrePlaylistScreen(
                                 )
                             }
 
-                            SmallHeightSpacer()
+                            SmallVerticalSpacer()
 
                             Text(
                                 text = genre,
@@ -104,7 +102,7 @@ fun GenrePlaylistScreen(
                                 modifier = Modifier.fillMaxWidth()
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
                         }
                     },
                     content = {
@@ -119,7 +117,7 @@ fun GenrePlaylistScreen(
                                 onSuffleClick = {mainVM.shuffleAndPlay(playlist)}
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
 
                             LazyColumn(
                                 content = {
@@ -128,10 +126,9 @@ fun GenrePlaylistScreen(
                                         items = playlist,
                                         key = { _, song -> song.id}
                                     ){ index, song ->
-                                        SongItem(
+                                        NewSongItem(
+                                            mainVM = mainVM,
                                             song = song,
-                                            songAlbumArt = songsImages?.find { song.albumID == it.albumID }?.albumArt,
-                                            highlight = song.path == selectedSong?.path,
                                             onSongClick = {mainVM.selectSong(playlist, position = index)}
                                         )
                                     }
@@ -151,7 +148,7 @@ fun GenrePlaylistScreen(
 
                     CustomToolbar(backText = stringResource(id = R.string.Albums), onBackClick = { onBackClicked() })
 
-                    MediumHeightSpacer()
+                    MediumVerticalSpacer()
 
                     Row(
                         modifier = Modifier
@@ -181,7 +178,7 @@ fun GenrePlaylistScreen(
                                 )
 
 
-                            SmallHeightSpacer()
+                            SmallVerticalSpacer()
 
                             Text(
                                 text = genre,
@@ -192,7 +189,7 @@ fun GenrePlaylistScreen(
                                 modifier = Modifier.fillMaxWidth()
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
                         }
 
                         Column(
@@ -208,7 +205,7 @@ fun GenrePlaylistScreen(
                                 onSuffleClick = {mainVM.shuffleAndPlay(playlist)}
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
 
                             LazyColumn(
                                 content = {
@@ -217,10 +214,9 @@ fun GenrePlaylistScreen(
                                         items = playlist,
                                         key = { _, song -> song.id}
                                     ){ index, song ->
-                                        SongItem(
+                                        NewSongItem(
+                                            mainVM = mainVM,
                                             song = song,
-                                            songAlbumArt = songsImages?.find { song.albumID == it.albumID }?.albumArt,
-                                            highlight = song.path == selectedSong?.path,
                                             onSongClick = {mainVM.selectSong(playlist, position = index)}
                                         )
                                     }

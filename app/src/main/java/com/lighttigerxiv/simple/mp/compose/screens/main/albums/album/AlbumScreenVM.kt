@@ -24,8 +24,8 @@ class AlbumScreenVM(application: Application) : AndroidViewModel(application) {
     private val _albumArt = MutableStateFlow<Bitmap?>(null)
     val albumArt = _albumArt.asStateFlow()
 
-    private val _albumName = MutableStateFlow("")
-    val albumName = _albumName.asStateFlow()
+    private val _albumTitle = MutableStateFlow("")
+    val albumTitle = _albumTitle.asStateFlow()
 
     private val _artistName = MutableStateFlow("")
     val artistName = _artistName.asStateFlow()
@@ -41,28 +41,32 @@ class AlbumScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun loadScreen(mainVM: MainVM, albumID: Long) {
 
-        val songs = mainVM.songs.value
-        val songsImages = mainVM.songsCovers.value
+        val songsData = mainVM.songsData.value
+        val songs = songsData?.songs
+        val albums = songsData?.albums
+        val artists = songsData?.artists
 
+        if (songs != null && albums != null && artists != null){
 
+            val album = albums.first { it.id == albumID }
 
-        _albumArt.update { songsImages?.find { it.albumID == albumID }?.albumArt }
+            _albumArt.update { album.art }
 
-        _albumSongs.update { songs?.filter { it.albumID == albumID } }
+            _albumSongs.update { songs.filter { it.albumID == albumID } }
 
-        _albumName.update { albumSongs.value!![0].album }
+            _albumTitle.update { album.title }
 
-        _artistName.update { albumSongs.value!![0].artist }
+            _artistName.update { artists.first { it.id == album.artistID }.name }
 
-        _screenLoaded.update { true }
-
+            _screenLoaded.update { true }
+        }
     }
 
     fun clearScreen() {
 
         _albumArt.update { null }
 
-        _albumName.update { "" }
+        _albumTitle.update { "" }
 
         _artistName.update { "" }
 

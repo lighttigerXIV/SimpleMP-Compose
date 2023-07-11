@@ -10,7 +10,6 @@ import org.mongodb.kbson.BsonObjectId
 class PlaylistsQueries(
     private val realm: Realm
 ) {
-
     private fun String.getMongoID(): BsonObjectId {
 
         val bsonId = BsonObjectId(this)
@@ -54,26 +53,6 @@ class PlaylistsQueries(
             val queryPlaylist = this.query<Playlist>("_id == $0", playlist._id).find().first()
 
             queryPlaylist.songs = songs.toRealmList()
-        }
-    }
-
-    suspend fun deletePlaylistImage(playlist: Playlist){
-
-        realm.write {
-
-            val queryPlaylist = this.query<Playlist>("_id == $0", playlist._id).find().first()
-
-            queryPlaylist.image = null
-        }
-    }
-
-    suspend fun updatePlaylistImage(playlist: Playlist, bitmapString: String){
-
-        realm.write {
-
-            val queryPlaylist = this.query<Playlist>("_id == $0", playlist._id).find().first()
-
-            queryPlaylist.image = bitmapString
         }
     }
 

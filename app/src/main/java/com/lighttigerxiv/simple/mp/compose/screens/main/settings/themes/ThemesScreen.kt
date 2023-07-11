@@ -14,7 +14,7 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.ThemeSelector
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
 
 @Composable
 fun ThemesScreen(
@@ -39,7 +39,7 @@ fun ThemesScreen(
             onBackClick = { onBackClick() }
         )
 
-        MediumHeightSpacer()
+        MediumVerticalSpacer()
 
         Column(
             modifier = Modifier

@@ -25,7 +25,7 @@ import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ImageCard
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import kotlinx.coroutines.delay
@@ -166,7 +166,7 @@ fun ArtistsScreen(
                     }
                 }
 
-                MediumHeightSpacer()
+                MediumVerticalSpacer()
 
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(gridCellsCount),
@@ -179,18 +179,16 @@ fun ArtistsScreen(
 
                     items(
                         items = artists!!,
-                        key = { artist -> artist.artistID },
+                        key = { artist -> artist.id },
                     ) { artist ->
-
-                        val albumArt = mainVM.songsCovers.collectAsState().value?.first { it.albumID == artist.albumID }?.albumArt
 
                         ImageCard(
                             modifier = Modifier.animateItemPlacement(),
-                            cardImage = remember { albumArt ?: getImage(context, R.drawable.person, ImageSizes.MEDIUM) },
-                            imageTint = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
-                            cardText = remember { artist.artist },
+                            cardImage = remember { getImage(context, R.drawable.person, ImageSizes.MEDIUM) },
+                            imageTint = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                            cardText = remember { artist.name },
                             onCardClicked = {
-                                vm.openArtist(activityContext, navController, artist.artistID)
+                                vm.openArtist(activityContext, navController, artist.id)
                             }
                         )
                     }

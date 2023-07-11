@@ -31,7 +31,6 @@ import com.google.accompanist.pager.rememberPagerState
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
-import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongCover
 import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
@@ -44,7 +43,7 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.BottomSheetHandle
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ClickableMediumIcon
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ReorderableSongItem
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.drop
@@ -73,8 +72,6 @@ fun Player(
     val currentSongMinutesAndSecondsText = mainVM.currentSongMinutesAndSecondsText.collectAsState().value
     val songAndQueuePager = rememberPagerState(2)
     val songsCoversPager = rememberPagerState(pageCount = queue?.size ?: 0)
-    val compressedSongsCovers = mainVM.compressedSongsCovers.collectAsState().value
-    val songsCovers = mainVM.songsCovers.collectAsState().value
     val musicPlaying = mainVM.musicPlayling.collectAsState().value
     val queueShuffled = mainVM.queueShuffled.collectAsState().value
     val songOnRepeat = mainVM.songOnRepeat.collectAsState().value
@@ -156,8 +153,6 @@ fun Player(
                     mainVM,
                     surfaceColor,
                     selectedSong,
-                    songsCovers,
-                    compressedSongsCovers,
                     queue,
                     upNextQueue,
                     musicPlaying,
@@ -181,8 +176,6 @@ fun Player(
                     mainVM,
                     surfaceColor,
                     selectedSong,
-                    songsCovers,
-                    compressedSongsCovers,
                     queue,
                     upNextQueue,
                     musicPlaying,
@@ -212,9 +205,7 @@ fun PortraitPlayer(
     vm: PlayerScreenVM,
     mainVM: MainVM,
     surfaceColor: Color,
-    selectedSong: Song,
-    songsCovers: List<SongCover>?,
-    compressedSongsCovers: List<SongCover>?,
+    currentSong: Song,
     queue: List<Song>?,
     upNextQueue: List<Song>?,
     musicPlaying: Boolean,
@@ -332,7 +323,7 @@ fun PortraitPlayer(
                             itemSpacing = SMALL_SPACING
                         ) { currentCoverIndex->
 
-                            val songAlbumArt = songsCovers?.first { it.albumID == queue!![currentCoverIndex].albumID }?.albumArt
+                            val songAlbumArt = mainVM.getSongArt(queue!![currentCoverIndex])
 
                             Image(
                                 modifier = Modifier
@@ -371,14 +362,14 @@ fun PortraitPlayer(
                             ) {
 
                                 CustomText(
-                                    text = selectedSong.title,
+                                    text = currentSong.title,
                                     size = 18.sp,
                                     weight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary
                                 )
 
                                 CustomText(
-                                    text = selectedSong.artist,
+                                    text = mainVM.getSongArtist(currentSong).name,
                                     size = 18.sp
                                 )
                             }
@@ -414,7 +405,7 @@ fun PortraitPlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${Routes.Root.FLOATING_ARTIST}${selectedSong.artistID}")
+                                            onOpenPage("${Routes.Root.FLOATING_ARTIST}${currentSong.artistID}")
                                             vm.updateShowMenu(false)
                                         }
                                     )
@@ -425,7 +416,7 @@ fun PortraitPlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${Routes.Root.FLOATING_ALBUM}${selectedSong.albumID}")
+                                            onOpenPage("${Routes.Root.FLOATING_ALBUM}${currentSong.albumID}")
                                             vm.updateShowMenu(false)
                                         }
                                     )
@@ -436,7 +427,7 @@ fun PortraitPlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${Routes.Root.ADD_SONG_TO_PLAYLIST}${selectedSong.id}")
+                                            onOpenPage("${Routes.Root.ADD_SONG_TO_PLAYLIST}${currentSong.id}")
 
                                             vm.updateShowMenu(false)
                                         }
@@ -460,7 +451,7 @@ fun PortraitPlayer(
 
                                 mainVM.seekSongSeconds(secondsSliderValue.toInt())
                             },
-                            valueRange = 1f..(selectedSong.duration / 1000).toFloat(),
+                            valueRange = 1f..(currentSong.duration / 1000).toFloat(),
                             colors = SliderDefaults.colors(
                                 thumbColor = MaterialTheme.colorScheme.primary,
                                 activeTrackColor = MaterialTheme.colorScheme.primary,
@@ -618,7 +609,7 @@ fun PortraitPlayer(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
-                            SmallHeightSpacer()
+                            SmallVerticalSpacer()
 
                             CustomText(text = stringResource(id = R.string.Shrug))
                         }
@@ -638,7 +629,6 @@ fun PortraitPlayer(
                                     ReorderableSongItem(
                                         mainVM = mainVM,
                                         song = song,
-                                        songAlbumArt = remember { compressedSongsCovers?.find { it.albumID == song.albumID }?.albumArt },
                                         state = state,
                                         isDragging = isDragging
                                     )
@@ -660,9 +650,7 @@ fun LandscapePlayer(
     vm: PlayerScreenVM,
     mainVM: MainVM,
     surfaceColor: Color,
-    selectedSong: Song,
-    songsCovers: List<SongCover>?,
-    compressedSongsCovers: List<SongCover>?,
+    currentSong: Song,
     queue: List<Song>?,
     upNextQueue: List<Song>?,
     musicPlaying: Boolean,
@@ -782,7 +770,7 @@ fun LandscapePlayer(
                             itemSpacing = SMALL_SPACING
                         ) { currentCoverIndex->
 
-                            val songAlbumArt = songsCovers?.first { it.albumID == queue!![currentCoverIndex].albumID }?.albumArt
+                            val songAlbumArt = mainVM.getSongArt(queue!![currentCoverIndex])
 
                             Image(
                                 modifier = Modifier
@@ -824,14 +812,14 @@ fun LandscapePlayer(
                             ) {
 
                                 CustomText(
-                                    text = selectedSong.title,
+                                    text = currentSong.title,
                                     size = 18.sp,
                                     weight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary
                                 )
 
                                 CustomText(
-                                    text = selectedSong.artist,
+                                    text = mainVM.getSongArtist(currentSong).name,
                                     size = 18.sp
                                 )
                             }
@@ -867,7 +855,7 @@ fun LandscapePlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${Routes.Root.FLOATING_ARTIST}${selectedSong.artistID}")
+                                            onOpenPage("${Routes.Root.FLOATING_ARTIST}${currentSong.artistID}")
                                             vm.updateShowMenu(false)
                                         }
                                     )
@@ -878,7 +866,7 @@ fun LandscapePlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${Routes.Root.FLOATING_ALBUM}${selectedSong.albumID}")
+                                            onOpenPage("${Routes.Root.FLOATING_ALBUM}${currentSong.albumID}")
                                             vm.updateShowMenu(false)
                                         }
                                     )
@@ -889,7 +877,7 @@ fun LandscapePlayer(
                                         },
                                         onClick = {
 
-                                            onOpenPage("${Routes.Root.ADD_SONG_TO_PLAYLIST}${selectedSong.id}")
+                                            onOpenPage("${Routes.Root.ADD_SONG_TO_PLAYLIST}${currentSong.id}")
 
                                             vm.updateShowMenu(false)
                                         }
@@ -913,7 +901,7 @@ fun LandscapePlayer(
 
                                 mainVM.seekSongSeconds(secondsSliderValue.toInt())
                             },
-                            valueRange = 1f..(selectedSong.duration / 1000).toFloat(),
+                            valueRange = 1f..(currentSong.duration / 1000).toFloat(),
                             colors = SliderDefaults.colors(
                                 thumbColor = MaterialTheme.colorScheme.primary,
                                 activeTrackColor = MaterialTheme.colorScheme.primary,
@@ -1071,7 +1059,7 @@ fun LandscapePlayer(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
-                            SmallHeightSpacer()
+                            SmallVerticalSpacer()
 
                             CustomText(text = stringResource(id = R.string.Shrug))
                         }
@@ -1091,7 +1079,6 @@ fun LandscapePlayer(
                                     ReorderableSongItem(
                                         mainVM = mainVM,
                                         song = song,
-                                        songAlbumArt = remember { compressedSongsCovers?.find { it.albumID == song.albumID }?.albumArt },
                                         state = state,
                                         isDragging = isDragging
                                     )

@@ -3,7 +3,6 @@ package com.lighttigerxiv.simple.mp.compose.services
 import android.app.*
 import android.appwidget.AppWidgetManager
 import android.content.*
-import android.graphics.Bitmap
 import android.media.*
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.os.Binder
@@ -19,9 +18,9 @@ import androidx.core.app.NotificationCompat
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainActivity
+import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
-import com.lighttigerxiv.simple.mp.compose.functions.getSongAlbumArt
 import com.lighttigerxiv.simple.mp.compose.widgets.SimpleMPWidget
 import org.burnoutcrew.reorderable.ItemPosition
 
@@ -38,6 +37,8 @@ class SimpleMPService : Service() {
     var songOnRepeat = false
     private lateinit var audioManager: AudioManager
     val mediaPlayer = MediaPlayer()
+
+    lateinit var mainVM: MainVM
 
 
     //Listeners
@@ -169,13 +170,13 @@ class SimpleMPService : Service() {
         return upNextQueueList
     }
 
-    fun updateQueue(from: ItemPosition, to: ItemPosition){
+    fun updateQueue(from: ItemPosition, to: ItemPosition) {
 
         queueList = queueList.apply {
             add(queueList.indexOfFirst { it.id == to.key }, removeAt(queueList.indexOfFirst { it.id == from.key }))
         }
 
-        if(queueShuffled){
+        if (queueShuffled) {
             shuffledQueueList = shuffledQueueList.apply {
                 add(shuffledQueueList.indexOfFirst { it.id == to.key }, removeAt(shuffledQueueList.indexOfFirst { it.id == from.key }))
             }
@@ -339,133 +340,116 @@ class SimpleMPService : Service() {
             serviceStarted = true
             musicStarted = true
 
-            val songTitle: String
-            val songArtist: String
-            val songID: Long
-            val songAlbumID: Long
-            var songAlbumArt: Bitmap?
-            val songDuration: Int
+            val songsData = mainVM.songsData.value
+            val artists = songsData?.artists
 
+            if (artists != null) {
 
-            if (!queueShuffled) {
+                currentSong = getQueue()[currentSongPosition]
 
-                songTitle = queueList[currentSongPosition].title
-                songArtist = queueList[currentSongPosition].artist
-                songID = queueList[currentSongPosition].id
-                songAlbumID = queueList[currentSongPosition].albumID
-                songAlbumArt = getSongAlbumArt(context, songID, songAlbumID)
-                songDuration = queueList[currentSongPosition].duration
-            } else {
-
-                songTitle = shuffledQueueList[currentSongPosition].title
-                songArtist = shuffledQueueList[currentSongPosition].artist
-                songID = shuffledQueueList[currentSongPosition].id
-                songAlbumID = shuffledQueueList[currentSongPosition].albumID
-                songAlbumArt = getSongAlbumArt(context, songID, songAlbumID)
-                songDuration = shuffledQueueList[currentSongPosition].duration
-            }
-
-            if (songAlbumArt == null) {
-                songAlbumArt = getImage(context, R.drawable.cd_filled, ImageSizes.LARGE)
-            }
-
-            currentSong = getQueue()[currentSongPosition]
-
-            mediaPlayer.reset()
-            mediaPlayer.setDataSource(currentSong!!.path)
-            mediaPlayer.prepareAsync()
-            mediaPlayer.setOnPreparedListener {
-
-                audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-
-                requestPlayWithFocus()
-
-                //Open App
-                val openAppIntent = Intent(context, MainActivity::class.java)
-                val pendingOpenAppIntent = TaskStackBuilder.create(context).run {
-
-                    addNextIntentWithParentStack(openAppIntent)
-                    getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
+                val art = if (mainVM.getSongArt(currentSong!!) != null) {
+                    mainVM.getSongArt(currentSong!!)
+                } else {
+                    getImage(context, R.drawable.cd_filled, ImageSizes.LARGE)
                 }
 
-                //Stop Service
-                val stopIntent = Intent(context, ReceiverStop::class.java)
-                val pendingStopIntent = PendingIntent.getBroadcast(context, 1, stopIntent, PendingIntent.FLAG_IMMUTABLE)
+                mediaPlayer.reset()
+                mediaPlayer.setDataSource(currentSong!!.path)
+                mediaPlayer.prepareAsync()
+                mediaPlayer.setOnPreparedListener {
 
+                    audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-                //Previous Music
-                val previousSongIntent = Intent(context, ReceiverPreviousSong::class.java)
-                val pendingPreviousSongIntent = PendingIntent.getBroadcast(context, 1, previousSongIntent, PendingIntent.FLAG_IMMUTABLE)
+                    requestPlayWithFocus()
 
+                    //Open App
+                    val openAppIntent = Intent(context, MainActivity::class.java)
+                    val pendingOpenAppIntent = TaskStackBuilder.create(context).run {
 
-                //Pauses/Plays music
-                val playPauseIntent = Intent(context, ReceiverPlayPause::class.java)
-                val pendingPlayPauseIntent = PendingIntent.getBroadcast(context, 1, playPauseIntent, PendingIntent.FLAG_IMMUTABLE)
-
-
-                //Skips to next music
-                val skipSongIntent = Intent(context, ReceiverSkipSong::class.java)
-                val pendingSkipSongIntent = PendingIntent.getBroadcast(context, 1, skipSongIntent, PendingIntent.FLAG_IMMUTABLE)
-
-
-
-                notification = NotificationCompat.Builder(context, "Playback")
-                    .setContentIntent(pendingOpenAppIntent)
-                    .setStyle(
-                        androidx.media.app.NotificationCompat.MediaStyle()
-                            .setMediaSession(mediaSession.sessionToken)
-                            .setShowActionsInCompactView(0, 1, 2, 3)
-                    )
-                    .setSmallIcon(R.drawable.icon)
-                    .addAction(R.drawable.icon_x_solid, "Stop Player", pendingStopIntent)
-                    .addAction(R.drawable.icon_previous_notification, "Previous Music", pendingPreviousSongIntent)
-                    .addAction(R.drawable.icon_pause_notification, "Play Pause Music", pendingPlayPauseIntent)
-                    .addAction(R.drawable.icon_next_notification, "Next Music", pendingSkipSongIntent)
-                    .build()
-
-
-                mediaSession.setMetadata(
-                    MediaMetadataCompat.Builder()
-
-                        .putString(MediaMetadata.METADATA_KEY_TITLE, songTitle)
-                        .putString(MediaMetadata.METADATA_KEY_ARTIST, songArtist)
-                        .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, songAlbumArt)
-                        .putLong(MediaMetadata.METADATA_KEY_DURATION, songDuration.toLong())
-                        .build()
-                )
-
-
-                startForeground(2, notification)
-                notificationManager.notify(2, notification)
-            }
-
-
-            handleSongFinished(context)
-
-
-            onSongSelected(currentSong!!)
-            onSongSelectedForPlayer(currentSong!!)
-            onSongSelectedForWidget(currentSong!!)
-
-
-            val bluetoothReceiver = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-            context.registerReceiver(bluetoothBroadcastReceiver, bluetoothReceiver)
-
-
-            val mainHandler = Handler(Looper.getMainLooper())
-            mainHandler.post(object : Runnable {
-                override fun run() {
-
-                    if (musicPlaying()) {
-
-                        onSecondPassed()
-                        setPlaybackState(PlaybackStateCompat.STATE_PLAYING)
+                        addNextIntentWithParentStack(openAppIntent)
+                        getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
                     }
-                    mainHandler.postDelayed(this, 1000)
-                }
-            })
 
-        } catch (exc:Exception){
+                    //Stop Service
+                    val stopIntent = Intent(context, ReceiverStop::class.java)
+                    val pendingStopIntent = PendingIntent.getBroadcast(context, 1, stopIntent, PendingIntent.FLAG_IMMUTABLE)
+
+
+                    //Previous Music
+                    val previousSongIntent = Intent(context, ReceiverPreviousSong::class.java)
+                    val pendingPreviousSongIntent = PendingIntent.getBroadcast(context, 1, previousSongIntent, PendingIntent.FLAG_IMMUTABLE)
+
+
+                    //Pauses/Plays music
+                    val playPauseIntent = Intent(context, ReceiverPlayPause::class.java)
+                    val pendingPlayPauseIntent = PendingIntent.getBroadcast(context, 1, playPauseIntent, PendingIntent.FLAG_IMMUTABLE)
+
+
+                    //Skips to next music
+                    val skipSongIntent = Intent(context, ReceiverSkipSong::class.java)
+                    val pendingSkipSongIntent = PendingIntent.getBroadcast(context, 1, skipSongIntent, PendingIntent.FLAG_IMMUTABLE)
+
+
+
+                    notification = NotificationCompat.Builder(context, "Playback")
+                        .setContentIntent(pendingOpenAppIntent)
+                        .setStyle(
+                            androidx.media.app.NotificationCompat.MediaStyle()
+                                .setMediaSession(mediaSession.sessionToken)
+                                .setShowActionsInCompactView(0, 1, 2, 3)
+                        )
+                        .setSmallIcon(R.drawable.icon)
+                        .addAction(R.drawable.icon_x_solid, "Stop Player", pendingStopIntent)
+                        .addAction(R.drawable.icon_previous_notification, "Previous Music", pendingPreviousSongIntent)
+                        .addAction(R.drawable.icon_pause_notification, "Play Pause Music", pendingPlayPauseIntent)
+                        .addAction(R.drawable.icon_next_notification, "Next Music", pendingSkipSongIntent)
+                        .build()
+
+
+                    mediaSession.setMetadata(
+                        MediaMetadataCompat.Builder()
+
+                            .putString(MediaMetadata.METADATA_KEY_TITLE, currentSong!!.title)
+                            .putString(MediaMetadata.METADATA_KEY_ARTIST, artists.first { it.id == currentSong!!.artistID }.name)
+                            .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, art)
+                            .putLong(MediaMetadata.METADATA_KEY_DURATION, currentSong!!.duration.toLong())
+                            .build()
+                    )
+
+
+                    startForeground(2, notification)
+                    notificationManager.notify(2, notification)
+                }
+
+
+                handleSongFinished(context)
+
+
+                onSongSelected(currentSong!!)
+                onSongSelectedForPlayer(currentSong!!)
+                onSongSelectedForWidget(currentSong!!)
+
+
+                val bluetoothReceiver = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+                context.registerReceiver(bluetoothBroadcastReceiver, bluetoothReceiver)
+
+
+                val mainHandler = Handler(Looper.getMainLooper())
+                mainHandler.post(object : Runnable {
+                    override fun run() {
+
+                        if (musicPlaying()) {
+
+                            onSecondPassed()
+                            setPlaybackState(PlaybackStateCompat.STATE_PLAYING)
+                        }
+                        mainHandler.postDelayed(this, 1000)
+                    }
+                })
+            }
+
+
+        } catch (exc: Exception) {
             Log.e("Service Error", exc.toString())
             selectNextSong(context)
         }
@@ -486,7 +470,7 @@ class SimpleMPService : Service() {
 
             mediaSession.setPlaybackState(stateBuilder.build())
 
-        } catch (exc:Exception){
+        } catch (exc: Exception) {
             Log.e("Service Error", exc.toString())
         }
     }
@@ -610,7 +594,7 @@ class SimpleMPService : Service() {
             startForeground(2, notification)
             notificationManager.notify(2, notification)
 
-        }catch (exc:Exception){
+        } catch (exc: Exception) {
             Log.e("Service Error", exc.toString())
         }
     }
@@ -670,6 +654,7 @@ class SimpleMPService : Service() {
 
                     true
                 }
+
                 else -> false
             }
         }

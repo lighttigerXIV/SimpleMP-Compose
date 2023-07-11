@@ -102,4 +102,15 @@
     <string name="SelectImage">Select Image</string>
     <string name="DeleteImage">Delete Image</string>
     <string name="Shrug" translatable="false">¯\\_(ツ)_/¯</string>
+    <string name="Changelog">Changelog</string>
+    <string name="Download">Download</string>
+    <string name="GitHubReleases" translatable="false">GitHub Releases</string>
+    <string name="DownloadInGitHubReleases">Download in GitHub Releases</string>
+    <string name="PlayStore" translatable="false">Play Store</string>
+    <string name="DownloadInPlayStore">Download in Play Store</string>
+    <string name="FDroid" translatable="false">F-Droid</string>
+    <string name="DownloadInFDroid">Download in F-Droid</string>
+    <string name="ReloadSongs">Reload Songs</string>
+    <string name="DontCloseAppWhileReloading">Don\'t close the app while reloading the songs!!</string>
+    <string name="ReloadingSongs">Reloading Songs</string>
 </resources>

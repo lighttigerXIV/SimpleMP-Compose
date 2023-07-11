@@ -28,13 +28,12 @@ fun MiniPlayer(
     mainVM: MainVM
 ) {
 
-
     val context = LocalContext.current
-    val selectedSong = mainVM.currentSong.collectAsState().value
-    val songAlbumArt = mainVM.currentSongAlbumArt.collectAsState().value
-    val musicPlaying = mainVM.musicPlayling.collectAsState().value
+    val song = mainVM.currentSong.collectAsState().value
+    val art = mainVM.currentSongAlbumArt.collectAsState().value
+    val musicIsPlaying = mainVM.musicPlayling.collectAsState().value
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
-    val playPauseIcon = if (musicPlaying) {
+    val playPauseIcon = if (musicIsPlaying) {
         remember { getImage(context, R.drawable.icon_pause_solid, ImageSizes.SMALL) }
     } else {
         remember { getImage(context, R.drawable.icon_play_solid, ImageSizes.SMALL) }
@@ -48,19 +47,21 @@ fun MiniPlayer(
             .padding(SMALL_SPACING)
     ) {
 
-        if (selectedSong != null) {
+        if (song != null) {
+
+            val artistName = mainVM.getSongArtist(song).name
 
             Image(
-                bitmap = (songAlbumArt ?: getImage(context, R.drawable.cd, ImageSizes.SMALL)).asImageBitmap(),
-                colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                bitmap = (art ?: getImage(context, R.drawable.cd, ImageSizes.SMALL)).asImageBitmap(),
+                colorFilter = if (art == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                 contentDescription = "Song Album Art",
                 modifier = Modifier
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(7.dp))
-                    .modifyIf(songAlbumArt == null) {
+                    .modifyIf(art == null) {
                         background(surfaceColor)
                     }
-                    .modifyIf(songAlbumArt == null) {
+                    .modifyIf(art == null) {
                         padding(5.dp)
                     }
             )
@@ -75,13 +76,13 @@ fun MiniPlayer(
             ) {
 
                 CustomText(
-                    text = selectedSong.title,
+                    text = song.title,
                     weight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
 
                 CustomText(
-                    text = selectedSong.artist
+                    text = artistName
                 )
             }
 

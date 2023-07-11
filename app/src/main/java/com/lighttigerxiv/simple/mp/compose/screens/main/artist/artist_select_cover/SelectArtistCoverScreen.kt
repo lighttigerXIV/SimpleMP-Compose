@@ -33,8 +33,8 @@ import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.artist.ArtistScreenVM
@@ -80,7 +80,7 @@ fun SelectArtistCoverScreen(
             onBackClick = {onGoBack()},
         )
 
-        MediumHeightSpacer()
+        MediumVerticalSpacer()
 
         if(screenLoaded){
 
@@ -108,7 +108,7 @@ fun SelectArtistCoverScreen(
                     )
                 }
 
-                SmallHeightSpacer()
+                SmallVerticalSpacer()
 
                 Row(
                     modifier = Modifier
@@ -128,7 +128,7 @@ fun SelectArtistCoverScreen(
                     )
                 }
 
-                MediumHeightSpacer()
+                MediumVerticalSpacer()
 
                 if(covers != null){
 

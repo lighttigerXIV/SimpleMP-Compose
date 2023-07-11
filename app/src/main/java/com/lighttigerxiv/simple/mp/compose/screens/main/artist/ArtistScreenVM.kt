@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
@@ -17,10 +18,11 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.Album
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
-import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.ArtistsQueries
+import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.ArtistsCoversQueries
 import com.lighttigerxiv.simple.mp.compose.data.responses.DiscogsResponse
 import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
@@ -34,6 +36,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -49,7 +52,7 @@ class ArtistScreenVM(application: Application) : AndroidViewModel(application) {
 
     private val context = application
 
-    private val artistsQueries = ArtistsQueries(getMongoRealm())
+    private val artistsCoversQueries = ArtistsCoversQueries(getMongoRealm())
 
     private val _screenLoaded = MutableStateFlow(false)
     val screenLoaded = _screenLoaded.asStateFlow()
@@ -65,20 +68,20 @@ class ArtistScreenVM(application: Application) : AndroidViewModel(application) {
 
     private val _artistCover = MutableStateFlow(getImage(context, R.drawable.person, ImageSizes.LARGE))
     val artistCover = _artistCover.asStateFlow()
-    fun updateArtistCover(newValue: Bitmap){
+    fun updateArtistCover(newValue: Bitmap) {
         _artistCover.update { newValue }
     }
 
     private val _tintCover = MutableStateFlow(true)
     val tintCover = _tintCover.asStateFlow()
-    fun updateTintCover(newValue: Boolean){
+    fun updateTintCover(newValue: Boolean) {
         _tintCover.update { newValue }
     }
 
     private val _artistSongs = MutableStateFlow<List<Song>?>(null)
     val artistSongs = _artistSongs.asStateFlow()
 
-    private val _artistAlbums = MutableStateFlow<List<Song>?>(null)
+    private val _artistAlbums = MutableStateFlow<List<Album>?>(null)
     val artistAlbums = _artistAlbums.asStateFlow()
 
 
@@ -88,124 +91,152 @@ class ArtistScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun loadScreen(artistID: Long, mainVM: MainVM, settingsVM: SettingsVM) {
 
-        val songs = mainVM.songs.value
+        fun load(){
+            val songsData = mainVM.songsData.value
+            val songs = songsData?.songs
+            val artists = songsData?.artists
+            val albums = songsData?.albums
 
-        _artistName.update { songs!!.first { it.artistID == artistID }.artist }
+            if (songs != null && artists != null && albums != null) {
 
-        var artist = artistsQueries.getArtist(artistID)
+                val artist = artists.first { it.id == artistID }
 
-        if (artist == null) {
+                _artistName.update { artist.name }
 
-            artistsQueries.addArtist(artistID)
-        }
+                var artistQuery = artistsCoversQueries.getArtist(artistID)
 
-        artist = artistsQueries.getArtist(artistID)
+                if (artistQuery == null) {
 
-        _artistSongs.update { songs!!.filter { it.artistID == artistID } }
+                    artistsCoversQueries.addArtist(artistID)
+                }
 
-        _artistAlbums.update { artistSongs.value!!.distinctBy { it.albumID } }
+                artistQuery = artistsCoversQueries.getArtist(artistID)
 
-        _screenLoaded.update { true }
+                _artistSongs.update { songs.filter { it.artistID == artistID } }
 
-        //Loads Artist Image
-        if (artist!!.alreadyRequested) {
+                val newAlbums = ArrayList<Album>()
 
-            if (artist.image != null) {
+                artistSongs.value?.forEach { song ->
+                    if( !newAlbums.any { it.id == song.albumID}){
+                        newAlbums.add(albums.first { it.id == song.albumID })
+                    }
+                }
 
-                val imageBytes = Base64.decode(artist.image, Base64.DEFAULT)
+                _artistAlbums.update { newAlbums }
 
-                _tintCover.update { false }
+                _screenLoaded.update { true }
 
-                _artistCover.update { BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size) }
-            }
-        } else {
+                //Loads Artist Image
+                if (artistQuery!!.alreadyRequested) {
 
-            val canDownloadArtistCover = settingsVM.downloadArtistCoverSetting.value
-            val isInternetAvailable = isNetworkAvailable(context)
-            val canDownloadOverData = settingsVM.downloadOverDataSetting.value
-            val isMobileDataEnabled = isOnMobileData(context)
+                    if (artistQuery.image != null) {
 
-            if (isInternetAvailable && canDownloadArtistCover) {
-                if ((canDownloadOverData && isMobileDataEnabled) || (!canDownloadOverData && !isMobileDataEnabled)) {
-                    getDiscogsRetrofit()
-                        .getArtistCover(
-                            token = "Discogs token=addIURHUBwvyDlSqWcNqPWkHXUbMgUzNgbpZGZnd",
-                            artist = artistName.value
-                        )
-                        .enqueue(object : Callback<String> {
-                            override fun onResponse(call: Call<String>, response: Response<String>) {
-                                if (response.code() == 200) {
+                        val imageBytes = Base64.decode(artistQuery.image, Base64.DEFAULT)
 
-                                    try {
+                        _tintCover.update { false }
 
-                                        val data = Gson().fromJson(response.body(), DiscogsResponse::class.java)
+                        _artistCover.update { BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size) }
+                    }
+                } else {
 
-                                        if (data.results.isNotEmpty()) {
+                    val canDownloadArtistCover = settingsVM.downloadArtistCoverSetting.value
+                    val isInternetAvailable = isNetworkAvailable(context)
+                    val canDownloadOverData = settingsVM.downloadOverDataSetting.value
+                    val isMobileDataEnabled = isOnMobileData(context)
 
-                                            val imageUrl = data.results[0].cover_image
+                    if (isInternetAvailable && canDownloadArtistCover) {
+                        if ((canDownloadOverData && isMobileDataEnabled) || (!canDownloadOverData && !isMobileDataEnabled)) {
+                            getDiscogsRetrofit()
+                                .getArtistCover(
+                                    token = "Discogs token=addIURHUBwvyDlSqWcNqPWkHXUbMgUzNgbpZGZnd",
+                                    artist = artistName.value
+                                )
+                                .enqueue(object : Callback<String> {
+                                    override fun onResponse(call: Call<String>, response: Response<String>) {
+                                        if (response.code() == 200) {
 
-                                            if (imageUrl.endsWith(".gif")) {
+                                            try {
 
-                                                runBlocking {
-                                                    withContext(Dispatchers.IO) {
-                                                        artistsQueries.updateArtistCover(artistID, null)
-                                                        artistsQueries.updateArtistAlreadyRequested(artistID)
-                                                    }
-                                                }
+                                                val data = Gson().fromJson(response.body(), DiscogsResponse::class.java)
 
-                                            } else {
-                                                Glide.with(context)
-                                                    .asBitmap()
-                                                    .load(imageUrl)
-                                                    .into(object : CustomTarget<Bitmap>() {
-                                                        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                                                if (data.results.isNotEmpty()) {
 
-                                                            val baos = ByteArrayOutputStream()
+                                                    val imageUrl = data.results[0].cover_image
 
-                                                            resource.compress(Bitmap.CompressFormat.PNG, 50, baos)
+                                                    if (imageUrl.endsWith(".gif")) {
 
-                                                            val b = baos.toByteArray()
-
-                                                            val imageString = Base64.encodeToString(b, Base64.DEFAULT)
-
-                                                            runBlocking {
-                                                                withContext(Dispatchers.IO) {
-                                                                    artistsQueries.updateArtistCover(artistID, imageString)
-                                                                    artistsQueries.updateArtistAlreadyRequested(artistID)
-                                                                }
+                                                        runBlocking {
+                                                            withContext(Dispatchers.IO) {
+                                                                artistsCoversQueries.updateArtistCover(artistID, null)
+                                                                artistsCoversQueries.updateArtistAlreadyRequested(artistID)
                                                             }
-
-                                                            _tintCover.update { false }
-
-                                                            _artistCover.update { resource }
                                                         }
 
-                                                        override fun onLoadCleared(placeholder: Drawable?) {}
-                                                    })
+                                                    } else {
+                                                        Glide.with(context)
+                                                            .asBitmap()
+                                                            .load(imageUrl)
+                                                            .into(object : CustomTarget<Bitmap>() {
+                                                                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+
+                                                                    val baos = ByteArrayOutputStream()
+
+                                                                    resource.compress(Bitmap.CompressFormat.PNG, 50, baos)
+
+                                                                    val b = baos.toByteArray()
+
+                                                                    val imageString = Base64.encodeToString(b, Base64.DEFAULT)
+
+                                                                    runBlocking {
+                                                                        withContext(Dispatchers.IO) {
+                                                                            artistsCoversQueries.updateArtistCover(artistID, imageString)
+                                                                            artistsCoversQueries.updateArtistAlreadyRequested(artistID)
+                                                                        }
+                                                                    }
+
+                                                                    _tintCover.update { false }
+
+                                                                    _artistCover.update { resource }
+                                                                }
+
+                                                                override fun onLoadCleared(placeholder: Drawable?) {}
+                                                            })
+                                                    }
+                                                }
+                                            } catch (exc: Exception) {
+
+                                                Toast.makeText(context, exc.message.toString(), Toast.LENGTH_LONG).show()
                                             }
                                         }
-                                    } catch (exc: Exception) {
-
-                                        Toast.makeText(context, exc.message.toString(), Toast.LENGTH_LONG).show()
                                     }
-                                }
-                            }
 
-                            override fun onFailure(call: Call<String>, t: Throwable) {
-                                Log.e("Discogs Error", "Error while getting artist cover")
-                            }
-                        })
+                                    override fun onFailure(call: Call<String>, t: Throwable) {
+                                        Log.e("Discogs Error", "Error while getting artist cover")
+                                    }
+                                })
+                        }
+                    }
+                }
+            }
+        }
+
+        load()
+
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                mainVM.songsData.collect{
+                    load()
                 }
             }
         }
     }
 
-    fun openAlbumScreen(activityContext: ViewModelStoreOwner, navController: NavHostController, id: Long){
+    fun openAlbumScreen(activityContext: ViewModelStoreOwner, navController: NavHostController, id: Long) {
         ViewModelProvider(activityContext)[ArtistAlbumScreenVM::class.java].clearScreen()
         navController.navigate("${Routes.Main.ARTIST_ALBUM}${id}")
     }
 
-    fun openSelectArtistCoverScreen(activityContext: ViewModelStoreOwner, navController: NavHostController, name: String, id: Long){
+    fun openSelectArtistCoverScreen(activityContext: ViewModelStoreOwner, navController: NavHostController, name: String, id: Long) {
         ViewModelProvider(activityContext)[SelectArtistCoverScreenVM::class.java].clearScreen()
         navController.navigate("${Routes.Main.SELECT_ARTIST_COVER}name=${name}&id=${id}")
     }

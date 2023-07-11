@@ -35,20 +35,21 @@ import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
-import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.Album
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ImageCard
+import com.lighttigerxiv.simple.mp.compose.ui.composables.NewSongItem
 import kotlinx.coroutines.launch
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
@@ -72,7 +73,6 @@ fun ArtistScreen(
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
     val screenLoaded = vm.screenLoaded.collectAsState().value
-    val currentSong = mainVM.currentSong.collectAsState().value
     val artistName = vm.artistName.collectAsState().value
     val artistCover = vm.artistCover.collectAsState().value
     val tintCover = vm.tintCover.collectAsState().value
@@ -113,7 +113,7 @@ fun ArtistScreen(
                         artistID
                     )
 
-                    SmallHeightSpacer()
+                    SmallVerticalSpacer()
 
                     Row(
                         modifier = Modifier
@@ -140,7 +140,7 @@ fun ArtistScreen(
                         )
                     }
 
-                    MediumHeightSpacer()
+                    MediumVerticalSpacer()
 
                     CustomText(
                         modifier = Modifier.fillMaxWidth(),
@@ -150,7 +150,7 @@ fun ArtistScreen(
                         weight = FontWeight.Bold
                     )
 
-                    MediumHeightSpacer()
+                    MediumVerticalSpacer()
                 }
             },
             content = {
@@ -165,7 +165,6 @@ fun ArtistScreen(
                     surfaceColor,
                     songs,
                     albums,
-                    currentSong,
                     gridCellsCount
                 )
             }
@@ -189,7 +188,7 @@ fun ArtistScreen(
                 artistID
             )
 
-            MediumHeightSpacer()
+            MediumVerticalSpacer()
 
             Row(
                 modifier = Modifier
@@ -223,7 +222,7 @@ fun ArtistScreen(
                             }
                     )
 
-                    MediumHeightSpacer()
+                    MediumVerticalSpacer()
 
                     CustomText(
                         modifier = Modifier.fillMaxWidth(),
@@ -233,7 +232,7 @@ fun ArtistScreen(
                         weight = FontWeight.Bold
                     )
 
-                    MediumHeightSpacer()
+                    MediumVerticalSpacer()
                 }
 
                 Column(
@@ -253,7 +252,6 @@ fun ArtistScreen(
                         surfaceColor,
                         songs,
                         albums,
-                        currentSong,
                         gridCellsCount
                     )
                 }
@@ -344,10 +342,9 @@ fun ArtistSongsAndAlbums(
     pagerState: PagerState,
     surfaceColor: Color,
     songs: List<Song>?,
-    albums: List<Song>?,
-    currentSong: Song?,
+    albums: List<Album>?,
     gridCellsCount: Int
-){
+) {
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -402,7 +399,7 @@ fun ArtistSongsAndAlbums(
                 )
             }
 
-            MediumHeightSpacer()
+            MediumVerticalSpacer()
 
             HorizontalPager(
                 state = pagerState,
@@ -431,7 +428,7 @@ fun ArtistSongsAndAlbums(
                                 }
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
 
                             LazyColumn(
                                 verticalArrangement = Arrangement.spacedBy(5.dp),
@@ -442,10 +439,9 @@ fun ArtistSongsAndAlbums(
                                         key = { song -> song.id }
                                     ) { song ->
 
-                                        SongItem(
+                                        NewSongItem(
+                                            mainVM = mainVM,
                                             song = song,
-                                            songAlbumArt = mainVM.songsCovers.collectAsState().value?.find { it.albumID == song.albumID }!!.albumArt,
-                                            highlight = song.path == currentSong?.path,
                                             onSongClick = { mainVM.selectSong(songs, songs.indexOf(song)) }
                                         )
                                     }
@@ -470,24 +466,17 @@ fun ArtistSongsAndAlbums(
 
                                     items(
                                         items = albums!!,
-                                        key = { album -> album.albumID },
+                                        key = { album -> album.id },
                                     ) { album ->
 
-                                        val albumSongAlbumID = album.albumID
-                                        val albumName = album.album
-                                        val albumArt = mainVM.songsCovers.collectAsState().value?.first { it.albumID == albumSongAlbumID }?.albumArt
-
-
                                         ImageCard(
-                                            cardImage = remember { (albumArt ?: getImage(context, R.drawable.cd, ImageSizes.MEDIUM)) },
-                                            cardText = albumName,
-                                            imageTint = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                                            cardImage = remember { (album.art ?: getImage(context, R.drawable.cd, ImageSizes.MEDIUM)) },
+                                            cardText = album.title,
+                                            imageTint = if (album.art == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                                             onCardClicked = {
-                                                vm.openAlbumScreen(activityContext, navController, album.albumID)
-                                            },
-
-                                            )
-
+                                                vm.openAlbumScreen(activityContext, navController, album.id)
+                                            }
+                                        )
                                     }
                                 }
                             )

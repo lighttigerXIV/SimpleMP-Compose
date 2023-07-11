@@ -6,8 +6,13 @@ import android.appwidget.AppWidgetManager
 import android.content.*
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
+import android.net.Uri
+import android.os.Build
 import android.os.IBinder
+import android.provider.MediaStore
 import android.util.Log
+import android.util.Size
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
@@ -16,11 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.lighttigerxiv.simple.mp.compose.*
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.Album
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.Artist
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
-import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongCover
-import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
-import com.lighttigerxiv.simple.mp.compose.functions.getAllAlbumsImages
-import com.lighttigerxiv.simple.mp.compose.functions.getSongs
+import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongsData
+import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
+import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.CacheQueries
 import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
 import com.lighttigerxiv.simple.mp.compose.widgets.SimpleMPWidget
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +37,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.burnoutcrew.reorderable.ItemPosition
+import java.io.File
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainVM(application: Application) : AndroidViewModel(application) {
 
@@ -42,8 +50,12 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     private val context = application
 
+    private val mainVM = this
+
     private val _loadingSongs = MutableStateFlow(true)
     val loadingSongs = _loadingSongs.asStateFlow()
+
+    private val cachedQueries = CacheQueries(getMongoRealm())
 
 
     @SuppressLint("StaticFieldLeak")
@@ -55,15 +67,14 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         _surfaceColor.update { newValue }
     }
 
+    private val _songsData = MutableStateFlow<SongsData?>(null)
+    val songsData = _songsData.asStateFlow()
 
-    private val _songs = MutableStateFlow<List<Song>?>(null)
-    val songs = _songs.asStateFlow()
+    private val _songCount = MutableStateFlow(0)
+    val songCount = _songCount.asStateFlow()
 
-    private val _songsCovers = MutableStateFlow<List<SongCover>?>(null)
-    val songsCovers = _songsCovers.asStateFlow()
-
-    private val _compressedSongsCovers = MutableStateFlow<List<SongCover>?>(null)
-    val compressedSongsCovers = _compressedSongsCovers.asStateFlow()
+    private val _indexedSongsCount = MutableStateFlow(0)
+    val indexedSongsCount = _indexedSongsCount.asStateFlow()
 
     private val _queue = MutableStateFlow<List<Song>?>(null)
     val queue = _queue.asStateFlow()
@@ -129,7 +140,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
 
             viewModelScope.launch {
-                withContext(Dispatchers.IO){
+                withContext(Dispatchers.IO) {
 
                     delay(1)
 
@@ -138,37 +149,24 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
                     smpService?.let { smp ->
 
+                        smp.mainVM = mainVM
                         _musicPlaying.update { smp.musicPlaying() }
-
                         _queueShuffled.update { smp.queueShuffled }
-
                         _songOnRepeat.update { smp.songOnRepeat }
-
-                        _songs.update { getSongs(context, Sorts.RECENT) }
-
-                        _songsCovers.update { getAllAlbumsImages(songs.value, context) }
-
-                        _compressedSongsCovers.update { getAllAlbumsImages(songs.value, context, compressed = true) }
-
+                        getSongsData()
 
                         if (smp.isMusicPlayingOrPaused()) {
 
                             _selectedSong.update { smp.currentSong }
-
-                            _songAlbumArt.update { getAlbumArt() }
-
+                            _songAlbumArt.update { getAlbumArt(songsData.value!!.songs, currentSong.value!!.albumID) }
                             _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
-
                             _songMinutesAndSecondsText.update { getMinutesAndSeconds(currentSong.value!!.duration / 1000) }
-
                             _currentSongMinutesAndSecondsText.update { getMinutesAndSeconds(smp.mediaPlayer.currentPosition / 1000) }
 
                             updateMiniPlayerPeekHeight()
 
                             _queue.update { smp.getQueue() }
-
                             _upNextQueue.update { smp.getUpNextQueue() }
-
                             _songPosition.update { smp.currentSongPosition }
 
                             onSongSelected()
@@ -178,21 +176,15 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                         smp.onSongSelected = { song ->
 
                             _selectedSong.update { song }
-
                             _songSeconds.update { (smp.mediaPlayer.currentPosition / 1000).toFloat() }
-
                             _songMinutesAndSecondsText.update { getMinutesAndSeconds(currentSong.value!!.duration / 1000) }
-
-                            _songAlbumArt.update { getAlbumArt() }
-
+                            _songAlbumArt.update { getAlbumArt(songsData.value!!.songs, song.albumID) }
                             _songOnRepeat.update { smp.songOnRepeat }
 
                             updateMiniPlayerPeekHeight()
 
                             _queue.update { smp.getQueue() }
-
                             _upNextQueue.update { smp.getUpNextQueue() }
-
                             _songPosition.update { smp.currentSongPosition }
 
                             onSongSelected()
@@ -209,11 +201,8 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                         smp.onQueueShuffle = {
 
                             _queueShuffled.update { smp.queueShuffled }
-
                             _queue.update { smp.getQueue() }
-
                             _upNextQueue.update { smp.getUpNextQueue() }
-
                             _songPosition.update { smp.currentSongPosition }
                         }
 
@@ -221,7 +210,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                         smp.onPause = {
 
                             _musicPlaying.update { smp.musicPlaying() }
-
                             updateWidget()
                         }
 
@@ -229,9 +217,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                         smp.onResume = {
 
                             _musicPlaying.update { smp.musicPlaying() }
-
                             _songPosition.update { smp.currentSongPosition }
-
                             updateWidget()
                         }
 
@@ -243,9 +229,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                         smp.onStop = {
 
                             _selectedSong.update { null }
-
                             updateMiniPlayerPeekHeight()
-
                             onFinish()
                         }
 
@@ -259,6 +243,252 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
             Log.d("Service Disconnection", "Service was disconnected")
         }
+    }
+
+    @SuppressLint("Range")
+    suspend fun getSongsData() {
+
+        val songs = ArrayList<Song>()
+        val cachedSongs = cachedQueries.getSongs()
+        val artists = ArrayList<Artist>()
+        val cachedArtists = cachedQueries.getArtists()
+        val albums = ArrayList<Album>()
+        val cachedAlbums = cachedQueries.getAlbums()
+
+
+        //Shows Cached Data if it exists
+        if (cachedSongs.isNotEmpty() && cachedAlbums.isNotEmpty() && cachedArtists.isNotEmpty()) {
+
+            _songCount.update { cachedSongs.size }
+
+            cachedSongs.forEach { cachedSong ->
+
+                songs.add(
+                    Song(
+                        id = cachedSong.id,
+                        path = cachedSong.path,
+                        title = cachedSong.title,
+                        albumID = cachedSong.albumID,
+                        duration = cachedSong.duration,
+                        artistID = cachedSong.artistID,
+                        year = cachedSong.year,
+                        genre = cachedSong.genre,
+                        modificationDate = cachedSong.modificationDate
+                    )
+                )
+
+                _indexedSongsCount.update { indexedSongsCount.value + 1 }
+            }
+
+            cachedArtists.forEach { cachedArtist ->
+                artists.add(
+                    Artist(
+                        id = cachedArtist.id,
+                        name = cachedArtist.name,
+                        cover = null
+                    )
+                )
+            }
+
+            cachedAlbums.forEach { cachedAlbum ->
+                albums.add(
+                    Album(
+                        id = cachedAlbum.id,
+                        title = cachedAlbum.title,
+                        art = null,
+                        artistID = cachedAlbum.artistID
+                    )
+                )
+            }
+
+            _songsData.update {
+                SongsData(
+                    songs,
+                    artists,
+                    albums
+                )
+            }
+
+            val newAlbums = ArrayList<Album>()
+
+            albums.forEach { album ->
+
+                val newAlbum = album.copy(art = getAlbumArt(songs, album.id))
+                newAlbums.add(newAlbum)
+            }
+
+            _songsData.update {
+                SongsData(
+                    songs,
+                    artists,
+                    newAlbums
+                )
+            }
+
+            _indexedSongsCount.update { 0 }
+            _songCount.update { 0 }
+
+        } else {
+
+            //Gets all songs from the device
+            indexSongs()
+        }
+    }
+
+    @SuppressLint("Range")
+    suspend fun indexSongs(onFinish: () -> Unit = {}) {
+
+        _indexedSongsCount.update { 0 }
+        cachedQueries.clear()
+
+
+        val songs = ArrayList<Song>()
+        val artists = ArrayList<Artist>()
+        val albums = ArrayList<Album>()
+        val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        var cursor = context.contentResolver.query(uri, null, null, null, null)
+        var count = 0
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                count += 1
+            }
+        }
+
+        cursor?.close()
+
+        _songCount.update { count }
+
+        cursor = context.contentResolver.query(uri, null, null, null, null)
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+
+                try {
+
+                    val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID))
+                    val songPath = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
+
+                    val retriever = MediaMetadataRetriever()
+                    retriever.setDataSource(songPath)
+
+                    var title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+                    var albumTitle = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+                    val albumID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))
+                    var duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                    var artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
+                    val artistID = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID))
+                    var genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE)
+                    val modificationDate = File(songPath).lastModified()
+
+
+                    if (title == null) {
+                        title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE))
+                    }
+
+                    if (albumTitle == null) {
+                        albumTitle = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM))
+                    }
+
+                    if (duration == null) {
+                        duration = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))
+                    }
+
+                    if (artistName == null) {
+                        artistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST))
+                    }
+
+                    if (!artists.any { it.id == artistID }) {
+
+                        val artist = Artist(
+                            artistID,
+                            artistName ?: "",
+                            null
+                        )
+
+                        artists.add(artist)
+
+                        cachedQueries.addArtist(artist)
+                    }
+
+                    if (!albums.any { it.id == albumID }) {
+
+                        val album = Album(
+                            albumID,
+                            albumTitle ?: "",
+                            null,
+                            artistID
+                        )
+
+                        albums.add(album)
+
+                        cachedQueries.addAlbum(album)
+                    }
+
+
+                    if (genre == null) genre = context.getString(R.string.Undefined)
+                    val year = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.YEAR))
+
+
+
+                    if (title != null && duration != null) {
+
+                        val song = Song(id, songPath, title, albumID, duration.toInt(), artistID, year, genre, modificationDate)
+                        val filterDuration = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString("FilterAudio", "60")!!.toInt() * 1000
+                        if (duration.toInt() > filterDuration) songs.add(song)
+
+                        cachedQueries.addSong(song)
+
+                        _indexedSongsCount.update { indexedSongsCount.value + 1 }
+                    }
+
+                } catch (e: Exception) {
+                    Log.e("Song Error", "Exception while getting song. Details -> ${e.message}")
+                }
+            }
+        }
+
+        cursor?.close()
+
+        _songsData.update {
+            SongsData(
+                songs,
+                artists,
+                albums
+            )
+        }
+
+        //Gets Albums Images
+        val newAlbums = ArrayList<Album>()
+
+        albums.forEach { album ->
+
+            val newAlbum = album.copy(art = getAlbumArt(songs, album.id))
+            newAlbums.add(newAlbum)
+        }
+
+        _songsData.update {
+            SongsData(
+                songs,
+                artists,
+                newAlbums
+            )
+        }
+
+        onFinish()
+
+        _indexedSongsCount.update { 0 }
+        _songCount.update { 0 }
+    }
+
+    fun getSongArt(song: Song): Bitmap? {
+
+        return songsData.value?.albums?.first { it.id == song.albumID }?.art
+    }
+
+    fun getSongArtist(song: Song): Artist {
+
+        return songsData.value!!.artists.first { it.id == song.artistID }
     }
 
     private fun updateWidget() {
@@ -290,17 +520,35 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         return "$minutes:$stringSeconds"
     }
 
-    private fun getAlbumArt(compressed: Boolean = false): Bitmap? {
+    private fun loadSongsCover() {
 
-        return when (compressed) {
+        songsData.value?.songs?.forEach { song ->
+            Log.d("Song ID", song.id.toString())
+        }
+    }
 
-            true -> {
-                compressedSongsCovers.value?.first { it.albumID == currentSong.value?.albumID }?.albumArt
+    private fun getAlbumArt(songs: List<Song>, id: Long): Bitmap? {
+
+        val songWithAlbumID = songs.first { it.albumID == id }.id
+
+        return try {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
+                val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                val songWithAlbumUri = ContentUris.withAppendedId(uri, songWithAlbumID)
+
+                context.contentResolver.loadThumbnail(songWithAlbumUri, Size(400, 400), null)
+            } else {
+
+                val sArtWorkUri = Uri.parse("content://media/external/audio/albumart")
+                val albumArtUri = ContentUris.withAppendedId(sArtWorkUri, id)
+
+                MediaStore.Images.Media.getBitmap(context.contentResolver, albumArtUri)
             }
 
-            false -> {
-                songsCovers.value?.first { it.albumID == currentSong.value?.albumID }?.albumArt
-            }
+        } catch (e: Exception) {
+            null
         }
     }
 
@@ -333,21 +581,21 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updateMiniPlayerPeekHeight(){
+    fun updateMiniPlayerPeekHeight() {
 
         val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
-        smpService?.let{
-            if(isPortrait && !smpService!!.isMusicPlayingOrPaused()){
+        smpService?.let {
+            if (isPortrait && !smpService!!.isMusicPlayingOrPaused()) {
                 _miniPlayerPeekHeight.update { 55.dp }
             }
-            if(isPortrait && smpService!!.isMusicPlayingOrPaused()){
+            if (isPortrait && smpService!!.isMusicPlayingOrPaused()) {
                 _miniPlayerPeekHeight.update { 115.dp }
             }
-            if(!isPortrait && !smpService!!.isMusicPlayingOrPaused()){
+            if (!isPortrait && !smpService!!.isMusicPlayingOrPaused()) {
                 _miniPlayerPeekHeight.update { 0.dp }
             }
-            if(!isPortrait && smpService!!.isMusicPlayingOrPaused()){
+            if (!isPortrait && smpService!!.isMusicPlayingOrPaused()) {
                 _miniPlayerPeekHeight.update { 55.dp }
             }
         }
@@ -369,7 +617,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
                 _songMinutesAndSecondsText.update { getMinutesAndSeconds(currentSong.value!!.duration / 1000) }
 
-                _songAlbumArt.update { getAlbumArt() }
+                _songAlbumArt.update { getAlbumArt(songsData.value!!.songs, currentSong.value!!.albumID) }
 
                 _queue.update { smp.getQueue() }
 

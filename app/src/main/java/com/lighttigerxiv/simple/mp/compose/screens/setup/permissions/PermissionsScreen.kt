@@ -29,8 +29,8 @@ import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_RADIUS
 import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.text.TitleMedium
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
@@ -101,7 +101,7 @@ fun PermissionsScreen(
                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                     )
 
-                    SmallHeightSpacer()
+                    SmallVerticalSpacer()
 
                     TitleMedium(
                         text = stringResource(id = R.string.Permissions),
@@ -113,7 +113,7 @@ fun PermissionsScreen(
                 Column(
                     modifier = Modifier
                 ) {
-                    MediumHeightSpacer()
+                    MediumVerticalSpacer()
 
                     //Storage Permission Card
                     Row(
@@ -177,7 +177,7 @@ fun PermissionsScreen(
                             onResult = { granted -> permissionsVM.updateNotificationsPermissionGranted(granted) }
                         )
 
-                        SmallHeightSpacer()
+                        SmallVerticalSpacer()
 
                         Row(
                             modifier = Modifier

@@ -93,4 +93,12 @@
     <string name="Select">Selecionar</string>
     <string name="SelectImage">Selecionar Imagem</string>
     <string name="DeleteImage">Eliminar Imagem</string>
+    <string name="Changelog">Mudanças</string>
+    <string name="Download">Transferir</string>
+    <string name="DownloadInGitHubReleases">Transferir no GitHub Releases</string>
+    <string name="DownloadInPlayStore">Transferir na Play Store</string>
+    <string name="DownloadInFDroid">Transferir na F-Droid</string>
+    <string name="ReloadSongs">Recarregar músicas</string>
+    <string name="DontCloseAppWhileReloading">Não feche a aplicação enquanto as músicas recarregam</string>
+    <string name="ReloadingSongs">A recarregar músicas</string>
 </resources>

@@ -35,7 +35,6 @@ import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
-import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongCover
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.items.Playlist
 import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
@@ -79,8 +78,6 @@ fun PlaylistScreen(
     val onEditMode = vm.onEditMode.collectAsState().value
     val playlistNameText = vm.playlistNameText.collectAsState().value
     val currentSong = mainVM.currentSong.collectAsState().value
-    val songsCovers = mainVM.songsCovers.collectAsState().value
-
 
     if (!screenLoaded) {
         vm.loadScreen(playlistID, mainVM, playlistsVM)
@@ -114,7 +111,7 @@ fun PlaylistScreen(
                         text = stringResource(id = R.string.SelectImage)
                     )
 
-                    MediumHeightSpacer()
+                    MediumVerticalSpacer()
 
                     Row(
                         modifier = Modifier
@@ -140,7 +137,7 @@ fun PlaylistScreen(
                         )
                     }
 
-                    SmallHeightSpacer()
+                    SmallVerticalSpacer()
 
                     Row(
                         modifier = Modifier
@@ -169,7 +166,7 @@ fun PlaylistScreen(
             }
         ) { bottomSheetScaffoldPadding ->
 
-            if(inPortrait){
+            if (inPortrait) {
                 VerticalNestedScrollView(
                     modifier = Modifier
                         .background(surfaceColor)
@@ -195,7 +192,7 @@ fun PlaylistScreen(
                                     showDeleteDialog
                                 )
 
-                                MediumHeightSpacer()
+                                MediumVerticalSpacer()
 
                                 PlaylistCoverAndName(
                                     vm,
@@ -220,10 +217,10 @@ fun PlaylistScreen(
                         surfaceColor,
                         surfaceVariantColor,
                         currentSong,
-                        songsCovers
+                        //songsCovers
                     )
                 }
-            }else{
+            } else {
 
                 Column(
                     modifier = Modifier
@@ -243,9 +240,9 @@ fun PlaylistScreen(
                         showDeleteDialog
                     )
 
-                    MediumHeightSpacer()
+                    MediumVerticalSpacer()
 
-                    if(screenLoaded){
+                    if (screenLoaded) {
 
                         Row(
                             modifier = Modifier
@@ -288,20 +285,13 @@ fun PlaylistScreen(
                                     onEditMode,
                                     surfaceColor,
                                     surfaceVariantColor,
-                                    currentSong,
-                                    songsCovers
+                                    currentSong
                                 )
                             }
                         }
                     }
                 }
-
-
-
-
             }
-
-
         }
     }
 }
@@ -319,7 +309,7 @@ fun PlaylistToolbar(
     saveButtonEnabled: Boolean,
     showMenu: Boolean,
     showDeleteDialog: Boolean
-){
+) {
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -502,13 +492,13 @@ fun PlaylistToolbar(
                                 color = MaterialTheme.colorScheme.primary
                             )
 
-                            SmallHeightSpacer()
+                            SmallVerticalSpacer()
 
                             Text(
                                 text = stringResource(id = R.string.ConfirmDeletePlaylist)
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
 
                             Row(
                                 modifier = Modifier
@@ -579,7 +569,7 @@ fun PlaylistCoverAndName(
     playlistNameText: String,
     playlist: Playlist?,
 
-){
+    ) {
 
     val scope = rememberCoroutineScope()
 
@@ -591,7 +581,7 @@ fun PlaylistCoverAndName(
             horizontalArrangement = Arrangement.Center
         ) {
 
-            if(inPortrait){
+            if (inPortrait) {
                 Image(
                     bitmap = playlistImage!!,
                     contentDescription = null,
@@ -617,7 +607,7 @@ fun PlaylistCoverAndName(
                             }
                         }
                 )
-            }else{
+            } else {
                 Image(
                     bitmap = playlistImage!!,
                     contentDescription = null,
@@ -646,7 +636,7 @@ fun PlaylistCoverAndName(
             }
         }
 
-        SmallHeightSpacer()
+        SmallVerticalSpacer()
 
         when (onEditMode) {
 
@@ -663,6 +653,7 @@ fun PlaylistCoverAndName(
                     }
                 )
             }
+
             false -> {
 
                 Text(
@@ -676,7 +667,7 @@ fun PlaylistCoverAndName(
             }
         }
 
-        MediumHeightSpacer()
+        MediumVerticalSpacer()
     }
 
 }
@@ -691,8 +682,8 @@ fun PlaylistSongs(
     surfaceColor: Color,
     surfaceVariantColor: Color,
     currentSong: Song?,
-    songsCovers: List<SongCover>?
-){
+    //songsCovers: List<SongCover>?
+) {
 
     val context = LocalContext.current
 
@@ -725,7 +716,7 @@ fun PlaylistSongs(
                 }
             }
 
-            MediumHeightSpacer()
+            MediumVerticalSpacer()
 
             LazyColumn(
                 content = {
@@ -736,9 +727,9 @@ fun PlaylistSongs(
                     ) { index, song ->
 
                         val songTitle = remember { song.title }
-                        val songArtist = remember { song.artist }
+                        val songArtist = remember { mainVM.getSongArtist(song).name }
                         val highlight = song.path == currentSong?.path
-                        val songAlbumArt = songsCovers?.find { it.albumID == song.albumID }?.albumArt
+                        val songAlbumArt = remember { mainVM.getSongArt(song) }
 
 
                         val titleColor = when (highlight) {

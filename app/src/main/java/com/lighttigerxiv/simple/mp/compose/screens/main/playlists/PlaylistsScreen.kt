@@ -36,7 +36,7 @@ import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.SheetDraggingBar
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import kotlinx.coroutines.launch
@@ -218,7 +218,7 @@ fun PlaylistsScreen(
 
                                         SheetDraggingBar()
 
-                                        MediumHeightSpacer()
+                                        MediumVerticalSpacer()
 
                                         Text(
                                             text = remember { getAppString(context, R.string.PlaylistName) },
@@ -234,7 +234,7 @@ fun PlaylistsScreen(
                                             textType = "text"
                                         )
 
-                                        MediumHeightSpacer()
+                                        MediumVerticalSpacer()
 
                                         Row(
                                             horizontalArrangement = Arrangement.End,
@@ -301,7 +301,7 @@ fun PlaylistsScreen(
                                         )
                                     }
 
-                                    MediumHeightSpacer()
+                                    MediumVerticalSpacer()
 
                                     LazyVerticalGrid(
                                         state = userPlaylistsGridState,

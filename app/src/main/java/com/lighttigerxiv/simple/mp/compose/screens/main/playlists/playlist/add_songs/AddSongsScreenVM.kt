@@ -22,15 +22,13 @@ class AddSongsScreenVM(application: Application) : AndroidViewModel(application)
         val title: String,
         val selected: Boolean,
         val albumID: Long,
-        val artist: String
+        val artistID: Long
     )
 
 
     //************************************************
     // Variables
     //************************************************
-
-    private val context = application
 
     private val playlistsQueries = PlaylistsQueries(getMongoRealm())
 
@@ -50,7 +48,7 @@ class AddSongsScreenVM(application: Application) : AndroidViewModel(application)
 
         val playlist = playlistsQueries.getPlaylist(playlistID)
 
-        val songs = mainVM.songs.value
+        val songs = mainVM.songsData.value?.songs
 
         val temp = ArrayList<SongInAddSongs>()
 
@@ -62,7 +60,7 @@ class AddSongsScreenVM(application: Application) : AndroidViewModel(application)
                 title = song.title,
                 selected = false,
                 albumID = song.albumID,
-                artist = song.artist
+                artistID = song.artistID
             ))
         }
 
@@ -107,7 +105,7 @@ class AddSongsScreenVM(application: Application) : AndroidViewModel(application)
 
         val newSongs = ArrayList<Song>()
 
-        val songs = mainVM.songs.value
+        val songs = mainVM.songsData.value?.songs
 
         songs!!.forEach {song->
             playlistSongsIDS.forEach { playlistSongID->

@@ -30,11 +30,11 @@ import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
-import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
+import com.lighttigerxiv.simple.mp.compose.ui.composables.NewSongItem
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 
@@ -53,7 +53,6 @@ fun FloatingArtistScreen(
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
     val screenLoaded = vm.screenLoaded.collectAsState().value
-    val selectedSong = mainVM.currentSong.collectAsState().value
     val artistName = vm.artistName.collectAsState().value
     val artistCover = vm.artistCover.collectAsState().value
     val tintCover = vm.tintCover.collectAsState().value
@@ -88,7 +87,7 @@ fun FloatingArtistScreen(
                                 onBackClick = { onBackClicked() }
                             )
 
-                            SmallHeightSpacer()
+                            SmallVerticalSpacer()
 
                             Image(
                                 bitmap = artistCover.asImageBitmap(),
@@ -117,7 +116,7 @@ fun FloatingArtistScreen(
                                 weight = FontWeight.Bold
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
                         }
                     },
                     content = {
@@ -138,7 +137,7 @@ fun FloatingArtistScreen(
                                 }
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
 
                             LazyColumn(
                                 verticalArrangement = Arrangement.spacedBy(5.dp),
@@ -149,10 +148,9 @@ fun FloatingArtistScreen(
                                         key = { song -> song.id }
                                     ) { song ->
 
-                                        SongItem(
+                                        NewSongItem(
+                                            mainVM = mainVM,
                                             song = song,
-                                            songAlbumArt = mainVM.songsCovers.collectAsState().value?.find { it.albumID == song.albumID }!!.albumArt,
-                                            highlight = song.path == selectedSong?.path,
                                             onSongClick = { mainVM.selectSong(songs, songs.indexOf(song)) }
                                         )
                                     }
@@ -173,7 +171,7 @@ fun FloatingArtistScreen(
                         onBackClick = { onBackClicked() }
                     )
 
-                    SmallHeightSpacer()
+                    SmallVerticalSpacer()
 
                     Row(
                         modifier = Modifier
@@ -215,7 +213,7 @@ fun FloatingArtistScreen(
                                 weight = FontWeight.Bold
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
                         }
 
                         Column(
@@ -235,7 +233,7 @@ fun FloatingArtistScreen(
                                 }
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
 
                             LazyColumn(
                                 verticalArrangement = Arrangement.spacedBy(5.dp),
@@ -246,10 +244,9 @@ fun FloatingArtistScreen(
                                         key = { song -> song.id }
                                     ) { song ->
 
-                                        SongItem(
+                                        NewSongItem(
+                                            mainVM = mainVM,
                                             song = song,
-                                            songAlbumArt = mainVM.songsCovers.collectAsState().value?.find { it.albumID == song.albumID }!!.albumArt,
-                                            highlight = song.path == selectedSong?.path,
                                             onSongClick = { mainVM.selectSong(songs, songs.indexOf(song)) }
                                         )
                                     }

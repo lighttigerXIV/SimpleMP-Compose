@@ -26,7 +26,7 @@ import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SettingsValues
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 
 @Composable
 fun SettingsScreen(
@@ -72,7 +72,7 @@ fun SettingsScreen(
             onBackClick = { onBackPressed() }
         )
 
-        SmallHeightSpacer()
+        SmallVerticalSpacer()
 
         Row(
             modifier = Modifier.fillMaxWidth()
@@ -88,7 +88,7 @@ fun SettingsScreen(
             )
         }
 
-        SmallHeightSpacer()
+        SmallVerticalSpacer()
 
         Column(
             modifier = Modifier

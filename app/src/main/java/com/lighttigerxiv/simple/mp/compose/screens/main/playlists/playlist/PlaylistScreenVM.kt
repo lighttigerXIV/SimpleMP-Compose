@@ -145,8 +145,8 @@ class PlaylistScreenVM(application: Application) : AndroidViewModel(application)
                 val newSongs = ArrayList<Song>()
 
                 songsIDS.forEach { songID ->
-                    if (mainVM.songs.value!!.any { it.id == songID }) {
-                        newSongs.add(mainVM.songs.value!!.first { it.id == songID })
+                    if (mainVM.songsData.value?.songs!!.any { it.id == songID }) {
+                        newSongs.add(mainVM.songsData.value?.songs!!.first { it.id == songID })
                     }
                 }
 

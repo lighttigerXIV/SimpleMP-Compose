@@ -87,7 +87,7 @@ internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManage
 
                 val song = smpService.currentSong!!
                 views.setTextViewText(R.id.title_Widget, song.title)
-                views.setTextViewText(R.id.artist_Widget, song.artist)
+                views.setTextViewText(R.id.artist_Widget, "banana")
                 views.setImageViewBitmap(R.id.albumArt_Widget, getSongAlbumArt(context, song.id, song.albumID))
 
                 if(smpService.musicPlaying())

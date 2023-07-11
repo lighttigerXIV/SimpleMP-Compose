@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.text.TitleMedium
 
 @Composable
@@ -60,7 +60,7 @@ fun WelcomeScreen(
                 )
             }
 
-            MediumHeightSpacer()
+            MediumVerticalSpacer()
 
             TitleMedium(
                 text = stringResource(id = R.string.WelcomeToSimpleMP),

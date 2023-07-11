@@ -27,7 +27,7 @@ import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -151,7 +151,7 @@ fun AlbumsScreen(
                 }
             }
 
-            MediumHeightSpacer()
+            MediumVerticalSpacer()
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(gridCellsCount),
@@ -164,18 +164,16 @@ fun AlbumsScreen(
 
                 items(
                     items = albums!!,
-                    key = { album -> album.albumID },
+                    key = { album -> album.id },
                 ) { album ->
-
-                    val albumArt = mainVM.songsCovers.collectAsState().value?.first { it.albumID == album.albumID }?.albumArt
 
                     ImageCard(
                         modifier = Modifier.animateItemPlacement(),
-                        cardImage = remember { albumArt ?: getImage(context, R.drawable.cd, ImageSizes.MEDIUM) },
-                        imageTint = if (albumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
-                        cardText = remember { album.album },
+                        cardImage = remember { album.art ?: getImage(context, R.drawable.cd, ImageSizes.MEDIUM) },
+                        imageTint = if (album.art == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                        cardText = remember { album.title },
                         onCardClicked = {
-                            onAlbumClicked(album.albumID)
+                            onAlbumClicked(album.id)
                         }
                     )
                 }

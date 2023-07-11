@@ -9,7 +9,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.google.gson.Gson
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
-import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.ArtistsQueries
+import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.ArtistsCoversQueries
 import com.lighttigerxiv.simple.mp.compose.data.responses.DiscogsResponse
 import com.lighttigerxiv.simple.mp.compose.functions.isNetworkAvailable
 import com.lighttigerxiv.simple.mp.compose.functions.isOnMobileData
@@ -33,7 +33,7 @@ class SelectArtistCoverScreenVM(application: Application) : AndroidViewModel(app
 
     private val context = application
 
-    private val artistsQueries = ArtistsQueries(getMongoRealm())
+    private val artistsCoversQueries = ArtistsCoversQueries(getMongoRealm())
 
     private val _screenLoaded = MutableStateFlow(false)
     val screenLoaded = _screenLoaded.asStateFlow()
@@ -101,9 +101,9 @@ class SelectArtistCoverScreenVM(application: Application) : AndroidViewModel(app
         runBlocking {
             withContext(Dispatchers.IO){
 
-                artistsQueries.updateArtistCover(artistID, bitmapString)
+                artistsCoversQueries.updateArtistCover(artistID, bitmapString)
 
-                val artist = artistsQueries.getArtist(artistID)
+                val artist = artistsCoversQueries.getArtist(artistID)
 
                 val imageBytes = Base64.decode(artist!!.image, Base64.DEFAULT)
 
@@ -121,7 +121,7 @@ class SelectArtistCoverScreenVM(application: Application) : AndroidViewModel(app
         runBlocking {
             withContext(Dispatchers.IO){
 
-                artistsQueries.updateArtistCover(artistID, null)
+                artistsCoversQueries.updateArtistCover(artistID, null)
 
                 artistVM!!.updateTintCover(true)
 

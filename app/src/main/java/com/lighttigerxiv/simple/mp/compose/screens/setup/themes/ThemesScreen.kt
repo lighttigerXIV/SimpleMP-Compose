@@ -23,8 +23,8 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainActivity
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ThemeSelector
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.text.TitleMedium
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.activities.setup.ActivitySetupVM
@@ -81,7 +81,7 @@ fun ThemesScreen(
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
 
-                SmallHeightSpacer()
+                SmallVerticalSpacer()
 
                 TitleMedium(
                     text = stringResource(id = R.string.Theming),
@@ -89,7 +89,7 @@ fun ThemesScreen(
                 )
             }
             
-            MediumHeightSpacer()
+            MediumVerticalSpacer()
 
             ThemeSelector(
                 selectedTheme = selectedTheme,

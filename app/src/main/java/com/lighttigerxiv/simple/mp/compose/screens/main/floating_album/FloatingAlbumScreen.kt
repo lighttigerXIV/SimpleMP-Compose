@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,10 +28,10 @@ import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
+import com.lighttigerxiv.simple.mp.compose.ui.composables.NewSongItem
 import com.lighttigerxiv.simple.mp.compose.ui.composables.PlayAndShuffleRow
-import com.lighttigerxiv.simple.mp.compose.ui.composables.SongItem
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import moe.tlaster.nestedscrollview.VerticalNestedScrollView
 import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 
@@ -49,12 +48,10 @@ fun FloatingAlbumScreen(
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
     val screenLoaded = albumVM.screenLoaded.collectAsState().value
-    val selectedSong = mainVM.currentSong.collectAsState().value
     val albumArt = albumVM.albumArt.collectAsState().value
-    val albumName = albumVM.albumName.collectAsState().value
+    val albumName = albumVM.albumTitle.collectAsState().value
     val artistName = albumVM.artistName.collectAsState().value
     val songs = albumVM.albumSongs.collectAsState().value
-    val songsImages = mainVM.songsCovers.collectAsState().value
 
 
     if (!screenLoaded) {
@@ -86,7 +83,7 @@ fun FloatingAlbumScreen(
 
                             CustomToolbar(backText = "Albums", onBackClick = { onBackClicked() })
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
 
                             Image(
                                 bitmap = (albumArt ?: getImage(context, R.drawable.cd, ImageSizes.LARGE)).asImageBitmap(),
@@ -105,7 +102,7 @@ fun FloatingAlbumScreen(
                                     }
                             )
 
-                            SmallHeightSpacer()
+                            SmallVerticalSpacer()
 
                             CustomText(
                                 text = albumName,
@@ -117,7 +114,7 @@ fun FloatingAlbumScreen(
                                 text = artistName
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
                         }
                     },
                     content = {
@@ -138,7 +135,7 @@ fun FloatingAlbumScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
 
-                                    SmallHeightSpacer()
+                                    SmallVerticalSpacer()
 
                                     PlayAndShuffleRow(
                                         surfaceColor = surfaceColor,
@@ -152,7 +149,7 @@ fun FloatingAlbumScreen(
                                 content = {
 
                                     item {
-                                        MediumHeightSpacer()
+                                        MediumVerticalSpacer()
                                     }
 
                                     items(
@@ -160,10 +157,9 @@ fun FloatingAlbumScreen(
                                         key = { song -> song.id }
                                     ) { song ->
 
-                                        SongItem(
+                                        NewSongItem(
+                                            mainVM = mainVM,
                                             song = song,
-                                            songAlbumArt = remember { songsImages?.first { it.albumID == song.albumID }?.albumArt },
-                                            highlight = song.path == selectedSong?.path,
                                             onSongClick = { mainVM.selectSong(songs, songs.indexOf(song)) }
                                         )
                                     }
@@ -182,7 +178,7 @@ fun FloatingAlbumScreen(
 
                     CustomToolbar(backText = "Albums", onBackClick = { onBackClicked() })
 
-                    MediumHeightSpacer()
+                    MediumVerticalSpacer()
 
                     Row(
                         modifier = Modifier
@@ -214,7 +210,7 @@ fun FloatingAlbumScreen(
                                     }
                             )
 
-                            SmallHeightSpacer()
+                            SmallVerticalSpacer()
 
                             CustomText(
                                 text = albumName,
@@ -226,7 +222,7 @@ fun FloatingAlbumScreen(
                                 text = artistName
                             )
 
-                            MediumHeightSpacer()
+                            MediumVerticalSpacer()
                         }
 
                         Column(
@@ -247,7 +243,7 @@ fun FloatingAlbumScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
 
-                                    SmallHeightSpacer()
+                                    SmallVerticalSpacer()
 
                                     PlayAndShuffleRow(
                                         surfaceColor = surfaceColor,
@@ -261,7 +257,7 @@ fun FloatingAlbumScreen(
                                 content = {
 
                                     item {
-                                        MediumHeightSpacer()
+                                        MediumVerticalSpacer()
                                     }
 
                                     items(
@@ -269,10 +265,9 @@ fun FloatingAlbumScreen(
                                         key = { song -> song.id }
                                     ) { song ->
 
-                                        SongItem(
+                                        NewSongItem(
+                                            mainVM = mainVM,
                                             song = song,
-                                            songAlbumArt = remember { songsImages?.first { it.albumID == song.albumID }?.albumArt },
-                                            highlight = song.path == selectedSong?.path,
                                             onSongClick = { mainVM.selectSong(songs, songs.indexOf(song)) }
                                         )
                                     }

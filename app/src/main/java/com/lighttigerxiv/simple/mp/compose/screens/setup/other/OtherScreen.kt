@@ -42,8 +42,8 @@ import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.SwitchSettingItem
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.text.TitleMedium
 
 @Composable
@@ -91,7 +91,7 @@ fun OtherScreen(
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
 
-                SmallHeightSpacer()
+                SmallVerticalSpacer()
 
                 TitleMedium(
                     text = stringResource(id = R.string.OtherSettings),
@@ -103,7 +103,7 @@ fun OtherScreen(
             Column(
                 modifier = Modifier
             ) {
-                MediumHeightSpacer()
+                MediumVerticalSpacer()
 
                 Column(
                     modifier = Modifier

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
@@ -12,9 +13,12 @@ import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.PlaylistsQueries
 import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.functions.unaccent
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.PlaylistScreenVM
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.URLEncoder
 
 class PlaylistsScreenVM(application: Application) : AndroidViewModel(application) {
@@ -64,22 +68,35 @@ class PlaylistsScreenVM(application: Application) : AndroidViewModel(application
 
     fun loadScreen(mainVM: MainVM) {
 
-        val songs = mainVM.songs.value
-        val newGenres = ArrayList<String>()
+        fun load(){
+            val songs = mainVM.songsData.value?.songs
+            val newGenres = ArrayList<String>()
 
-        if (songs != null) {
+            if (songs != null) {
 
-            songs.forEach {
-                newGenres.add(it.genre)
+                songs.forEach {
+                    newGenres.add(it.genre)
+                }
+
+                _genres.update { newGenres.distinctBy { it }.sortedBy { it } }
+
+                _playlists.update { playlistsQueries.getPlaylists() }
+
+                _currentPlaylists.update { playlists.value }
+
+                _screenLoaded.update { true }
             }
+        }
 
-            _genres.update { newGenres.distinctBy { it }.sortedBy { it } }
+        load()
 
-            _playlists.update { playlistsQueries.getPlaylists() }
-
-            _currentPlaylists.update { playlists.value }
-
-            _screenLoaded.update { true }
+        viewModelScope.launch{
+            withContext(Dispatchers.IO){
+                mainVM.songsData.collect{
+                    load()
+                    filterPlaylists()
+                }
+            }
         }
     }
 

@@ -29,7 +29,7 @@ import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.XSmallHeightSpacer
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.PlaylistScreenVM
@@ -52,7 +52,7 @@ fun AddSongsScreen(
     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
     val screenLoaded = addSongsVM.screenLoaded.collectAsState().value
     val songs = addSongsVM.songs.collectAsState().value
-    val songsCovers = mainVM.compressedSongsCovers.collectAsState().value
+    val songsData = mainVM.songsData.collectAsState().value
 
     if (!screenLoaded) {
         addSongsVM.loadScreen(playlistID, mainVM)
@@ -72,7 +72,7 @@ fun AddSongsScreen(
             }
         )
 
-        MediumHeightSpacer()
+        MediumVerticalSpacer()
 
         if (screenLoaded) {
 
@@ -87,7 +87,8 @@ fun AddSongsScreen(
                     key = { it.id }
                 ) { song ->
 
-                    val songAlbumArt = songsCovers?.find { it.albumID == song.albumID }?.albumArt
+                    val art = remember { songsData?.albums?.first { it.id == song.albumID }?.art }
+                    val artistName = remember { songsData?.artists?.first { it.id == song.artistID }?.name ?: "" }
 
                     Column {
                         Row(
@@ -103,17 +104,17 @@ fun AddSongsScreen(
                         ) {
 
                             AsyncImage(
-                                model = remember { songAlbumArt ?: getImage(context, R.drawable.cd, ImageSizes.SMALL) },
+                                model = remember { art ?: getImage(context, R.drawable.cd, ImageSizes.SMALL) },
                                 contentDescription = null,
-                                colorFilter = if (songAlbumArt == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                                colorFilter = if (art == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(14.dp))
                                     .height(70.dp)
                                     .width(70.dp)
-                                    .modifyIf(songAlbumArt == null) {
+                                    .modifyIf(art == null) {
                                         background(surfaceVariantColor)
                                     }
-                                    .modifyIf(songAlbumArt == null) {
+                                    .modifyIf(art == null) {
                                         padding(5.dp)
                                     }
                             )
@@ -132,7 +133,7 @@ fun AddSongsScreen(
                                 )
 
                                 CustomText(
-                                    text = song.artist
+                                    text = artistName
                                 )
                             }
 
@@ -152,7 +153,7 @@ fun AddSongsScreen(
                 }
             }
 
-            MediumHeightSpacer()
+            MediumVerticalSpacer()
 
             Button(
                 modifier = Modifier

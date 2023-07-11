@@ -30,8 +30,8 @@ import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHeightSpacer
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHeightSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
@@ -148,7 +148,7 @@ fun AddToPlaylistScreen(
 
                     BottomSheetHandle()
 
-                    SmallHeightSpacer()
+                    SmallVerticalSpacer()
 
                     Text(
                         text = "Playlist Name",
@@ -164,7 +164,7 @@ fun AddToPlaylistScreen(
                         textType = "text"
                     )
 
-                    SmallHeightSpacer()
+                    SmallVerticalSpacer()
 
                     Row(
                         horizontalArrangement = Arrangement.End,
@@ -206,7 +206,7 @@ fun AddToPlaylistScreen(
             ) {
 
                 if (screenLoaded) {
-                    MediumHeightSpacer()
+                    MediumVerticalSpacer()
 
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -266,7 +266,7 @@ fun AddToPlaylistScreen(
                                         .padding(5.dp)
                                 )
 
-                                SmallHeightSpacer()
+                                SmallHorizontalSpacer()
 
                                 Text(
                                     text = playlist.name,

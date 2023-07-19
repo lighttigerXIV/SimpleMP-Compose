@@ -1,4 +1,11 @@
+<div align="center">
+
+  <img heigh="200" width="200" src="https://github.com/lighttigerXIV/SimpleMP-Compose/assets/35658492/a45b3ae3-b677-40a4-a86b-286ab602de1a">
+ 
 # Simple MP (Simple Music Player)
+
+</div>
+
 ### About
 Simple MP (Simple Music Player) is music player based on material you design.
 This app is for those who like a minimalist look too their apps.

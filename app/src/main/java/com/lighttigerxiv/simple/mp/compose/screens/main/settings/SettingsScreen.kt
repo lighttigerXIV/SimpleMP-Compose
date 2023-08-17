@@ -23,6 +23,7 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_SPACING
 import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SettingsValues
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
@@ -688,7 +689,7 @@ fun SwitchSettingItem(
             .fillMaxWidth()
             .wrapContentHeight()
             .clickable { if (enabled) onToggle() }
-            .padding(10.dp)
+            .padding(MEDIUM_SPACING)
     ) {
 
         Image(

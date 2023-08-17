@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -21,19 +20,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_RADIUS
+import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_SPACING
 import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
-import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.text.TitleMedium
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHorizontalSpacer
 
 @Composable
 fun PermissionsScreen(
@@ -122,7 +121,7 @@ fun PermissionsScreen(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(MEDIUM_RADIUS))
                             .background(MaterialTheme.colorScheme.surfaceVariant)
-                            .padding(SMALL_SPACING)
+                            .padding(MEDIUM_SPACING)
                     ) {
 
                         Text(
@@ -133,30 +132,16 @@ fun PermissionsScreen(
                                 .weight(weight = 1f, fill = true)
                         )
 
-                        SmallHorizontalSpacer()
-
-                        Row(
-                            modifier = Modifier
-                                .width(1.dp)
-                        ) {
-                            Divider(
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.fillMaxHeight()
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(10.dp))
+                        MediumHorizontalSpacer()
 
                         Column(
                             verticalArrangement = Arrangement.Center,
                             modifier = Modifier.fillMaxHeight()
                         ) {
-                            Text(
-                                text = if (storagePermissionGranted) getAppString(context, R.string.Granted) else getAppString(context, R.string.Grant),
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.clickable {
 
+                            Switch(
+                                checked = storagePermissionGranted,
+                                onCheckedChange = {
                                     if (Build.VERSION.SDK_INT >= 33) {
                                         storagePermissionLauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
                                     } else {
@@ -185,7 +170,7 @@ fun PermissionsScreen(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(14.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .padding(SMALL_SPACING)
+                                .padding(MEDIUM_SPACING)
                         ) {
 
                             Text(
@@ -196,35 +181,16 @@ fun PermissionsScreen(
                                     .weight(weight = 1f, fill = true)
                             )
 
-                            Spacer(modifier = Modifier.width(5.dp))
-
-                            Row(
-                                modifier = Modifier
-                                    .width(1.dp)
-                            ) {
-                                Divider(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.fillMaxHeight()
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.width(10.dp))
+                            MediumHorizontalSpacer()
 
                             Column(
                                 verticalArrangement = Arrangement.Center,
                                 modifier = Modifier.fillMaxHeight()
                             ) {
-                                Text(
-                                    text = if (notificationsPermissionGranted) getAppString(context, R.string.Granted) else getAppString(context, R.string.Grant),
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.clickable(
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        indication = null
-                                    ) {
-                                        notificationsPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                    }
-                                )
+
+                                Switch(checked = notificationsPermissionGranted, onCheckedChange = {
+                                    notificationsPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                })
                             }
                         }
                     }

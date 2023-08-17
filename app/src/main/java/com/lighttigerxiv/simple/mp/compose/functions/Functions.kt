@@ -22,12 +22,6 @@ import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import java.text.Normalizer
 
 
-//************************************************
-// Song Related
-//************************************************
-
-
-
 @Suppress("DEPRECATION")
 fun getSongAlbumArt(context: Context, songID: Long, albumID: Long): Bitmap? {
 

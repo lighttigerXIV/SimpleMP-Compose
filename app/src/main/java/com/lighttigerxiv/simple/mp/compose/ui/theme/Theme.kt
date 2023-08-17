@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.lighttigerxiv.simple.mp.compose.data.variables.SettingsValues
 
 
-private val LightBlueColors = lightColorScheme(
+val LightBlueColors = lightColorScheme(
     primary = blue_theme_light_primary,
     onPrimary = blue_theme_light_onPrimary,
     primaryContainer = blue_theme_light_primaryContainer,
@@ -40,7 +40,7 @@ private val LightBlueColors = lightColorScheme(
 )
 
 
-private val DarkBlueColors = darkColorScheme(
+val DarkBlueColors = darkColorScheme(
     primary = blue_theme_dark_primary,
     onPrimary = blue_theme_dark_onPrimary,
     primaryContainer = blue_theme_dark_primaryContainer,
@@ -71,7 +71,7 @@ private val DarkBlueColors = darkColorScheme(
 )
 
 
-private val LightRedColors = lightColorScheme(
+val LightRedColors = lightColorScheme(
     primary = red_theme_light_primary,
     onPrimary = red_theme_light_onPrimary,
     primaryContainer = red_theme_light_primaryContainer,
@@ -102,7 +102,7 @@ private val LightRedColors = lightColorScheme(
 )
 
 
-private val DarkRedColors = darkColorScheme(
+val DarkRedColors = darkColorScheme(
     primary = red_theme_dark_primary,
     onPrimary = red_theme_dark_onPrimary,
     primaryContainer = red_theme_dark_primaryContainer,
@@ -132,7 +132,7 @@ private val DarkRedColors = darkColorScheme(
     surfaceTint = red_theme_dark_surfaceTint,
 )
 
-private val LightPurpleColors = lightColorScheme(
+val LightPurpleColors = lightColorScheme(
     primary = purple_theme_light_primary,
     onPrimary = purple_theme_light_onPrimary,
     primaryContainer = purple_theme_light_primaryContainer,
@@ -163,7 +163,7 @@ private val LightPurpleColors = lightColorScheme(
 )
 
 
-private val DarkPurpleColors = darkColorScheme(
+val DarkPurpleColors = darkColorScheme(
     primary = purple_theme_dark_primary,
     onPrimary = purple_theme_dark_onPrimary,
     primaryContainer = purple_theme_dark_primaryContainer,
@@ -193,7 +193,7 @@ private val DarkPurpleColors = darkColorScheme(
     surfaceTint = purple_theme_dark_surfaceTint,
 )
 
-private val LightYellowColors = lightColorScheme(
+val LightYellowColors = lightColorScheme(
     primary = yellow_theme_light_primary,
     onPrimary = yellow_theme_light_onPrimary,
     primaryContainer = yellow_theme_light_primaryContainer,
@@ -224,7 +224,7 @@ private val LightYellowColors = lightColorScheme(
 )
 
 
-private val DarkYellowColors = darkColorScheme(
+val DarkYellowColors = darkColorScheme(
     primary = yellow_theme_dark_primary,
     onPrimary = yellow_theme_dark_onPrimary,
     primaryContainer = yellow_theme_dark_primaryContainer,
@@ -255,7 +255,7 @@ private val DarkYellowColors = darkColorScheme(
 )
 
 
-private val LightOrangeColors = lightColorScheme(
+val LightOrangeColors = lightColorScheme(
     primary = orange_theme_light_primary,
     onPrimary = orange_theme_light_onPrimary,
     primaryContainer = orange_theme_light_primaryContainer,
@@ -286,7 +286,7 @@ private val LightOrangeColors = lightColorScheme(
 )
 
 
-private val DarkOrangeColors = darkColorScheme(
+val DarkOrangeColors = darkColorScheme(
     primary = orange_theme_dark_primary,
     onPrimary = orange_theme_dark_onPrimary,
     primaryContainer = orange_theme_dark_primaryContainer,
@@ -316,7 +316,7 @@ private val DarkOrangeColors = darkColorScheme(
     surfaceTint = orange_theme_dark_surfaceTint,
 )
 
-private val LightGreenColors = lightColorScheme(
+val LightGreenColors = lightColorScheme(
     primary = green_theme_light_primary,
     onPrimary = green_theme_light_onPrimary,
     primaryContainer = green_theme_light_primaryContainer,
@@ -347,7 +347,7 @@ private val LightGreenColors = lightColorScheme(
 )
 
 
-private val DarkGreenColors = darkColorScheme(
+val DarkGreenColors = darkColorScheme(
     primary = green_theme_dark_primary,
     onPrimary = green_theme_dark_onPrimary,
     primaryContainer = green_theme_dark_primaryContainer,
@@ -377,7 +377,7 @@ private val DarkGreenColors = darkColorScheme(
     surfaceTint = green_theme_dark_surfaceTint,
 )
 
-private val LightPinkColors = lightColorScheme(
+val LightPinkColors = lightColorScheme(
     primary = pink_theme_light_primary,
     onPrimary = pink_theme_light_onPrimary,
     primaryContainer = pink_theme_light_primaryContainer,
@@ -408,7 +408,7 @@ private val LightPinkColors = lightColorScheme(
 )
 
 
-private val DarkPinkColors = darkColorScheme(
+val DarkPinkColors = darkColorScheme(
     primary = pink_theme_dark_primary,
     onPrimary = pink_theme_dark_onPrimary,
     primaryContainer = pink_theme_dark_primaryContainer,
@@ -439,7 +439,7 @@ private val DarkPinkColors = darkColorScheme(
 )
 
 
-private val MacchiatoRosewater = darkColorScheme(
+val MacchiatoRosewater = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoRosewater,
     onPrimary = macchiatoOnPrimary,
@@ -449,7 +449,7 @@ private val MacchiatoRosewater = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoFlamingo = darkColorScheme(
+val MacchiatoFlamingo = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoFlamingo,
     onPrimary = macchiatoOnPrimary,
@@ -459,7 +459,7 @@ private val MacchiatoFlamingo = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoPink = darkColorScheme(
+val MacchiatoPink = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoPink,
     onPrimary = macchiatoOnPrimary,
@@ -469,7 +469,7 @@ private val MacchiatoPink = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoMauve = darkColorScheme(
+val MacchiatoMauve = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoMauve,
     onPrimary = macchiatoOnPrimary,
@@ -479,7 +479,7 @@ private val MacchiatoMauve = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoRed = darkColorScheme(
+val MacchiatoRed = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoRed,
     onPrimary = macchiatoOnPrimary,
@@ -489,7 +489,7 @@ private val MacchiatoRed = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoMaroon = darkColorScheme(
+val MacchiatoMaroon = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoMaroon,
     onPrimary = macchiatoOnPrimary,
@@ -499,7 +499,7 @@ private val MacchiatoMaroon = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoPeach = darkColorScheme(
+val MacchiatoPeach = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoPeach,
     onPrimary = macchiatoOnPrimary,
@@ -509,7 +509,7 @@ private val MacchiatoPeach = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoYellow = darkColorScheme(
+val MacchiatoYellow = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoYellow,
     onPrimary = macchiatoOnPrimary,
@@ -519,7 +519,7 @@ private val MacchiatoYellow = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoGreen = darkColorScheme(
+val MacchiatoGreen = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoGreen,
     onPrimary = macchiatoOnPrimary,
@@ -529,7 +529,7 @@ private val MacchiatoGreen = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoTeal = darkColorScheme(
+val MacchiatoTeal = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoTeal,
     onPrimary = macchiatoOnPrimary,
@@ -539,7 +539,7 @@ private val MacchiatoTeal = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoSky = darkColorScheme(
+val MacchiatoSky = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoSky,
     onPrimary = macchiatoOnPrimary,
@@ -549,7 +549,7 @@ private val MacchiatoSky = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoSapphire = darkColorScheme(
+val MacchiatoSapphire = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoSapphire,
     onPrimary = macchiatoOnPrimary,
@@ -559,7 +559,7 @@ private val MacchiatoSapphire = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoBlue = darkColorScheme(
+val MacchiatoBlue = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoBlue,
     onPrimary = macchiatoOnPrimary,
@@ -569,7 +569,7 @@ private val MacchiatoBlue = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MacchiatoLavender = darkColorScheme(
+val MacchiatoLavender = darkColorScheme(
     background = macchiatoBackground,
     primary = macchiatoLavender,
     onPrimary = macchiatoOnPrimary,
@@ -579,7 +579,7 @@ private val MacchiatoLavender = darkColorScheme(
     onSurfaceVariant = macchiatoOnSurfaceVariant
 )
 
-private val MochaRosewater = darkColorScheme(
+val MochaRosewater = darkColorScheme(
     background = mochaBackground,
     primary = mochaRosewater,
     onPrimary = mochaOnPrimary,
@@ -589,7 +589,7 @@ private val MochaRosewater = darkColorScheme(
     onSurfaceVariant = mochaOnSurfaceVariant
 )
 
-private val MochaFlamingo = darkColorScheme(
+val MochaFlamingo = darkColorScheme(
     background = mochaBackground,
     primary = mochaFlamingo,
     onPrimary = mochaOnPrimary,
@@ -599,7 +599,7 @@ private val MochaFlamingo = darkColorScheme(
     onSurfaceVariant = mochaOnSurfaceVariant
 )
 
-private val MochaPink = darkColorScheme(
+val MochaPink = darkColorScheme(
     background = mochaBackground,
     primary = mochaPink,
     onPrimary = mochaOnPrimary,
@@ -609,7 +609,7 @@ private val MochaPink = darkColorScheme(
     onSurfaceVariant = mochaOnSurfaceVariant
 )
 
-private val MochaMauve = darkColorScheme(
+val MochaMauve = darkColorScheme(
     background = mochaBackground,
     primary = mochaMauve,
     onPrimary = mochaOnPrimary,
@@ -619,7 +619,7 @@ private val MochaMauve = darkColorScheme(
     onSurfaceVariant = mochaOnSurfaceVariant
 )
 
-private val MochaRed = darkColorScheme(
+val MochaRed = darkColorScheme(
     background = mochaBackground,
     primary = mochaRed,
     onPrimary = mochaOnPrimary,
@@ -629,7 +629,7 @@ private val MochaRed = darkColorScheme(
     onSurfaceVariant = mochaOnSurfaceVariant
 )
 
-private val MochaMaroon = darkColorScheme(
+val MochaMaroon = darkColorScheme(
     background = mochaBackground,
     primary = mochaMaroon,
     onPrimary = mochaOnPrimary,
@@ -639,7 +639,7 @@ private val MochaMaroon = darkColorScheme(
     onSurfaceVariant = mochaOnSurfaceVariant
 )
 
-private val MochaPeach = darkColorScheme(
+val MochaPeach = darkColorScheme(
     background = mochaBackground,
     primary = mochaPeach,
     onPrimary = mochaOnPrimary,
@@ -649,7 +649,7 @@ private val MochaPeach = darkColorScheme(
     onSurfaceVariant = mochaOnSurfaceVariant
 )
 
-private val MochaYellow = darkColorScheme(
+val MochaYellow = darkColorScheme(
     background = mochaBackground,
     primary = mochaYellow,
     onPrimary = mochaOnPrimary,
@@ -660,7 +660,7 @@ private val MochaYellow = darkColorScheme(
 )
 
 
-private val MochaGreen = darkColorScheme(
+val MochaGreen = darkColorScheme(
     background = mochaBackground,
     primary = mochaGreen,
     onPrimary = mochaOnPrimary,
@@ -670,7 +670,7 @@ private val MochaGreen = darkColorScheme(
     onSurfaceVariant = mochaOnSurfaceVariant
 )
 
-private val MochaTeal = darkColorScheme(
+val MochaTeal = darkColorScheme(
     background = mochaBackground,
     primary = mochaTeal,
     onPrimary = mochaOnPrimary,
@@ -680,7 +680,7 @@ private val MochaTeal = darkColorScheme(
     onSurfaceVariant = mochaOnSurfaceVariant
 )
 
-private val MochaSky = darkColorScheme(
+val MochaSky = darkColorScheme(
     background = mochaBackground,
     primary = mochaSky,
     onPrimary = mochaOnPrimary,
@@ -690,7 +690,7 @@ private val MochaSky = darkColorScheme(
     onSurfaceVariant = mochaOnSurfaceVariant
 )
 
-private val MochaSapphire = darkColorScheme(
+val MochaSapphire = darkColorScheme(
     background = mochaBackground,
     primary = mochaSapphire,
     onPrimary = mochaOnPrimary,
@@ -700,7 +700,7 @@ private val MochaSapphire = darkColorScheme(
     onSurfaceVariant = mochaOnSurfaceVariant
 )
 
-private val MochaBlue = darkColorScheme(
+val MochaBlue = darkColorScheme(
     background = mochaBackground,
     primary = mochaBlue,
     onPrimary = mochaOnPrimary,
@@ -710,7 +710,7 @@ private val MochaBlue = darkColorScheme(
     onSurfaceVariant = mochaOnSurfaceVariant
 )
 
-private val MochaLavender = darkColorScheme(
+val MochaLavender = darkColorScheme(
     background = mochaBackground,
     primary = mochaLavender,
     onPrimary = mochaOnPrimary,
@@ -721,7 +721,7 @@ private val MochaLavender = darkColorScheme(
 )
 
 
-private val FrappeRosewater = darkColorScheme(
+val FrappeRosewater = darkColorScheme(
     background = frappeBackground,
     primary = frappeRosewater,
     onPrimary = frappeOnPrimary,
@@ -731,7 +731,7 @@ private val FrappeRosewater = darkColorScheme(
     onSurfaceVariant = frappeOnSurfaceVariant
 )
 
-private val FrappeFlamingo = darkColorScheme(
+val FrappeFlamingo = darkColorScheme(
     background = frappeBackground,
     primary = frappeFlamingo,
     onPrimary = frappeOnPrimary,
@@ -741,7 +741,7 @@ private val FrappeFlamingo = darkColorScheme(
     onSurfaceVariant = frappeOnSurfaceVariant
 )
 
-private val FrappePink = darkColorScheme(
+val FrappePink = darkColorScheme(
     background = frappeBackground,
     primary = frappePink,
     onPrimary = frappeOnPrimary,
@@ -751,7 +751,7 @@ private val FrappePink = darkColorScheme(
     onSurfaceVariant = frappeOnSurfaceVariant
 )
 
-private val FrappeMauve = darkColorScheme(
+val FrappeMauve = darkColorScheme(
     background = frappeBackground,
     primary = frappeMauve,
     onPrimary = frappeOnPrimary,
@@ -761,7 +761,7 @@ private val FrappeMauve = darkColorScheme(
     onSurfaceVariant = frappeOnSurfaceVariant
 )
 
-private val FrappeRed = darkColorScheme(
+val FrappeRed = darkColorScheme(
     background = frappeBackground,
     primary = frappeRed,
     onPrimary = frappeOnPrimary,
@@ -771,7 +771,7 @@ private val FrappeRed = darkColorScheme(
     onSurfaceVariant = frappeOnSurfaceVariant
 )
 
-private val FrappeMaroon = darkColorScheme(
+val FrappeMaroon = darkColorScheme(
     background = frappeBackground,
     primary = frappeMaroon,
     onPrimary = frappeOnPrimary,
@@ -781,7 +781,7 @@ private val FrappeMaroon = darkColorScheme(
     onSurfaceVariant = frappeOnSurfaceVariant
 )
 
-private val FrappePeach = darkColorScheme(
+val FrappePeach = darkColorScheme(
     background = frappeBackground,
     primary = frappePeach,
     onPrimary = frappeOnPrimary,
@@ -791,7 +791,7 @@ private val FrappePeach = darkColorScheme(
     onSurfaceVariant = frappeOnSurfaceVariant
 )
 
-private val FrappeYellow = darkColorScheme(
+val FrappeYellow = darkColorScheme(
     background = frappeBackground,
     primary = frappeYellow,
     onPrimary = frappeOnPrimary,
@@ -802,7 +802,7 @@ private val FrappeYellow = darkColorScheme(
 )
 
 
-private val FrappeGreen = darkColorScheme(
+val FrappeGreen = darkColorScheme(
     background = frappeBackground,
     primary = frappeGreen,
     onPrimary = frappeOnPrimary,
@@ -812,7 +812,7 @@ private val FrappeGreen = darkColorScheme(
     onSurfaceVariant = frappeOnSurfaceVariant
 )
 
-private val FrappeTeal = darkColorScheme(
+val FrappeTeal = darkColorScheme(
     background = frappeBackground,
     primary = frappeTeal,
     onPrimary = frappeOnPrimary,
@@ -822,7 +822,7 @@ private val FrappeTeal = darkColorScheme(
     onSurfaceVariant = frappeOnSurfaceVariant
 )
 
-private val FrappeSky = darkColorScheme(
+val FrappeSky = darkColorScheme(
     background = frappeBackground,
     primary = frappeSky,
     onPrimary = frappeOnPrimary,
@@ -832,7 +832,7 @@ private val FrappeSky = darkColorScheme(
     onSurfaceVariant = frappeOnSurfaceVariant
 )
 
-private val FrappeSapphire = darkColorScheme(
+val FrappeSapphire = darkColorScheme(
     background = frappeBackground,
     primary = frappeSapphire,
     onPrimary = frappeOnPrimary,
@@ -842,7 +842,7 @@ private val FrappeSapphire = darkColorScheme(
     onSurfaceVariant = frappeOnSurfaceVariant
 )
 
-private val FrappeBlue = darkColorScheme(
+val FrappeBlue = darkColorScheme(
     background = frappeBackground,
     primary = frappeBlue,
     onPrimary = frappeOnPrimary,
@@ -852,7 +852,7 @@ private val FrappeBlue = darkColorScheme(
     onSurfaceVariant = frappeOnSurfaceVariant
 )
 
-private val FrappeLavender = darkColorScheme(
+val FrappeLavender = darkColorScheme(
     background = frappeBackground,
     primary = frappeLavender,
     onPrimary = frappeOnPrimary,

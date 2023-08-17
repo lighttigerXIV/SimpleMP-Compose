@@ -27,6 +27,7 @@ import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongsData
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.CacheQueries
+import com.lighttigerxiv.simple.mp.compose.data.variables.Settings
 import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
 import com.lighttigerxiv.simple.mp.compose.widgets.SimpleMPWidget
 import kotlinx.coroutines.Dispatchers
@@ -261,23 +262,27 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
             _songCount.update { cachedSongs.size }
 
+            val durationFilter = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString(Settings.FILTER_AUDIO, "30")!!.toInt()
+
             cachedSongs.forEach { cachedSong ->
 
-                songs.add(
-                    Song(
-                        id = cachedSong.id,
-                        path = cachedSong.path,
-                        title = cachedSong.title,
-                        albumID = cachedSong.albumID,
-                        duration = cachedSong.duration,
-                        artistID = cachedSong.artistID,
-                        year = cachedSong.year,
-                        genre = cachedSong.genre,
-                        modificationDate = cachedSong.modificationDate
+                if(cachedSong.duration > durationFilter){
+                    songs.add(
+                        Song(
+                            id = cachedSong.id,
+                            path = cachedSong.path,
+                            title = cachedSong.title,
+                            albumID = cachedSong.albumID,
+                            duration = cachedSong.duration,
+                            artistID = cachedSong.artistID,
+                            year = cachedSong.year,
+                            genre = cachedSong.genre,
+                            modificationDate = cachedSong.modificationDate
+                        )
                     )
-                )
 
-                _indexedSongsCount.update { indexedSongsCount.value + 1 }
+                    _indexedSongsCount.update { indexedSongsCount.value + 1 }
+                }
             }
 
             cachedArtists.forEach { cachedArtist ->
@@ -429,13 +434,11 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                     if (genre == null) genre = context.getString(R.string.Undefined)
                     val year = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.YEAR))
 
-
-
                     if (title != null && duration != null) {
 
                         val song = Song(id, songPath, title, albumID, duration.toInt(), artistID, year, genre, modificationDate)
-                        val filterDuration = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString("FilterAudio", "60")!!.toInt() * 1000
-                        if (duration.toInt() > filterDuration) songs.add(song)
+
+                        songs.add(song)
 
                         cachedQueries.addSong(song)
 
@@ -488,6 +491,8 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     fun getSongArtist(song: Song): Artist {
 
+        Log.d("Song", song.toString())
+
         return songsData.value!!.artists.first { it.id == song.artistID }
     }
 
@@ -518,13 +523,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         }
 
         return "$minutes:$stringSeconds"
-    }
-
-    private fun loadSongsCover() {
-
-        songsData.value?.songs?.forEach { song ->
-            Log.d("Song ID", song.id.toString())
-        }
     }
 
     private fun getAlbumArt(songs: List<Song>, id: Long): Bitmap? {

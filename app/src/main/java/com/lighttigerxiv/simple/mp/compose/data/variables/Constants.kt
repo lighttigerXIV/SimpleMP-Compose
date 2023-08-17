@@ -4,11 +4,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 
-val SCREEN_PADDING = 16.dp
+val SCREEN_PADDING = 24.dp
 val XSMALL_SPACING = 4.dp
 val SMALL_SPACING = 8.dp
 val MEDIUM_SPACING = 16.dp
 val MEDIUM_TITLE_SIZE = 22.sp
+val SMALL_TITLE_SIZE = 20.sp
 val MEDIUM_RADIUS = 14.dp
 
 object Routes{

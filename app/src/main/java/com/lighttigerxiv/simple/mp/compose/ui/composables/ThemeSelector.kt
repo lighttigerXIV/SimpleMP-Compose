@@ -1,27 +1,106 @@
 package com.lighttigerxiv.simple.mp.compose.ui.composables
 
+import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.R
+import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_SPACING
+import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_TITLE_SIZE
+import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
+import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_TITLE_SIZE
 import com.lighttigerxiv.simple.mp.compose.data.variables.SettingsValues
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHorizontalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkBlueColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkGreenColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkOrangeColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkPinkColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkPurpleColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkRedColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkYellowColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeBlue
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeFlamingo
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeGreen
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeLavender
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeMaroon
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeMauve
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappePeach
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappePink
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeRed
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeRosewater
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeSapphire
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeSky
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeTeal
+import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeYellow
+import com.lighttigerxiv.simple.mp.compose.ui.theme.LightBlueColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.LightGreenColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.LightOrangeColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.LightPinkColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.LightPurpleColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.LightRedColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.LightYellowColors
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoBlue
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoFlamingo
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoGreen
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoLavender
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoMaroon
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoMauve
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoPeach
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoPink
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoRed
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoRosewater
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoSapphire
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoSky
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoTeal
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoYellow
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaBlue
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaFlamingo
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaGreen
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaLavender
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaMaroon
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaMauve
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaPeach
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaPink
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaRed
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaRosewater
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaSapphire
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaSky
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaTeal
+import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaYellow
+
 
 @Composable
 fun ThemeSelector(
@@ -30,8 +109,10 @@ fun ThemeSelector(
 ) {
 
     val context = LocalContext.current
+    val inDarkMode = isSystemInDarkTheme()
     val showCommonThemes = remember { mutableStateOf(true) }
     val showCatppuccinThemes = remember { mutableStateOf(true) }
+    val commonThemes = remember { getCommonThemes(inDarkMode, context) }
 
     Column(
         modifier = Modifier
@@ -53,7 +134,7 @@ fun ThemeSelector(
                         .clip(RoundedCornerShape(14.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant)
                         .clickable { onThemeClick(SettingsValues.Themes.SYSTEM) }
-                        .padding(14.dp)
+                        .padding(MEDIUM_SPACING)
                 ) {
 
                     Row(
@@ -87,7 +168,7 @@ fun ThemeSelector(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant)
-                .padding(10.dp)
+                .padding(MEDIUM_SPACING)
         ) {
 
             Row(
@@ -114,61 +195,13 @@ fun ThemeSelector(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                ThemeItem(
-                    themeName = remember { getAppString(context, R.string.Blue) },
-                    surfaceColor = Color(0xFF225FA6),
-                    accentColor = Color(0xFF225FA6),
-                    isSelected = selectedTheme == SettingsValues.Themes.BLUE,
-                    onSelect = { onThemeClick(SettingsValues.Themes.BLUE) }
-                )
+                LazyRow {
+                    items(items = commonThemes, key = { it.setting }) { theme ->
 
-                ThemeItem(
-                    themeName = remember { getAppString(context, R.string.Red) },
-                    surfaceColor = Color(0xFFBF0027),
-                    accentColor = Color(0xFFBF0027),
-                    isSelected = selectedTheme == SettingsValues.Themes.RED,
-                    onSelect = { onThemeClick(SettingsValues.Themes.RED) }
-                )
-
-                ThemeItem(
-                    themeName = remember { getAppString(context, R.string.Purple) },
-                    surfaceColor = Color(0xFF6750A4),
-                    accentColor = Color(0xFF6750A4),
-                    isSelected = selectedTheme == SettingsValues.Themes.PURPLE,
-                    onSelect = { onThemeClick(SettingsValues.Themes.PURPLE) }
-                )
-
-                ThemeItem(
-                    themeName = remember { getAppString(context, R.string.Orange) },
-                    surfaceColor = Color(0xFF924B00),
-                    accentColor = Color(0xFF924B00),
-                    isSelected = selectedTheme == SettingsValues.Themes.ORANGE,
-                    onSelect = { onThemeClick(SettingsValues.Themes.ORANGE) }
-                )
-
-                ThemeItem(
-                    themeName = remember { getAppString(context, R.string.Yellow) },
-                    surfaceColor = Color(0xFF6D5E00),
-                    accentColor = Color(0xFF6D5E00),
-                    isSelected = selectedTheme == SettingsValues.Themes.YELLOW,
-                    onSelect = { onThemeClick(SettingsValues.Themes.YELLOW) }
-                )
-
-                ThemeItem(
-                    themeName = remember { getAppString(context, R.string.Green) },
-                    surfaceColor = Color(0xFF326B00),
-                    accentColor = Color(0xFF326B00),
-                    isSelected = selectedTheme == SettingsValues.Themes.GREEN,
-                    onSelect = { onThemeClick(SettingsValues.Themes.GREEN) }
-                )
-
-                ThemeItem(
-                    themeName = remember { getAppString(context, R.string.Pink) },
-                    surfaceColor = Color(0xFF84468E),
-                    accentColor = Color(0xFF84468E),
-                    isSelected = selectedTheme == SettingsValues.Themes.PINK,
-                    onSelect = { onThemeClick(SettingsValues.Themes.PINK) }
-                )
+                        ThemePreview(selectedTheme = selectedTheme, theme = theme, onClick = { onThemeClick(theme.setting) })
+                        SmallHorizontalSpacer()
+                    }
+                }
             }
         }
 
@@ -202,351 +235,41 @@ fun ThemeSelector(
 
             if (showCatppuccinThemes.value) {
 
-                Spacer(modifier = Modifier.height(10.dp))
+                MediumVerticalSpacer()
 
-                ThemeItem(
-                    themeName = "Frappe Rosewater",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xfff2d5cf),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_ROSEWATER,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_ROSEWATER) }
-                )
+                Text(text = "Frappe", fontSize = SMALL_TITLE_SIZE, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                ThemeItem(
-                    themeName = "Frappe Flamingo",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xffeebebe),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_FLAMINGO,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_FLAMINGO) }
-                )
+                LazyRow {
+                    items(items = getCatppuccinFrappeThemes(), key = { it.setting }) { theme ->
 
-                ThemeItem(
-                    themeName = "Frappe Pink",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xfff4b8e4),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_PINK,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_PINK) }
-                )
+                        ThemePreview(selectedTheme = selectedTheme, theme = theme, onClick = { onThemeClick(theme.setting) })
+                        SmallHorizontalSpacer()
+                    }
+                }
 
-                ThemeItem(
-                    themeName = "Frappe Mauve",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xffca9ee6),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_MAUVE,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_MAUVE) }
-                )
+                SmallVerticalSpacer()
 
-                ThemeItem(
-                    themeName = "Frappe Red",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xffe78284),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_RED,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_RED) }
-                )
+                Text(text = "Macchiato", fontSize = SMALL_TITLE_SIZE, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                ThemeItem(
-                    themeName = "Frappe Maroon",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xffea999c),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_MAROON,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_MAROON) }
-                )
+                LazyRow {
+                    items(items = getCatppuccinMacchiatoThemes(), key = { it.setting }) { theme ->
 
-                ThemeItem(
-                    themeName = "Frappe Peach",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xffef9f76),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_PEACH,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_PEACH) }
-                )
+                        ThemePreview(selectedTheme = selectedTheme, theme = theme, onClick = { onThemeClick(theme.setting) })
+                        SmallHorizontalSpacer()
+                    }
+                }
 
-                ThemeItem(
-                    themeName = "Frappe Yellow",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xffe5c890),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_YELLOW,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_YELLOW) }
-                )
+                SmallVerticalSpacer()
 
-                ThemeItem(
-                    themeName = "Frappe Green",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xffa6d189),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_GREEN,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_GREEN) }
-                )
+                Text(text = "Mocha", fontSize = SMALL_TITLE_SIZE, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                ThemeItem(
-                    themeName = "Frappe Teal",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xff81c8be),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_TEAL,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_TEAL) }
-                )
+                LazyRow {
+                    items(items = getCatppuccinMochaThemes(), key = { it.setting }) { theme ->
 
-                ThemeItem(
-                    themeName = "Frappe Sky",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xff99d1db),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_SKY,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_SKY) }
-                )
-
-                ThemeItem(
-                    themeName = "Frappe Sapphire",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xff85c1dc),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_SAPPHIRE,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_SAPPHIRE) }
-                )
-
-                ThemeItem(
-                    themeName = "Frappe Blue",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xff8caaee),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_BLUE,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_BLUE) }
-                )
-
-                ThemeItem(
-                    themeName = "Frappe Lavender",
-                    surfaceColor = Color(0xff303446),
-                    accentColor = Color(0xffbabbf1),
-                    isSelected = selectedTheme == SettingsValues.Themes.FRAPPE_LAVENDER,
-                    onSelect = { onThemeClick(SettingsValues.Themes.FRAPPE_LAVENDER) }
-                )
-
-                Spacer(modifier = Modifier.height(5.dp))
-                Divider(color = MaterialTheme.colorScheme.surface)
-                Spacer(modifier = Modifier.height(5.dp))
-
-                ThemeItem(
-                    themeName = "Macchiato Rosewater",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xfff5e0dc),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_ROSEWATER,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_ROSEWATER) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Flamingo",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xfff2cdcd),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_FLAMINGO,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_FLAMINGO) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Pink",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xfff5c2e7),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_PINK,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_PINK) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Mauve",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xffcba6f7),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_MAUVE,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_MAUVE) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Red",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xfff38ba8),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_RED,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_RED) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Maroon",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xffeba0ac),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_MAROON,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_MAROON) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Peach",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xfffab387),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_PEACH,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_PEACH) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Yellow",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xfff9e2af),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_YELLOW,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_YELLOW) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Green",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xffa6e3a1),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_GREEN,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_GREEN) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Teal",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xff94e2d5),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_TEAL,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_TEAL) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Sky",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xff89dceb),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_SKY,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_SKY) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Sapphire",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xff74c7ec),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_SAPPHIRE,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_SAPPHIRE) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Blue",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xff89b4fa),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_BLUE,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_BLUE) }
-                )
-
-                ThemeItem(
-                    themeName = "Macchiato Lavender",
-                    surfaceColor = Color(0xff24273a),
-                    accentColor = Color(0xffb4befe),
-                    isSelected = selectedTheme == SettingsValues.Themes.MACCHIATO_LAVENDER,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MACCHIATO_LAVENDER) }
-                )
-
-                Spacer(modifier = Modifier.height(5.dp))
-                Divider(color = MaterialTheme.colorScheme.surface)
-                Spacer(modifier = Modifier.height(5.dp))
-
-                ThemeItem(
-                    themeName = "Mocha Rosewater",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xfff5e0dc),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_ROSEWATER,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_ROSEWATER) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Flamingo",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xfff2cdcd),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_FLAMINGO,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_FLAMINGO) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Pink",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xfff5c2e7),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_PINK,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_PINK) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Mauve",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xffcba6f7),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_MAUVE,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_MAUVE) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Red",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xfff38ba8),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_RED,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_RED) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Maroon",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xffeba0ac),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_MAROON,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_MAROON) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Peach",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xfffab387),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_PEACH,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_PEACH) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Yellow",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xfff9e2af),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_YELLOW,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_YELLOW) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Green",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xffa6e3a1),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_GREEN,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_GREEN) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Teal",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xff94e2d5),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_TEAL,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_TEAL) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Sky",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xff89dceb),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_SKY,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_SKY) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Sapphire",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xff74c7ec),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_SAPPHIRE,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_SAPPHIRE) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Blue",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xff89b4fa),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_BLUE,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_BLUE) }
-                )
-
-                ThemeItem(
-                    themeName = "Mocha Lavender",
-                    surfaceColor = Color(0xff1e1e2e),
-                    accentColor = Color(0xffb4befe),
-                    isSelected = selectedTheme == SettingsValues.Themes.MOCHA_LAVENDER,
-                    onSelect = { onThemeClick(SettingsValues.Themes.MOCHA_LAVENDER) }
-                )
+                        ThemePreview(selectedTheme = selectedTheme, theme = theme, onClick = { onThemeClick(theme.setting) })
+                        SmallHorizontalSpacer()
+                    }
+                }
             }
         }
     }
@@ -625,4 +348,415 @@ fun ThemeItem(
 
         Spacer(modifier = Modifier.height(10.dp))
     }
+}
+
+@Composable
+fun ThemePreview(selectedTheme: String, theme: Theme, onClick: () -> Unit) {
+
+    Column(
+        modifier = Modifier
+            .width(IntrinsicSize.Max)
+            .clip(RoundedCornerShape(14.dp))
+            .background(theme.colorScheme.surface)
+            .clickable { onClick() }
+            .padding(MEDIUM_SPACING)
+    ) {
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(theme.colorScheme.surfaceVariant)
+                    .padding(SMALL_SPACING)
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .height(60.dp)
+                        .width(60.dp),
+                    painter = painterResource(id = R.drawable.cd),
+                    contentDescription = null,
+                    tint = theme.colorScheme.primary
+                )
+            }
+
+            MediumHorizontalSpacer()
+
+            Column {
+                Row {
+                    Text(text = "Abc", color = theme.colorScheme.onSurface, fontSize = 20.sp)
+
+                    MediumHorizontalSpacer()
+
+                    Text(text = "Abc", color = theme.colorScheme.primary, fontSize = 20.sp)
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row {
+                    Text(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(theme.colorScheme.surfaceVariant)
+                            .padding(4.dp),
+                        text = "Abc",
+                        color = theme.colorScheme.onSurfaceVariant,
+                        fontSize = 20.sp
+                    )
+
+                    MediumHorizontalSpacer()
+
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(theme.colorScheme.primary)
+                            .padding(SMALL_SPACING)
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .height(20.dp)
+                                .width(20.dp),
+                            painter = painterResource(id = R.drawable.icon_shuffle_solid),
+                            contentDescription = null,
+                            tint = theme.colorScheme.onPrimary
+                        )
+                    }
+                }
+            }
+        }
+
+        SmallVerticalSpacer()
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(14.dp))
+                .background(theme.colorScheme.surfaceVariant),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            RadioButton(
+                selected = selectedTheme == theme.setting,
+                onClick = { onClick() },
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = theme.colorScheme.primary,
+                    unselectedColor = theme.colorScheme.onSurface
+                )
+            )
+
+            Text(text = theme.name, color = theme.colorScheme.onSurface)
+        }
+    }
+}
+
+data class Theme(
+    val name: String,
+    val colorScheme: ColorScheme,
+    val setting: String
+)
+
+
+fun getCommonThemes(inDarkMode: Boolean, context: Context): List<Theme> {
+
+    return if (inDarkMode) {
+        listOf(
+            Theme(
+                getAppString(context, R.string.Blue),
+                DarkBlueColors,
+                SettingsValues.Themes.BLUE
+            ),
+            Theme(
+                getAppString(context, R.string.Red),
+                DarkRedColors,
+                SettingsValues.Themes.RED
+            ),
+            Theme(
+                getAppString(context, R.string.Purple),
+                DarkPurpleColors,
+                SettingsValues.Themes.PURPLE
+            ),
+            Theme(
+                getAppString(context, R.string.Orange),
+                DarkOrangeColors,
+                SettingsValues.Themes.ORANGE
+            ),
+            Theme(
+                getAppString(context, R.string.Yellow),
+                DarkYellowColors,
+                SettingsValues.Themes.YELLOW
+            ),
+            Theme(
+                getAppString(context, R.string.Green),
+                DarkGreenColors,
+                SettingsValues.Themes.GREEN
+            ),
+            Theme(
+                getAppString(context, R.string.Pink),
+                DarkPinkColors,
+                SettingsValues.Themes.PINK
+            )
+        )
+    } else {
+        listOf(
+            Theme(
+                getAppString(context, R.string.Blue),
+                LightBlueColors,
+                SettingsValues.Themes.BLUE
+            ),
+            Theme(
+                getAppString(context, R.string.Red),
+                LightRedColors,
+                SettingsValues.Themes.RED
+            ),
+            Theme(
+                getAppString(context, R.string.Purple),
+                LightPurpleColors,
+                SettingsValues.Themes.PURPLE
+            ),
+            Theme(
+                getAppString(context, R.string.Orange),
+                LightOrangeColors,
+                SettingsValues.Themes.ORANGE
+            ),
+            Theme(
+                getAppString(context, R.string.Yellow),
+                LightYellowColors,
+                SettingsValues.Themes.YELLOW
+            ),
+            Theme(
+                getAppString(context, R.string.Green),
+                LightGreenColors,
+                SettingsValues.Themes.GREEN
+            ),
+            Theme(
+                getAppString(context, R.string.Pink),
+                LightPinkColors,
+                SettingsValues.Themes.PINK
+            )
+        )
+    }
+}
+
+fun getCatppuccinFrappeThemes(): List<Theme> {
+    return listOf(
+        Theme(
+            "Rosewater",
+            FrappeRosewater,
+            SettingsValues.Themes.FRAPPE_ROSEWATER
+        ),
+        Theme(
+            "Flamingo",
+            FrappeFlamingo,
+            SettingsValues.Themes.FRAPPE_FLAMINGO
+        ),
+        Theme(
+            "Pink",
+            FrappePink,
+            SettingsValues.Themes.FRAPPE_PINK
+        ),
+        Theme(
+            "Mauve",
+            FrappeMauve,
+            SettingsValues.Themes.FRAPPE_MAUVE
+        ),
+        Theme(
+            "Red",
+            FrappeRed,
+            SettingsValues.Themes.FRAPPE_RED
+        ),
+        Theme(
+            "Maroon",
+            FrappeMaroon,
+            SettingsValues.Themes.FRAPPE_MAROON
+        ),
+        Theme(
+            "Peach",
+            FrappePeach,
+            SettingsValues.Themes.FRAPPE_PEACH
+        ),
+        Theme(
+            "Yellow",
+            FrappeYellow,
+            SettingsValues.Themes.FRAPPE_YELLOW
+        ),
+        Theme(
+            "Green",
+            FrappeGreen,
+            SettingsValues.Themes.FRAPPE_GREEN
+        ),
+        Theme(
+            "Teal",
+            FrappeTeal,
+            SettingsValues.Themes.FRAPPE_TEAL
+        ),
+        Theme(
+            "Sky",
+            FrappeSky,
+            SettingsValues.Themes.FRAPPE_SKY
+        ),
+        Theme(
+            "Sapphire",
+            FrappeSapphire,
+            SettingsValues.Themes.FRAPPE_SAPPHIRE
+        ),
+        Theme(
+            "Blue",
+            FrappeBlue,
+            SettingsValues.Themes.FRAPPE_BLUE
+        ),
+        Theme(
+            "Lavender",
+            FrappeLavender,
+            SettingsValues.Themes.FRAPPE_LAVENDER
+        )
+    )
+}
+
+fun getCatppuccinMacchiatoThemes(): List<Theme> {
+    return listOf(
+        Theme(
+            "Rosewater",
+            MacchiatoRosewater,
+            SettingsValues.Themes.MACCHIATO_ROSEWATER
+        ),
+        Theme(
+            "Flamingo",
+            MacchiatoFlamingo,
+            SettingsValues.Themes.MACCHIATO_FLAMINGO
+        ),
+        Theme(
+            "Pink",
+            MacchiatoPink,
+            SettingsValues.Themes.MACCHIATO_PINK
+        ),
+        Theme(
+            "Mauve",
+            MacchiatoMauve,
+            SettingsValues.Themes.MACCHIATO_MAUVE
+        ),
+        Theme(
+            "Red",
+            MacchiatoRed,
+            SettingsValues.Themes.MACCHIATO_RED
+        ),
+        Theme(
+            "Maroon",
+            MacchiatoMaroon,
+            SettingsValues.Themes.MACCHIATO_MAROON
+        ),
+        Theme(
+            "Peach",
+            MacchiatoPeach,
+            SettingsValues.Themes.MACCHIATO_PEACH
+        ),
+        Theme(
+            "Yellow",
+            MacchiatoYellow,
+            SettingsValues.Themes.MACCHIATO_YELLOW
+        ),
+        Theme(
+            "Green",
+            MacchiatoGreen,
+            SettingsValues.Themes.MACCHIATO_GREEN
+        ),
+        Theme(
+            "Teal",
+            MacchiatoTeal,
+            SettingsValues.Themes.MACCHIATO_TEAL
+        ),
+        Theme(
+            "Sky",
+            MacchiatoSky,
+            SettingsValues.Themes.MACCHIATO_SKY
+        ),
+        Theme(
+            "Sapphire",
+            MacchiatoSapphire,
+            SettingsValues.Themes.MACCHIATO_SAPPHIRE
+        ),
+        Theme(
+            "Blue",
+            MacchiatoBlue,
+            SettingsValues.Themes.MACCHIATO_BLUE
+        ),
+        Theme(
+            "Lavender",
+            MacchiatoLavender,
+            SettingsValues.Themes.MACCHIATO_LAVENDER
+        )
+    )
+}
+
+fun getCatppuccinMochaThemes(): List<Theme> {
+    return listOf(
+        Theme(
+            "Rosewater",
+            MochaRosewater,
+            SettingsValues.Themes.MOCHA_ROSEWATER
+        ),
+        Theme(
+            "Flamingo",
+            MochaFlamingo,
+            SettingsValues.Themes.MOCHA_FLAMINGO
+        ),
+        Theme(
+            "Pink",
+            MochaPink,
+            SettingsValues.Themes.MOCHA_PINK
+        ),
+        Theme(
+            "Mauve",
+            MochaMauve,
+            SettingsValues.Themes.MOCHA_MAUVE
+        ),
+        Theme(
+            "Red",
+            MochaRed,
+            SettingsValues.Themes.MOCHA_RED
+        ),
+        Theme(
+            "Maroon",
+            MochaMaroon,
+            SettingsValues.Themes.MOCHA_MAROON
+        ),
+        Theme(
+            "Peach",
+            MochaPeach,
+            SettingsValues.Themes.MOCHA_PEACH
+        ),
+        Theme(
+            "Yellow",
+            MochaYellow,
+            SettingsValues.Themes.MOCHA_YELLOW
+        ),
+        Theme(
+            "Green",
+            MochaGreen,
+            SettingsValues.Themes.MOCHA_GREEN
+        ),
+        Theme(
+            "Teal",
+            MochaTeal,
+            SettingsValues.Themes.MOCHA_TEAL
+        ),
+        Theme(
+            "Sky",
+            MochaSky,
+            SettingsValues.Themes.MOCHA_SKY
+        ),
+        Theme(
+            "Sapphire",
+            MochaSapphire,
+            SettingsValues.Themes.MOCHA_SAPPHIRE
+        ),
+        Theme(
+            "Blue",
+            MochaBlue,
+            SettingsValues.Themes.MOCHA_BLUE
+        ),
+        Theme(
+            "Lavender",
+            MochaLavender,
+            SettingsValues.Themes.MOCHA_LAVENDER
+        )
+    )
 }

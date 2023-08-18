@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +25,8 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomToolbar
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
+import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_RADIUS
+import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_SPACING
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 
@@ -60,30 +63,46 @@ fun AboutScreen(
             MediumVerticalSpacer()
 
             CustomText(
+                modifier = Modifier.offset(8.dp),
                 text = remember { getAppString(context, R.string.AppVersion) },
                 weight = FontWeight.Bold
             )
 
             CustomText(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(MEDIUM_RADIUS))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(MEDIUM_SPACING),
                 text = remember { BuildConfig.VERSION_NAME }
             )
 
             MediumVerticalSpacer()
 
             CustomText(
+                modifier = Modifier.offset(8.dp),
                 text = remember { getAppString(context, R.string.Changelog) },
                 weight = FontWeight.Bold
             )
 
             Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(MEDIUM_RADIUS))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(MEDIUM_SPACING),
                 color = MaterialTheme.colorScheme.onSurface,
-                text = "- Drastically improved loading speed\n" +
-                        "- Added more info in about screen"
+                text = "- Updated Player UI \n" +
+                        "- Player now opens on click \n" +
+                        "- Fixed audio filter not working as intended \n" +
+                        "- Improved themes preview \n" +
+                        "- Updated catppuccin themes"
             )
 
             MediumVerticalSpacer()
 
             CustomText(
+                modifier = Modifier.offset(8.dp),
                 text = remember { getAppString(context, R.string.AppSource) },
                 weight = FontWeight.Bold
             )
@@ -101,12 +120,13 @@ fun AboutScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Image(
+                Icon(
                     modifier = Modifier
                         .height(30.dp)
                         .width(30.dp),
                     painter = painterResource(id = R.drawable.icon_github),
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.width(14.dp))
@@ -131,6 +151,7 @@ fun AboutScreen(
             MediumVerticalSpacer()
 
             CustomText(
+                modifier = Modifier.offset(8.dp),
                 text = remember { getAppString(context, R.string.Download) },
                 weight = FontWeight.Bold
             )
@@ -148,12 +169,13 @@ fun AboutScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Image(
+                Icon(
                     modifier = Modifier
                         .height(30.dp)
                         .width(30.dp),
                     painter = painterResource(id = R.drawable.icon_github),
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.width(14.dp))
@@ -165,7 +187,7 @@ fun AboutScreen(
                 ) {
 
                     CustomText(
-                        text = remember{ getAppString(context, R.string.GitHubReleases)},
+                        text = remember { getAppString(context, R.string.GitHubReleases) },
                         weight = FontWeight.Bold
                     )
 
@@ -190,12 +212,13 @@ fun AboutScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Image(
+                Icon(
                     modifier = Modifier
                         .height(30.dp)
                         .width(30.dp),
                     painter = painterResource(id = R.drawable.icon_play_store),
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.width(14.dp))
@@ -207,7 +230,7 @@ fun AboutScreen(
                 ) {
 
                     CustomText(
-                        text = remember{ getAppString(context, R.string.PlayStore)},
+                        text = remember { getAppString(context, R.string.PlayStore) },
                         weight = FontWeight.Bold
                     )
 
@@ -232,12 +255,13 @@ fun AboutScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Image(
+                Icon(
                     modifier = Modifier
                         .height(30.dp)
                         .width(30.dp),
                     painter = painterResource(id = R.drawable.icon_fdroid),
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.width(14.dp))
@@ -249,7 +273,7 @@ fun AboutScreen(
                 ) {
 
                     CustomText(
-                        text = remember{ getAppString(context, R.string.FDroid)},
+                        text = remember { getAppString(context, R.string.FDroid) },
                         weight = FontWeight.Bold
                     )
 

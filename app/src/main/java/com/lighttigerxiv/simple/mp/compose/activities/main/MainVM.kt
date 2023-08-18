@@ -262,7 +262,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
             _songCount.update { cachedSongs.size }
 
-            val durationFilter = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString(Settings.FILTER_AUDIO, "30")!!.toInt()
+            val durationFilter = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString(Settings.FILTER_AUDIO, "30")!!.toInt() * 1000
 
             cachedSongs.forEach { cachedSong ->
 
@@ -453,30 +453,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
         cursor?.close()
 
-        _songsData.update {
-            SongsData(
-                songs,
-                artists,
-                albums
-            )
-        }
-
-        //Gets Albums Images
-        val newAlbums = ArrayList<Album>()
-
-        albums.forEach { album ->
-
-            val newAlbum = album.copy(art = getAlbumArt(songs, album.id))
-            newAlbums.add(newAlbum)
-        }
-
-        _songsData.update {
-            SongsData(
-                songs,
-                artists,
-                newAlbums
-            )
-        }
+        getSongsData()
 
         onFinish()
 
@@ -490,8 +467,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     }
 
     fun getSongArtist(song: Song): Artist {
-
-        Log.d("Song", song.toString())
 
         return songsData.value!!.artists.first { it.id == song.artistID }
     }
@@ -527,9 +502,9 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     private fun getAlbumArt(songs: List<Song>, id: Long): Bitmap? {
 
-        val songWithAlbumID = songs.first { it.albumID == id }.id
-
         return try {
+
+            val songWithAlbumID = songs.first { it.albumID == id }.id
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 

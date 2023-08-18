@@ -137,6 +137,8 @@ fun OtherScreen(
             }
         }
 
+        MediumVerticalSpacer()
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()

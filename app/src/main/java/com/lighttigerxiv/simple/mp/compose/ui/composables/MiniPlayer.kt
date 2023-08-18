@@ -25,7 +25,8 @@ import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modif
 
 @Composable
 fun MiniPlayer(
-    mainVM: MainVM
+    mainVM: MainVM,
+    onClick: () -> Unit
 ) {
 
     val context = LocalContext.current
@@ -45,6 +46,7 @@ fun MiniPlayer(
             .height(60.dp)
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(SMALL_SPACING)
+            .clickable { onClick() }
     ) {
 
         if (song != null) {

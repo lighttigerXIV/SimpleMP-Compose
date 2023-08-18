@@ -53,7 +53,8 @@ fun WelcomeScreen(
             ) {
                 Icon(
                     modifier = Modifier
-                        .height(60.dp),
+                        .height(60.dp)
+                        .width(60.dp),
                     painter = painterResource(id = R.drawable.play_empty),
                     contentDescription = "Logo Play Button",
                     tint = MaterialTheme.colorScheme.onPrimary,
@@ -67,6 +68,8 @@ fun WelcomeScreen(
                 color = MaterialTheme.colorScheme.primary
             )
         }
+
+        MediumVerticalSpacer()
 
         Row(
             modifier = Modifier

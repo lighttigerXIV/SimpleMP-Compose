@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -31,27 +32,6 @@ fun SmallIcon(
     )
 }
 
-@Composable
-fun ClickableSmallIcon(
-    id: Int,
-    description: String? = null,
-    color: Color = MaterialTheme.colorScheme.primary,
-    onClick: () -> Unit
-) {
-
-    Image(
-        modifier = Modifier
-            .height(20.dp)
-            .width(20.dp)
-            .clickable {
-                onClick()
-            },
-        contentScale = ContentScale.Fit,
-        painter = painterResource(id = id),
-        contentDescription = description,
-        colorFilter = ColorFilter.tint(color)
-    )
-}
 
 @Composable
 fun MediumIcon(
@@ -79,16 +59,15 @@ fun ClickableMediumIcon(
     onClick: () -> Unit
 ) {
 
-    Image(
+    Icon(
         modifier = Modifier
-            .height(30.dp)
-            .width(30.dp)
+            .height(35.dp)
+            .width(35.dp)
             .clickable {
                 onClick()
             },
-        contentScale = ContentScale.Fit,
         painter = painterResource(id = id),
         contentDescription = description,
-        colorFilter = ColorFilter.tint(color)
+        tint = color
     )
 }

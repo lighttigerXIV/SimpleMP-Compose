@@ -101,6 +101,8 @@ fun ThemesScreen(
 
         }
 
+        MediumVerticalSpacer()
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()

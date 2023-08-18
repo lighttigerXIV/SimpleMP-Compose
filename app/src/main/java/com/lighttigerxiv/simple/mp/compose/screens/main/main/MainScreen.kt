@@ -196,8 +196,6 @@ fun PortraitScreen(
                 openScreen(navController, navItem.route)
             }
         )
-
-
     }
 }
 
@@ -219,6 +217,7 @@ fun LandscapeScreen(
     onGetArtistCover: () -> Unit,
     onGetPlaylistImage: () -> Unit
 ) {
+
 
     Row(
         modifier = Modifier
@@ -261,7 +260,7 @@ fun LandscapeScreen(
 fun MainScaffold(
     activityContext: ViewModelStoreOwner,
     mainVM: MainVM,
-    playerSheetScaffoldState: BottomSheetScaffoldState,
+    playerSheetState: BottomSheetScaffoldState,
     miniPlayerHeight: Dp,
     currentSong: Song?,
     queue: List<Song>?,
@@ -273,11 +272,13 @@ fun MainScaffold(
     onGetPlaylistImage: () -> Unit
 ) {
 
+    val scope = rememberCoroutineScope()
+
     BottomSheetScaffold(
         modifier = Modifier
             .fillMaxSize()
             .layoutId("player"),
-        scaffoldState = playerSheetScaffoldState,
+        scaffoldState = playerSheetState,
         sheetPeekHeight = miniPlayerHeight,
         backgroundColor = mainVM.surfaceColor.collectAsState().value,
         sheetBackgroundColor = mainVM.surfaceColor.collectAsState().value,
@@ -296,7 +297,10 @@ fun MainScaffold(
                 if (currentSong != null && !showMainPlayer && queue != null && upNextQueue != null) {
 
                     MiniPlayer(
-                        mainVM = mainVM
+                        mainVM = mainVM,
+                        onClick = {
+                            scope.launch { playerSheetState.bottomSheetState.expand() }
+                        }
                     )
                 }
 
@@ -323,9 +327,13 @@ fun MainScaffold(
                             }
 
                             openScreen(rootNavController, route)
+                        },
+                        onClosePLayer = {
+                            scope.launch {
+                                playerSheetState.bottomSheetState.collapse()
+                            }
                         }
                     )
-
                 }
             }
         },

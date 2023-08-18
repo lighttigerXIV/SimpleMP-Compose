@@ -403,15 +403,15 @@ val pink_theme_dark_surfaceTint = Color(0xFFF6ADFD)
 
 //Catppuccin colors
 //Background And Surface => Base
-//SurfaceVariant => Surface 1
+//SurfaceVariant => Surface 0
 //OnPrimary => Base
 
 //Macchiato
 val macchiatoBackground = Color(0xff24273a)
 val macchiatoSurface = Color(0xff24273a)
-val macchiatoOnPrimary = Color(0xff24273a)
+val macchiatoOnPrimary = Color(0xff181926)
 val macchiatoOnSurface = Color(0xffcad3f5)
-val macchiatoSurfaceVariant = Color(0xff494d64)
+val macchiatoSurfaceVariant = Color(0xff414559)
 val macchiatoOnSurfaceVariant = Color(0xffcad3f5)
 val macchiatoRosewater = Color(0xfff4dbd6)
 val macchiatoFlamingo = Color(0xfff0c6c6)
@@ -431,9 +431,9 @@ val macchiatoLavender = Color(0xffb7bdf8)
 
 val mochaBackground = Color(0xff1e1e2e)
 val mochaSurface = Color(0xff1e1e2e)
-val mochaOnPrimary = Color(0xff1e1e2e)
+val mochaOnPrimary = Color(0xff11111b)
 val mochaOnSurface = Color(0xffcdd6f4)
-val mochaSurfaceVariant = Color(0xff45475a)
+val mochaSurfaceVariant = Color(0xff313244)
 val mochaOnSurfaceVariant = Color(0xffcdd6f4)
 val mochaRosewater = Color(0xfff5e0dc)
 val mochaFlamingo = Color(0xfff2cdcd)
@@ -453,9 +453,9 @@ val mochaLavender = Color(0xffb4befe)
 
 val frappeBackground = Color(0xff303446)
 val frappeSurface = Color(0xff303446)
-val frappeOnPrimary = Color(0xff303446)
+val frappeOnPrimary = Color(0xff232634)
 val frappeOnSurface = Color(0xffc6d0f5)
-val frappeSurfaceVariant = Color(0xff51576d)
+val frappeSurfaceVariant = Color(0xff414559)
 val frappeOnSurfaceVariant = Color(0xffc6d0f5)
 val frappeRosewater = Color(0xfff2d5cf)
 val frappeFlamingo = Color(0xffeebebe)

@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -24,6 +25,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ExperimentalMotionApi
+import androidx.constraintlayout.compose.MotionLayout
+import androidx.constraintlayout.compose.MotionScene
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -50,7 +54,7 @@ import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMotionApi::class)
 @Composable
 fun Player(
     mainVM: MainVM,
@@ -76,6 +80,7 @@ fun Player(
     val songOnRepeat = mainVM.songOnRepeat.collectAsState().value
     val inPortrait = localConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT
     val showMenu = vm.showMenu.collectAsState().value
+    val hideNavMotionProgress = mainVM.hideNavProgress.collectAsState().value
 
     LaunchedEffect(queue) {
         songsCoversPager.scrollToPage(mainVM.songPosition.value)
@@ -124,66 +129,79 @@ fun Player(
             }
     }
 
-    BoxWithConstraints(
+    MotionLayout(
         modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .fillMaxSize(),
+        motionScene = MotionScene(
+            content = context.resources
+                .openRawResource(R.raw.player_visibility)
+                .readBytes()
+                .decodeToString()
+        ),
+        progress = hideNavMotionProgress
     ) {
-
-        val screenHeight = this.maxHeight
-
-        Column(
+        BoxWithConstraints(
             modifier = Modifier
-                .height(screenHeight)
-                .fillMaxWidth()
-                .padding(24.dp)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .layoutId("player")
         ) {
 
+            val screenHeight = this.maxHeight
 
-            if (inPortrait) {
-                PortraitPlayer(
-                    context,
-                    scope,
-                    vm,
-                    mainVM,
-                    surfaceColor,
-                    selectedSong,
-                    queue,
-                    upNextQueue,
-                    musicPlaying,
-                    songSeconds,
-                    songAndQueuePager,
-                    songsCoversPager,
-                    showMenu,
-                    onOpenPage = { onOpenPage(it) },
-                    currentSongMinutesAndSecondsText,
-                    songMinutesAndSecondsText,
-                    queueShuffled,
-                    songOnRepeat,
-                    onClosePLayer = { onClosePLayer() }
-                )
-            } else {
-                LandscapePlayer(
-                    context,
-                    scope,
-                    vm,
-                    mainVM,
-                    surfaceColor,
-                    selectedSong,
-                    queue,
-                    upNextQueue,
-                    musicPlaying,
-                    songSeconds,
-                    songAndQueuePager,
-                    songsCoversPager,
-                    showMenu,
-                    onOpenPage = { onOpenPage(it) },
-                    currentSongMinutesAndSecondsText,
-                    songMinutesAndSecondsText,
-                    queueShuffled,
-                    songOnRepeat,
-                    onClosePLayer = { onClosePLayer() }
-                )
+            Column(
+                modifier = Modifier
+                    .height(screenHeight)
+                    .fillMaxWidth()
+                    .padding(24.dp)
+            ) {
+
+
+                if (inPortrait) {
+                    PortraitPlayer(
+                        context,
+                        scope,
+                        vm,
+                        mainVM,
+                        surfaceColor,
+                        selectedSong,
+                        queue,
+                        upNextQueue,
+                        musicPlaying,
+                        songSeconds,
+                        songAndQueuePager,
+                        songsCoversPager,
+                        showMenu,
+                        onOpenPage = { onOpenPage(it) },
+                        currentSongMinutesAndSecondsText,
+                        songMinutesAndSecondsText,
+                        queueShuffled,
+                        songOnRepeat,
+                        onClosePLayer = { onClosePLayer() }
+                    )
+                } else {
+                    LandscapePlayer(
+                        context,
+                        scope,
+                        vm,
+                        mainVM,
+                        surfaceColor,
+                        selectedSong,
+                        queue,
+                        upNextQueue,
+                        musicPlaying,
+                        songSeconds,
+                        songAndQueuePager,
+                        songsCoversPager,
+                        showMenu,
+                        onOpenPage = { onOpenPage(it) },
+                        currentSongMinutesAndSecondsText,
+                        songMinutesAndSecondsText,
+                        queueShuffled,
+                        songOnRepeat,
+                        onClosePLayer = { onClosePLayer() }
+                    )
+                }
             }
         }
     }

@@ -286,24 +286,30 @@ class MainVM(application: Application) : AndroidViewModel(application) {
             }
 
             cachedArtists.forEach { cachedArtist ->
-                artists.add(
-                    Artist(
-                        id = cachedArtist.id,
-                        name = cachedArtist.name,
-                        cover = null
+
+                if(songs.any{it.artistID == cachedArtist.id}){
+                    artists.add(
+                        Artist(
+                            id = cachedArtist.id,
+                            name = cachedArtist.name,
+                            cover = null
+                        )
                     )
-                )
+                }
             }
 
             cachedAlbums.forEach { cachedAlbum ->
-                albums.add(
-                    Album(
-                        id = cachedAlbum.id,
-                        title = cachedAlbum.title,
-                        art = null,
-                        artistID = cachedAlbum.artistID
+
+                if(songs.any { it.albumID == cachedAlbum.id }){
+                    albums.add(
+                        Album(
+                            id = cachedAlbum.id,
+                            title = cachedAlbum.title,
+                            art = null,
+                            artistID = cachedAlbum.artistID
+                        )
                     )
-                )
+                }
             }
 
             _songsData.update {

@@ -1,0 +1,14 @@
+{
+  ConstraintSets: {
+    start: {
+      player: {
+        visibility: 'invisible',
+      }
+    },
+    end: {
+      player: {
+        visibility: 'visible',
+      }
+    }
+  }
+}

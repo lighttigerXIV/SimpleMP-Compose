@@ -18,8 +18,7 @@ The app is open sorce so you can always go to the about page and open an issue r
 
 [<img height="100" src="https://github-production-user-asset-6210df.s3.amazonaws.com/35658492/244207413-05ded486-e3be-4724-ada4-ced065999793.svg">](https://play.google.com/store/apps/details?id=com.lighttigerxiv.simple.mp)
 
-[<img height="100" src="https://github.com/lighttigerXIV/SimpleMP-Compose/assets/35658492/0d8a7a5b-6045-4cb6-ba1a-e2b2cc7449c3">](https://f-droid.org/en/packages/com.lighttigerxiv.simple.mp)
-
+[<img height="100" src="https://github-production-user-asset-6210df.s3.amazonaws.com/35658492/247910431-0d8a7a5b-6045-4cb6-ba1a-e2b2cc7449c3.svg">](https://f-droid.org/packages/com.lighttigerxiv.simple.mp/)
 
 
 ### Screenshots

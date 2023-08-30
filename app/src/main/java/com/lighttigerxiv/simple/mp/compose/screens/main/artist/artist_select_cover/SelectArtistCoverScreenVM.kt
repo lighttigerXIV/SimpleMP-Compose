@@ -11,6 +11,7 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.ArtistsCoversQueries
 import com.lighttigerxiv.simple.mp.compose.data.responses.DiscogsResponse
+import com.lighttigerxiv.simple.mp.compose.data.variables.Settings
 import com.lighttigerxiv.simple.mp.compose.functions.isNetworkAvailable
 import com.lighttigerxiv.simple.mp.compose.functions.isOnMobileData
 import com.lighttigerxiv.simple.mp.compose.retrofit.getDiscogsRetrofit
@@ -47,27 +48,30 @@ class SelectArtistCoverScreenVM(application: Application) : AndroidViewModel(app
 
     private val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
 
+    private val _showOnlineResults = MutableStateFlow(preferences.getBoolean(Settings.DOWNLOAD_COVER, false))
+    val showOnlineResults = _showOnlineResults.asStateFlow()
+
     //************************************************
     // Functions
     //************************************************
 
-    fun loadScreen(artistName: String, id: Long, artVM: ArtistScreenVM){
+    fun loadScreen(artistName: String, id: Long, artVM: ArtistScreenVM) {
 
         artistID = id
 
         artistVM = artVM
 
-        val canDownloadCover = preferences.getBoolean("DownloadArtistCoverSetting", true)
+        val canDownloadCover = preferences.getBoolean(Settings.DOWNLOAD_COVER, false)
 
-        val canDownloadOverData = preferences.getBoolean("DownloadOverDataSetting", false)
+        val canDownloadOverData = preferences.getBoolean(Settings.DOWNLOAD_OVER_DATA, false)
 
         val isInternetAvailable = isNetworkAvailable(context)
 
         val isMobileDataEnabled = isOnMobileData(context)
 
-        if(canDownloadCover && isInternetAvailable){
+        if (canDownloadCover && isInternetAvailable) {
 
-            if((isMobileDataEnabled && canDownloadOverData) || !isMobileDataEnabled){
+            if ((isMobileDataEnabled && canDownloadOverData) || !isMobileDataEnabled) {
 
                 getDiscogsRetrofit()
                     .getArtistCover(
@@ -77,7 +81,7 @@ class SelectArtistCoverScreenVM(application: Application) : AndroidViewModel(app
                     .enqueue(object : Callback<String> {
                         override fun onResponse(call: Call<String>, response: Response<String>) {
 
-                            if(response.code() == 200){
+                            if (response.code() == 200) {
 
                                 val data = Gson().fromJson(response.body(), DiscogsResponse::class.java)
 
@@ -96,10 +100,10 @@ class SelectArtistCoverScreenVM(application: Application) : AndroidViewModel(app
         _screenLoaded.update { true }
     }
 
-    fun updateArtistCover(bitmapString: String){
+    fun updateArtistCover(bitmapString: String) {
 
         runBlocking {
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
 
                 artistsCoversQueries.updateArtistCover(artistID, bitmapString)
 
@@ -116,23 +120,23 @@ class SelectArtistCoverScreenVM(application: Application) : AndroidViewModel(app
         onGoBack()
     }
 
-    fun clearArtistCover(){
+    fun clearArtistCover() {
 
         runBlocking {
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
 
                 artistsCoversQueries.updateArtistCover(artistID, null)
 
                 artistVM!!.updateTintCover(true)
 
-                artistVM!!.updateArtistCover(BitmapFactory.decodeResource(context.resources, R.drawable.person_hd))
+                artistVM!!.updateArtistCover(BitmapFactory.decodeResource(context.resources, R.drawable.person))
             }
         }
 
         onGoBack()
     }
 
-    fun clearScreen(){
+    fun clearScreen() {
 
         _screenLoaded.update { false }
         _covers.update { null }

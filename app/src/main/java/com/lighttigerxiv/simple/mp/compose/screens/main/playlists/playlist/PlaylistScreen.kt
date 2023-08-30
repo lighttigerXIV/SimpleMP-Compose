@@ -809,7 +809,7 @@ fun PlaylistSongs(
                                     if (onEditMode) {
 
                                         Icon(
-                                            painter = painterResource(id = R.drawable.icon_remove_regular),
+                                            painter = painterResource(id = R.drawable.remove),
                                             contentDescription = "",
                                             tint = MaterialTheme.colorScheme.onSurface,
                                             modifier = Modifier

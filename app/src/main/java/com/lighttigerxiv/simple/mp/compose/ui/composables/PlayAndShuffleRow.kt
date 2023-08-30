@@ -51,7 +51,7 @@ fun PlayAndShuffleRow(
                 modifier = Modifier
                     .height(15.dp)
                     .width(15.dp),
-                painter = painterResource(id = R.drawable.icon_play_solid),
+                painter = painterResource(id = R.drawable.play),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimary
             )
@@ -83,7 +83,7 @@ fun PlayAndShuffleRow(
                 modifier = Modifier
                     .height(15.dp)
                     .width(15.dp),
-                painter = painterResource(id = R.drawable.icon_shuffle_solid),
+                painter = painterResource(id = R.drawable.shuffle),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary
             )

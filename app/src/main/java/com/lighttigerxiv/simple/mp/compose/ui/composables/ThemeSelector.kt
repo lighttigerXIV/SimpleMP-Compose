@@ -1,7 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.ui.composables
 
 import android.content.Context
-import android.os.Build
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -10,40 +9,36 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_SPACING
-import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_TITLE_SIZE
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_TITLE_SIZE
-import com.lighttigerxiv.simple.mp.compose.data.variables.SettingsValues
+import com.lighttigerxiv.simple.mp.compose.data.variables.Settings
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
+import com.lighttigerxiv.simple.mp.compose.functions.isAtLeastAndroid12
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.theme.AppColorScheme
 import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkBlueColors
 import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkGreenColors
 import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkOrangeColors
@@ -51,20 +46,6 @@ import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkPinkColors
 import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkPurpleColors
 import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkRedColors
 import com.lighttigerxiv.simple.mp.compose.ui.theme.DarkYellowColors
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeBlue
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeFlamingo
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeGreen
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeLavender
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeMaroon
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeMauve
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappePeach
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappePink
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeRed
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeRosewater
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeSapphire
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeSky
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeTeal
-import com.lighttigerxiv.simple.mp.compose.ui.theme.FrappeYellow
 import com.lighttigerxiv.simple.mp.compose.ui.theme.LightBlueColors
 import com.lighttigerxiv.simple.mp.compose.ui.theme.LightGreenColors
 import com.lighttigerxiv.simple.mp.compose.ui.theme.LightOrangeColors
@@ -72,47 +53,23 @@ import com.lighttigerxiv.simple.mp.compose.ui.theme.LightPinkColors
 import com.lighttigerxiv.simple.mp.compose.ui.theme.LightPurpleColors
 import com.lighttigerxiv.simple.mp.compose.ui.theme.LightRedColors
 import com.lighttigerxiv.simple.mp.compose.ui.theme.LightYellowColors
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoBlue
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoFlamingo
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoGreen
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoLavender
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoMaroon
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoMauve
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoPeach
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoPink
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoRed
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoRosewater
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoSapphire
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoSky
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoTeal
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MacchiatoYellow
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaBlue
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaFlamingo
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaGreen
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaLavender
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaMaroon
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaMauve
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaPeach
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaPink
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaRed
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaRosewater
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaSapphire
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaSky
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaTeal
-import com.lighttigerxiv.simple.mp.compose.ui.theme.MochaYellow
+import com.lighttigerxiv.simple.mp.compose.ui.theme.getFrappeScheme
+import com.lighttigerxiv.simple.mp.compose.ui.theme.getLatteScheme
+import com.lighttigerxiv.simple.mp.compose.ui.theme.getMacchiatoScheme
+import com.lighttigerxiv.simple.mp.compose.ui.theme.getMochaScheme
 
 
 @Composable
 fun ThemeSelector(
     selectedTheme: String,
-    onThemeClick: (theme: String) -> Unit
+    onClick: (theme: String) -> Unit
 ) {
 
     val context = LocalContext.current
     val inDarkMode = isSystemInDarkTheme()
     val showCommonThemes = remember { mutableStateOf(true) }
     val showCatppuccinThemes = remember { mutableStateOf(true) }
-    val commonThemes = remember { getCommonThemes(inDarkMode, context) }
+    val commonThemes = remember { getCommonColorSchemes(inDarkMode, context) }
 
     Column(
         modifier = Modifier
@@ -125,39 +82,28 @@ fun ThemeSelector(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
+            if (isAtLeastAndroid12()) {
 
-                Column(
+                val scheme = Scheme(
+                    name = getAppString(context, R.string.MaterialYou),
+                    colorScheme = if(isSystemInDarkTheme()) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context),
+                    setting = Settings.Values.ColorSchemes.MATERIAL_YOU
+                )
+
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentHeight()
                         .clip(RoundedCornerShape(14.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .clickable { onThemeClick(SettingsValues.Themes.SYSTEM) }
                         .padding(MEDIUM_SPACING)
-                ) {
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        RadioButton(
-                            selected = selectedTheme == SettingsValues.Themes.SYSTEM,
-                            onClick = { onThemeClick(SettingsValues.Themes.SYSTEM) }
-                        )
-
-                        CustomText(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f, fill = true),
-                            text = remember { getAppString(context, R.string.System) },
-                        )
-
-                        Spacer(modifier = Modifier.width(5.dp))
-                    }
+                ){
+                    ThemePreview(
+                        selectedTheme = selectedTheme,
+                        scheme = scheme,
+                        onClick = { onClick(scheme.setting) }
+                    )
                 }
+
             }
         }
 
@@ -198,10 +144,12 @@ fun ThemeSelector(
                 LazyRow {
                     items(items = commonThemes, key = { it.setting }) { theme ->
 
-                        ThemePreview(selectedTheme = selectedTheme, theme = theme, onClick = { onThemeClick(theme.setting) })
+                        ThemePreview(selectedTheme = selectedTheme, scheme = theme, onClick = { onClick(theme.setting) })
                         SmallHorizontalSpacer()
                     }
                 }
+
+                SmallVerticalSpacer()
             }
         }
 
@@ -237,12 +185,24 @@ fun ThemeSelector(
 
                 MediumVerticalSpacer()
 
+                Text(text = "Latte", fontSize = SMALL_TITLE_SIZE, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+                LazyRow {
+                    items(items = getCatppuccinLatteColorSchemes(), key = { it.setting }) { theme ->
+
+                        ThemePreview(selectedTheme = selectedTheme, scheme = theme, onClick = { onClick(theme.setting) })
+                        SmallHorizontalSpacer()
+                    }
+                }
+
+                SmallVerticalSpacer()
+
                 Text(text = "Frappe", fontSize = SMALL_TITLE_SIZE, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                 LazyRow {
-                    items(items = getCatppuccinFrappeThemes(), key = { it.setting }) { theme ->
+                    items(items = getCatppuccinFrappeColorSchemes(), key = { it.setting }) { theme ->
 
-                        ThemePreview(selectedTheme = selectedTheme, theme = theme, onClick = { onThemeClick(theme.setting) })
+                        ThemePreview(selectedTheme = selectedTheme, scheme = theme, onClick = { onClick(theme.setting) })
                         SmallHorizontalSpacer()
                     }
                 }
@@ -252,9 +212,9 @@ fun ThemeSelector(
                 Text(text = "Macchiato", fontSize = SMALL_TITLE_SIZE, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                 LazyRow {
-                    items(items = getCatppuccinMacchiatoThemes(), key = { it.setting }) { theme ->
+                    items(items = getCatppuccinMacchiatoColorSchemes(), key = { it.setting }) { theme ->
 
-                        ThemePreview(selectedTheme = selectedTheme, theme = theme, onClick = { onThemeClick(theme.setting) })
+                        ThemePreview(selectedTheme = selectedTheme, scheme = theme, onClick = { onClick(theme.setting) })
                         SmallHorizontalSpacer()
                     }
                 }
@@ -264,9 +224,9 @@ fun ThemeSelector(
                 Text(text = "Mocha", fontSize = SMALL_TITLE_SIZE, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                 LazyRow {
-                    items(items = getCatppuccinMochaThemes(), key = { it.setting }) { theme ->
+                    items(items = getCatppuccinMochaColorSchemes(), key = { it.setting }) { theme ->
 
-                        ThemePreview(selectedTheme = selectedTheme, theme = theme, onClick = { onThemeClick(theme.setting) })
+                        ThemePreview(selectedTheme = selectedTheme, scheme = theme, onClick = { onClick(theme.setting) })
                         SmallHorizontalSpacer()
                     }
                 }
@@ -276,88 +236,13 @@ fun ThemeSelector(
 }
 
 @Composable
-fun ThemeItem(
-    themeName: String,
-    surfaceColor: Color,
-    accentColor: Color,
-    isSelected: Boolean,
-    onSelect: () -> Unit,
-) {
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(14.dp))
-                .clickable { onSelect() }
-        ) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                RadioButton(
-                    selected = isSelected,
-                    onClick = { onSelect() }
-                )
-
-                CustomText(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f, fill = true),
-                    text = themeName,
-                )
-
-                Spacer(modifier = Modifier.width(5.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f, fill = true)
-                        .border(1.dp, MaterialTheme.colorScheme.onSurfaceVariant, shape = RoundedCornerShape(10.dp))
-                        .height(40.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                ) {
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .fillMaxWidth()
-                            .weight(1f, fill = true)
-                            .background(surfaceColor)
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .fillMaxWidth()
-                            .weight(1f, fill = true)
-                            .background(accentColor)
-                    )
-                }
-            }
-
-
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-    }
-}
-
-@Composable
-fun ThemePreview(selectedTheme: String, theme: Theme, onClick: () -> Unit) {
+fun ThemePreview(selectedTheme: String, scheme: Scheme, onClick: () -> Unit) {
 
     Column(
         modifier = Modifier
             .width(IntrinsicSize.Max)
             .clip(RoundedCornerShape(14.dp))
-            .background(theme.colorScheme.surface)
+            .background(scheme.colorScheme.surface)
             .clickable { onClick() }
             .padding(MEDIUM_SPACING)
     ) {
@@ -366,7 +251,7 @@ fun ThemePreview(selectedTheme: String, theme: Theme, onClick: () -> Unit) {
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(14.dp))
-                    .background(theme.colorScheme.surfaceVariant)
+                    .background(scheme.colorScheme.surfaceVariant)
                     .padding(SMALL_SPACING)
             ) {
                 Icon(
@@ -375,7 +260,7 @@ fun ThemePreview(selectedTheme: String, theme: Theme, onClick: () -> Unit) {
                         .width(60.dp),
                     painter = painterResource(id = R.drawable.cd),
                     contentDescription = null,
-                    tint = theme.colorScheme.primary
+                    tint = scheme.colorScheme.primary
                 )
             }
 
@@ -383,11 +268,11 @@ fun ThemePreview(selectedTheme: String, theme: Theme, onClick: () -> Unit) {
 
             Column {
                 Row {
-                    Text(text = "Abc", color = theme.colorScheme.onSurface, fontSize = 20.sp)
+                    Text(text = "Abc", color = scheme.colorScheme.onSurface, fontSize = 20.sp)
 
                     MediumHorizontalSpacer()
 
-                    Text(text = "Abc", color = theme.colorScheme.primary, fontSize = 20.sp)
+                    Text(text = "Abc", color = scheme.colorScheme.primary, fontSize = 20.sp)
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -396,10 +281,10 @@ fun ThemePreview(selectedTheme: String, theme: Theme, onClick: () -> Unit) {
                     Text(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(theme.colorScheme.surfaceVariant)
+                            .background(scheme.colorScheme.surfaceVariant)
                             .padding(4.dp),
                         text = "Abc",
-                        color = theme.colorScheme.onSurfaceVariant,
+                        color = scheme.colorScheme.onSurfaceVariant,
                         fontSize = 20.sp
                     )
 
@@ -408,16 +293,16 @@ fun ThemePreview(selectedTheme: String, theme: Theme, onClick: () -> Unit) {
                     Box(
                         modifier = Modifier
                             .clip(CircleShape)
-                            .background(theme.colorScheme.primary)
+                            .background(scheme.colorScheme.primary)
                             .padding(SMALL_SPACING)
                     ) {
                         Icon(
                             modifier = Modifier
                                 .height(20.dp)
                                 .width(20.dp),
-                            painter = painterResource(id = R.drawable.icon_shuffle_solid),
+                            painter = painterResource(id = R.drawable.shuffle),
                             contentDescription = null,
-                            tint = theme.colorScheme.onPrimary
+                            tint = scheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -430,333 +315,408 @@ fun ThemePreview(selectedTheme: String, theme: Theme, onClick: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
-                .background(theme.colorScheme.surfaceVariant),
+                .background(scheme.colorScheme.surfaceVariant),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             RadioButton(
-                selected = selectedTheme == theme.setting,
+                selected = selectedTheme == scheme.setting,
                 onClick = { onClick() },
                 colors = RadioButtonDefaults.colors(
-                    selectedColor = theme.colorScheme.primary,
-                    unselectedColor = theme.colorScheme.onSurface
+                    selectedColor = scheme.colorScheme.primary,
+                    unselectedColor = scheme.colorScheme.onSurface
                 )
             )
 
-            Text(text = theme.name, color = theme.colorScheme.onSurface)
+            Text(text = scheme.name, color = scheme.colorScheme.onSurface)
         }
     }
 }
 
-data class Theme(
+data class Scheme(
     val name: String,
     val colorScheme: ColorScheme,
     val setting: String
 )
 
 
-fun getCommonThemes(inDarkMode: Boolean, context: Context): List<Theme> {
+fun getCommonColorSchemes(inDarkMode: Boolean, context: Context): List<Scheme> {
 
     return if (inDarkMode) {
         listOf(
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Blue),
                 DarkBlueColors,
-                SettingsValues.Themes.BLUE
+                Settings.Values.ColorSchemes.BLUE
             ),
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Red),
                 DarkRedColors,
-                SettingsValues.Themes.RED
+                Settings.Values.ColorSchemes.RED
             ),
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Purple),
                 DarkPurpleColors,
-                SettingsValues.Themes.PURPLE
+                Settings.Values.ColorSchemes.PURPLE
             ),
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Orange),
                 DarkOrangeColors,
-                SettingsValues.Themes.ORANGE
+                Settings.Values.ColorSchemes.ORANGE
             ),
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Yellow),
                 DarkYellowColors,
-                SettingsValues.Themes.YELLOW
+                Settings.Values.ColorSchemes.YELLOW
             ),
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Green),
                 DarkGreenColors,
-                SettingsValues.Themes.GREEN
+                Settings.Values.ColorSchemes.GREEN
             ),
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Pink),
                 DarkPinkColors,
-                SettingsValues.Themes.PINK
+                Settings.Values.ColorSchemes.PINK
             )
         )
     } else {
         listOf(
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Blue),
                 LightBlueColors,
-                SettingsValues.Themes.BLUE
+                Settings.Values.ColorSchemes.BLUE
             ),
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Red),
                 LightRedColors,
-                SettingsValues.Themes.RED
+                Settings.Values.ColorSchemes.RED
             ),
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Purple),
                 LightPurpleColors,
-                SettingsValues.Themes.PURPLE
+                Settings.Values.ColorSchemes.PURPLE
             ),
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Orange),
                 LightOrangeColors,
-                SettingsValues.Themes.ORANGE
+                Settings.Values.ColorSchemes.ORANGE
             ),
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Yellow),
                 LightYellowColors,
-                SettingsValues.Themes.YELLOW
+                Settings.Values.ColorSchemes.YELLOW
             ),
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Green),
                 LightGreenColors,
-                SettingsValues.Themes.GREEN
+                Settings.Values.ColorSchemes.GREEN
             ),
-            Theme(
+            Scheme(
                 getAppString(context, R.string.Pink),
                 LightPinkColors,
-                SettingsValues.Themes.PINK
+                Settings.Values.ColorSchemes.PINK
             )
         )
     }
 }
 
-fun getCatppuccinFrappeThemes(): List<Theme> {
+fun getCatppuccinLatteColorSchemes(): List<Scheme> {
     return listOf(
-        Theme(
+        Scheme(
             "Rosewater",
-            FrappeRosewater,
-            SettingsValues.Themes.FRAPPE_ROSEWATER
+            getLatteScheme(AppColorScheme.CatppuccinLatte.ROSEWATER),
+            Settings.Values.ColorSchemes.LATTE_ROSEWATER
         ),
-        Theme(
+        Scheme(
             "Flamingo",
-            FrappeFlamingo,
-            SettingsValues.Themes.FRAPPE_FLAMINGO
+            getLatteScheme(AppColorScheme.CatppuccinLatte.FLAMINGO),
+            Settings.Values.ColorSchemes.LATTE_FLAMINGO
         ),
-        Theme(
+        Scheme(
             "Pink",
-            FrappePink,
-            SettingsValues.Themes.FRAPPE_PINK
+            getLatteScheme(AppColorScheme.CatppuccinLatte.PINK),
+            Settings.Values.ColorSchemes.LATTE_PINK
         ),
-        Theme(
+        Scheme(
             "Mauve",
-            FrappeMauve,
-            SettingsValues.Themes.FRAPPE_MAUVE
+            getLatteScheme(AppColorScheme.CatppuccinLatte.MAUVE),
+            Settings.Values.ColorSchemes.LATTE_MAUVE
         ),
-        Theme(
+        Scheme(
             "Red",
-            FrappeRed,
-            SettingsValues.Themes.FRAPPE_RED
+            getLatteScheme(AppColorScheme.CatppuccinLatte.RED),
+            Settings.Values.ColorSchemes.LATTE_RED
         ),
-        Theme(
+        Scheme(
             "Maroon",
-            FrappeMaroon,
-            SettingsValues.Themes.FRAPPE_MAROON
+            getLatteScheme(AppColorScheme.CatppuccinLatte.MAROON),
+            Settings.Values.ColorSchemes.LATTE_MAROON
         ),
-        Theme(
+        Scheme(
             "Peach",
-            FrappePeach,
-            SettingsValues.Themes.FRAPPE_PEACH
+            getLatteScheme(AppColorScheme.CatppuccinLatte.PEACH),
+            Settings.Values.ColorSchemes.LATTE_PEACH
         ),
-        Theme(
+        Scheme(
             "Yellow",
-            FrappeYellow,
-            SettingsValues.Themes.FRAPPE_YELLOW
+            getLatteScheme(AppColorScheme.CatppuccinLatte.YELLOW),
+            Settings.Values.ColorSchemes.LATTE_YELLOW
         ),
-        Theme(
+        Scheme(
             "Green",
-            FrappeGreen,
-            SettingsValues.Themes.FRAPPE_GREEN
+            getLatteScheme(AppColorScheme.CatppuccinLatte.GREEN),
+            Settings.Values.ColorSchemes.LATTE_GREEN
         ),
-        Theme(
+        Scheme(
             "Teal",
-            FrappeTeal,
-            SettingsValues.Themes.FRAPPE_TEAL
+            getLatteScheme(AppColorScheme.CatppuccinLatte.TEAL),
+            Settings.Values.ColorSchemes.LATTE_TEAL
         ),
-        Theme(
+        Scheme(
             "Sky",
-            FrappeSky,
-            SettingsValues.Themes.FRAPPE_SKY
+            getLatteScheme(AppColorScheme.CatppuccinLatte.SKY),
+            Settings.Values.ColorSchemes.LATTE_SKY
         ),
-        Theme(
+        Scheme(
             "Sapphire",
-            FrappeSapphire,
-            SettingsValues.Themes.FRAPPE_SAPPHIRE
+            getLatteScheme(AppColorScheme.CatppuccinLatte.SAPPHIRE),
+            Settings.Values.ColorSchemes.LATTE_SAPPHIRE
         ),
-        Theme(
+        Scheme(
             "Blue",
-            FrappeBlue,
-            SettingsValues.Themes.FRAPPE_BLUE
+            getLatteScheme(AppColorScheme.CatppuccinLatte.BLUE),
+            Settings.Values.ColorSchemes.LATTE_BLUE
         ),
-        Theme(
+        Scheme(
             "Lavender",
-            FrappeLavender,
-            SettingsValues.Themes.FRAPPE_LAVENDER
+            getLatteScheme(AppColorScheme.CatppuccinLatte.LAVENDER),
+            Settings.Values.ColorSchemes.LATTE_LAVENDER
         )
     )
 }
 
-fun getCatppuccinMacchiatoThemes(): List<Theme> {
+fun getCatppuccinFrappeColorSchemes(): List<Scheme> {
     return listOf(
-        Theme(
+        Scheme(
             "Rosewater",
-            MacchiatoRosewater,
-            SettingsValues.Themes.MACCHIATO_ROSEWATER
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.ROSEWATER),
+            Settings.Values.ColorSchemes.FRAPPE_ROSEWATER
         ),
-        Theme(
+        Scheme(
             "Flamingo",
-            MacchiatoFlamingo,
-            SettingsValues.Themes.MACCHIATO_FLAMINGO
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.FLAMINGO),
+            Settings.Values.ColorSchemes.FRAPPE_FLAMINGO
         ),
-        Theme(
+        Scheme(
             "Pink",
-            MacchiatoPink,
-            SettingsValues.Themes.MACCHIATO_PINK
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.PINK),
+            Settings.Values.ColorSchemes.FRAPPE_PINK
         ),
-        Theme(
+        Scheme(
             "Mauve",
-            MacchiatoMauve,
-            SettingsValues.Themes.MACCHIATO_MAUVE
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.MAUVE),
+            Settings.Values.ColorSchemes.FRAPPE_MAUVE
         ),
-        Theme(
+        Scheme(
             "Red",
-            MacchiatoRed,
-            SettingsValues.Themes.MACCHIATO_RED
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.RED),
+            Settings.Values.ColorSchemes.FRAPPE_RED
         ),
-        Theme(
+        Scheme(
             "Maroon",
-            MacchiatoMaroon,
-            SettingsValues.Themes.MACCHIATO_MAROON
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.MAROON),
+            Settings.Values.ColorSchemes.FRAPPE_MAROON
         ),
-        Theme(
+        Scheme(
             "Peach",
-            MacchiatoPeach,
-            SettingsValues.Themes.MACCHIATO_PEACH
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.PEACH),
+            Settings.Values.ColorSchemes.FRAPPE_PEACH
         ),
-        Theme(
+        Scheme(
             "Yellow",
-            MacchiatoYellow,
-            SettingsValues.Themes.MACCHIATO_YELLOW
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.YELLOW),
+            Settings.Values.ColorSchemes.FRAPPE_YELLOW
         ),
-        Theme(
+        Scheme(
             "Green",
-            MacchiatoGreen,
-            SettingsValues.Themes.MACCHIATO_GREEN
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.GREEN),
+            Settings.Values.ColorSchemes.FRAPPE_GREEN
         ),
-        Theme(
+        Scheme(
             "Teal",
-            MacchiatoTeal,
-            SettingsValues.Themes.MACCHIATO_TEAL
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.TEAL),
+            Settings.Values.ColorSchemes.FRAPPE_TEAL
         ),
-        Theme(
+        Scheme(
             "Sky",
-            MacchiatoSky,
-            SettingsValues.Themes.MACCHIATO_SKY
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.SKY),
+            Settings.Values.ColorSchemes.FRAPPE_SKY
         ),
-        Theme(
+        Scheme(
             "Sapphire",
-            MacchiatoSapphire,
-            SettingsValues.Themes.MACCHIATO_SAPPHIRE
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.SAPPHIRE),
+            Settings.Values.ColorSchemes.FRAPPE_SAPPHIRE
         ),
-        Theme(
+        Scheme(
             "Blue",
-            MacchiatoBlue,
-            SettingsValues.Themes.MACCHIATO_BLUE
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.BLUE),
+            Settings.Values.ColorSchemes.FRAPPE_BLUE
         ),
-        Theme(
+        Scheme(
             "Lavender",
-            MacchiatoLavender,
-            SettingsValues.Themes.MACCHIATO_LAVENDER
+            getFrappeScheme(AppColorScheme.CatppuccinFrappe.LAVENDER),
+            Settings.Values.ColorSchemes.FRAPPE_LAVENDER
         )
     )
 }
 
-fun getCatppuccinMochaThemes(): List<Theme> {
+fun getCatppuccinMacchiatoColorSchemes(): List<Scheme> {
     return listOf(
-        Theme(
+        Scheme(
             "Rosewater",
-            MochaRosewater,
-            SettingsValues.Themes.MOCHA_ROSEWATER
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.ROSEWATER),
+            Settings.Values.ColorSchemes.MACCHIATO_ROSEWATER
         ),
-        Theme(
+        Scheme(
             "Flamingo",
-            MochaFlamingo,
-            SettingsValues.Themes.MOCHA_FLAMINGO
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.FLAMINGO),
+            Settings.Values.ColorSchemes.MACCHIATO_FLAMINGO
         ),
-        Theme(
+        Scheme(
             "Pink",
-            MochaPink,
-            SettingsValues.Themes.MOCHA_PINK
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.PINK),
+            Settings.Values.ColorSchemes.MACCHIATO_PINK
         ),
-        Theme(
+        Scheme(
             "Mauve",
-            MochaMauve,
-            SettingsValues.Themes.MOCHA_MAUVE
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.MAUVE),
+            Settings.Values.ColorSchemes.MACCHIATO_MAUVE
         ),
-        Theme(
+        Scheme(
             "Red",
-            MochaRed,
-            SettingsValues.Themes.MOCHA_RED
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.RED),
+            Settings.Values.ColorSchemes.MACCHIATO_RED
         ),
-        Theme(
+        Scheme(
             "Maroon",
-            MochaMaroon,
-            SettingsValues.Themes.MOCHA_MAROON
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.MAROON),
+            Settings.Values.ColorSchemes.MACCHIATO_MAROON
         ),
-        Theme(
+        Scheme(
             "Peach",
-            MochaPeach,
-            SettingsValues.Themes.MOCHA_PEACH
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.PEACH),
+            Settings.Values.ColorSchemes.MACCHIATO_PEACH
         ),
-        Theme(
+        Scheme(
             "Yellow",
-            MochaYellow,
-            SettingsValues.Themes.MOCHA_YELLOW
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.YELLOW),
+            Settings.Values.ColorSchemes.MACCHIATO_YELLOW
         ),
-        Theme(
+        Scheme(
             "Green",
-            MochaGreen,
-            SettingsValues.Themes.MOCHA_GREEN
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.GREEN),
+            Settings.Values.ColorSchemes.MACCHIATO_GREEN
         ),
-        Theme(
+        Scheme(
             "Teal",
-            MochaTeal,
-            SettingsValues.Themes.MOCHA_TEAL
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.TEAL),
+            Settings.Values.ColorSchemes.MACCHIATO_TEAL
         ),
-        Theme(
+        Scheme(
             "Sky",
-            MochaSky,
-            SettingsValues.Themes.MOCHA_SKY
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.SKY),
+            Settings.Values.ColorSchemes.MACCHIATO_SKY
         ),
-        Theme(
+        Scheme(
             "Sapphire",
-            MochaSapphire,
-            SettingsValues.Themes.MOCHA_SAPPHIRE
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.SAPPHIRE),
+            Settings.Values.ColorSchemes.MACCHIATO_SAPPHIRE
         ),
-        Theme(
+        Scheme(
             "Blue",
-            MochaBlue,
-            SettingsValues.Themes.MOCHA_BLUE
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.BLUE),
+            Settings.Values.ColorSchemes.MACCHIATO_BLUE
         ),
-        Theme(
+        Scheme(
             "Lavender",
-            MochaLavender,
-            SettingsValues.Themes.MOCHA_LAVENDER
+            getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.LAVENDER),
+            Settings.Values.ColorSchemes.MACCHIATO_LAVENDER
+        )
+    )
+}
+
+fun getCatppuccinMochaColorSchemes(): List<Scheme> {
+    return listOf(
+        Scheme(
+            "Rosewater",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.ROSEWATER),
+            Settings.Values.ColorSchemes.MOCHA_ROSEWATER
+        ),
+        Scheme(
+            "Flamingo",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.FLAMINGO),
+            Settings.Values.ColorSchemes.MOCHA_FLAMINGO
+        ),
+        Scheme(
+            "Pink",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.PINK),
+            Settings.Values.ColorSchemes.MOCHA_PINK
+        ),
+        Scheme(
+            "Mauve",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.MAUVE),
+            Settings.Values.ColorSchemes.MOCHA_MAUVE
+        ),
+        Scheme(
+            "Red",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.RED),
+            Settings.Values.ColorSchemes.MOCHA_RED
+        ),
+        Scheme(
+            "Maroon",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.MAROON),
+            Settings.Values.ColorSchemes.MOCHA_MAROON
+        ),
+        Scheme(
+            "Peach",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.PEACH),
+            Settings.Values.ColorSchemes.MOCHA_PEACH
+        ),
+        Scheme(
+            "Yellow",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.YELLOW),
+            Settings.Values.ColorSchemes.MOCHA_YELLOW
+        ),
+        Scheme(
+            "Green",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.GREEN),
+            Settings.Values.ColorSchemes.MOCHA_GREEN
+        ),
+        Scheme(
+            "Teal",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.TEAL),
+            Settings.Values.ColorSchemes.MOCHA_TEAL
+        ),
+        Scheme(
+            "Sky",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.SKY),
+            Settings.Values.ColorSchemes.MOCHA_SKY
+        ),
+        Scheme(
+            "Sapphire",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.SAPPHIRE),
+            Settings.Values.ColorSchemes.MOCHA_SAPPHIRE
+        ),
+        Scheme(
+            "Blue",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.BLUE),
+            Settings.Values.ColorSchemes.MOCHA_BLUE
+        ),
+        Scheme(
+            "Lavender",
+            getMochaScheme(AppColorScheme.CatppuccinMocha.LAVENDER),
+            Settings.Values.ColorSchemes.MOCHA_LAVENDER
         )
     )
 }

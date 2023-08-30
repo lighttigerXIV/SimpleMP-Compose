@@ -1,5 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.albums
 
+import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -17,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
@@ -25,7 +29,7 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.ImageCard
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
-import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
+import com.lighttigerxiv.simple.mp.compose.data.variables.Settings
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
 import kotlinx.coroutines.delay
@@ -97,55 +101,62 @@ fun AlbumsScreen(
                 ) {
 
                     DropdownMenuItem(
-                        text = { Text(text = remember { getAppString(context, R.string.SortByRecentlyAdded) }) },
+                        text = {
+                            Text(text = stringResource(id = R.string.ModificationDate))
+                        },
                         onClick = {
 
-                            vm.updateSortType(Sorts.RECENT)
-                            vm.updateCurrentAlbums(recentAlbums)
+                            val currentSort = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString(Settings.ALBUMS_SORT, Settings.Values.Sort.RECENT)
+                            val filterAlgorithm = if (currentSort == Settings.Values.Sort.RECENT) Settings.Values.Sort.OLDEST else Settings.Values.Sort.RECENT
+                            val filterAlbums = if(currentSort == Settings.Values.Sort.RECENT) oldestAlbums else recentAlbums
+
+                            vm.updateSortType(filterAlgorithm)
+                            vm.updateCurrentAlbums(filterAlbums)
                             scope.launch {
                                 vm.updateMenuExpanded(false)
                                 delay(200)
                                 listState.scrollToItem(index = 0)
                             }
+                        },
+                        leadingIcon = {
+                            Icon(
+                                modifier = Modifier
+                                    .height(20.dp)
+                                    .width(20.dp),
+                                painter = painterResource(id = R.drawable.date_sort),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     )
+
                     DropdownMenuItem(
-                        text = { Text(text = remember { getAppString(context, R.string.SortByOldestAdded) }) },
+                        text = {
+                            Text(text = stringResource(id = R.string.SortAlphabetically))
+                        },
                         onClick = {
 
-                            vm.updateSortType(Sorts.OLDEST)
-                            vm.updateCurrentAlbums(oldestAlbums)
+                            val currentSort = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString(Settings.ALBUMS_SORT, Settings.Values.Sort.RECENT)
+                            val filterAlgorithm = if (currentSort == Settings.Values.Sort.ASCENDENT) Settings.Values.Sort.DESCENDENT else Settings.Values.Sort.ASCENDENT
+                            val filterAlbums = if(currentSort == Settings.Values.Sort.ASCENDENT) descendentAlbums else ascendentAlbums
+
+                            vm.updateSortType(filterAlgorithm)
+                            vm.updateCurrentAlbums(filterAlbums)
                             scope.launch {
                                 vm.updateMenuExpanded(false)
                                 delay(200)
                                 listState.scrollToItem(index = 0)
                             }
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = remember { getAppString(context, R.string.SortByAscendent) }) },
-                        onClick = {
-
-                            vm.updateSortType(Sorts.ASCENDENT)
-                            vm.updateCurrentAlbums(ascendentAlbums)
-                            scope.launch {
-                                vm.updateMenuExpanded(false)
-                                delay(200)
-                                listState.scrollToItem(index = 0)
-                            }
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(text = remember { getAppString(context, R.string.SortByDescendent) }) },
-                        onClick = {
-
-                            vm.updateSortType(Sorts.DESCENDENT)
-                            vm.updateCurrentAlbums(descendentAlbums)
-                            scope.launch {
-                                vm.updateMenuExpanded(false)
-                                delay(200)
-                                listState.scrollToItem(index = 0)
-                            }
+                        },
+                        leadingIcon = {
+                            Icon(
+                                modifier = Modifier
+                                    .height(20.dp)
+                                    .width(20.dp),
+                                painter = painterResource(id = R.drawable.alphabetic_sort),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     )
                 }

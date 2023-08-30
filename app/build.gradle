@@ -13,8 +13,8 @@ android {
         applicationId "com.lighttigerxiv.simple.mp"
         minSdk 26
         targetSdk 33
-        versionCode 16
-        versionName "BETA-1.6.5"
+        versionCode 20
+        versionName "BETA-1.7.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -96,4 +96,10 @@ dependencies {
 
     //Motion Layout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+
+    //Work Manager
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+
+    //Catppuccin Colors
+    implementation 'com.github.lighttigerxiv:catppuccin-kt:1.0.0'
 }

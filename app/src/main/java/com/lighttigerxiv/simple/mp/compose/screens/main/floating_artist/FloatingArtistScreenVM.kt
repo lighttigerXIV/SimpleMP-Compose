@@ -19,6 +19,7 @@ import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.ArtistsCoversQueries
 import com.lighttigerxiv.simple.mp.compose.data.responses.DiscogsResponse
+import com.lighttigerxiv.simple.mp.compose.functions.getBitmapFromSVG
 import com.lighttigerxiv.simple.mp.compose.functions.isNetworkAvailable
 import com.lighttigerxiv.simple.mp.compose.functions.isOnMobileData
 import com.lighttigerxiv.simple.mp.compose.retrofit.getDiscogsRetrofit
@@ -43,13 +44,13 @@ class FloatingArtistScreenVM(application: Application) : AndroidViewModel(applic
 
     private val artistsCoversQueries = ArtistsCoversQueries(getMongoRealm())
 
-    private val _screenLoaded = MutableStateFlow(false)
-    val screenLoaded = _screenLoaded.asStateFlow()
+    private val _loadingScreen = MutableStateFlow(true)
+    val loadingScreen = _loadingScreen.asStateFlow()
 
     private val _artistName = MutableStateFlow("")
     val artistName = _artistName.asStateFlow()
 
-    private val _artistCover = MutableStateFlow(BitmapFactory.decodeResource(context.resources, R.drawable.person_hd))
+    private val _artistCover = MutableStateFlow(getBitmapFromSVG(context, R.drawable.person))
     val artistCover = _artistCover.asStateFlow()
 
 
@@ -88,7 +89,7 @@ class FloatingArtistScreenVM(application: Application) : AndroidViewModel(applic
 
             _artistSongs.update { songs.filter { it.artistID == artistID } }
 
-            _screenLoaded.update { true }
+            _loadingScreen.update { false }
 
             //Loads Artist Image
             if (artistQuery!!.alreadyRequested) {
@@ -186,9 +187,9 @@ class FloatingArtistScreenVM(application: Application) : AndroidViewModel(applic
 
     fun clearScreen() {
 
-        _screenLoaded.update { false }
+        _loadingScreen.update { true }
         _artistName.update { "" }
-        _artistCover.update { BitmapFactory.decodeResource(context.resources, R.drawable.person_hd) }
+        _artistCover.update { getBitmapFromSVG(context, R.drawable.person) }
         _tintCover.update { true }
         _artistSongs.update { null }
     }

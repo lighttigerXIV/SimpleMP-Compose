@@ -38,12 +38,13 @@ import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalS
 import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.artist.ArtistScreenVM
+import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 import java.io.ByteArrayOutputStream
 
 @Composable
 fun SelectArtistCoverScreen(
     mainVM: MainVM,
-    selectArtistCoverVM: SelectArtistCoverScreenVM,
+    vm: SelectArtistCoverScreenVM,
     artistVM: ArtistScreenVM,
     artistName: String,
     artistID: Long,
@@ -55,16 +56,20 @@ fun SelectArtistCoverScreen(
 
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
 
-    val screenLoaded = selectArtistCoverVM.screenLoaded.collectAsState().value
+    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
 
-    val covers = selectArtistCoverVM.covers.collectAsState().value
+    val screenLoaded = vm.screenLoaded.collectAsState().value
 
-    selectArtistCoverVM.onGoBack = {
+    val covers = vm.covers.collectAsState().value
+
+    val showOnlineResults = vm.showOnlineResults.collectAsState().value
+
+    vm.onGoBack = {
         onGoBack()
     }
 
     if(!screenLoaded){
-        selectArtistCoverVM.loadScreen(artistName, artistID, artistVM)
+        vm.loadScreen(artistName, artistID, artistVM)
     }
 
 
@@ -96,7 +101,7 @@ fun SelectArtistCoverScreen(
                         .clip(RoundedCornerShape(percent = 100))
                         .clickable {
 
-                            selectArtistCoverVM.clearArtistCover()
+                            vm.clearArtistCover()
                         }
                         .padding(SMALL_SPACING),
                     horizontalArrangement = Arrangement.Center,
@@ -130,7 +135,7 @@ fun SelectArtistCoverScreen(
 
                 MediumVerticalSpacer()
 
-                if(covers != null){
+                if(covers != null && showOnlineResults){
 
                     CustomText(
                         text = remember{ getAppString(context, R.string.OnlineResults) },
@@ -156,9 +161,12 @@ fun SelectArtistCoverScreen(
                                         .fillMaxWidth()
                                         .aspectRatio(1f)
                                         .clip(RoundedCornerShape(14.dp))
+                                        .modifyIf(artistPicture.value == null){
+                                            background(surfaceVariantColor)
+                                        }
                                         .clickable {
 
-                                            if(artistPicture.value != null){
+                                            if (artistPicture.value != null) {
 
                                                 val baos = ByteArrayOutputStream()
 
@@ -168,7 +176,7 @@ fun SelectArtistCoverScreen(
 
                                                 val encodedImage = Base64.encodeToString(b, Base64.DEFAULT)
 
-                                                selectArtistCoverVM.updateArtistCover(encodedImage)
+                                                vm.updateArtistCover(encodedImage)
                                             }
                                         },
                                     bitmap = if(artistPicture.value == null)

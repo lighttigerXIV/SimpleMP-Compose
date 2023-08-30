@@ -170,7 +170,7 @@ fun OtherScreen(
             Spacer(modifier = Modifier.width(5.dp))
 
             Button(
-                onClick = { navController.navigate(Routes.Setup.THEMES) },
+                onClick = { navController.navigate(Routes.Setup.LIGHT_COLOR_SCHEMES) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 )

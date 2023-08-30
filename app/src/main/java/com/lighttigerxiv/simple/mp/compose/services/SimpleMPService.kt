@@ -342,6 +342,7 @@ class SimpleMPService : Service() {
 
             val songsData = mainVM.songsData.value
             val artists = songsData?.artists
+            val albums = songsData?.albums
 
             if (artists != null) {
 
@@ -352,6 +353,8 @@ class SimpleMPService : Service() {
                 } else {
                     getImage(context, R.drawable.cd_filled, ImageSizes.LARGE)
                 }
+
+
 
                 mediaPlayer.reset()
                 mediaPlayer.setDataSource(currentSong!!.path)
@@ -396,13 +399,16 @@ class SimpleMPService : Service() {
                         .setStyle(
                             androidx.media.app.NotificationCompat.MediaStyle()
                                 .setMediaSession(mediaSession.sessionToken)
-                                .setShowActionsInCompactView(0, 1, 2, 3)
+                                .setShowActionsInCompactView(1, 2, 3)
                         )
-                        .setSmallIcon(R.drawable.icon)
-                        .addAction(R.drawable.icon_x_solid, "Stop Player", pendingStopIntent)
-                        .addAction(R.drawable.icon_previous_notification, "Previous Music", pendingPreviousSongIntent)
-                        .addAction(R.drawable.icon_pause_notification, "Play Pause Music", pendingPlayPauseIntent)
-                        .addAction(R.drawable.icon_next_notification, "Next Music", pendingSkipSongIntent)
+                        .setSmallIcon(R.drawable.play_empty)
+                        .setLargeIcon(art)
+                        .setContentTitle(currentSong!!.title)
+                        .setContentText(albums?.first { it.id == currentSong!!.albumID }?.title)
+                        .addAction(R.drawable.close_notification, "Stop Player", pendingStopIntent)
+                        .addAction(R.drawable.previous_notification, "Previous Music", pendingPreviousSongIntent)
+                        .addAction(R.drawable.pause_notification, "Play Pause Music", pendingPlayPauseIntent)
+                        .addAction(R.drawable.next_notification, "Next Music", pendingSkipSongIntent)
                         .build()
 
 
@@ -411,7 +417,10 @@ class SimpleMPService : Service() {
 
                             .putString(MediaMetadata.METADATA_KEY_TITLE, currentSong!!.title)
                             .putString(MediaMetadata.METADATA_KEY_ARTIST, artists.first { it.id == currentSong!!.artistID }.name)
+                            .putString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST, artists.first { it.id == currentSong!!.artistID }.name)
+                            .putString(MediaMetadata.METADATA_KEY_ALBUM, albums!!.first { it.id == currentSong!!.albumID }.title)
                             .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, art)
+                            .putBitmap(MediaMetadata.METADATA_KEY_ART, art)
                             .putLong(MediaMetadata.METADATA_KEY_DURATION, currentSong!!.duration.toLong())
                             .build()
                     )
@@ -575,7 +584,7 @@ class SimpleMPService : Service() {
 
         try {
 
-            val playPauseIcon = R.drawable.icon_play_notification
+            val playPauseIcon = R.drawable.play_notification
             mediaPlayer.pause()
             mediaSession.isActive = false
             onPause()
@@ -607,7 +616,7 @@ class SimpleMPService : Service() {
 
         if (mediaPlayer.isPlaying) {
 
-            playPauseIcon = R.drawable.icon_play_notification
+            playPauseIcon = R.drawable.play_notification
 
             mediaPlayer.pause()
             setPlaybackState(PlaybackStateCompat.STATE_PAUSED)
@@ -615,7 +624,7 @@ class SimpleMPService : Service() {
 
         } else {
 
-            playPauseIcon = R.drawable.icon_pause_notification
+            playPauseIcon = R.drawable.pause_notification
 
             requestPlayWithFocus()
             setPlaybackState(PlaybackStateCompat.STATE_PLAYING)

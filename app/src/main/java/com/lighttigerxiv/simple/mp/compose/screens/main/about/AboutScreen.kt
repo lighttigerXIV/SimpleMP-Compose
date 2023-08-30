@@ -92,11 +92,17 @@ fun AboutScreen(
                     .background(MaterialTheme.colorScheme.surfaceVariant)
                     .padding(MEDIUM_SPACING),
                 color = MaterialTheme.colorScheme.onSurface,
-                text = "- Updated Player UI \n" +
-                        "- Player now opens on click \n" +
-                        "- Fixed audio filter not working as intended \n" +
-                        "- Improved themes preview \n" +
-                        "- Updated catppuccin themes"
+                text = "- Added a smooth animation when opening and closing player \n\n" +
+                        "- Added Latte theme \n\n" +
+                        "- Added Light theme and Dark Theme options \n\n" +
+                        "- Fixed Oled theme on home screen\n\n" +
+                        "- Fixed empty albums and artists showing up due to filter\n\n" +
+                        "- Fixed crash on Android 9 devices\n\n" +
+                        "- Fixed notification on Android 9\n\n" +
+                        "- Fixed songs that don't have artist id or album id showing up" +
+                        "- App now syncs songs in background when opening\n\n" +
+                        "- Added swipe to resync songs on home screen \n\n" +
+                        "- Other small UI Updates "
             )
 
             MediumVerticalSpacer()
@@ -124,7 +130,7 @@ fun AboutScreen(
                     modifier = Modifier
                         .height(30.dp)
                         .width(30.dp),
-                    painter = painterResource(id = R.drawable.icon_github),
+                    painter = painterResource(id = R.drawable.github),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface
                 )
@@ -173,7 +179,7 @@ fun AboutScreen(
                     modifier = Modifier
                         .height(30.dp)
                         .width(30.dp),
-                    painter = painterResource(id = R.drawable.icon_github),
+                    painter = painterResource(id = R.drawable.github),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurface
                 )

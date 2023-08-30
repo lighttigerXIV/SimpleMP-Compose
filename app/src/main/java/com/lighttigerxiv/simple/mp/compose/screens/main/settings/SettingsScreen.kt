@@ -25,38 +25,42 @@ import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.MEDIUM_SPACING
 import com.lighttigerxiv.simple.mp.compose.data.variables.Routes
-import com.lighttigerxiv.simple.mp.compose.data.variables.SettingsValues
+import com.lighttigerxiv.simple.mp.compose.data.variables.Settings.Values
+import com.lighttigerxiv.simple.mp.compose.functions.isAtLeastAndroid10
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHorizontalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 
 @Composable
 fun SettingsScreen(
     mainVM: MainVM,
     settingsVM: SettingsVM,
-    settingsScreenVM: SettingsScreenVM,
+    vm: SettingsScreenVM,
     onBackPressed: () -> Unit,
     onOpenScreen: (route: String) -> Unit
 ) {
 
     val context = LocalContext.current
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
-    val screenLoaded = settingsScreenVM.screenLoaded.collectAsState().value
-    val showThemeModeDialog = settingsScreenVM.showThemeModeDialog.collectAsState().value
-    val showDarkModeDialog = settingsScreenVM.showDarkModeDialog.collectAsState().value
-    val showFilterAudioDialog = settingsScreenVM.showFilterAudioDialog.collectAsState().value
-    val themeModeSetting = settingsVM.themeModeSetting.collectAsState().value
+    val screenLoaded = vm.screenLoaded.collectAsState().value
+    val showThemeModeDialog = vm.showThemeModeDialog.collectAsState().value
+    val showDarkModeDialog = vm.showDarkModeDialog.collectAsState().value
+    val showFilterAudioDialog = vm.showFilterAudioDialog.collectAsState().value
+    val themeSetting = settingsVM.colorSchemeSetting.collectAsState().value
     val darkModeSetting = settingsVM.darkModeSetting.collectAsState().value
-    val themeAccentSetting = settingsVM.themeAccentSetting.collectAsState().value
+    val darkColorScheme = settingsVM.darkColorSchemeSetting.collectAsState().value
+    val lightColorScheme = settingsVM.lightColorSchemeSetting.collectAsState().value
     val filterAudioSetting = settingsVM.filterAudioSetting.collectAsState().value
     val downloadArtistCoverSetting = settingsVM.downloadArtistCoverSetting.collectAsState().value
     val downloadOverDataSetting = settingsVM.downloadOverDataSetting.collectAsState().value
-    val selectedThemeMode = settingsScreenVM.selectedThemeMode.collectAsState().value
-    val selectedDarkMode = settingsScreenVM.selectedDarkMode.collectAsState().value
-    val filterAudioText = settingsScreenVM.filterAudioText.collectAsState().value
+    val selectedThemeMode = vm.selectedColorScheme.collectAsState().value
+    val selectedDarkMode = vm.selectedDarkMode.collectAsState().value
+    val filterAudioText = vm.filterAudioText.collectAsState().value
 
 
     if (!screenLoaded) {
-        settingsScreenVM.loadScreen(settingsVM)
+        vm.loadScreen(settingsVM)
     }
 
     Column(
@@ -75,21 +79,18 @@ fun SettingsScreen(
 
         SmallVerticalSpacer()
 
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
 
-            Text(
-                text = remember { getAppString(context, R.string.Theming) },
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Start,
-                maxLines = 1,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
 
-        SmallVerticalSpacer()
+        Text(
+            text = remember { getAppString(context, R.string.Theming) },
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 22.sp,
+            textAlign = TextAlign.Start,
+            maxLines = 1,
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(x = 8.dp)
+        )
 
         Column(
             modifier = Modifier
@@ -99,29 +100,46 @@ fun SettingsScreen(
         ) {
 
             DefaultSettingItem(
-                icon = painterResource(id = R.drawable.icon_theme_mode_regular),
-                settingText = remember { getAppString(context, R.string.Theme) },
+                icon = painterResource(id = R.drawable.colorscheme),
+                settingText = remember { getAppString(context, R.string.ColorScheme) },
                 settingValue = selectedThemeMode,
                 onSettingClick = {
-                    settingsScreenVM.updateShowThemeModeDialog(true)
+                    vm.updateShowThemeModeDialog(true)
                 },
             )
 
             DefaultSettingItem(
-                icon = painterResource(id = R.drawable.icon_moon_regular),
+                icon = painterResource(id = R.drawable.moon),
                 settingText = remember { getAppString(context, R.string.DarkMode) },
                 settingValue = selectedDarkMode,
                 onSettingClick = {
-                    settingsScreenVM.updateShowDarkModeDialog(true)
+                    vm.updateShowDarkModeDialog(true)
                 }
             )
 
-            DefaultSettingItem(
-                icon = painterResource(id = R.drawable.brush),
-                settingText = remember { getAppString(context, R.string.AccentColor) },
-                settingValue = themeAccentSetting,
-                onSettingClick = { onOpenScreen(Routes.Root.THEMES) }
-            )
+
+            if(isAtLeastAndroid10()){
+                DefaultSettingItem(
+                    icon = painterResource(id = R.drawable.brush),
+                    settingText = remember { getAppString(context, R.string.LightColorScheme) },
+                    settingValue = lightColorScheme,
+                    onSettingClick = { onOpenScreen(Routes.Root.LIGHT_COLOR_SCHEMES) }
+                )
+
+                DefaultSettingItem(
+                    icon = painterResource(id = R.drawable.brush),
+                    settingText = remember { getAppString(context, R.string.DarkColorScheme) },
+                    settingValue = darkColorScheme,
+                    onSettingClick = { onOpenScreen(Routes.Root.DARK_COLOR_SCHEMES) }
+                )
+            }else{
+                DefaultSettingItem(
+                    icon = painterResource(id = R.drawable.brush),
+                    settingText = remember { getAppString(context, R.string.ColorScheme) },
+                    settingValue = lightColorScheme,
+                    onSettingClick = { onOpenScreen(Routes.Root.LIGHT_COLOR_SCHEMES) }
+                )
+            }
         }
 
 
@@ -130,9 +148,9 @@ fun SettingsScreen(
             Dialog(
                 onDismissRequest = {
 
-                    settingsScreenVM.updateShowThemeModeDialog(false)
+                    vm.updateShowThemeModeDialog(false)
 
-                    settingsScreenVM.updateSelectedThemeMode(themeModeSetting)
+                    vm.updateSelectedThemeMode(themeSetting)
                 }
             ) {
                 Surface(
@@ -150,7 +168,7 @@ fun SettingsScreen(
                         ) {
                             Spacer(Modifier.width(10.dp))
                             Text(
-                                text = remember { getAppString(context, R.string.SelectThemeMode) },
+                                text = remember { getAppString(context, R.string.SelectColorScheme) },
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 fontSize = 20.sp,
@@ -165,18 +183,20 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    settingsScreenVM.updateSelectedThemeMode(SettingsValues.ThemeMode.SYSTEM)
+                                    vm.updateSelectedThemeMode(Values.ColorScheme.SYSTEM)
                                 }
                         ) {
 
                             RadioButton(
-                                selected = selectedThemeMode == SettingsValues.ThemeMode.SYSTEM,
+                                selected = selectedThemeMode == Values.ColorScheme.SYSTEM,
                                 onClick = {
 
-                                    settingsScreenVM.updateSelectedThemeMode(SettingsValues.ThemeMode.SYSTEM)
+                                    vm.updateSelectedThemeMode(Values.ColorScheme.SYSTEM)
                                 }
                             )
+
                             Spacer(modifier = Modifier.width(10.dp))
+
                             Text(
                                 text = remember { getAppString(context, R.string.SystemDefault) },
                                 fontSize = 16.sp,
@@ -191,14 +211,14 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    settingsScreenVM.updateSelectedThemeMode(SettingsValues.ThemeMode.LIGHT)
+                                    vm.updateSelectedThemeMode(Values.ColorScheme.LIGHT)
                                 }
                         ) {
 
                             RadioButton(
-                                selected = selectedThemeMode == SettingsValues.ThemeMode.LIGHT,
+                                selected = selectedThemeMode == Values.ColorScheme.LIGHT,
                                 onClick = {
-                                    settingsScreenVM.updateSelectedThemeMode(SettingsValues.ThemeMode.LIGHT)
+                                    vm.updateSelectedThemeMode(Values.ColorScheme.LIGHT)
                                 }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
@@ -216,14 +236,14 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    settingsScreenVM.updateSelectedThemeMode(SettingsValues.ThemeMode.DARK)
+                                    vm.updateSelectedThemeMode(Values.ColorScheme.DARK)
                                 }
                         ) {
 
                             RadioButton(
-                                selected = selectedThemeMode == SettingsValues.ThemeMode.DARK,
+                                selected = selectedThemeMode == Values.ColorScheme.DARK,
                                 onClick = {
-                                    settingsScreenVM.updateSelectedThemeMode(SettingsValues.ThemeMode.DARK)
+                                    vm.updateSelectedThemeMode(Values.ColorScheme.DARK)
                                 }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
@@ -244,9 +264,9 @@ fun SettingsScreen(
                             Button(
                                 onClick = {
 
-                                    settingsScreenVM.updateShowThemeModeDialog(false)
+                                    vm.updateShowThemeModeDialog(false)
 
-                                    settingsScreenVM.updateSelectedThemeMode(themeModeSetting)
+                                    vm.updateSelectedThemeMode(themeSetting)
                                 },
                                 border = BorderStroke(
                                     1.dp,
@@ -270,9 +290,9 @@ fun SettingsScreen(
                             Button(
                                 onClick = {
 
-                                    settingsVM.updateThemeModeSetting(selectedThemeMode)
+                                    settingsVM.updateColorSchemeSetting(selectedThemeMode)
 
-                                    settingsScreenVM.updateShowThemeModeDialog(false)
+                                    vm.updateShowThemeModeDialog(false)
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary
@@ -293,21 +313,19 @@ fun SettingsScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        MediumVerticalSpacer()
 
-            Text(
-                text = remember { getAppString(context, R.string.Audio) },
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Start,
-                maxLines = 1,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        Spacer(modifier = Modifier.height(10.dp))
+
+        Text(
+            text = remember { getAppString(context, R.string.Audio) },
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 22.sp,
+            textAlign = TextAlign.Start,
+            maxLines = 1,
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(x = 8.dp)
+        )
 
         Column(
             modifier = Modifier
@@ -318,28 +336,28 @@ fun SettingsScreen(
         ) {
 
             DefaultSettingItem(
-                icon = painterResource(id = R.drawable.icon_filter_regular),
+                icon = painterResource(id = R.drawable.filter),
                 settingText = remember { getAppString(context, R.string.FilterAudioBelow) },
                 settingValue = "$filterAudioSetting seconds",
                 onSettingClick = {
 
-                    settingsScreenVM.updateShowFilterAudioDialog(true)
+                    vm.updateShowFilterAudioDialog(true)
                 }
             )
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        MediumVerticalSpacer()
 
         Text(
             text = remember { getAppString(context, R.string.Data) },
             color = MaterialTheme.colorScheme.primary,
-            fontSize = 16.sp,
+            fontSize = 22.sp,
             textAlign = TextAlign.Start,
             maxLines = 1,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(8.dp)
         )
-
-        Spacer(modifier = Modifier.height(10.dp))
 
         Column(
             modifier = Modifier
@@ -377,9 +395,9 @@ fun SettingsScreen(
             Dialog(
                 onDismissRequest = {
 
-                    settingsScreenVM.updateShowDarkModeDialog(false)
+                    vm.updateShowDarkModeDialog(false)
 
-                    settingsScreenVM.updateSelectedDarkMode(darkModeSetting)
+                    vm.updateSelectedDarkMode(darkModeSetting)
                 }
             ) {
                 Surface(
@@ -413,15 +431,15 @@ fun SettingsScreen(
                                 .fillMaxWidth()
                                 .clickable {
 
-                                    settingsScreenVM.updateSelectedDarkMode(SettingsValues.DarkMode.COLOR)
+                                    vm.updateSelectedDarkMode(Values.DarkMode.COLOR)
                                 }
                         ) {
 
                             RadioButton(
-                                selected = selectedDarkMode == SettingsValues.DarkMode.COLOR,
+                                selected = selectedDarkMode == Values.DarkMode.COLOR,
                                 onClick = {
 
-                                    settingsScreenVM.updateSelectedDarkMode(SettingsValues.DarkMode.COLOR)
+                                    vm.updateSelectedDarkMode(Values.DarkMode.COLOR)
                                 }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
@@ -439,14 +457,14 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    settingsScreenVM.updateSelectedDarkMode(SettingsValues.DarkMode.OLED)
+                                    vm.updateSelectedDarkMode(Values.DarkMode.OLED)
                                 }
                         ) {
 
                             RadioButton(
-                                selected = selectedDarkMode == SettingsValues.DarkMode.OLED,
+                                selected = selectedDarkMode == Values.DarkMode.OLED,
                                 onClick = {
-                                    settingsScreenVM.updateSelectedDarkMode(SettingsValues.DarkMode.OLED)
+                                    vm.updateSelectedDarkMode(Values.DarkMode.OLED)
                                 }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
@@ -467,9 +485,9 @@ fun SettingsScreen(
                             Button(
                                 onClick = {
 
-                                    settingsScreenVM.updateShowDarkModeDialog(false)
+                                    vm.updateShowDarkModeDialog(false)
 
-                                    settingsScreenVM.updateSelectedDarkMode(darkModeSetting)
+                                    vm.updateSelectedDarkMode(darkModeSetting)
                                 },
                                 border = BorderStroke(
                                     1.dp,
@@ -495,7 +513,7 @@ fun SettingsScreen(
 
                                     settingsVM.updateDarkModeSetting(selectedDarkMode)
 
-                                    settingsScreenVM.updateShowDarkModeDialog(false)
+                                    vm.updateShowDarkModeDialog(false)
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary
@@ -521,9 +539,9 @@ fun SettingsScreen(
             Dialog(
                 onDismissRequest = {
 
-                    settingsScreenVM.updateShowFilterAudioDialog(false)
+                    vm.updateShowFilterAudioDialog(false)
 
-                    settingsScreenVM.updateFilterAudioText(filterAudioSetting)
+                    vm.updateFilterAudioText(filterAudioSetting)
                 }
             ) {
 
@@ -558,7 +576,7 @@ fun SettingsScreen(
                             textType = "number",
                             onTextChange = {
 
-                                settingsScreenVM.updateFilterAudioText(it)
+                                vm.updateFilterAudioText(it)
                             }
                         )
 
@@ -570,9 +588,9 @@ fun SettingsScreen(
                             Button(
                                 onClick = {
 
-                                    settingsScreenVM.updateShowFilterAudioDialog(false)
+                                    vm.updateShowFilterAudioDialog(false)
 
-                                    settingsScreenVM.updateFilterAudioText(filterAudioSetting)
+                                    vm.updateFilterAudioText(filterAudioSetting)
                                 },
                                 border = BorderStroke(
                                     1.dp,
@@ -597,8 +615,7 @@ fun SettingsScreen(
                                 onClick = {
 
                                     settingsVM.updateFilterAudioSetting(filterAudioText)
-
-                                    settingsScreenVM.updateShowFilterAudioDialog(false)
+                                    vm.applyAudioFilterSetting(settingsVM, mainVM)
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.primary
@@ -637,7 +654,7 @@ fun DefaultSettingItem(
             .fillMaxWidth()
             .wrapContentHeight()
             .clickable { onSettingClick() }
-            .padding(10.dp)
+            .padding(MEDIUM_SPACING)
     ) {
 
 
@@ -650,7 +667,7 @@ fun DefaultSettingItem(
                 .width(30.dp)
         )
 
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(MEDIUM_SPACING))
 
         Column(
             modifier = Modifier
@@ -701,7 +718,7 @@ fun SwitchSettingItem(
                 .width(30.dp)
         )
 
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(MEDIUM_SPACING))
 
         Text(
             modifier = Modifier
@@ -714,12 +731,12 @@ fun SwitchSettingItem(
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(Modifier.width(10.dp))
+        MediumHorizontalSpacer()
 
         Switch(
             checked = settingValue,
             onCheckedChange = { onToggle() },
-            enabled = enabled
+            enabled = enabled,
         )
     }
 }

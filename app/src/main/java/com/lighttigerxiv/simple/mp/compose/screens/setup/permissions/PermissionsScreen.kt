@@ -55,12 +55,9 @@ fun PermissionsScreen(
         storagePermissionGranted
     }
 
-    //Loading...
     if (!screenLoaded) {
         permissionsVM.loadScreen()
     }
-
-
 
 
     Column(

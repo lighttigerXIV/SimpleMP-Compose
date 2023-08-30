@@ -52,14 +52,14 @@ fun FloatingArtistScreen(
     val nestedScrollViewState = rememberNestedScrollViewState()
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
-    val screenLoaded = vm.screenLoaded.collectAsState().value
+    val loadingScreen = vm.loadingScreen.collectAsState().value
     val artistName = vm.artistName.collectAsState().value
     val artistCover = vm.artistCover.collectAsState().value
     val tintCover = vm.tintCover.collectAsState().value
     val songs = vm.artistSongs.collectAsState().value
 
 
-    if (!screenLoaded) {
+    if (loadingScreen) {
         vm.loadScreen(artistID, mainVM, settingsVM)
     }
 
@@ -68,7 +68,7 @@ fun FloatingArtistScreen(
             .fillMaxSize()
     ) {
 
-        if (screenLoaded) {
+        if (!loadingScreen) {
             if (inPortrait) {
                 VerticalNestedScrollView(
                     modifier = Modifier

@@ -35,9 +35,9 @@ fun MiniPlayer(
     val musicIsPlaying = mainVM.musicPlayling.collectAsState().value
     val surfaceColor = mainVM.surfaceColor.collectAsState().value
     val playPauseIcon = if (musicIsPlaying) {
-        remember { getImage(context, R.drawable.icon_pause_solid, ImageSizes.SMALL) }
+        remember { getImage(context, R.drawable.pause, ImageSizes.SMALL) }
     } else {
-        remember { getImage(context, R.drawable.icon_play_solid, ImageSizes.SMALL) }
+        remember { getImage(context, R.drawable.play, ImageSizes.SMALL) }
     }
 
     Row(

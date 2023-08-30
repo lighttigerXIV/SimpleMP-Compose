@@ -1,14 +1,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
+    android:layout_height="90dp"
     android:background="@drawable/app_widget_background"
     android:theme="@style/Theme.ComposeSimpleMP"
     android:padding="10dp">
 
     <ImageView
         android:id="@+id/albumArt_Widget"
-        android:layout_width="110dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:contentDescription="@string/emptyDescription"
         android:src="@drawable/demons"/>
@@ -34,24 +34,10 @@
         android:singleLine="true"
         android:textStyle="bold"/>
 
-    <TextView
-        android:id="@+id/artist_Widget"
-        style="@style/Text"
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="0dp"
-        android:layout_below="@id/title_Widget"
-        android:layout_alignStart="@id/title_Widget"
-        android:gravity="center"
-        android:text="@string/imagineDragons"
-        android:textColor="@color/onWidgetSurface"
-        android:textSize="14sp" />
-
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@id/artist_Widget"
+        android:layout_alignStart="@id/title_Widget"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:columnCount="3"
@@ -59,14 +45,14 @@
 
         <ImageView
             android:id="@+id/previousSongButton_Widget"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_row="0"
             android:layout_column="0"
             android:layout_columnWeight="1"
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
-            android:src="@drawable/icon_previous_notification"
+            android:src="@drawable/previous_notification"
             android:tintMode="src_atop"
             android:tint="@color/onWidgetSurface"
             tools:ignore="UseAppTint"
@@ -75,28 +61,28 @@
 
         <ImageView
             android:id="@+id/playPauseButton_Widget"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_row="0"
             android:layout_column="1"
             android:layout_columnWeight="1"
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
-            android:src="@drawable/icon_pause_notification"
+            android:src="@drawable/pause_notification"
             android:tint="@color/onWidgetSurface"
             tools:ignore="UseAppTint"
             android:contentDescription="@string/emptyDescription" />
 
         <ImageView
             android:id="@+id/nextSongButton_Widget"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_row="0"
             android:layout_column="2"
             android:layout_columnWeight="1"
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
-            android:src="@drawable/icon_next_notification"
+            android:src="@drawable/next_notification"
             android:tint="@color/onWidgetSurface"
             tools:ignore="UseAppTint"
             android:contentDescription="@string/emptyDescription" />

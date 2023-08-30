@@ -2,11 +2,14 @@ package com.lighttigerxiv.simple.mp.compose.screens.main.home
 
 import android.app.Application
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
-import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
+import com.lighttigerxiv.simple.mp.compose.data.variables.Settings
+import com.lighttigerxiv.simple.mp.compose.functions.getAppString
 import com.lighttigerxiv.simple.mp.compose.functions.unaccent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,12 +19,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class HomeScreenVM(application: Application) : AndroidViewModel(application) {
-
-
-    //************************************************
-    // Variables
-    //************************************************
-
 
     val context = application
 
@@ -60,38 +57,30 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
     private val _descendentSongs = MutableStateFlow<List<Song>?>(null)
     val descendentSongs = _descendentSongs.asStateFlow()
 
-    private val _showReloadSongsDialog = MutableStateFlow(false)
-    val showReloadSongsDialog= _showReloadSongsDialog.asStateFlow()
-    fun updateShowReloadSongsDialog(newValue:Boolean) {
-        _showReloadSongsDialog.update { newValue }
-    }
-
-    //************************************************
-    // Functions
-    //************************************************
-
+    private val _syncingSongs = MutableStateFlow(false)
+    val syncingSongs= _syncingSongs.asStateFlow()
 
     fun loadScreen(mainVM: MainVM) {
 
         fun load(){
-            val sortType = preferences.getString("HomeSongsSortType", Sorts.RECENT)
+            val sortType = preferences.getString(Settings.HOME_SORT, Settings.Values.Sort.RECENT)
             val songs = mainVM.songsData.value?.songs
 
             if (songs != null) {
 
                 _recentSongs.update { songs }
 
-                _oldestSongs.update { songs!!.reversed() }
+                _oldestSongs.update { songs.reversed() }
 
-                _ascendentSongs.update { songs!!.sortedBy { it.title } }
+                _ascendentSongs.update { songs.sortedBy { it.title } }
 
-                _descendentSongs.update { songs!!.sortedByDescending { it.title } }
+                _descendentSongs.update { songs.sortedByDescending { it.title } }
 
                 _currentSongs.update {
                     when (sortType) {
-                        Sorts.RECENT -> recentSongs.value
-                        Sorts.OLDEST -> oldestSongs.value
-                        Sorts.ASCENDENT -> ascendentSongs.value
+                        Settings.Values.Sort.RECENT -> recentSongs.value
+                        Settings.Values.Sort.OLDEST -> oldestSongs.value
+                        Settings.Values.Sort.ASCENDENT -> ascendentSongs.value
                         else -> descendentSongs.value
                     }
                 }
@@ -111,33 +100,31 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
-
-
     }
 
     fun filterSongs() {
 
-        when (preferences.getString("HomeSongsSortType", Sorts.RECENT)) {
+        when (preferences.getString(Settings.HOME_SORT, Settings.Values.Sort.RECENT)) {
 
-            Sorts.RECENT -> _currentSongs.update { recentSongs.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
-            Sorts.OLDEST -> _currentSongs.update { oldestSongs.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
-            Sorts.ASCENDENT -> _currentSongs.update { ascendentSongs.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
-            Sorts.DESCENDENT -> _currentSongs.update { descendentSongs.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Settings.Values.Sort.RECENT -> _currentSongs.update { recentSongs.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Settings.Values.Sort.OLDEST -> _currentSongs.update { oldestSongs.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Settings.Values.Sort.ASCENDENT -> _currentSongs.update { ascendentSongs.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Settings.Values.Sort.DESCENDENT -> _currentSongs.update { descendentSongs.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
         }
     }
 
     fun updateSortType(sortType: String) {
 
-        preferences.edit().putString("HomeSongsSortType", sortType).apply()
+        preferences.edit().putString(Settings.HOME_SORT, sortType).apply()
     }
 
     fun selectSong(song: Song, mainVM: MainVM) {
 
-        val newQueue = when (preferences.getString("HomeSongsSortType", Sorts.RECENT)) {
+        val newQueue = when (preferences.getString(Settings.HOME_SORT, Settings.Values.Sort.RECENT)) {
 
-            Sorts.RECENT -> recentSongs.value!!
-            Sorts.OLDEST -> oldestSongs.value!!
-            Sorts.ASCENDENT -> ascendentSongs.value!!
+            Settings.Values.Sort.RECENT -> recentSongs.value!!
+            Settings.Values.Sort.OLDEST -> oldestSongs.value!!
+            Settings.Values.Sort.ASCENDENT -> ascendentSongs.value!!
             else -> descendentSongs.value!!
         }
 
@@ -146,14 +133,17 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun reloadSongs(mainVM: MainVM){
 
+        Toast.makeText(context, getAppString(context, R.string.IndexingSongs), Toast.LENGTH_LONG).show()
+
         viewModelScope.launch {
             withContext(Dispatchers.IO){
 
                 _menuExpanded.update { false }
-                _showReloadSongsDialog.update { true }
 
-                mainVM.indexSongs(onFinish = {
-                    _showReloadSongsDialog.update { false }
+                _syncingSongs.update { true }
+
+                mainVM.indexSongs(showNotification = true, onFinish = {
+                    _syncingSongs.update { false }
                 })
             }
         }

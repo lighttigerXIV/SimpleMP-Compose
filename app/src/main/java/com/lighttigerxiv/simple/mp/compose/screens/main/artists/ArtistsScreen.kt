@@ -1,5 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.screens.main.artists
 
+import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -14,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavHostController
@@ -22,7 +25,7 @@ import com.lighttigerxiv.simple.mp.compose.data.variables.SCREEN_PADDING
 import com.lighttigerxiv.simple.mp.compose.data.variables.XSMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
-import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
+import com.lighttigerxiv.simple.mp.compose.data.variables.Settings
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomTextField
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ImageCard
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
@@ -111,6 +114,7 @@ fun ArtistsScreen(
                         }
                     ) {
 
+                        /*
                         DropdownMenuItem(
                             text = { Text(text = remember { getAppString(context, R.string.SortByRecentlyAdded) }) },
                             onClick = {
@@ -161,6 +165,68 @@ fun ArtistsScreen(
                                     delay(200)
                                     gridState.scrollToItem(index = 0)
                                 }
+                            }
+                        )
+
+                         */
+
+                        DropdownMenuItem(
+                            text = {
+                                Text(text = stringResource(id = R.string.ModificationDate))
+                            },
+                            onClick = {
+
+                                val currentSort = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString(Settings.ARTISTS_SORT, Settings.Values.Sort.RECENT)
+                                val filterAlgorithm = if (currentSort == Settings.Values.Sort.RECENT) Settings.Values.Sort.OLDEST else Settings.Values.Sort.RECENT
+                                val filterArtists = if(currentSort == Settings.Values.Sort.RECENT) oldestArtists else recentArtists
+
+                                vm.updateSortType(filterAlgorithm)
+                                vm.updateCurrentArtists(filterArtists)
+                                scope.launch {
+                                    vm.updateMenuExpanded(false)
+                                    delay(200)
+                                    gridState.scrollToItem(index = 0)
+                                }
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    modifier = Modifier
+                                        .height(20.dp)
+                                        .width(20.dp),
+                                    painter = painterResource(id = R.drawable.date_sort),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = {
+                                Text(text = stringResource(id = R.string.SortAlphabetically))
+                            },
+                            onClick = {
+
+                                val currentSort = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString(Settings.ARTISTS_SORT, Settings.Values.Sort.RECENT)
+                                val filterAlgorithm = if (currentSort == Settings.Values.Sort.ASCENDENT) Settings.Values.Sort.DESCENDENT else Settings.Values.Sort.ASCENDENT
+                                val filterArtists = if(currentSort == Settings.Values.Sort.ASCENDENT) descendentArtists else ascendentArtists
+
+                                vm.updateSortType(filterAlgorithm)
+                                vm.updateCurrentArtists(filterArtists)
+                                scope.launch {
+                                    vm.updateMenuExpanded(false)
+                                    delay(200)
+                                    gridState.scrollToItem(index = 0)
+                                }
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    modifier = Modifier
+                                        .height(20.dp)
+                                        .width(20.dp),
+                                    painter = painterResource(id = R.drawable.alphabetic_sort),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
                             }
                         )
                     }

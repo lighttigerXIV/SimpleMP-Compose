@@ -1,12 +1,8 @@
 package com.lighttigerxiv.simple.mp.compose.screens.setup.permissions
 
-import android.Manifest
 import android.app.Application
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
+import com.lighttigerxiv.simple.mp.compose.functions.Permissions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -26,13 +22,13 @@ class PermissionsScreenVM(application: Application) : AndroidViewModel(applicati
 
     private val _storagePermissionGranted = MutableStateFlow(false)
     val storagePermissionGranted = _storagePermissionGranted.asStateFlow()
-    fun updateStoragePermissionGranted(newValue:Boolean) {
+    fun updateStoragePermissionGranted(newValue: Boolean) {
         _storagePermissionGranted.update { newValue }
     }
 
     private val _notificationsPermissionGranted = MutableStateFlow(false)
     val notificationsPermissionGranted = _notificationsPermissionGranted.asStateFlow()
-    fun updateNotificationsPermissionGranted(newValue:Boolean) {
+    fun updateNotificationsPermissionGranted(newValue: Boolean) {
         _notificationsPermissionGranted.update { newValue }
     }
 
@@ -42,15 +38,10 @@ class PermissionsScreenVM(application: Application) : AndroidViewModel(applicati
     //************************************************
 
 
-    fun loadScreen(){
+    fun loadScreen() {
 
-        if(Build.VERSION.SDK_INT >= 33){
-            _storagePermissionGranted.update { ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED }
-            _notificationsPermissionGranted.update { ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED }
-        }
-        else{
-            _storagePermissionGranted.update { ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED }
-        }
+        _storagePermissionGranted.update { Permissions.hasStoragePermission(context) }
+        _notificationsPermissionGranted.update { Permissions.hasNotificationsPermission(context) }
 
         _screenLoaded.update { true }
     }

@@ -13,7 +13,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -61,11 +61,12 @@ import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.add_s
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.add_songs.AddSongsScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.SettingsScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.settings.SettingsScreenVM
-import com.lighttigerxiv.simple.mp.compose.screens.main.settings.themes.ThemesScreen
+import com.lighttigerxiv.simple.mp.compose.screens.main.settings.color_schemes.DarkColorSchemesScreen
+import com.lighttigerxiv.simple.mp.compose.screens.main.settings.color_schemes.LightColorSchemesScreen
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
-import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.theme.ComposeSimpleMPTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -81,6 +82,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+
         if (!getSharedPreferences(packageName, MODE_PRIVATE).getBoolean("setupCompleted", false)) {
 
             startActivity(
@@ -90,7 +93,7 @@ class MainActivity : ComponentActivity() {
             finish()
         }
 
-        createNotificationChannel()
+        createNotificationChannels()
 
 
         val vm = ViewModelProvider(this)[MainVM::class.java]
@@ -100,18 +103,25 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ComposeSimpleMPTheme(
-                useDarkTheme = isSystemInDarkTheme(),
-                themeMode = settingsVM.themeModeSetting.collectAsState().value,
-                themeAccent = settingsVM.themeAccentSetting.collectAsState().value,
+                settingsVM = settingsVM,
                 content = {
 
                     vm.updateSurfaceColor(getSurfaceColor(settingsVM = settingsVM))
 
                     val rootNavController = rememberNavController()
                     val loadingSongs = vm.loadingSongs.collectAsState().value
-                    val songCount = vm.songCount.collectAsState().value
-                    val indexedSongsCount = vm.indexedSongsCount.collectAsState().value
                     val context = LocalContext.current
+
+                    val indexedSongsCount = vm.indexedSongsCount.collectAsState().value
+                    val songsCount = vm.songsCount.collectAsState().value
+
+                    LaunchedEffect(songsCount){
+                        println("Song count: $songsCount")
+                    }
+
+                    LaunchedEffect(key1 = indexedSongsCount){
+                        println("Indexed count: $indexedSongsCount")
+                    }
 
 
                     Column(
@@ -152,7 +162,7 @@ class MainActivity : ComponentActivity() {
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
 
-                                    if(indexedSongsCount != songCount){
+                                    if(indexedSongsCount != songsCount && songsCount != 0){
                                         CustomText(text = indexedSongsCount.toString())
 
                                         SmallHorizontalSpacer()
@@ -165,7 +175,7 @@ class MainActivity : ComponentActivity() {
 
                                         SmallHorizontalSpacer()
 
-                                        CustomText(text = songCount.toString())
+                                        CustomText(text = songsCount.toString())
                                     } else{
 
                                         LinearProgressIndicator(
@@ -253,7 +263,7 @@ class MainActivity : ComponentActivity() {
                                     SettingsScreen(
                                         mainVM = vm,
                                         settingsVM = ViewModelProvider(activityContext)[SettingsVM::class.java],
-                                        settingsScreenVM = ViewModelProvider(activityContext)[SettingsScreenVM::class.java],
+                                        vm = ViewModelProvider(activityContext)[SettingsScreenVM::class.java],
                                         onBackPressed = { rootNavController.navigateUp() },
                                         onOpenScreen = { rootNavController.navigate(it) }
                                     )
@@ -267,9 +277,18 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
 
-                                composable(Routes.Root.THEMES) {
+                                composable(Routes.Root.DARK_COLOR_SCHEMES) {
 
-                                    ThemesScreen(
+                                    DarkColorSchemesScreen(
+                                        mainVM = vm,
+                                        settingsVM = ViewModelProvider(activityContext)[SettingsVM::class.java],
+                                        onBackClick = { rootNavController.navigateUp() }
+                                    )
+                                }
+
+                                composable(Routes.Root.LIGHT_COLOR_SCHEMES) {
+
+                                    LightColorSchemesScreen(
                                         mainVM = vm,
                                         settingsVM = ViewModelProvider(activityContext)[SettingsVM::class.java],
                                         onBackClick = { rootNavController.navigateUp() }
@@ -324,17 +343,29 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun createNotificationChannel() {
+    private fun createNotificationChannels() {
 
-        val channelName = getString(R.string.notificationChannelName)
-        val channelDescription = getString(R.string.notificationChannelDescription)
-        val channelImportance = NotificationManager.IMPORTANCE_LOW
-        val mChannel = NotificationChannel("Playback", channelName, channelImportance)
-        mChannel.description = channelDescription
+        val playbackChannel = NotificationChannel(
+            "Playback",
+            "Playback",
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            description = "Simple MP Playback"
+        }
+
+        val syncingSongsChannel = NotificationChannel(
+            "Sync",
+            "Sync",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = "Syncing Notifications"
+        }
 
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(mChannel)
+        notificationManager.createNotificationChannel(playbackChannel)
+        notificationManager.createNotificationChannel(syncingSongsChannel)
     }
+
 
     @Deprecated("Deprecated in Java", ReplaceWith("super.onActivityResult(requestCode, resultCode, data)", "androidx.activity.ComponentActivity"))
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

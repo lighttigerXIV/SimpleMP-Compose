@@ -15,6 +15,8 @@
     <string name="SearchArtists">Search Artists</string>
     <string name="SearchAlbums">Search Albums</string>
     <string name="SearchPlaylists">Search Playlists</string>
+    <string name="ModificationDate">Sort By Modification Date</string>
+    <string name="SortAlphabetically">Sort Alphabetically</string>
     <string name="SortByRecentlyAdded">Sort By Recently Added</string>
     <string name="SortByOldestAdded">Sort By Oldest Added</string>
     <string name="SortByAscendent">Sort By Ascendent</string>
@@ -49,10 +51,9 @@
     <string name="GoToAlbum">Go To Album</string>
     <string name="AddToPlaylist">Add To Playlist</string>
     <string name="Theming">Theming</string>
-    <string name="Theme">Theme</string>
     <string name="DarkMode">Dark Mode</string>
     <string name="AccentColor">Accent Color</string>
-    <string name="SelectThemeMode">Select Theme Mode</string>
+    <string name="SelectColorScheme">Select Color Scheme</string>
     <string name="SystemDefault">System Default</string>
     <string name="LightMode">Light Mode</string>
     <string name="Apply">Apply</string>
@@ -63,7 +64,7 @@
     <string name="Oled" translatable="false">Oled</string>
     <string name="FilterAudio">Filter Audio</string>
     <string name="InsertMinimumSeconds">Insert minimum seconds</string>
-    <string name="System">System</string>
+    <string name="MaterialYou">Material You</string>
     <string name="Blue">Blue</string>
     <string name="Red">Red</string>
     <string name="Purple">Purple</string>
@@ -113,4 +114,8 @@
     <string name="ReloadSongs">Reload Songs</string>
     <string name="DontCloseAppWhileReloading">Don\'t close the app while reloading the songs!!</string>
     <string name="ReloadingSongs">Reloading Songs</string>
+    <string name="ColorScheme">Color Scheme</string>
+    <string name="DarkColorScheme">Dark Color Scheme</string>
+    <string name="LightColorScheme">Light Color Scheme</string>
+    <string name="IndexingSongs">Indexing Songs. Don\'t close the app.</string>
 </resources>

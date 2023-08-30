@@ -1,971 +1,654 @@
 package com.lighttigerxiv.simple.mp.compose.ui.theme
 
-import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.lighttigerxiv.simple.mp.compose.data.variables.SettingsValues
+import com.lighttigerxiv.simple.mp.compose.data.variables.Settings
+import com.lighttigerxiv.simple.mp.compose.functions.isAtLeastAndroid12
+import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 
 
 val LightBlueColors = lightColorScheme(
-    primary = blue_theme_light_primary,
-    onPrimary = blue_theme_light_onPrimary,
-    primaryContainer = blue_theme_light_primaryContainer,
-    onPrimaryContainer = blue_theme_light_onPrimaryContainer,
-    secondary = blue_theme_light_secondary,
-    onSecondary = blue_theme_light_onSecondary,
-    secondaryContainer = blue_theme_light_secondaryContainer,
-    onSecondaryContainer = blue_theme_light_onSecondaryContainer,
-    tertiary = blue_theme_light_tertiary,
-    onTertiary = blue_theme_light_onTertiary,
-    tertiaryContainer = blue_theme_light_tertiaryContainer,
-    onTertiaryContainer = blue_theme_light_onTertiaryContainer,
-    error = blue_theme_light_error,
-    errorContainer = blue_theme_light_errorContainer,
-    onError = blue_theme_light_onError,
-    onErrorContainer = blue_theme_light_onErrorContainer,
-    background = blue_theme_light_background,
-    onBackground = blue_theme_light_onBackground,
-    surface = blue_theme_light_surface,
-    onSurface = blue_theme_light_onSurface,
-    surfaceVariant = blue_theme_light_surfaceVariant,
-    onSurfaceVariant = blue_theme_light_onSurfaceVariant,
-    outline = blue_theme_light_outline,
-    inverseOnSurface = blue_theme_light_inverseOnSurface,
-    inverseSurface = blue_theme_light_inverseSurface,
-    inversePrimary = blue_theme_light_inversePrimary,
-    surfaceTint = blue_theme_light_surfaceTint,
+    primary = AppColorScheme.Blue.Light.PRIMARY,
+    onPrimary = AppColorScheme.Blue.Light.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Blue.Light.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Blue.Light.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Blue.Light.SECONDARY,
+    onSecondary = AppColorScheme.Blue.Light.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Blue.Light.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Blue.Light.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Blue.Light.TERTIARY,
+    onTertiary = AppColorScheme.Blue.Light.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Blue.Light.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Blue.Light.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Blue.Light.ERROR,
+    errorContainer = AppColorScheme.Blue.Light.ERROR_CONTAINER,
+    onError = AppColorScheme.Blue.Light.ON_ERROR,
+    onErrorContainer = AppColorScheme.Blue.Light.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Blue.Light.BACKGROUND,
+    onBackground = AppColorScheme.Blue.Light.ON_BACKGROUND,
+    surface = AppColorScheme.Blue.Light.SURFACE,
+    onSurface = AppColorScheme.Blue.Light.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Blue.Light.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Blue.Light.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Blue.Light.OUTLINE,
+    inverseOnSurface = AppColorScheme.Blue.Light.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Blue.Light.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Blue.Light.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Blue.Light.SURFACE_TINT,
 )
 
 
 val DarkBlueColors = darkColorScheme(
-    primary = blue_theme_dark_primary,
-    onPrimary = blue_theme_dark_onPrimary,
-    primaryContainer = blue_theme_dark_primaryContainer,
-    onPrimaryContainer = blue_theme_dark_onPrimaryContainer,
-    secondary = blue_theme_dark_secondary,
-    onSecondary = blue_theme_dark_onSecondary,
-    secondaryContainer = blue_theme_dark_secondaryContainer,
-    onSecondaryContainer = blue_theme_dark_onSecondaryContainer,
-    tertiary = blue_theme_dark_tertiary,
-    onTertiary = blue_theme_dark_onTertiary,
-    tertiaryContainer = blue_theme_dark_tertiaryContainer,
-    onTertiaryContainer = blue_theme_dark_onTertiaryContainer,
-    error = blue_theme_dark_error,
-    errorContainer = blue_theme_dark_errorContainer,
-    onError = blue_theme_dark_onError,
-    onErrorContainer = blue_theme_dark_onErrorContainer,
-    background = blue_theme_dark_background,
-    onBackground = blue_theme_dark_onBackground,
-    surface = blue_theme_dark_surface,
-    onSurface = blue_theme_dark_onSurface,
-    surfaceVariant = blue_theme_dark_surfaceVariant,
-    onSurfaceVariant = blue_theme_dark_onSurfaceVariant,
-    outline = blue_theme_dark_outline,
-    inverseOnSurface = blue_theme_dark_inverseOnSurface,
-    inverseSurface = blue_theme_dark_inverseSurface,
-    inversePrimary = blue_theme_dark_inversePrimary,
-    surfaceTint = blue_theme_dark_surfaceTint,
+    primary = AppColorScheme.Blue.Dark.PRIMARY,
+    onPrimary = AppColorScheme.Blue.Dark.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Blue.Dark.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Blue.Dark.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Blue.Dark.SECONDARY,
+    onSecondary = AppColorScheme.Blue.Dark.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Blue.Dark.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Blue.Dark.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Blue.Dark.TERTIARY,
+    onTertiary = AppColorScheme.Blue.Dark.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Blue.Dark.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Blue.Dark.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Blue.Dark.ERROR,
+    errorContainer = AppColorScheme.Blue.Dark.ERROR_CONTAINER,
+    onError = AppColorScheme.Blue.Dark.ON_ERROR,
+    onErrorContainer = AppColorScheme.Blue.Dark.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Blue.Dark.BACKGROUND,
+    onBackground = AppColorScheme.Blue.Dark.ON_BACKGROUND,
+    surface = AppColorScheme.Blue.Dark.SURFACE,
+    onSurface = AppColorScheme.Blue.Dark.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Blue.Dark.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Blue.Dark.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Blue.Dark.OUTLINE,
+    inverseOnSurface = AppColorScheme.Blue.Dark.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Blue.Dark.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Blue.Dark.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Blue.Dark.SURFACE_TINT,
 )
 
 
 val LightRedColors = lightColorScheme(
-    primary = red_theme_light_primary,
-    onPrimary = red_theme_light_onPrimary,
-    primaryContainer = red_theme_light_primaryContainer,
-    onPrimaryContainer = red_theme_light_onPrimaryContainer,
-    secondary = red_theme_light_secondary,
-    onSecondary = red_theme_light_onSecondary,
-    secondaryContainer = red_theme_light_secondaryContainer,
-    onSecondaryContainer = red_theme_light_onSecondaryContainer,
-    tertiary = red_theme_light_tertiary,
-    onTertiary = red_theme_light_onTertiary,
-    tertiaryContainer = red_theme_light_tertiaryContainer,
-    onTertiaryContainer = red_theme_light_onTertiaryContainer,
-    error = red_theme_light_error,
-    errorContainer = red_theme_light_errorContainer,
-    onError = red_theme_light_onError,
-    onErrorContainer = red_theme_light_onErrorContainer,
-    background = red_theme_light_background,
-    onBackground = red_theme_light_onBackground,
-    surface = red_theme_light_surface,
-    onSurface = red_theme_light_onSurface,
-    surfaceVariant = red_theme_light_surfaceVariant,
-    onSurfaceVariant = red_theme_light_onSurfaceVariant,
-    outline = red_theme_light_outline,
-    inverseOnSurface = red_theme_light_inverseOnSurface,
-    inverseSurface = red_theme_light_inverseSurface,
-    inversePrimary = red_theme_light_inversePrimary,
-    surfaceTint = red_theme_light_surfaceTint,
+    primary = AppColorScheme.Red.Light.PRIMARY,
+    onPrimary = AppColorScheme.Red.Light.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Red.Light.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Red.Light.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Red.Light.SECONDARY,
+    onSecondary = AppColorScheme.Red.Light.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Red.Light.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Red.Light.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Red.Light.TERTIARY,
+    onTertiary = AppColorScheme.Red.Light.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Red.Light.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Red.Light.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Red.Light.ERROR,
+    errorContainer = AppColorScheme.Red.Light.ERROR_CONTAINER,
+    onError = AppColorScheme.Red.Light.ON_ERROR,
+    onErrorContainer = AppColorScheme.Red.Light.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Red.Light.BACKGROUND,
+    onBackground = AppColorScheme.Red.Light.ON_BACKGROUND,
+    surface = AppColorScheme.Red.Light.SURFACE,
+    onSurface = AppColorScheme.Red.Light.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Red.Light.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Red.Light.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Red.Light.OUTLINE,
+    inverseOnSurface = AppColorScheme.Red.Light.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Red.Light.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Red.Light.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Red.Light.SURFACE_TINT,
 )
 
 
 val DarkRedColors = darkColorScheme(
-    primary = red_theme_dark_primary,
-    onPrimary = red_theme_dark_onPrimary,
-    primaryContainer = red_theme_dark_primaryContainer,
-    onPrimaryContainer = red_theme_dark_onPrimaryContainer,
-    secondary = red_theme_dark_secondary,
-    onSecondary = red_theme_dark_onSecondary,
-    secondaryContainer = red_theme_dark_secondaryContainer,
-    onSecondaryContainer = red_theme_dark_onSecondaryContainer,
-    tertiary = red_theme_dark_tertiary,
-    onTertiary = red_theme_dark_onTertiary,
-    tertiaryContainer = red_theme_dark_tertiaryContainer,
-    onTertiaryContainer = red_theme_dark_onTertiaryContainer,
-    error = red_theme_dark_error,
-    errorContainer = red_theme_dark_errorContainer,
-    onError = red_theme_dark_onError,
-    onErrorContainer = red_theme_dark_onErrorContainer,
-    background = red_theme_dark_background,
-    onBackground = red_theme_dark_onBackground,
-    surface = red_theme_dark_surface,
-    onSurface = red_theme_dark_onSurface,
-    surfaceVariant = red_theme_dark_surfaceVariant,
-    onSurfaceVariant = red_theme_dark_onSurfaceVariant,
-    outline = red_theme_dark_outline,
-    inverseOnSurface = red_theme_dark_inverseOnSurface,
-    inverseSurface = red_theme_dark_inverseSurface,
-    inversePrimary = red_theme_dark_inversePrimary,
-    surfaceTint = red_theme_dark_surfaceTint,
+    primary = AppColorScheme.Red.Dark.PRIMARY,
+    onPrimary = AppColorScheme.Red.Dark.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Red.Dark.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Red.Dark.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Red.Dark.SECONDARY,
+    onSecondary = AppColorScheme.Red.Dark.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Red.Dark.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Red.Dark.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Red.Dark.TERTIARY,
+    onTertiary = AppColorScheme.Red.Dark.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Red.Dark.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Red.Dark.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Red.Dark.ERROR,
+    errorContainer = AppColorScheme.Red.Dark.ERROR_CONTAINER,
+    onError = AppColorScheme.Red.Dark.ON_ERROR,
+    onErrorContainer = AppColorScheme.Red.Dark.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Red.Dark.BACKGROUND,
+    onBackground = AppColorScheme.Red.Dark.ON_BACKGROUND,
+    surface = AppColorScheme.Red.Dark.SURFACE,
+    onSurface = AppColorScheme.Red.Dark.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Red.Dark.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Red.Dark.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Red.Dark.OUTLINE,
+    inverseOnSurface = AppColorScheme.Red.Dark.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Red.Dark.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Red.Dark.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Red.Dark.SURFACE_TINT,
 )
 
 val LightPurpleColors = lightColorScheme(
-    primary = purple_theme_light_primary,
-    onPrimary = purple_theme_light_onPrimary,
-    primaryContainer = purple_theme_light_primaryContainer,
-    onPrimaryContainer = purple_theme_light_onPrimaryContainer,
-    secondary = purple_theme_light_secondary,
-    onSecondary = purple_theme_light_onSecondary,
-    secondaryContainer = purple_theme_light_secondaryContainer,
-    onSecondaryContainer = purple_theme_light_onSecondaryContainer,
-    tertiary = purple_theme_light_tertiary,
-    onTertiary = purple_theme_light_onTertiary,
-    tertiaryContainer = purple_theme_light_tertiaryContainer,
-    onTertiaryContainer = purple_theme_light_onTertiaryContainer,
-    error = purple_theme_light_error,
-    errorContainer = purple_theme_light_errorContainer,
-    onError = purple_theme_light_onError,
-    onErrorContainer = purple_theme_light_onErrorContainer,
-    background = purple_theme_light_background,
-    onBackground = purple_theme_light_onBackground,
-    surface = purple_theme_light_surface,
-    onSurface = purple_theme_light_onSurface,
-    surfaceVariant = purple_theme_light_surfaceVariant,
-    onSurfaceVariant = purple_theme_light_onSurfaceVariant,
-    outline = purple_theme_light_outline,
-    inverseOnSurface = purple_theme_light_inverseOnSurface,
-    inverseSurface = purple_theme_light_inverseSurface,
-    inversePrimary = purple_theme_light_inversePrimary,
-    surfaceTint = purple_theme_light_surfaceTint,
+    primary = AppColorScheme.Purple.Light.PRIMARY,
+    onPrimary = AppColorScheme.Purple.Light.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Purple.Light.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Purple.Light.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Purple.Light.SECONDARY,
+    onSecondary = AppColorScheme.Purple.Light.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Purple.Light.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Purple.Light.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Purple.Light.TERTIARY,
+    onTertiary = AppColorScheme.Purple.Light.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Purple.Light.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Purple.Light.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Purple.Light.ERROR,
+    errorContainer = AppColorScheme.Purple.Light.ERROR_CONTAINER,
+    onError = AppColorScheme.Purple.Light.ON_ERROR,
+    onErrorContainer = AppColorScheme.Purple.Light.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Purple.Light.BACKGROUND,
+    onBackground = AppColorScheme.Purple.Light.ON_BACKGROUND,
+    surface = AppColorScheme.Purple.Light.SURFACE,
+    onSurface = AppColorScheme.Purple.Light.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Purple.Light.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Purple.Light.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Purple.Light.OUTLINE,
+    inverseOnSurface = AppColorScheme.Purple.Light.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Purple.Light.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Purple.Light.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Purple.Light.SURFACE_TINT,
 )
 
 
 val DarkPurpleColors = darkColorScheme(
-    primary = purple_theme_dark_primary,
-    onPrimary = purple_theme_dark_onPrimary,
-    primaryContainer = purple_theme_dark_primaryContainer,
-    onPrimaryContainer = purple_theme_dark_onPrimaryContainer,
-    secondary = purple_theme_dark_secondary,
-    onSecondary = purple_theme_dark_onSecondary,
-    secondaryContainer = purple_theme_dark_secondaryContainer,
-    onSecondaryContainer = purple_theme_dark_onSecondaryContainer,
-    tertiary = purple_theme_dark_tertiary,
-    onTertiary = purple_theme_dark_onTertiary,
-    tertiaryContainer = purple_theme_dark_tertiaryContainer,
-    onTertiaryContainer = purple_theme_dark_onTertiaryContainer,
-    error = purple_theme_dark_error,
-    errorContainer = purple_theme_dark_errorContainer,
-    onError = purple_theme_dark_onError,
-    onErrorContainer = purple_theme_dark_onErrorContainer,
-    background = purple_theme_dark_background,
-    onBackground = purple_theme_dark_onBackground,
-    surface = purple_theme_dark_surface,
-    onSurface = purple_theme_dark_onSurface,
-    surfaceVariant = purple_theme_dark_surfaceVariant,
-    onSurfaceVariant = purple_theme_dark_onSurfaceVariant,
-    outline = purple_theme_dark_outline,
-    inverseOnSurface = purple_theme_dark_inverseOnSurface,
-    inverseSurface = purple_theme_dark_inverseSurface,
-    inversePrimary = purple_theme_dark_inversePrimary,
-    surfaceTint = purple_theme_dark_surfaceTint,
+    primary = AppColorScheme.Purple.Dark.PRIMARY,
+    onPrimary = AppColorScheme.Purple.Dark.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Purple.Dark.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Purple.Dark.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Purple.Dark.SECONDARY,
+    onSecondary = AppColorScheme.Purple.Dark.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Purple.Dark.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Purple.Dark.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Purple.Dark.TERTIARY,
+    onTertiary = AppColorScheme.Purple.Dark.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Purple.Dark.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Purple.Dark.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Purple.Dark.ERROR,
+    errorContainer = AppColorScheme.Purple.Dark.ERROR_CONTAINER,
+    onError = AppColorScheme.Purple.Dark.ON_ERROR,
+    onErrorContainer = AppColorScheme.Purple.Dark.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Purple.Dark.BACKGROUND,
+    onBackground = AppColorScheme.Purple.Dark.ON_BACKGROUND,
+    surface = AppColorScheme.Purple.Dark.SURFACE,
+    onSurface = AppColorScheme.Purple.Dark.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Purple.Dark.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Purple.Dark.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Purple.Dark.OUTLINE,
+    inverseOnSurface = AppColorScheme.Purple.Dark.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Purple.Dark.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Purple.Dark.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Purple.Dark.SURFACE_TINT,
 )
 
 val LightYellowColors = lightColorScheme(
-    primary = yellow_theme_light_primary,
-    onPrimary = yellow_theme_light_onPrimary,
-    primaryContainer = yellow_theme_light_primaryContainer,
-    onPrimaryContainer = yellow_theme_light_onPrimaryContainer,
-    secondary = yellow_theme_light_secondary,
-    onSecondary = yellow_theme_light_onSecondary,
-    secondaryContainer = yellow_theme_light_secondaryContainer,
-    onSecondaryContainer = yellow_theme_light_onSecondaryContainer,
-    tertiary = yellow_theme_light_tertiary,
-    onTertiary = yellow_theme_light_onTertiary,
-    tertiaryContainer = yellow_theme_light_tertiaryContainer,
-    onTertiaryContainer = yellow_theme_light_onTertiaryContainer,
-    error = yellow_theme_light_error,
-    errorContainer = yellow_theme_light_errorContainer,
-    onError = yellow_theme_light_onError,
-    onErrorContainer = yellow_theme_light_onErrorContainer,
-    background = yellow_theme_light_background,
-    onBackground = yellow_theme_light_onBackground,
-    surface = yellow_theme_light_surface,
-    onSurface = yellow_theme_light_onSurface,
-    surfaceVariant = yellow_theme_light_surfaceVariant,
-    onSurfaceVariant = yellow_theme_light_onSurfaceVariant,
-    outline = yellow_theme_light_outline,
-    inverseOnSurface = yellow_theme_light_inverseOnSurface,
-    inverseSurface = yellow_theme_light_inverseSurface,
-    inversePrimary = yellow_theme_light_inversePrimary,
-    surfaceTint = yellow_theme_light_surfaceTint,
+    primary = AppColorScheme.Yellow.Light.PRIMARY,
+    onPrimary = AppColorScheme.Yellow.Light.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Yellow.Light.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Yellow.Light.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Yellow.Light.SECONDARY,
+    onSecondary = AppColorScheme.Yellow.Light.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Yellow.Light.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Yellow.Light.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Yellow.Light.TERTIARY,
+    onTertiary = AppColorScheme.Yellow.Light.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Yellow.Light.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Yellow.Light.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Yellow.Light.ERROR,
+    errorContainer = AppColorScheme.Yellow.Light.ERROR_CONTAINER,
+    onError = AppColorScheme.Yellow.Light.ON_ERROR,
+    onErrorContainer = AppColorScheme.Yellow.Light.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Yellow.Light.BACKGROUND,
+    onBackground = AppColorScheme.Yellow.Light.ON_BACKGROUND,
+    surface = AppColorScheme.Yellow.Light.SURFACE,
+    onSurface = AppColorScheme.Yellow.Light.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Yellow.Light.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Yellow.Light.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Yellow.Light.OUTLINE,
+    inverseOnSurface = AppColorScheme.Yellow.Light.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Yellow.Light.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Yellow.Light.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Yellow.Light.SURFACE_TINT,
 )
 
 
 val DarkYellowColors = darkColorScheme(
-    primary = yellow_theme_dark_primary,
-    onPrimary = yellow_theme_dark_onPrimary,
-    primaryContainer = yellow_theme_dark_primaryContainer,
-    onPrimaryContainer = yellow_theme_dark_onPrimaryContainer,
-    secondary = yellow_theme_dark_secondary,
-    onSecondary = yellow_theme_dark_onSecondary,
-    secondaryContainer = yellow_theme_dark_secondaryContainer,
-    onSecondaryContainer = yellow_theme_dark_onSecondaryContainer,
-    tertiary = yellow_theme_dark_tertiary,
-    onTertiary = yellow_theme_dark_onTertiary,
-    tertiaryContainer = yellow_theme_dark_tertiaryContainer,
-    onTertiaryContainer = yellow_theme_dark_onTertiaryContainer,
-    error = yellow_theme_dark_error,
-    errorContainer = yellow_theme_dark_errorContainer,
-    onError = yellow_theme_dark_onError,
-    onErrorContainer = yellow_theme_dark_onErrorContainer,
-    background = yellow_theme_dark_background,
-    onBackground = yellow_theme_dark_onBackground,
-    surface = yellow_theme_dark_surface,
-    onSurface = yellow_theme_dark_onSurface,
-    surfaceVariant = yellow_theme_dark_surfaceVariant,
-    onSurfaceVariant = yellow_theme_dark_onSurfaceVariant,
-    outline = yellow_theme_dark_outline,
-    inverseOnSurface = yellow_theme_dark_inverseOnSurface,
-    inverseSurface = yellow_theme_dark_inverseSurface,
-    inversePrimary = yellow_theme_dark_inversePrimary,
-    surfaceTint = yellow_theme_dark_surfaceTint,
+    primary = AppColorScheme.Yellow.Dark.PRIMARY,
+    onPrimary = AppColorScheme.Yellow.Dark.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Yellow.Dark.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Yellow.Dark.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Yellow.Dark.SECONDARY,
+    onSecondary = AppColorScheme.Yellow.Dark.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Yellow.Dark.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Yellow.Dark.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Yellow.Dark.TERTIARY,
+    onTertiary = AppColorScheme.Yellow.Dark.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Yellow.Dark.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Yellow.Dark.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Yellow.Dark.ERROR,
+    errorContainer = AppColorScheme.Yellow.Dark.ERROR_CONTAINER,
+    onError = AppColorScheme.Yellow.Dark.ON_ERROR,
+    onErrorContainer = AppColorScheme.Yellow.Dark.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Yellow.Dark.BACKGROUND,
+    onBackground = AppColorScheme.Yellow.Dark.ON_BACKGROUND,
+    surface = AppColorScheme.Yellow.Dark.SURFACE,
+    onSurface = AppColorScheme.Yellow.Dark.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Yellow.Dark.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Yellow.Dark.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Yellow.Dark.OUTLINE,
+    inverseOnSurface = AppColorScheme.Yellow.Dark.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Yellow.Dark.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Yellow.Dark.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Yellow.Dark.SURFACE_TINT,
 )
 
 
 val LightOrangeColors = lightColorScheme(
-    primary = orange_theme_light_primary,
-    onPrimary = orange_theme_light_onPrimary,
-    primaryContainer = orange_theme_light_primaryContainer,
-    onPrimaryContainer = orange_theme_light_onPrimaryContainer,
-    secondary = orange_theme_light_secondary,
-    onSecondary = orange_theme_light_onSecondary,
-    secondaryContainer = orange_theme_light_secondaryContainer,
-    onSecondaryContainer = orange_theme_light_onSecondaryContainer,
-    tertiary = orange_theme_light_tertiary,
-    onTertiary = orange_theme_light_onTertiary,
-    tertiaryContainer = orange_theme_light_tertiaryContainer,
-    onTertiaryContainer = orange_theme_light_onTertiaryContainer,
-    error = orange_theme_light_error,
-    errorContainer = orange_theme_light_errorContainer,
-    onError = orange_theme_light_onError,
-    onErrorContainer = orange_theme_light_onErrorContainer,
-    background = orange_theme_light_background,
-    onBackground = orange_theme_light_onBackground,
-    surface = orange_theme_light_surface,
-    onSurface = orange_theme_light_onSurface,
-    surfaceVariant = orange_theme_light_surfaceVariant,
-    onSurfaceVariant = orange_theme_light_onSurfaceVariant,
-    outline = orange_theme_light_outline,
-    inverseOnSurface = orange_theme_light_inverseOnSurface,
-    inverseSurface = orange_theme_light_inverseSurface,
-    inversePrimary = orange_theme_light_inversePrimary,
-    surfaceTint = orange_theme_light_surfaceTint,
+    primary = AppColorScheme.Orange.Light.PRIMARY,
+    onPrimary = AppColorScheme.Orange.Light.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Orange.Light.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Orange.Light.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Orange.Light.SECONDARY,
+    onSecondary = AppColorScheme.Orange.Light.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Orange.Light.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Orange.Light.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Orange.Light.TERTIARY,
+    onTertiary = AppColorScheme.Orange.Light.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Orange.Light.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Orange.Light.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Orange.Light.ERROR,
+    errorContainer = AppColorScheme.Orange.Light.ERROR_CONTAINER,
+    onError = AppColorScheme.Orange.Light.ON_ERROR,
+    onErrorContainer = AppColorScheme.Orange.Light.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Orange.Light.BACKGROUND,
+    onBackground = AppColorScheme.Orange.Light.ON_BACKGROUND,
+    surface = AppColorScheme.Orange.Light.SURFACE,
+    onSurface = AppColorScheme.Orange.Light.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Orange.Light.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Orange.Light.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Orange.Light.OUTLINE,
+    inverseOnSurface = AppColorScheme.Orange.Light.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Orange.Light.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Orange.Light.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Orange.Light.SURFACE_TINT,
 )
 
 
 val DarkOrangeColors = darkColorScheme(
-    primary = orange_theme_dark_primary,
-    onPrimary = orange_theme_dark_onPrimary,
-    primaryContainer = orange_theme_dark_primaryContainer,
-    onPrimaryContainer = orange_theme_dark_onPrimaryContainer,
-    secondary = orange_theme_dark_secondary,
-    onSecondary = orange_theme_dark_onSecondary,
-    secondaryContainer = orange_theme_dark_secondaryContainer,
-    onSecondaryContainer = orange_theme_dark_onSecondaryContainer,
-    tertiary = orange_theme_dark_tertiary,
-    onTertiary = orange_theme_dark_onTertiary,
-    tertiaryContainer = orange_theme_dark_tertiaryContainer,
-    onTertiaryContainer = orange_theme_dark_onTertiaryContainer,
-    error = orange_theme_dark_error,
-    errorContainer = orange_theme_dark_errorContainer,
-    onError = orange_theme_dark_onError,
-    onErrorContainer = orange_theme_dark_onErrorContainer,
-    background = orange_theme_dark_background,
-    onBackground = orange_theme_dark_onBackground,
-    surface = orange_theme_dark_surface,
-    onSurface = orange_theme_dark_onSurface,
-    surfaceVariant = orange_theme_dark_surfaceVariant,
-    onSurfaceVariant = orange_theme_dark_onSurfaceVariant,
-    outline = orange_theme_dark_outline,
-    inverseOnSurface = orange_theme_dark_inverseOnSurface,
-    inverseSurface = orange_theme_dark_inverseSurface,
-    inversePrimary = orange_theme_dark_inversePrimary,
-    surfaceTint = orange_theme_dark_surfaceTint,
+    primary = AppColorScheme.Orange.Dark.PRIMARY,
+    onPrimary = AppColorScheme.Orange.Dark.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Orange.Dark.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Orange.Dark.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Orange.Dark.SECONDARY,
+    onSecondary = AppColorScheme.Orange.Dark.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Orange.Dark.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Orange.Dark.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Orange.Dark.TERTIARY,
+    onTertiary = AppColorScheme.Orange.Dark.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Orange.Dark.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Orange.Dark.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Orange.Dark.ERROR,
+    errorContainer = AppColorScheme.Orange.Dark.ERROR_CONTAINER,
+    onError = AppColorScheme.Orange.Dark.ON_ERROR,
+    onErrorContainer = AppColorScheme.Orange.Dark.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Orange.Dark.BACKGROUND,
+    onBackground = AppColorScheme.Orange.Dark.ON_BACKGROUND,
+    surface = AppColorScheme.Orange.Dark.SURFACE,
+    onSurface = AppColorScheme.Orange.Dark.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Orange.Dark.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Orange.Dark.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Orange.Dark.OUTLINE,
+    inverseOnSurface = AppColorScheme.Orange.Dark.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Orange.Dark.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Orange.Dark.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Orange.Dark.SURFACE_TINT,
 )
 
 val LightGreenColors = lightColorScheme(
-    primary = green_theme_light_primary,
-    onPrimary = green_theme_light_onPrimary,
-    primaryContainer = green_theme_light_primaryContainer,
-    onPrimaryContainer = green_theme_light_onPrimaryContainer,
-    secondary = green_theme_light_secondary,
-    onSecondary = green_theme_light_onSecondary,
-    secondaryContainer = green_theme_light_secondaryContainer,
-    onSecondaryContainer = green_theme_light_onSecondaryContainer,
-    tertiary = green_theme_light_tertiary,
-    onTertiary = green_theme_light_onTertiary,
-    tertiaryContainer = green_theme_light_tertiaryContainer,
-    onTertiaryContainer = green_theme_light_onTertiaryContainer,
-    error = green_theme_light_error,
-    errorContainer = green_theme_light_errorContainer,
-    onError = green_theme_light_onError,
-    onErrorContainer = green_theme_light_onErrorContainer,
-    background = green_theme_light_background,
-    onBackground = green_theme_light_onBackground,
-    surface = green_theme_light_surface,
-    onSurface = green_theme_light_onSurface,
-    surfaceVariant = green_theme_light_surfaceVariant,
-    onSurfaceVariant = green_theme_light_onSurfaceVariant,
-    outline = green_theme_light_outline,
-    inverseOnSurface = green_theme_light_inverseOnSurface,
-    inverseSurface = green_theme_light_inverseSurface,
-    inversePrimary = green_theme_light_inversePrimary,
-    surfaceTint = green_theme_light_surfaceTint,
+    primary = AppColorScheme.Green.Light.PRIMARY,
+    onPrimary = AppColorScheme.Green.Light.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Green.Light.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Green.Light.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Green.Light.SECONDARY,
+    onSecondary = AppColorScheme.Green.Light.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Green.Light.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Green.Light.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Green.Light.TERTIARY,
+    onTertiary = AppColorScheme.Green.Light.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Green.Light.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Green.Light.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Green.Light.ERROR,
+    errorContainer = AppColorScheme.Green.Light.ERROR_CONTAINER,
+    onError = AppColorScheme.Green.Light.ON_ERROR,
+    onErrorContainer = AppColorScheme.Green.Light.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Green.Light.BACKGROUND,
+    onBackground = AppColorScheme.Green.Light.ON_BACKGROUND,
+    surface = AppColorScheme.Green.Light.SURFACE,
+    onSurface = AppColorScheme.Green.Light.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Green.Light.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Green.Light.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Green.Light.OUTLINE,
+    inverseOnSurface = AppColorScheme.Green.Light.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Green.Light.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Green.Light.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Green.Light.SURFACE_TINT,
 )
 
 
 val DarkGreenColors = darkColorScheme(
-    primary = green_theme_dark_primary,
-    onPrimary = green_theme_dark_onPrimary,
-    primaryContainer = green_theme_dark_primaryContainer,
-    onPrimaryContainer = green_theme_dark_onPrimaryContainer,
-    secondary = green_theme_dark_secondary,
-    onSecondary = green_theme_dark_onSecondary,
-    secondaryContainer = green_theme_dark_secondaryContainer,
-    onSecondaryContainer = green_theme_dark_onSecondaryContainer,
-    tertiary = green_theme_dark_tertiary,
-    onTertiary = green_theme_dark_onTertiary,
-    tertiaryContainer = green_theme_dark_tertiaryContainer,
-    onTertiaryContainer = green_theme_dark_onTertiaryContainer,
-    error = green_theme_dark_error,
-    errorContainer = green_theme_dark_errorContainer,
-    onError = green_theme_dark_onError,
-    onErrorContainer = green_theme_dark_onErrorContainer,
-    background = green_theme_dark_background,
-    onBackground = green_theme_dark_onBackground,
-    surface = green_theme_dark_surface,
-    onSurface = green_theme_dark_onSurface,
-    surfaceVariant = green_theme_dark_surfaceVariant,
-    onSurfaceVariant = green_theme_dark_onSurfaceVariant,
-    outline = green_theme_dark_outline,
-    inverseOnSurface = green_theme_dark_inverseOnSurface,
-    inverseSurface = green_theme_dark_inverseSurface,
-    inversePrimary = green_theme_dark_inversePrimary,
-    surfaceTint = green_theme_dark_surfaceTint,
+    primary = AppColorScheme.Green.Dark.PRIMARY,
+    onPrimary = AppColorScheme.Green.Dark.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Green.Dark.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Green.Dark.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Green.Dark.SECONDARY,
+    onSecondary = AppColorScheme.Green.Dark.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Green.Dark.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Green.Dark.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Green.Dark.TERTIARY,
+    onTertiary = AppColorScheme.Green.Dark.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Green.Dark.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Green.Dark.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Green.Dark.ERROR,
+    errorContainer = AppColorScheme.Green.Dark.ERROR_CONTAINER,
+    onError = AppColorScheme.Green.Dark.ON_ERROR,
+    onErrorContainer = AppColorScheme.Green.Dark.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Green.Dark.BACKGROUND,
+    onBackground = AppColorScheme.Green.Dark.ON_BACKGROUND,
+    surface = AppColorScheme.Green.Dark.SURFACE,
+    onSurface = AppColorScheme.Green.Dark.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Green.Dark.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Green.Dark.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Green.Dark.OUTLINE,
+    inverseOnSurface = AppColorScheme.Green.Dark.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Green.Dark.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Green.Dark.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Green.Dark.SURFACE_TINT,
 )
 
 val LightPinkColors = lightColorScheme(
-    primary = pink_theme_light_primary,
-    onPrimary = pink_theme_light_onPrimary,
-    primaryContainer = pink_theme_light_primaryContainer,
-    onPrimaryContainer = pink_theme_light_onPrimaryContainer,
-    secondary = pink_theme_light_secondary,
-    onSecondary = pink_theme_light_onSecondary,
-    secondaryContainer = pink_theme_light_secondaryContainer,
-    onSecondaryContainer = pink_theme_light_onSecondaryContainer,
-    tertiary = pink_theme_light_tertiary,
-    onTertiary = pink_theme_light_onTertiary,
-    tertiaryContainer = pink_theme_light_tertiaryContainer,
-    onTertiaryContainer = pink_theme_light_onTertiaryContainer,
-    error = pink_theme_light_error,
-    errorContainer = pink_theme_light_errorContainer,
-    onError = pink_theme_light_onError,
-    onErrorContainer = pink_theme_light_onErrorContainer,
-    background = pink_theme_light_background,
-    onBackground = pink_theme_light_onBackground,
-    surface = pink_theme_light_surface,
-    onSurface = pink_theme_light_onSurface,
-    surfaceVariant = pink_theme_light_surfaceVariant,
-    onSurfaceVariant = pink_theme_light_onSurfaceVariant,
-    outline = pink_theme_light_outline,
-    inverseOnSurface = pink_theme_light_inverseOnSurface,
-    inverseSurface = pink_theme_light_inverseSurface,
-    inversePrimary = pink_theme_light_inversePrimary,
-    surfaceTint = pink_theme_light_surfaceTint,
+    primary = AppColorScheme.Pink.Light.PRIMARY,
+    onPrimary = AppColorScheme.Pink.Light.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Pink.Light.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Pink.Light.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Pink.Light.SECONDARY,
+    onSecondary = AppColorScheme.Pink.Light.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Pink.Light.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Pink.Light.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Pink.Light.TERTIARY,
+    onTertiary = AppColorScheme.Pink.Light.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Pink.Light.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Pink.Light.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Pink.Light.ERROR,
+    errorContainer = AppColorScheme.Pink.Light.ERROR_CONTAINER,
+    onError = AppColorScheme.Pink.Light.ON_ERROR,
+    onErrorContainer = AppColorScheme.Pink.Light.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Pink.Light.BACKGROUND,
+    onBackground = AppColorScheme.Pink.Light.ON_BACKGROUND,
+    surface = AppColorScheme.Pink.Light.SURFACE,
+    onSurface = AppColorScheme.Pink.Light.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Pink.Light.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Pink.Light.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Pink.Light.OUTLINE,
+    inverseOnSurface = AppColorScheme.Pink.Light.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Pink.Light.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Pink.Light.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Pink.Light.SURFACE_TINT,
 )
 
 
 val DarkPinkColors = darkColorScheme(
-    primary = pink_theme_dark_primary,
-    onPrimary = pink_theme_dark_onPrimary,
-    primaryContainer = pink_theme_dark_primaryContainer,
-    onPrimaryContainer = pink_theme_dark_onPrimaryContainer,
-    secondary = pink_theme_dark_secondary,
-    onSecondary = pink_theme_dark_onSecondary,
-    secondaryContainer = pink_theme_dark_secondaryContainer,
-    onSecondaryContainer = pink_theme_dark_onSecondaryContainer,
-    tertiary = pink_theme_dark_tertiary,
-    onTertiary = pink_theme_dark_onTertiary,
-    tertiaryContainer = pink_theme_dark_tertiaryContainer,
-    onTertiaryContainer = pink_theme_dark_onTertiaryContainer,
-    error = pink_theme_dark_error,
-    errorContainer = pink_theme_dark_errorContainer,
-    onError = pink_theme_dark_onError,
-    onErrorContainer = pink_theme_dark_onErrorContainer,
-    background = pink_theme_dark_background,
-    onBackground = pink_theme_dark_onBackground,
-    surface = pink_theme_dark_surface,
-    onSurface = pink_theme_dark_onSurface,
-    surfaceVariant = pink_theme_dark_surfaceVariant,
-    onSurfaceVariant = pink_theme_dark_onSurfaceVariant,
-    outline = pink_theme_dark_outline,
-    inverseOnSurface = pink_theme_dark_inverseOnSurface,
-    inverseSurface = pink_theme_dark_inverseSurface,
-    inversePrimary = pink_theme_dark_inversePrimary,
-    surfaceTint = pink_theme_dark_surfaceTint,
+    primary = AppColorScheme.Pink.Dark.PRIMARY,
+    onPrimary = AppColorScheme.Pink.Dark.ON_PRIMARY,
+    primaryContainer = AppColorScheme.Pink.Dark.PRIMARY_CONTAINER,
+    onPrimaryContainer = AppColorScheme.Pink.Dark.ON_PRIMARY_CONTAINER,
+    secondary = AppColorScheme.Pink.Dark.SECONDARY,
+    onSecondary = AppColorScheme.Pink.Dark.ON_SECONDARY,
+    secondaryContainer = AppColorScheme.Pink.Dark.SECONDARY_CONTAINER,
+    onSecondaryContainer = AppColorScheme.Pink.Dark.ON_SECONDARY_CONTAINER,
+    tertiary = AppColorScheme.Pink.Dark.TERTIARY,
+    onTertiary = AppColorScheme.Pink.Dark.ON_TERTIARY,
+    tertiaryContainer = AppColorScheme.Pink.Dark.TERTIARY_CONTAINER,
+    onTertiaryContainer = AppColorScheme.Pink.Dark.ON_TERTIARY_CONTAINER,
+    error = AppColorScheme.Pink.Dark.ERROR,
+    errorContainer = AppColorScheme.Pink.Dark.ERROR_CONTAINER,
+    onError = AppColorScheme.Pink.Dark.ON_ERROR,
+    onErrorContainer = AppColorScheme.Pink.Dark.ON_ERROR_CONTAINER,
+    background = AppColorScheme.Pink.Dark.BACKGROUND,
+    onBackground = AppColorScheme.Pink.Dark.ON_BACKGROUND,
+    surface = AppColorScheme.Pink.Dark.SURFACE,
+    onSurface = AppColorScheme.Pink.Dark.ON_SURFACE,
+    surfaceVariant = AppColorScheme.Pink.Dark.SURFACE_VARIANT,
+    onSurfaceVariant = AppColorScheme.Pink.Dark.ON_SURFACE_VARIANT,
+    outline = AppColorScheme.Pink.Dark.OUTLINE,
+    inverseOnSurface = AppColorScheme.Pink.Dark.INVERSE_ON_SURFACE,
+    inverseSurface = AppColorScheme.Pink.Dark.INVERSE_SURFACE,
+    inversePrimary = AppColorScheme.Pink.Dark.INVERSE_PRIMARY,
+    surfaceTint = AppColorScheme.Pink.Dark.SURFACE_TINT,
 )
 
+fun getMochaScheme(accent: Color): ColorScheme {
 
-val MacchiatoRosewater = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoRosewater,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
+    return darkColorScheme(
+        background = AppColorScheme.CatppuccinMocha.BACKGROUND,
+        primary = accent,
+        onPrimary = AppColorScheme.CatppuccinMocha.ON_PRIMARY,
+        surface = AppColorScheme.CatppuccinMocha.SURFACE,
+        onSurface = AppColorScheme.CatppuccinMocha.ON_SURFACE,
+        surfaceVariant = AppColorScheme.CatppuccinMocha.SURFACE_VARIANT,
+        onSurfaceVariant = AppColorScheme.CatppuccinMocha.ON_SURFACE_VARIANT
+    )
+}
 
-val MacchiatoFlamingo = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoFlamingo,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
+fun getMacchiatoScheme(accent: Color): ColorScheme {
+    return darkColorScheme(
+        background = AppColorScheme.CatppuccinMacchiato.BACKGROUND,
+        primary = accent,
+        onPrimary = AppColorScheme.CatppuccinMacchiato.ON_PRIMARY,
+        surface = AppColorScheme.CatppuccinMacchiato.SURFACE,
+        onSurface = AppColorScheme.CatppuccinMacchiato.ON_SURFACE,
+        surfaceVariant = AppColorScheme.CatppuccinMacchiato.SURFACE_VARIANT,
+        onSurfaceVariant = AppColorScheme.CatppuccinMacchiato.ON_SURFACE_VARIANT
+    )
+}
 
-val MacchiatoPink = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoPink,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
+fun getFrappeScheme(accent: Color): ColorScheme {
+    return darkColorScheme(
+        background = AppColorScheme.CatppuccinFrappe.BACKGROUND,
+        primary = accent,
+        onPrimary = AppColorScheme.CatppuccinFrappe.ON_PRIMARY,
+        surface = AppColorScheme.CatppuccinFrappe.SURFACE,
+        onSurface = AppColorScheme.CatppuccinFrappe.ON_SURFACE,
+        surfaceVariant = AppColorScheme.CatppuccinFrappe.SURFACE_VARIANT,
+        onSurfaceVariant = AppColorScheme.CatppuccinFrappe.ON_SURFACE_VARIANT
+    )
+}
 
-val MacchiatoMauve = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoMauve,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
-
-val MacchiatoRed = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoRed,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
-
-val MacchiatoMaroon = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoMaroon,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
-
-val MacchiatoPeach = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoPeach,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
-
-val MacchiatoYellow = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoYellow,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
-
-val MacchiatoGreen = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoGreen,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
-
-val MacchiatoTeal = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoTeal,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
-
-val MacchiatoSky = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoSky,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
-
-val MacchiatoSapphire = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoSapphire,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
-
-val MacchiatoBlue = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoBlue,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
-
-val MacchiatoLavender = darkColorScheme(
-    background = macchiatoBackground,
-    primary = macchiatoLavender,
-    onPrimary = macchiatoOnPrimary,
-    surface = macchiatoSurface,
-    onSurface = macchiatoOnSurface,
-    surfaceVariant = macchiatoSurfaceVariant,
-    onSurfaceVariant = macchiatoOnSurfaceVariant
-)
-
-val MochaRosewater = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaRosewater,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-val MochaFlamingo = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaFlamingo,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-val MochaPink = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaPink,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-val MochaMauve = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaMauve,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-val MochaRed = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaRed,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-val MochaMaroon = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaMaroon,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-val MochaPeach = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaPeach,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-val MochaYellow = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaYellow,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-
-val MochaGreen = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaGreen,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-val MochaTeal = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaTeal,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-val MochaSky = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaSky,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-val MochaSapphire = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaSapphire,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-val MochaBlue = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaBlue,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-val MochaLavender = darkColorScheme(
-    background = mochaBackground,
-    primary = mochaLavender,
-    onPrimary = mochaOnPrimary,
-    surface = mochaSurface,
-    onSurface = mochaOnSurface,
-    surfaceVariant = mochaSurfaceVariant,
-    onSurfaceVariant = mochaOnSurfaceVariant
-)
-
-
-val FrappeRosewater = darkColorScheme(
-    background = frappeBackground,
-    primary = frappeRosewater,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-val FrappeFlamingo = darkColorScheme(
-    background = frappeBackground,
-    primary = frappeFlamingo,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-val FrappePink = darkColorScheme(
-    background = frappeBackground,
-    primary = frappePink,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-val FrappeMauve = darkColorScheme(
-    background = frappeBackground,
-    primary = frappeMauve,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-val FrappeRed = darkColorScheme(
-    background = frappeBackground,
-    primary = frappeRed,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-val FrappeMaroon = darkColorScheme(
-    background = frappeBackground,
-    primary = frappeMaroon,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-val FrappePeach = darkColorScheme(
-    background = frappeBackground,
-    primary = frappePeach,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-val FrappeYellow = darkColorScheme(
-    background = frappeBackground,
-    primary = frappeYellow,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-
-val FrappeGreen = darkColorScheme(
-    background = frappeBackground,
-    primary = frappeGreen,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-val FrappeTeal = darkColorScheme(
-    background = frappeBackground,
-    primary = frappeTeal,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-val FrappeSky = darkColorScheme(
-    background = frappeBackground,
-    primary = frappeSky,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-val FrappeSapphire = darkColorScheme(
-    background = frappeBackground,
-    primary = frappeSapphire,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-val FrappeBlue = darkColorScheme(
-    background = frappeBackground,
-    primary = frappeBlue,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
-
-val FrappeLavender = darkColorScheme(
-    background = frappeBackground,
-    primary = frappeLavender,
-    onPrimary = frappeOnPrimary,
-    surface = frappeSurface,
-    onSurface = frappeOnSurface,
-    surfaceVariant = frappeSurfaceVariant,
-    onSurfaceVariant = frappeOnSurfaceVariant
-)
+fun getLatteScheme(accent: Color): ColorScheme {
+    return darkColorScheme(
+        background = AppColorScheme.CatppuccinLatte.BACKGROUND,
+        primary = accent,
+        onPrimary = AppColorScheme.CatppuccinLatte.ON_PRIMARY,
+        surface = AppColorScheme.CatppuccinLatte.SURFACE,
+        onSurface = AppColorScheme.CatppuccinLatte.ON_SURFACE,
+        surfaceVariant = AppColorScheme.CatppuccinLatte.SURFACE_VARIANT,
+        onSurfaceVariant = AppColorScheme.CatppuccinLatte.ON_SURFACE_VARIANT
+    )
+}
 
 @Composable
 fun ComposeSimpleMPTheme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit,
-    themeMode: String,
-    themeAccent: String
+    settingsVM: SettingsVM,
+    content: @Composable () -> Unit
 ) {
 
+    val colorScheme = settingsVM.colorSchemeSetting.collectAsState().value
+    val darkColorScheme = settingsVM.darkColorSchemeSetting.collectAsState().value
+    val lightColorScheme = settingsVM.lightColorSchemeSetting.collectAsState().value
+    val supportsMaterialYou = isAtLeastAndroid12()
+
+
+    val nightMode = when (colorScheme) {
+        Settings.Values.ColorScheme.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        Settings.Values.ColorScheme.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+        else -> AppCompatDelegate.MODE_NIGHT_NO
+    }
+
+    AppCompatDelegate.setDefaultNightMode(nightMode)
+
     val context = LocalContext.current
-    val supportsMaterialYou = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+
+    val useDarkTheme = colorScheme == Settings.Values.ColorScheme.SYSTEM && isSystemInDarkTheme() || colorScheme == Settings.Values.ColorScheme.DARK
+    val useLightTheme = colorScheme == Settings.Values.ColorScheme.SYSTEM && !isSystemInDarkTheme() || colorScheme == Settings.Values.ColorScheme.LIGHT
 
     val colors = when {
-
-        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.BLUE -> DarkBlueColors
-        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.RED -> DarkRedColors
-        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.PURPLE -> DarkPurpleColors
-        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.YELLOW -> DarkYellowColors
-        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.ORANGE -> DarkOrangeColors
-        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.GREEN -> DarkGreenColors
-        themeMode == SettingsValues.ThemeMode.DARK && themeAccent == SettingsValues.Themes.PINK -> DarkPinkColors
-        themeAccent == SettingsValues.Themes.FRAPPE_ROSEWATER -> FrappeRosewater
-        themeAccent == SettingsValues.Themes.FRAPPE_FLAMINGO -> FrappeFlamingo
-        themeAccent == SettingsValues.Themes.FRAPPE_PINK -> FrappePink
-        themeAccent == SettingsValues.Themes.FRAPPE_MAUVE -> FrappeMauve
-        themeAccent == SettingsValues.Themes.FRAPPE_RED -> FrappeRed
-        themeAccent == SettingsValues.Themes.FRAPPE_MAROON -> FrappeMaroon
-        themeAccent == SettingsValues.Themes.FRAPPE_PEACH -> FrappePeach
-        themeAccent == SettingsValues.Themes.FRAPPE_YELLOW -> FrappeYellow
-        themeAccent == SettingsValues.Themes.FRAPPE_GREEN -> FrappeGreen
-        themeAccent == SettingsValues.Themes.FRAPPE_TEAL -> FrappeTeal
-        themeAccent == SettingsValues.Themes.FRAPPE_SKY -> FrappeSky
-        themeAccent == SettingsValues.Themes.FRAPPE_SAPPHIRE -> FrappeSapphire
-        themeAccent == SettingsValues.Themes.FRAPPE_BLUE -> FrappeBlue
-        themeAccent == SettingsValues.Themes.FRAPPE_LAVENDER -> FrappeLavender
-        themeAccent == SettingsValues.Themes.MACCHIATO_ROSEWATER -> MacchiatoRosewater
-        themeAccent == SettingsValues.Themes.MACCHIATO_FLAMINGO -> MacchiatoFlamingo
-        themeAccent == SettingsValues.Themes.MACCHIATO_PINK -> MacchiatoPink
-        themeAccent == SettingsValues.Themes.MACCHIATO_MAUVE -> MacchiatoMauve
-        themeAccent == SettingsValues.Themes.MACCHIATO_RED -> MacchiatoRed
-        themeAccent == SettingsValues.Themes.MACCHIATO_MAROON -> MacchiatoMaroon
-        themeAccent == SettingsValues.Themes.MACCHIATO_PEACH -> MacchiatoPeach
-        themeAccent == SettingsValues.Themes.MACCHIATO_YELLOW -> MacchiatoYellow
-        themeAccent == SettingsValues.Themes.MACCHIATO_GREEN -> MacchiatoGreen
-        themeAccent == SettingsValues.Themes.MACCHIATO_TEAL -> MacchiatoTeal
-        themeAccent == SettingsValues.Themes.MACCHIATO_SKY -> MacchiatoSky
-        themeAccent == SettingsValues.Themes.MACCHIATO_SAPPHIRE -> MacchiatoSapphire
-        themeAccent == SettingsValues.Themes.MACCHIATO_BLUE -> MacchiatoBlue
-        themeAccent == SettingsValues.Themes.MACCHIATO_LAVENDER -> MacchiatoLavender
-        themeAccent == SettingsValues.Themes.MOCHA_ROSEWATER -> MochaRosewater
-        themeAccent == SettingsValues.Themes.MOCHA_FLAMINGO -> MochaFlamingo
-        themeAccent == SettingsValues.Themes.MOCHA_PINK -> MochaPink
-        themeAccent == SettingsValues.Themes.MOCHA_MAUVE -> MochaMauve
-        themeAccent == SettingsValues.Themes.MOCHA_RED -> MochaRed
-        themeAccent == SettingsValues.Themes.MOCHA_MAROON -> MochaMaroon
-        themeAccent == SettingsValues.Themes.MOCHA_PEACH -> MochaPeach
-        themeAccent == SettingsValues.Themes.MOCHA_YELLOW -> MochaYellow
-        themeAccent == SettingsValues.Themes.MOCHA_GREEN -> MochaGreen
-        themeAccent == SettingsValues.Themes.MOCHA_TEAL -> MochaTeal
-        themeAccent == SettingsValues.Themes.MOCHA_SKY -> MochaSky
-        themeAccent == SettingsValues.Themes.MOCHA_SAPPHIRE -> MochaSapphire
-        themeAccent == SettingsValues.Themes.MOCHA_BLUE -> MochaBlue
-        themeAccent == SettingsValues.Themes.MOCHA_LAVENDER -> MochaLavender
-
-        supportsMaterialYou && themeMode == SettingsValues.ThemeMode.DARK -> dynamicDarkColorScheme(context)
-
-        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.BLUE -> LightBlueColors
-        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.RED -> LightRedColors
-        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.PURPLE -> LightPurpleColors
-        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.YELLOW -> LightYellowColors
-        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.ORANGE -> LightOrangeColors
-        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.GREEN -> LightGreenColors
-        themeMode == SettingsValues.ThemeMode.LIGHT && themeAccent == SettingsValues.Themes.PINK -> LightPinkColors
-
-        supportsMaterialYou && themeMode == SettingsValues.ThemeMode.LIGHT -> dynamicLightColorScheme(context)
-
-        themeAccent == SettingsValues.Themes.BLUE && useDarkTheme -> DarkBlueColors
-        themeAccent == SettingsValues.Themes.RED && useDarkTheme -> DarkRedColors
-        themeAccent == SettingsValues.Themes.PURPLE && useDarkTheme -> DarkPurpleColors
-        themeAccent == SettingsValues.Themes.YELLOW && useDarkTheme -> DarkYellowColors
-        themeAccent == SettingsValues.Themes.ORANGE && useDarkTheme -> DarkOrangeColors
-        themeAccent == SettingsValues.Themes.GREEN && useDarkTheme -> DarkGreenColors
-        themeAccent == SettingsValues.Themes.PINK && useDarkTheme -> DarkPinkColors
-
-        supportsMaterialYou && useDarkTheme -> dynamicDarkColorScheme(context)
-
-        themeAccent == SettingsValues.Themes.BLUE && !useDarkTheme -> LightBlueColors
-        themeAccent == SettingsValues.Themes.RED && !useDarkTheme -> LightRedColors
-        themeAccent == SettingsValues.Themes.PURPLE && !useDarkTheme -> LightPurpleColors
-        themeAccent == SettingsValues.Themes.YELLOW && !useDarkTheme -> LightYellowColors
-        themeAccent == SettingsValues.Themes.ORANGE && !useDarkTheme -> LightOrangeColors
-        themeAccent == SettingsValues.Themes.GREEN && !useDarkTheme -> LightGreenColors
-        themeAccent == SettingsValues.Themes.PINK && !useDarkTheme -> LightPinkColors
-
-        supportsMaterialYou && !useDarkTheme -> dynamicLightColorScheme(context)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.BLUE -> DarkBlueColors
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.RED -> DarkRedColors
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.PURPLE -> DarkPurpleColors
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.YELLOW -> DarkYellowColors
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.ORANGE -> DarkOrangeColors
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.GREEN -> DarkGreenColors
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.PINK -> DarkPinkColors
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_ROSEWATER -> getMochaScheme(AppColorScheme.CatppuccinMocha.ROSEWATER)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_FLAMINGO -> getMochaScheme(AppColorScheme.CatppuccinMocha.FLAMINGO)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_PINK -> getMochaScheme(AppColorScheme.CatppuccinMocha.PINK)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_MAUVE -> getMochaScheme(AppColorScheme.CatppuccinMocha.MAUVE)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_RED -> getMochaScheme(AppColorScheme.CatppuccinMocha.RED)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_MAROON -> getMochaScheme(AppColorScheme.CatppuccinMocha.MAROON)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_PEACH -> getMochaScheme(AppColorScheme.CatppuccinMocha.PEACH)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_YELLOW -> getMochaScheme(AppColorScheme.CatppuccinMocha.YELLOW)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_GREEN -> getMochaScheme(AppColorScheme.CatppuccinMocha.GREEN)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_TEAL -> getMochaScheme(AppColorScheme.CatppuccinMocha.TEAL)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_SKY -> getMochaScheme(AppColorScheme.CatppuccinMocha.SKY)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_SAPPHIRE -> getMochaScheme(AppColorScheme.CatppuccinMocha.SAPPHIRE)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_BLUE -> getMochaScheme(AppColorScheme.CatppuccinMocha.BLUE)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MOCHA_LAVENDER -> getMochaScheme(AppColorScheme.CatppuccinMocha.LAVENDER)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_ROSEWATER -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.ROSEWATER)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_FLAMINGO -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.FLAMINGO)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_PINK -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.PINK)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_MAUVE -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.MAUVE)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_RED -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.RED)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_MAROON -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.MAROON)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_PEACH -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.PEACH)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_YELLOW -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.YELLOW)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_GREEN -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.GREEN)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_TEAL -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.TEAL)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_SKY -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.SKY)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_SAPPHIRE -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.SAPPHIRE)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_BLUE -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.BLUE)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MACCHIATO_LAVENDER -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.LAVENDER)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_ROSEWATER -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.ROSEWATER)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_FLAMINGO -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.FLAMINGO)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_PINK -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.PINK)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_MAUVE -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.MAUVE)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_RED -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.RED)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_MAROON -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.MAROON)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_PEACH -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.PEACH)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_YELLOW -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.YELLOW)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_GREEN -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.GREEN)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_TEAL -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.TEAL)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_SKY -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.SKY)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_SAPPHIRE -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.SAPPHIRE)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_BLUE -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.BLUE)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.FRAPPE_LAVENDER -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.LAVENDER)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_ROSEWATER -> getLatteScheme(AppColorScheme.CatppuccinLatte.ROSEWATER)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_FLAMINGO -> getLatteScheme(AppColorScheme.CatppuccinLatte.FLAMINGO)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_PINK -> getLatteScheme(AppColorScheme.CatppuccinLatte.PINK)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_MAUVE -> getLatteScheme(AppColorScheme.CatppuccinLatte.MAUVE)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_RED -> getLatteScheme(AppColorScheme.CatppuccinLatte.RED)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_MAROON -> getLatteScheme(AppColorScheme.CatppuccinLatte.MAROON)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_PEACH -> getLatteScheme(AppColorScheme.CatppuccinLatte.PEACH)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_YELLOW -> getLatteScheme(AppColorScheme.CatppuccinLatte.YELLOW)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_GREEN -> getLatteScheme(AppColorScheme.CatppuccinLatte.GREEN)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_TEAL -> getLatteScheme(AppColorScheme.CatppuccinLatte.TEAL)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_SKY -> getLatteScheme(AppColorScheme.CatppuccinLatte.SKY)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_SAPPHIRE -> getLatteScheme(AppColorScheme.CatppuccinLatte.SAPPHIRE)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_BLUE -> getLatteScheme(AppColorScheme.CatppuccinLatte.BLUE)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.LATTE_LAVENDER -> getLatteScheme(AppColorScheme.CatppuccinLatte.LAVENDER)
+        useDarkTheme && darkColorScheme == Settings.Values.ColorSchemes.MATERIAL_YOU && supportsMaterialYou -> dynamicDarkColorScheme(context)
 
         useDarkTheme -> DarkBlueColors
 
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.BLUE -> LightBlueColors
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.RED -> LightRedColors
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.PURPLE -> LightPurpleColors
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.YELLOW -> LightYellowColors
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.ORANGE -> LightOrangeColors
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.GREEN -> LightGreenColors
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.PINK -> LightPinkColors
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_ROSEWATER -> getMochaScheme(AppColorScheme.CatppuccinMocha.ROSEWATER)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_FLAMINGO -> getMochaScheme(AppColorScheme.CatppuccinMocha.FLAMINGO)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_PINK -> getMochaScheme(AppColorScheme.CatppuccinMocha.PINK)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_MAUVE -> getMochaScheme(AppColorScheme.CatppuccinMocha.MAUVE)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_RED -> getMochaScheme(AppColorScheme.CatppuccinMocha.RED)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_MAROON -> getMochaScheme(AppColorScheme.CatppuccinMocha.MAROON)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_PEACH -> getMochaScheme(AppColorScheme.CatppuccinMocha.PEACH)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_YELLOW -> getMochaScheme(AppColorScheme.CatppuccinMocha.YELLOW)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_GREEN -> getMochaScheme(AppColorScheme.CatppuccinMocha.GREEN)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_TEAL -> getMochaScheme(AppColorScheme.CatppuccinMocha.TEAL)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_SKY -> getMochaScheme(AppColorScheme.CatppuccinMocha.SKY)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_SAPPHIRE -> getMochaScheme(AppColorScheme.CatppuccinMocha.SAPPHIRE)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_BLUE -> getMochaScheme(AppColorScheme.CatppuccinMocha.BLUE)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MOCHA_LAVENDER -> getMochaScheme(AppColorScheme.CatppuccinMocha.LAVENDER)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_ROSEWATER -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.ROSEWATER)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_FLAMINGO -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.FLAMINGO)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_PINK -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.PINK)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_MAUVE -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.MAUVE)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_RED -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.RED)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_MAROON -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.MAROON)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_PEACH -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.PEACH)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_YELLOW -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.YELLOW)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_GREEN -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.GREEN)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_TEAL -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.TEAL)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_SKY -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.SKY)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_SAPPHIRE -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.SAPPHIRE)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_BLUE -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.BLUE)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MACCHIATO_LAVENDER -> getMacchiatoScheme(AppColorScheme.CatppuccinMacchiato.LAVENDER)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_ROSEWATER -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.ROSEWATER)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_FLAMINGO -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.FLAMINGO)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_PINK -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.PINK)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_MAUVE -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.MAUVE)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_RED -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.RED)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_MAROON -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.MAROON)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_PEACH -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.PEACH)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_YELLOW -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.YELLOW)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_GREEN -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.GREEN)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_TEAL -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.TEAL)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_SKY -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.SKY)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_SAPPHIRE -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.SAPPHIRE)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_BLUE -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.BLUE)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.FRAPPE_LAVENDER -> getFrappeScheme(AppColorScheme.CatppuccinFrappe.LAVENDER)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_ROSEWATER -> getLatteScheme(AppColorScheme.CatppuccinLatte.ROSEWATER)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_FLAMINGO -> getLatteScheme(AppColorScheme.CatppuccinLatte.FLAMINGO)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_PINK -> getLatteScheme(AppColorScheme.CatppuccinLatte.PINK)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_MAUVE -> getLatteScheme(AppColorScheme.CatppuccinLatte.MAUVE)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_RED -> getLatteScheme(AppColorScheme.CatppuccinLatte.RED)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_MAROON -> getLatteScheme(AppColorScheme.CatppuccinLatte.MAROON)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_PEACH -> getLatteScheme(AppColorScheme.CatppuccinLatte.PEACH)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_YELLOW -> getLatteScheme(AppColorScheme.CatppuccinLatte.YELLOW)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_GREEN -> getLatteScheme(AppColorScheme.CatppuccinLatte.GREEN)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_TEAL -> getLatteScheme(AppColorScheme.CatppuccinLatte.TEAL)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_SKY -> getLatteScheme(AppColorScheme.CatppuccinLatte.SKY)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_SAPPHIRE -> getLatteScheme(AppColorScheme.CatppuccinLatte.SAPPHIRE)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_BLUE -> getLatteScheme(AppColorScheme.CatppuccinLatte.BLUE)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.LATTE_LAVENDER -> getLatteScheme(AppColorScheme.CatppuccinLatte.LAVENDER)
+        useLightTheme && lightColorScheme == Settings.Values.ColorSchemes.MATERIAL_YOU && supportsMaterialYou -> dynamicLightColorScheme(context)
+
         else -> LightBlueColors
-    }
-
-    when (themeMode) {
-
-        SettingsValues.ThemeMode.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        SettingsValues.ThemeMode.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
 

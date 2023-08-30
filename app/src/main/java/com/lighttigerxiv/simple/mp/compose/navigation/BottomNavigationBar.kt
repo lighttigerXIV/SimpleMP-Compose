@@ -58,6 +58,7 @@ fun BottomNavigationBar(
                         itemRoute == Routes.Main.ALBUMS && destinationRoute!!.startsWith(Routes.Main.ALBUM) -> true
                         itemRoute == Routes.Main.PLAYLISTS && destinationRoute!!.startsWith(Routes.Main.GENRE_PLAYLIST) -> true
                         itemRoute == Routes.Main.PLAYLISTS && destinationRoute!!.startsWith(Routes.Main.PLAYLIST) -> true
+                        itemRoute == Routes.Main.ARTISTS && destinationRoute!!.startsWith(Routes.Main.SELECT_ARTIST_COVER) -> true
                         else -> false
                     }
 
@@ -137,6 +138,7 @@ fun BottomNavigationBar(
                     itemRoute == Routes.Main.ALBUMS && destinationRoute!!.startsWith(Routes.Main.ALBUM) -> true
                     itemRoute == Routes.Main.PLAYLISTS && destinationRoute!!.startsWith(Routes.Main.GENRE_PLAYLIST) -> true
                     itemRoute == Routes.Main.PLAYLISTS && destinationRoute!!.startsWith(Routes.Main.PLAYLIST) -> true
+                    itemRoute == Routes.Main.ARTISTS && destinationRoute!!.startsWith(Routes.Main.SELECT_ARTIST_COVER) -> true
                     else -> false
                 }
 

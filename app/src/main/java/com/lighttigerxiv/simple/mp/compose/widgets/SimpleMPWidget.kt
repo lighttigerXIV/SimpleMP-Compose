@@ -28,8 +28,6 @@ class SimpleMPWidget : AppWidgetProvider() {
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
 
-        println("Action => ${intent?.action}")
-
         when(intent?.action){
 
             "openActivity"->{
@@ -87,13 +85,12 @@ internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManage
 
                 val song = smpService.currentSong!!
                 views.setTextViewText(R.id.title_Widget, song.title)
-                views.setTextViewText(R.id.artist_Widget, "banana")
                 views.setImageViewBitmap(R.id.albumArt_Widget, getSongAlbumArt(context, song.id, song.albumID))
 
                 if(smpService.musicPlaying())
-                    views.setImageViewBitmap(R.id.playPauseButton_Widget, ResourcesCompat.getDrawable(context.resources, R.drawable.icon_pause_notification, null)?.toBitmap())
+                    views.setImageViewBitmap(R.id.playPauseButton_Widget, ResourcesCompat.getDrawable(context.resources, R.drawable.pause_notification, null)?.toBitmap())
                 else
-                    views.setImageViewBitmap(R.id.playPauseButton_Widget, ResourcesCompat.getDrawable(context.resources, R.drawable.icon_play_notification, null)?.toBitmap())
+                    views.setImageViewBitmap(R.id.playPauseButton_Widget, ResourcesCompat.getDrawable(context.resources, R.drawable.play_notification, null)?.toBitmap())
 
 
                 views.setOnClickPendingIntent(R.id.albumArt_Widget, openActivityPendingIntent)

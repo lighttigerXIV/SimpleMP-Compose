@@ -286,8 +286,8 @@ fun PortraitPlayer(
                                 }
                             }
                             .padding(
-                                top = SMALL_SPACING,
-                                bottom = SMALL_SPACING,
+                                top = 10.dp,
+                                bottom = 10.dp,
                                 start = MEDIUM_SPACING,
                                 end = MEDIUM_SPACING
                             ),
@@ -323,8 +323,8 @@ fun PortraitPlayer(
                                 }
                             }
                             .padding(
-                                top = SMALL_SPACING,
-                                bottom = SMALL_SPACING,
+                                top = 10.dp,
+                                bottom = 10.dp,
                                 start = MEDIUM_SPACING,
                                 end = MEDIUM_SPACING
                             ),
@@ -545,11 +545,12 @@ fun PortraitPlayer(
                             }
 
                             Icon(
-                                painter = painterResource(id = R.drawable.icon_shuffle_solid),
+                                painter = painterResource(id = R.drawable.shuffle),
                                 contentDescription = "",
                                 tint = if (queueShuffled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier
-                                    .height(30.dp)
+                                    .size(35.dp)
+                                    .fillMaxSize()
                                     .clickable(
                                         indication = null,
                                         interactionSource = remember { MutableInteractionSource() }
@@ -565,11 +566,12 @@ fun PortraitPlayer(
                         }
 
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_previous_solid),
+                            painter = painterResource(id = R.drawable.previous),
                             contentDescription = "Select Previous Song",
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
-                                .height(30.dp)
+                                .size(35.dp)
+                                .fillMaxSize()
                                 .clickable(
                                     indication = null,
                                     interactionSource = remember { MutableInteractionSource() }
@@ -598,11 +600,12 @@ fun PortraitPlayer(
                         )
 
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_next_solid),
+                            painter = painterResource(id = R.drawable.next),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
-                                .height(30.dp)
+                                .size(35.dp)
+                                .fillMaxSize()
                                 .clickable(
                                     indication = null,
                                     interactionSource = remember { MutableInteractionSource() }
@@ -623,11 +626,12 @@ fun PortraitPlayer(
                             }
 
                             Icon(
-                                painter = painterResource(id = R.drawable.icon_repeat_solid),
+                                painter = painterResource(id = R.drawable.repeat),
                                 contentDescription = "Repeat Song",
                                 tint = if (songOnRepeat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier
-                                    .height(30.dp)
+                                    .size(35.dp)
+                                    .fillMaxSize()
                                     .clickable(
                                         indication = null,
                                         interactionSource = remember { MutableInteractionSource() }
@@ -768,8 +772,8 @@ fun LandscapePlayer(
                                 }
                             }
                             .padding(
-                                top = SMALL_SPACING,
-                                bottom = SMALL_SPACING,
+                                top = 12.dp,
+                                bottom = 12.dp,
                                 start = MEDIUM_SPACING,
                                 end = MEDIUM_SPACING
                             ),
@@ -805,8 +809,8 @@ fun LandscapePlayer(
                                 }
                             }
                             .padding(
-                                top = SMALL_SPACING,
-                                bottom = SMALL_SPACING,
+                                top = 12.dp,
+                                bottom = 12.dp,
                                 start = MEDIUM_SPACING,
                                 end = MEDIUM_SPACING
                             ),
@@ -1033,11 +1037,13 @@ fun LandscapePlayer(
                                 }
 
                                 Icon(
-                                    painter = painterResource(id = R.drawable.icon_shuffle_solid),
+                                    painter = painterResource(id = R.drawable.shuffle),
                                     contentDescription = "",
                                     tint = if (queueShuffled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier
-                                        .height(30.dp)
+                                        .size(35.dp)
+                                        .fillMaxSize()
+                                        .fillMaxSize()
                                         .clickable(
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }
@@ -1053,11 +1059,13 @@ fun LandscapePlayer(
                             }
 
                             Icon(
-                                painter = painterResource(id = R.drawable.icon_previous_solid),
+                                painter = painterResource(id = R.drawable.previous),
                                 contentDescription = "Select Previous Song",
                                 tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier
-                                    .height(30.dp)
+                                    .size(35.dp)
+                                    .fillMaxSize()
+                                    .fillMaxSize()
                                     .clickable(
                                         indication = null,
                                         interactionSource = remember { MutableInteractionSource() }
@@ -1067,16 +1075,16 @@ fun LandscapePlayer(
                             )
 
                             Icon(
-                                bitmap = if (musicPlaying) {
-                                    remember { getImage(context, R.drawable.icon_pause_round_solid, ImageSizes.MEDIUM) }
+                                painter = if (musicPlaying) {
+                                    painterResource(id = R.drawable.icon_pause_round_solid)
                                 } else {
-                                    remember { getImage(context, R.drawable.icon_play_round_solid, ImageSizes.MEDIUM) }
-                                }.asImageBitmap(),
+                                    painterResource(id = R.drawable.icon_play_round_solid)
+                                },
                                 contentDescription = "Play/Pause Button",
                                 tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier
-                                    .height(80.dp)
-                                    .aspectRatio(1f)
+                                    .size(80.dp)
+                                    .fillMaxSize()
                                     .clickable(
                                         indication = null,
                                         interactionSource = remember { MutableInteractionSource() }
@@ -1086,11 +1094,13 @@ fun LandscapePlayer(
                             )
 
                             Icon(
-                                painter = painterResource(id = R.drawable.icon_next_solid),
-                                contentDescription = null,
+                                painter = painterResource(id = R.drawable.next),
+                                contentDescription = "Next Song",
                                 tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier
-                                    .height(30.dp)
+                                    .size(35.dp)
+                                    .fillMaxSize()
+                                    .fillMaxSize()
                                     .clickable(
                                         indication = null,
                                         interactionSource = remember { MutableInteractionSource() }
@@ -1111,11 +1121,12 @@ fun LandscapePlayer(
                                 }
 
                                 Icon(
-                                    painter = painterResource(id = R.drawable.icon_repeat_solid),
+                                    painter = painterResource(id = R.drawable.repeat),
                                     contentDescription = "Repeat Song",
                                     tint = if (songOnRepeat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier
-                                        .height(30.dp)
+                                        .size(35.dp)
+                                        .fillMaxSize()
                                         .clickable(
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }

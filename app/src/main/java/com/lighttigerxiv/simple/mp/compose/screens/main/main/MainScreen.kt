@@ -446,7 +446,7 @@ fun MainScaffold(
                     if (name != null && id != null) {
                         SelectArtistCoverScreen(
                             mainVM = mainVM,
-                            selectArtistCoverVM = ViewModelProvider(activityContext)[SelectArtistCoverScreenVM::class.java],
+                            vm = ViewModelProvider(activityContext)[SelectArtistCoverScreenVM::class.java],
                             artistVM = ViewModelProvider(activityContext)[ArtistScreenVM::class.java],
                             artistName = name,
                             artistID = id,

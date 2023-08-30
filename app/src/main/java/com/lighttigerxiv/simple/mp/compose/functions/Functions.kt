@@ -10,14 +10,17 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Size
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import com.lighttigerxiv.simple.mp.compose.data.variables.Settings
 import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import java.text.Normalizer
 
@@ -29,7 +32,7 @@ fun getSongAlbumArt(context: Context, songID: Long, albumID: Long): Bitmap? {
 
     try {
 
-        albumArt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        albumArt = if (isAtLeastAndroid10()) {
 
             val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
             val songUri = ContentUris.withAppendedId(uri, songID)
@@ -48,7 +51,6 @@ fun getSongAlbumArt(context: Context, songID: Long, albumID: Long): Bitmap? {
 
     return albumArt
 }
-
 
 
 //************************************************
@@ -113,39 +115,38 @@ fun CharSequence.unaccent(): String {
 @Composable
 fun getSurfaceColor(settingsVM: SettingsVM): Color {
 
-    val themeMode = settingsVM.themeModeSetting.collectAsState().value
-    val themeAccent = settingsVM.themeAccentSetting.collectAsState().value
+    val colorScheme = settingsVM.colorSchemeSetting.collectAsState().value
     val darkMode = settingsVM.darkModeSetting.collectAsState().value
 
-    return if (themeMode == "Dark" && darkMode == "Oled") {
+    val lightColorScheme = settingsVM.lightColorSchemeSetting.collectAsState().value
+    val useDarkScheme = colorScheme == Settings.Values.ColorScheme.DARK
+    val useSystemScheme = colorScheme == Settings.Values.ColorScheme.SYSTEM
+    val useOledSurface = darkMode == Settings.Values.DarkMode.OLED
+
+    val useOledUnderAndroid10 = !isAtLeastAndroid10()
+            && useOledSurface
+            && (!lightColorScheme.startsWith("Latte")
+            && lightColorScheme != Settings.Values.ColorSchemes.BLUE
+            && lightColorScheme != Settings.Values.ColorSchemes.RED
+            && lightColorScheme != Settings.Values.ColorSchemes.PURPLE
+            && lightColorScheme != Settings.Values.ColorSchemes.ORANGE
+            && lightColorScheme != Settings.Values.ColorSchemes.YELLOW
+            && lightColorScheme != Settings.Values.ColorSchemes.GREEN
+            && lightColorScheme != Settings.Values.ColorSchemes.PINK)
+
+    return if (useSystemScheme && isSystemInDarkTheme() && useOledSurface)
         Color.Black
-    } else if (themeMode == "Light" && themeAccent == "Blue") {
-        Color(0xFFFEFBFF)
-    } else if (themeMode == "Light" && themeAccent == "Red") {
-        Color(0xFFFFFBFF)
-    } else if (themeMode == "Light" && themeAccent == "Purple") {
-        Color(0xFFFFFBFF)
-    } else if (themeMode == "Light" && themeAccent == "Yellow") {
-        Color(0xFFFFFBFF)
-    } else if (themeMode == "Light" && themeAccent == "Orange") {
-        Color(0xFFFFFBFF)
-    } else if (themeMode == "Light" && themeAccent == "Green") {
-        Color(0xFFFDFDF5)
-    } else if (themeMode == "Light" && themeAccent == "Pink") {
-        Color(0xFFFFFBFF)
-    } else if (darkMode == "Oled" && themeMode == "Light" && isSystemInDarkTheme()) {
-        Color(0xFFFFFBFF)
-    } else if (darkMode == "Oled" && themeAccent.startsWith("Macchiato")) {
+    else if (useOledUnderAndroid10)
         Color.Black
-    } else if (darkMode == "Oled" && themeAccent.startsWith("Frappe")) {
+    else if (useDarkScheme && useOledSurface)
         Color.Black
-    } else if (darkMode == "Oled" && themeAccent.startsWith("Mocha")) {
-        Color.Black
-    } else if (darkMode == "Oled" && isSystemInDarkTheme()) {
-        Color.Black
-    } else {
+    else
         MaterialTheme.colorScheme.surface
-    }
+}
+
+fun getBitmapFromSVG(context: Context, resourceID: Int): Bitmap {
+
+    return AppCompatResources.getDrawable(context, resourceID)!!.toBitmap()
 }
 
 fun openScreen(navController: NavHostController, route: String) {
@@ -157,4 +158,12 @@ fun openScreen(navController: NavHostController, route: String) {
         launchSingleTop = true
         restoreState = true
     }
+}
+
+fun isAtLeastAndroid10(): Boolean {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+}
+
+fun isAtLeastAndroid12(): Boolean {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
 }

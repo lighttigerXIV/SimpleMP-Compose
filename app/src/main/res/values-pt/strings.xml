@@ -42,10 +42,10 @@
     <string name="GoToAlbum">Ver Album</string>
     <string name="AddToPlaylist">Adicionar A Uma Playlist</string>
     <string name="Theming">Tema</string>
-    <string name="Theme">Tema</string>
+    <string name="ColorScheme">Tema</string>
     <string name="DarkMode">Modo Escuro</string>
     <string name="AccentColor">Cor De Realce</string>
-    <string name="SelectThemeMode">Selecionar Modo Do Tema</string>
+    <string name="SelectColorScheme">Selecionar Modo Do Tema</string>
     <string name="SystemDefault">Padrão</string>
     <string name="LightMode">Modo Claro</string>
     <string name="Apply">Aplicar</string>
@@ -55,7 +55,7 @@
     <string name="Color">Cor</string>
     <string name="FilterAudio">Filtrar Áudio</string>
     <string name="InsertMinimumSeconds">Inserir um minimo de segundos</string>
-    <string name="System">Sistema</string>
+    <string name="MaterialYou">Sistema</string>
     <string name="Blue">Azul</string>
     <string name="Red">Vermelho</string>
     <string name="Purple">Roxo</string>

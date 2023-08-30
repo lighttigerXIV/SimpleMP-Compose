@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,9 +47,9 @@ fun NewSongItem(
 ) {
 
     val context = LocalContext.current
-    val title = remember { song.title }
-    val artistName = remember { mainVM.getSongArtist(song).name }
-    val art = remember{ mainVM.getSongArt(song) }
+    val title = remember { mutableStateOf(song.title) }
+    val artistName = remember { mutableStateOf(mainVM.getSongArtist(song).name) }
+    val art = remember{ mutableStateOf(mainVM.getSongArt(song)) }
     val highlight = song.path == mainVM.currentSong.collectAsState().value?.path
     val isPopupMenuExpanded = remember { mutableStateOf(false) }
     val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
@@ -57,7 +58,6 @@ fun NewSongItem(
         true -> MaterialTheme.colorScheme.primary
         else -> MaterialTheme.colorScheme.onSurface
     }
-
 
     val titleWeight = when (highlight) {
         true -> FontWeight.Medium
@@ -76,18 +76,18 @@ fun NewSongItem(
 
         ) {
 
-            AsyncImage(
-                model = remember { art ?: getImage(context, R.drawable.cd, ImageSizes.SMALL) },
+            Image(
+                bitmap = remember { mutableStateOf(art.value ?: getImage(context, R.drawable.cd, ImageSizes.SMALL)) }.value.asImageBitmap(),
                 contentDescription = "",
-                colorFilter = if (art == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                colorFilter = if (art.value == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                 modifier = Modifier
                     .clip(RoundedCornerShape(20))
                     .height(70.dp)
                     .width(70.dp)
-                    .modifyIf(art == null) {
+                    .modifyIf(art.value == null) {
                         background(surfaceVariantColor)
                     }
-                    .modifyIf(art == null) {
+                    .modifyIf(art.value == null) {
                         padding(5.dp)
                     }
             )
@@ -106,7 +106,7 @@ fun NewSongItem(
             ) {
 
                 Text(
-                    text = title,
+                    text = title.value,
                     fontSize = 16.sp,
                     color = titleColor,
                     maxLines = 1,
@@ -115,7 +115,7 @@ fun NewSongItem(
                 )
 
                 Text(
-                    text = artistName,
+                    text = artistName.value,
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,

@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Album
-import com.lighttigerxiv.simple.mp.compose.data.variables.Sorts
+import com.lighttigerxiv.simple.mp.compose.data.variables.Settings
 import com.lighttigerxiv.simple.mp.compose.functions.unaccent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,7 +69,7 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
     fun loadScreen(mainVM: MainVM) {
 
         fun load(){
-            val sortType = preferences.getString("AlbumsSortType", Sorts.RECENT)
+            val sortType = preferences.getString(Settings.ALBUMS_SORT, Settings.Values.Sort.RECENT)
             val albums = mainVM.songsData.value?.albums
 
             if (albums != null) {
@@ -84,9 +84,9 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
 
                 _currentAlbums.update {
                     when (sortType) {
-                        Sorts.RECENT -> recentAlbums.value
-                        Sorts.OLDEST -> oldestAlbums.value
-                        Sorts.ASCENDENT -> ascendentAlbums.value
+                        Settings.Values.Sort.RECENT -> recentAlbums.value
+                        Settings.Values.Sort.OLDEST -> oldestAlbums.value
+                        Settings.Values.Sort.ASCENDENT -> ascendentAlbums.value
                         else -> descendentAlbums.value
                     }
                 }
@@ -108,16 +108,16 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
     }
 
     fun filterAlbums() {
-        when (preferences.getString("AlbumsSortType", Sorts.RECENT)) {
-            Sorts.RECENT -> _currentAlbums.update { recentAlbums.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
-            Sorts.OLDEST -> _currentAlbums.update { oldestAlbums.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
-            Sorts.ASCENDENT -> _currentAlbums.update { ascendentAlbums.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
-            Sorts.DESCENDENT -> _currentAlbums.update { descendentAlbums.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+        when (preferences.getString(Settings.ALBUMS_SORT, Settings.Values.Sort.RECENT)) {
+            Settings.Values.Sort.RECENT -> _currentAlbums.update { recentAlbums.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Settings.Values.Sort.OLDEST -> _currentAlbums.update { oldestAlbums.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Settings.Values.Sort.ASCENDENT -> _currentAlbums.update { ascendentAlbums.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
+            Settings.Values.Sort.DESCENDENT -> _currentAlbums.update { descendentAlbums.value!!.filter { it.title.unaccent().lowercase().trim().contains(searchText.value.unaccent().lowercase().trim()) } }
         }
     }
 
     fun updateSortType(sortType: String) {
 
-        preferences.edit().putString("AlbumsSortType", sortType).apply()
+        preferences.edit().putString(Settings.ALBUMS_SORT, sortType).apply()
     }
 }

@@ -170,7 +170,7 @@ fun CustomTextField(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ) { onTextChange("") },
-                painter = painterResource(id = R.drawable.icon_x_solid),
+                painter = painterResource(id = R.drawable.close),
                 contentDescription = null,
                 tint = contentColor
             )

@@ -2,6 +2,7 @@ package com.lighttigerxiv.simple.mp.compose.activities.main
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.app.NotificationManager
 import android.appwidget.AppWidgetManager
 import android.content.*
 import android.content.res.Configuration
@@ -18,8 +19,12 @@ import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.lighttigerxiv.simple.mp.compose.*
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Album
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.Artist
@@ -28,6 +33,8 @@ import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongsData
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.CacheQueries
 import com.lighttigerxiv.simple.mp.compose.data.variables.Settings
+import com.lighttigerxiv.simple.mp.compose.data.workers.SyncSongsWorker
+import com.lighttigerxiv.simple.mp.compose.functions.Permissions
 import com.lighttigerxiv.simple.mp.compose.services.SimpleMPService
 import com.lighttigerxiv.simple.mp.compose.widgets.SimpleMPWidget
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +47,7 @@ import kotlinx.coroutines.withContext
 import org.burnoutcrew.reorderable.ItemPosition
 import java.io.File
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 class MainVM(application: Application) : AndroidViewModel(application) {
@@ -70,12 +78,6 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     private val _songsData = MutableStateFlow<SongsData?>(null)
     val songsData = _songsData.asStateFlow()
-
-    private val _songCount = MutableStateFlow(0)
-    val songCount = _songCount.asStateFlow()
-
-    private val _indexedSongsCount = MutableStateFlow(0)
-    val indexedSongsCount = _indexedSongsCount.asStateFlow()
 
     private val _queue = MutableStateFlow<List<Song>?>(null)
     val queue = _queue.asStateFlow()
@@ -121,6 +123,12 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     private val _showMainPlayer = MutableStateFlow(false)
     val showMainPlayer = _showMainPlayer.asStateFlow()
+
+    private val _songsCount = MutableStateFlow(0)
+    val songsCount = _songsCount.asStateFlow()
+
+    private val _indexedSongsCount = MutableStateFlow(0)
+    val indexedSongsCount = _indexedSongsCount.asStateFlow()
 
 
     //************************************************
@@ -249,107 +257,129 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     @SuppressLint("Range")
     suspend fun getSongsData() {
 
-        val songs = ArrayList<Song>()
-        val cachedSongs = cachedQueries.getSongs()
-        val artists = ArrayList<Artist>()
-        val cachedArtists = cachedQueries.getArtists()
-        val albums = ArrayList<Album>()
-        val cachedAlbums = cachedQueries.getAlbums()
+        try {
+
+            val songs = ArrayList<Song>()
+            val cachedSongs = cachedQueries.getSongs()
+            val artists = ArrayList<Artist>()
+            val cachedArtists = cachedQueries.getArtists()
+            val albums = ArrayList<Album>()
+            val cachedAlbums = cachedQueries.getAlbums()
 
 
-        //Shows Cached Data if it exists
-        if (cachedSongs.isNotEmpty() && cachedAlbums.isNotEmpty() && cachedArtists.isNotEmpty()) {
+            //Shows Cached Data if it exists
+            if (cachedSongs.isNotEmpty() && cachedAlbums.isNotEmpty() && cachedArtists.isNotEmpty()) {
 
-            _songCount.update { cachedSongs.size }
+                _songsCount.update { cachedSongs.size }
+                _indexedSongsCount.update { 0 }
 
-            val durationFilter = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString(Settings.FILTER_AUDIO, "30")!!.toInt() * 1000
+                val durationFilter = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString(Settings.FILTER_AUDIO, "30")!!.toInt() * 1000
 
-            cachedSongs.forEach { cachedSong ->
+                cachedSongs.forEach { cachedSong ->
 
-                if(cachedSong.duration > durationFilter){
-                    songs.add(
-                        Song(
-                            id = cachedSong.id,
-                            path = cachedSong.path,
-                            title = cachedSong.title,
-                            albumID = cachedSong.albumID,
-                            duration = cachedSong.duration,
-                            artistID = cachedSong.artistID,
-                            year = cachedSong.year,
-                            genre = cachedSong.genre,
-                            modificationDate = cachedSong.modificationDate
+                    if (cachedSong.duration > durationFilter) {
+                        songs.add(
+                            Song(
+                                id = cachedSong.id,
+                                path = cachedSong.path,
+                                title = cachedSong.title,
+                                albumID = cachedSong.albumID,
+                                duration = cachedSong.duration,
+                                artistID = cachedSong.artistID,
+                                year = cachedSong.year,
+                                genre = cachedSong.genre,
+                                modificationDate = cachedSong.modificationDate
+                            )
                         )
-                    )
+                    }
 
                     _indexedSongsCount.update { indexedSongsCount.value + 1 }
                 }
-            }
 
-            cachedArtists.forEach { cachedArtist ->
+                cachedArtists.forEach { cachedArtist ->
 
-                if(songs.any{it.artistID == cachedArtist.id}){
-                    artists.add(
-                        Artist(
-                            id = cachedArtist.id,
-                            name = cachedArtist.name,
-                            cover = null
+                    if (songs.any { it.artistID == cachedArtist.id }) {
+                        artists.add(
+                            Artist(
+                                id = cachedArtist.id,
+                                name = cachedArtist.name,
+                                cover = null
+                            )
                         )
+                    }
+                }
+
+                cachedAlbums.forEach { cachedAlbum ->
+
+                    if (songs.any { it.albumID == cachedAlbum.id }) {
+                        albums.add(
+                            Album(
+                                id = cachedAlbum.id,
+                                title = cachedAlbum.title,
+                                art = null,
+                                artistID = cachedAlbum.artistID
+                            )
+                        )
+                    }
+                }
+
+                _songsData.update {
+                    SongsData(
+                        songs,
+                        artists,
+                        albums
                     )
                 }
-            }
 
-            cachedAlbums.forEach { cachedAlbum ->
 
-                if(songs.any { it.albumID == cachedAlbum.id }){
-                    albums.add(
-                        Album(
-                            id = cachedAlbum.id,
-                            title = cachedAlbum.title,
-                            art = null,
-                            artistID = cachedAlbum.artistID
-                        )
+                val newAlbums = ArrayList<Album>()
+
+                albums.forEach { album ->
+
+                    val newAlbum = album.copy(art = getAlbumArt(songs, album.id))
+                    newAlbums.add(newAlbum)
+                }
+
+                _songsData.update {
+                    SongsData(
+                        songs,
+                        artists,
+                        newAlbums
                     )
                 }
-            }
 
-            _songsData.update {
-                SongsData(
-                    songs,
-                    artists,
-                    albums
+            } else {
+
+                _songsCount.update { 0 }
+                _indexedSongsCount.update { 0 }
+
+                indexSongs(
+                    onSongsCount = { _songsCount.update { it } },
+                    onSongIndexed = { _indexedSongsCount.update { indexedSongsCount.value + 1 } }
                 )
             }
-
-            val newAlbums = ArrayList<Album>()
-
-            albums.forEach { album ->
-
-                val newAlbum = album.copy(art = getAlbumArt(songs, album.id))
-                newAlbums.add(newAlbum)
-            }
-
-            _songsData.update {
-                SongsData(
-                    songs,
-                    artists,
-                    newAlbums
-                )
-            }
-
-            _indexedSongsCount.update { 0 }
-            _songCount.update { 0 }
-
-        } else {
-
-            //Gets all songs from the device
-            indexSongs()
+        } catch (e: Exception) {
+            Log.e("Error getting songs data", e.toString())
         }
     }
 
     @SuppressLint("Range")
-    suspend fun indexSongs(onFinish: () -> Unit = {}) {
+    suspend fun indexSongs(
+        showNotification: Boolean = false,
+        onSongsCount: (count: Int) -> Unit = {},
+        onSongIndexed: () -> Unit = {},
+        onFinish: () -> Unit = {}
+    ) {
 
-        _indexedSongsCount.update { 0 }
+
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationBuilder = NotificationCompat.Builder(context, "Sync")
+            .setContentTitle("Syncing Songs")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setSmallIcon(R.drawable.play_empty)
+            .setSilent(true)
+
+
         cachedQueries.clear()
 
 
@@ -358,19 +388,21 @@ class MainVM(application: Application) : AndroidViewModel(application) {
         val albums = ArrayList<Album>()
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         var cursor = context.contentResolver.query(uri, null, null, null, null)
-        var count = 0
+        var totalSongsCount = 0
+        var indexedSongsCount = 0
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                count += 1
+                totalSongsCount += 1
             }
         }
 
         cursor?.close()
 
-        _songCount.update { count }
+        onSongsCount(totalSongsCount)
 
         cursor = context.contentResolver.query(uri, null, null, null, null)
+
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
@@ -409,6 +441,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                         artistName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST))
                     }
 
+
                     if (!artists.any { it.id == artistID }) {
 
                         val artist = Artist(
@@ -440,7 +473,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
                     if (genre == null) genre = context.getString(R.string.Undefined)
                     val year = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.YEAR))
 
-                    if (title != null && duration != null) {
+                    if (title != null && duration != null && artistID != 0L && albumID != 0L) {
 
                         val song = Song(id, songPath, title, albumID, duration.toInt(), artistID, year, genre, modificationDate)
 
@@ -448,8 +481,16 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
                         cachedQueries.addSong(song)
 
-                        _indexedSongsCount.update { indexedSongsCount.value + 1 }
+                        indexedSongsCount++
+
+                        onSongIndexed()
+
+                        if (showNotification) {
+                            notificationBuilder.setProgress(totalSongsCount, indexedSongsCount, false)
+                            notificationManager.notify(3, notificationBuilder.build())
+                        }
                     }
+
 
                 } catch (e: Exception) {
                     Log.e("Song Error", "Exception while getting song. Details -> ${e.message}")
@@ -459,12 +500,23 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
         cursor?.close()
 
-        getSongsData()
+        if (songs.isEmpty()) {
+            _songsData.update {
+                SongsData(
+                    songs,
+                    artists,
+                    albums
+                )
+            }
+        } else {
+            getSongsData()
+        }
 
         onFinish()
 
-        _indexedSongsCount.update { 0 }
-        _songCount.update { 0 }
+        if (showNotification) {
+            notificationManager.cancel(3)
+        }
     }
 
     fun getSongArt(song: Song): Bitmap? {
@@ -692,7 +744,20 @@ class MainVM(application: Application) : AndroidViewModel(application) {
     }
 
     init {
-        val serviceIntent = Intent(context, SimpleMPService::class.java)
-        context.bindService(serviceIntent, simpleMPConnection, Context.BIND_AUTO_CREATE)
+
+        val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+        val setupCompleted = preferences.getBoolean("setupCompleted", false)
+
+
+        if (setupCompleted && Permissions.hasStoragePermission(context) && Permissions.hasNotificationsPermission(context)) {
+            val syncSongsRequest = PeriodicWorkRequestBuilder<SyncSongsWorker>(1, TimeUnit.HOURS)
+                .build()
+
+            val workManager = WorkManager.getInstance(application)
+            workManager.enqueueUniquePeriodicWork("SyncSongsRequest", ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, syncSongsRequest)
+
+            val serviceIntent = Intent(context, SimpleMPService::class.java)
+            context.bindService(serviceIntent, simpleMPConnection, Context.BIND_AUTO_CREATE)
+        }
     }
 }

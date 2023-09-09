@@ -111,7 +111,7 @@
     <string name="DownloadInPlayStore">Download in Play Store</string>
     <string name="FDroid" translatable="false">F-Droid</string>
     <string name="DownloadInFDroid">Download in F-Droid</string>
-    <string name="ReloadSongs">Reload Songs</string>
+    <string name="ReloadSongs">Update Songs</string>
     <string name="DontCloseAppWhileReloading">Don\'t close the app while reloading the songs!!</string>
     <string name="ReloadingSongs">Reloading Songs</string>
     <string name="ColorScheme">Color Scheme</string>

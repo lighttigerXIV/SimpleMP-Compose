@@ -5,7 +5,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+import android.database.ContentObserver
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Toast
@@ -92,6 +94,20 @@ class MainActivity : ComponentActivity() {
 
             finish()
         }
+
+        //I'm clueless where to put it, but I'm guessing this code runs at the start and only once
+        val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        val contentObserver = object : ContentObserver(null) {
+                override fun onChange(selfChange: Boolean, uri: Uri?) {
+                    super.onChange(selfChange, uri)
+                    if (uri != null) {
+                        //added, deleted, or modified
+                        //TODO: this must be handled and updates to UI called to save resources and avoid reloading/syncing
+                    }
+                }
+            }
+        //It's pretty expensive, so we should watchout not to spawn more than one as it's all that we need
+        applicationContext.contentResolver.registerContentObserver(uri, true, contentObserver)
 
         createNotificationChannels()
 

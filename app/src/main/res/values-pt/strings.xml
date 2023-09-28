@@ -101,4 +101,12 @@
     <string name="ReloadSongs">Recarregar músicas</string>
     <string name="DontCloseAppWhileReloading">Não feche a aplicação enquanto as músicas recarregam</string>
     <string name="ReloadingSongs">A recarregar músicas</string>
+    <string name="DarkColorScheme">Esquema De Cores Escuro</string>
+    <string name="LightColorScheme">Esquema De Cores Claro</string>
+    <string name="IndexingSongs">A indexar m�sicas. N�o feche a aplicaç�o</string>
+    <string name="ExperimentalFeatures">Funcionalidades Experimentais</string>
+    <string name="CarPlayer">Player Do Carro</string>
+    <string name="KeepScreenOnInCarMode">Manter Ecr� Ativo Em Modo Carro</string>
+    <string name="ShowCarPlayer">Mostar Player Do Carro</string>
+    <string name="SortByArtist">Ordenar Por Artista</string>
 </resources>

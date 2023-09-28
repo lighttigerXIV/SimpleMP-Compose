@@ -133,17 +133,22 @@ class HomeScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun reloadSongs(mainVM: MainVM){
 
+        _menuExpanded.update { false }
+
+        if(preferences.getBoolean("indexingSongs", false)) return
+
         Toast.makeText(context, getAppString(context, R.string.IndexingSongs), Toast.LENGTH_LONG).show()
 
         viewModelScope.launch {
             withContext(Dispatchers.IO){
 
-                _menuExpanded.update { false }
-
                 _syncingSongs.update { true }
+
+                preferences.edit().putBoolean("indexingSongs", true).apply()
 
                 mainVM.indexSongs(showNotification = true, onFinish = {
                     _syncingSongs.update { false }
+                    preferences.edit().putBoolean("indexingSongs", false).apply()
                 })
             }
         }

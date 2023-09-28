@@ -54,6 +54,8 @@ fun SettingsScreen(
     val filterAudioSetting = settingsVM.filterAudioSetting.collectAsState().value
     val downloadArtistCoverSetting = settingsVM.downloadArtistCoverSetting.collectAsState().value
     val downloadOverDataSetting = settingsVM.downloadOverDataSetting.collectAsState().value
+    val carPlayerSetting = settingsVM.carPlayerSetting.collectAsState().value
+    val keepScreenOnInCarModeSetting = settingsVM.keepScreenOnInCarModeSetting.collectAsState().value
     val selectedThemeMode = vm.selectedColorScheme.collectAsState().value
     val selectedDarkMode = vm.selectedDarkMode.collectAsState().value
     val filterAudioText = vm.filterAudioText.collectAsState().value
@@ -78,8 +80,6 @@ fun SettingsScreen(
         )
 
         SmallVerticalSpacer()
-
-
 
         Text(
             text = remember { getAppString(context, R.string.Theming) },
@@ -118,7 +118,7 @@ fun SettingsScreen(
             )
 
 
-            if(isAtLeastAndroid10()){
+            if (isAtLeastAndroid10()) {
                 DefaultSettingItem(
                     icon = painterResource(id = R.drawable.brush),
                     settingText = remember { getAppString(context, R.string.LightColorScheme) },
@@ -132,7 +132,7 @@ fun SettingsScreen(
                     settingValue = darkColorScheme,
                     onSettingClick = { onOpenScreen(Routes.Root.DARK_COLOR_SCHEMES) }
                 )
-            }else{
+            } else {
                 DefaultSettingItem(
                     icon = painterResource(id = R.drawable.brush),
                     settingText = remember { getAppString(context, R.string.ColorScheme) },
@@ -315,7 +315,6 @@ fun SettingsScreen(
 
         MediumVerticalSpacer()
 
-
         Text(
             text = remember { getAppString(context, R.string.Audio) },
             color = MaterialTheme.colorScheme.primary,
@@ -387,6 +386,49 @@ fun SettingsScreen(
                 },
                 enabled = downloadArtistCoverSetting
             )
+        }
+
+        MediumVerticalSpacer()
+
+        Text(
+            text = remember { getAppString(context, R.string.ExperimentalFeatures) },
+            color = MaterialTheme.colorScheme.primary,
+            fontSize = 22.sp,
+            textAlign = TextAlign.Start,
+            maxLines = 1,
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(8.dp)
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .clip(RoundedCornerShape(14.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            SwitchSettingItem(
+                icon = painterResource(id = R.drawable.car),
+                settingText = remember { getAppString(context, R.string.CarPlayer) },
+                settingValue = carPlayerSetting,
+                onToggle = {
+
+                    settingsVM.updateCarPlayerSetting(!carPlayerSetting)
+                }
+            )
+
+            SwitchSettingItem(
+                icon = painterResource(id = R.drawable.car),
+                settingText = remember { getAppString(context, R.string.KeepScreenOnInCarMode) },
+                settingValue = keepScreenOnInCarModeSetting,
+                enabled = carPlayerSetting,
+                onToggle = {
+
+                    settingsVM.updateKeepScreenOnCarModeSetting(!keepScreenOnInCarModeSetting)
+                }
+            )
+
         }
 
 

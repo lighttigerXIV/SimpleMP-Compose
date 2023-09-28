@@ -13,9 +13,8 @@ android {
         applicationId "com.lighttigerxiv.simple.mp"
         minSdk 26
         targetSdk 33
-        versionCode 21
-        versionName "BETA-1.7.1"
-
+        versionCode 22
+        versionName "BETA-1.8.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
@@ -102,4 +101,8 @@ dependencies {
 
     //Catppuccin Colors
     implementation 'com.github.lighttigerxiv:catppuccin-kt:1.0.0'
+
+    //Android Auto
+    implementation 'androidx.car.app:app:1.2.0'
+
 }

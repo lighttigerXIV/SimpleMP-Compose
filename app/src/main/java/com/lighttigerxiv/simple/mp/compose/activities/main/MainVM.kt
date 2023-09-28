@@ -14,6 +14,7 @@ import android.os.IBinder
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Size
+import androidx.car.app.connection.CarConnection
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
@@ -63,6 +64,12 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
     private val _loadingSongs = MutableStateFlow(true)
     val loadingSongs = _loadingSongs.asStateFlow()
+
+    private val _showCarPlayer = MutableStateFlow(false)
+    val showCarPlayer = _showCarPlayer.asStateFlow()
+    fun updateShowCarPlayer(newValue: Boolean){
+        _showCarPlayer.update { newValue }
+    }
 
     private val cachedQueries = CacheQueries(getMongoRealm())
 
@@ -755,6 +762,7 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
             val workManager = WorkManager.getInstance(application)
             workManager.enqueueUniquePeriodicWork("SyncSongsRequest", ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, syncSongsRequest)
+
 
             val serviceIntent = Intent(context, SimpleMPService::class.java)
             context.bindService(serviceIntent, simpleMPConnection, Context.BIND_AUTO_CREATE)

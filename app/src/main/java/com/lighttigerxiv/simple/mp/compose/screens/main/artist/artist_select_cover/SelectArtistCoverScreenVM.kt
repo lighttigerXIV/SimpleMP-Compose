@@ -107,6 +107,8 @@ class SelectArtistCoverScreenVM(application: Application) : AndroidViewModel(app
 
                 artistsCoversQueries.updateArtistCover(artistID, bitmapString)
 
+                artistsCoversQueries.updateArtistAlreadyRequested(artistID)
+
                 val artist = artistsCoversQueries.getArtist(artistID)
 
                 val imageBytes = Base64.decode(artist!!.image, Base64.DEFAULT)

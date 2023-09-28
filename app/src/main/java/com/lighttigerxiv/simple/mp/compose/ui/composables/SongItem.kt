@@ -3,6 +3,7 @@ package com.lighttigerxiv.simple.mp.compose.ui.composables
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -174,7 +176,9 @@ fun ReorderableSongItem(
     modifier: Modifier = Modifier,
     song: Song,
     state: ReorderableLazyListState,
-    isDragging: Boolean
+    isDragging: Boolean,
+    carMode: Boolean = false,
+    onClick: () -> Unit = {}
 ) {
 
     val context = LocalContext.current
@@ -187,9 +191,10 @@ fun ReorderableSongItem(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .height(70.dp)
+                .height(if(carMode) 100.dp else 70.dp)
                 .clip(RoundedCornerShape(14.dp))
                 .background(if (isDragging) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant)
+                .clickable { onClick() }
         ) {
 
             AsyncImage(
@@ -198,8 +203,8 @@ fun ReorderableSongItem(
                 colorFilter = if (art == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
                 modifier = Modifier
                     .clip(RoundedCornerShape(20))
-                    .height(70.dp)
-                    .width(70.dp)
+                    .height(if(carMode) 100.dp else 70.dp)
+                    .width(if(carMode) 100.dp else 70.dp)
                     .modifyIf(art == null) {
                         background(surfaceColor)
                     }
@@ -248,11 +253,13 @@ fun ReorderableSongItem(
 
                 Image(
                     modifier = Modifier
-                        .height(24.dp)
+                        .height(if(carMode) 100.dp else 70.dp)
+                        .width(if(carMode) 40.dp else 30.dp)
                         .detectReorder(state),
                     painter = painterResource(id = R.drawable.drag),
                     contentDescription = "",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                    contentScale = ContentScale.Fit
                 )
             }
 

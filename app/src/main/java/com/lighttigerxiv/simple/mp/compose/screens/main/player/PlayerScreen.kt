@@ -2,11 +2,13 @@ package com.lighttigerxiv.simple.mp.compose.screens.main.player
 
 import android.content.Context
 import android.content.res.Configuration
+import android.view.View
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -20,11 +22,13 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
@@ -42,14 +46,18 @@ import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.data.variables.XSMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
+import com.lighttigerxiv.simple.mp.compose.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ClickableMediumIcon
 import com.lighttigerxiv.simple.mp.compose.ui.composables.CustomText
 import com.lighttigerxiv.simple.mp.compose.ui.composables.ReorderableSongItem
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumHorizontalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.MediumVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallVerticalSpacer
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import org.burnoutcrew.reorderable.ItemPosition
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
@@ -58,6 +66,7 @@ import org.burnoutcrew.reorderable.reorderable
 @Composable
 fun Player(
     mainVM: MainVM,
+    settingsVM: SettingsVM,
     vm: PlayerScreenVM,
     selectedSong: Song,
     queue: List<Song>?,
@@ -81,6 +90,8 @@ fun Player(
     val inPortrait = localConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT
     val showMenu = vm.showMenu.collectAsState().value
     val hideNavMotionProgress = mainVM.hideNavProgress.collectAsState().value
+    val showCarPlayer = mainVM.showCarPlayer.collectAsState().value
+    val keepScreenOnInCarMode = settingsVM.keepScreenOnInCarModeSetting.collectAsState().value
 
     LaunchedEffect(queue) {
         songsCoversPager.scrollToPage(mainVM.songPosition.value)
@@ -125,9 +136,13 @@ fun Player(
 
                 if (currentTab == 1) {
                     vm.highlightTab("queue")
+
                 }
             }
     }
+
+
+
 
     MotionLayout(
         modifier = Modifier
@@ -158,49 +173,105 @@ fun Player(
 
 
                 if (inPortrait) {
-                    PortraitPlayer(
-                        context,
-                        scope,
-                        vm,
-                        mainVM,
-                        surfaceColor,
-                        selectedSong,
-                        queue,
-                        upNextQueue,
-                        musicPlaying,
-                        songSeconds,
-                        songAndQueuePager,
-                        songsCoversPager,
-                        showMenu,
-                        onOpenPage = { onOpenPage(it) },
-                        currentSongMinutesAndSecondsText,
-                        songMinutesAndSecondsText,
-                        queueShuffled,
-                        songOnRepeat,
-                        onClosePLayer = { onClosePLayer() }
-                    )
+
+                    if (showCarPlayer) {
+                        PortraitCarPlayer(
+                            context,
+                            scope,
+                            vm,
+                            mainVM,
+                            selectedSong,
+                            queue,
+                            upNextQueue,
+                            musicPlaying,
+                            songSeconds,
+                            songAndQueuePager,
+                            songsCoversPager,
+                            currentSongMinutesAndSecondsText,
+                            songMinutesAndSecondsText,
+                            queueShuffled,
+                            songOnRepeat,
+                            onClosePLayer = { onClosePLayer() }
+                        )
+
+                        if(keepScreenOnInCarMode){
+                            KeepScreenOn()
+                        }
+                    } else {
+                        PortraitPlayer(
+                            context,
+                            scope,
+                            vm,
+                            mainVM,
+                            settingsVM,
+                            surfaceColor,
+                            selectedSong,
+                            queue,
+                            upNextQueue,
+                            musicPlaying,
+                            songSeconds,
+                            songAndQueuePager,
+                            songsCoversPager,
+                            showMenu,
+                            onOpenPage = { onOpenPage(it) },
+                            currentSongMinutesAndSecondsText,
+                            songMinutesAndSecondsText,
+                            queueShuffled,
+                            songOnRepeat,
+                            onClosePLayer = { onClosePLayer() },
+                            showCarPlayer
+                        )
+                    }
+
                 } else {
-                    LandscapePlayer(
-                        context,
-                        scope,
-                        vm,
-                        mainVM,
-                        surfaceColor,
-                        selectedSong,
-                        queue,
-                        upNextQueue,
-                        musicPlaying,
-                        songSeconds,
-                        songAndQueuePager,
-                        songsCoversPager,
-                        showMenu,
-                        onOpenPage = { onOpenPage(it) },
-                        currentSongMinutesAndSecondsText,
-                        songMinutesAndSecondsText,
-                        queueShuffled,
-                        songOnRepeat,
-                        onClosePLayer = { onClosePLayer() }
-                    )
+
+                    if(showCarPlayer){
+                        LandscapeCarPlayer(
+                            context,
+                            scope,
+                            vm,
+                            mainVM,
+                            selectedSong,
+                            queue,
+                            upNextQueue,
+                            musicPlaying,
+                            songSeconds,
+                            songAndQueuePager,
+                            songsCoversPager,
+                            currentSongMinutesAndSecondsText,
+                            songMinutesAndSecondsText,
+                            queueShuffled,
+                            songOnRepeat,
+                            onClosePLayer = { onClosePLayer() }
+                        )
+
+                        if(keepScreenOnInCarMode){
+                            KeepScreenOn()
+                        }
+                    }else{
+                        LandscapePlayer(
+                            context,
+                            scope,
+                            vm,
+                            mainVM,
+                            settingsVM,
+                            surfaceColor,
+                            selectedSong,
+                            queue,
+                            upNextQueue,
+                            musicPlaying,
+                            songSeconds,
+                            songAndQueuePager,
+                            songsCoversPager,
+                            showMenu,
+                            onOpenPage = { onOpenPage(it) },
+                            currentSongMinutesAndSecondsText,
+                            songMinutesAndSecondsText,
+                            queueShuffled,
+                            songOnRepeat,
+                            onClosePLayer = { onClosePLayer() }
+                        )
+                    }
                 }
             }
         }
@@ -215,6 +286,7 @@ fun PortraitPlayer(
     scope: CoroutineScope,
     vm: PlayerScreenVM,
     mainVM: MainVM,
+    settingsVM: SettingsVM,
     surfaceColor: Color,
     currentSong: Song,
     queue: List<Song>?,
@@ -229,7 +301,8 @@ fun PortraitPlayer(
     songMinutesAndSecondsText: String,
     queueShuffled: Boolean,
     songOnRepeat: Boolean,
-    onClosePLayer: () -> Unit
+    onClosePLayer: () -> Unit,
+    showCarPlayer: Boolean
 ) {
 
     val defaultAlbumArt = remember { getImage(context, R.drawable.cd, ImageSizes.LARGE).asImageBitmap() }
@@ -274,7 +347,6 @@ fun PortraitPlayer(
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surface)
                 ) {
-
 
                     Row(
                         modifier = Modifier
@@ -372,7 +444,9 @@ fun PortraitPlayer(
                             .background(mainVM.surfaceColor.collectAsState().value),
                         expanded = showMenu,
                         onDismissRequest = {
-                            vm.updateShowMenu(false)
+                            if (!showCarPlayer) {
+                                vm.updateShowMenu(false)
+                            }
                         },
                     ) {
 
@@ -409,6 +483,18 @@ fun PortraitPlayer(
                                 vm.updateShowMenu(false)
                             }
                         )
+
+                        if (settingsVM.carPlayerSetting.collectAsState().value) {
+                            DropdownMenuItem(
+                                text = {
+                                    CustomText(text = stringResource(id = R.string.ShowCarPlayer))
+                                },
+                                onClick = {
+
+                                    mainVM.updateShowCarPlayer(true)
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -675,14 +761,483 @@ fun PortraitPlayer(
                                 .fillMaxSize()
                                 .then(Modifier.reorderable(state))
                         ) {
-                            items(items = upNextQueue, key = { it.id }) { song ->
+                            itemsIndexed(items = upNextQueue, key = { _, song -> song.id }) { index, song ->
                                 ReorderableItem(state, key = song.id) { isDragging ->
 
                                     ReorderableSongItem(
                                         mainVM = mainVM,
                                         song = song,
                                         state = state,
-                                        isDragging = isDragging
+                                        isDragging = isDragging,
+                                        onClick = {
+                                            mainVM.onUpNextQueueMove(ItemPosition(index, song.id), ItemPosition(0, upNextQueue[0].id))
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun PortraitCarPlayer(
+    context: Context,
+    scope: CoroutineScope,
+    vm: PlayerScreenVM,
+    mainVM: MainVM,
+    currentSong: Song,
+    queue: List<Song>?,
+    upNextQueue: List<Song>?,
+    musicPlaying: Boolean,
+    songSeconds: Float,
+    songAndQueuePager: PagerState,
+    songsCoversPager: PagerState,
+    currentSongMinutesAndSecondsText: String,
+    songMinutesAndSecondsText: String,
+    queueShuffled: Boolean,
+    songOnRepeat: Boolean,
+    onClosePLayer: () -> Unit
+) {
+
+    var secondsSliderValue by remember { mutableStateOf(songSeconds) }
+    val secondsSliderInteractionSource = remember { MutableInteractionSource() }
+    val draggingSecondsSlider = secondsSliderInteractionSource.collectIsDraggedAsState().value
+
+    LaunchedEffect(songSeconds) {
+        if (!draggingSecondsSlider) {
+            secondsSliderValue = songSeconds
+        }
+
+        mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds((secondsSliderValue).toInt()))
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            ClickableMediumIcon(
+                id = R.drawable.icon_arrow_down_solid,
+                onClick = { onClosePLayer() },
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            MediumHorizontalSpacer()
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f, fill = true),
+                horizontalArrangement = Arrangement.Center
+            ) {
+
+                Row(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface)
+                ) {
+
+
+                    Row(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(if (songAndQueuePager.currentPage == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
+                            .clickable {
+                                scope.launch {
+                                    songAndQueuePager.scrollToPage(0)
+                                }
+                            }
+                            .padding(
+                                top = 10.dp,
+                                bottom = 10.dp,
+                                start = MEDIUM_SPACING,
+                                end = MEDIUM_SPACING
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+
+                        Icon(
+                            modifier = Modifier
+                                .height(18.dp)
+                                .width(18.dp),
+                            painter = painterResource(id = R.drawable.music_note),
+                            contentDescription = null,
+                            tint = if (songAndQueuePager.currentPage == 0) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface
+                        )
+
+                        SmallHorizontalSpacer()
+
+                        CustomText(
+
+                            text = "Song",
+                            color = if (songAndQueuePager.currentPage == 0) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+
+                    Row(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(if (songAndQueuePager.currentPage == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
+                            .clickable {
+                                scope.launch {
+                                    songAndQueuePager.scrollToPage(1)
+                                }
+                            }
+                            .padding(
+                                top = 10.dp,
+                                bottom = 10.dp,
+                                start = MEDIUM_SPACING,
+                                end = MEDIUM_SPACING
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+
+                        Icon(
+                            modifier = Modifier
+                                .height(18.dp)
+                                .width(18.dp),
+                            painter = painterResource(id = R.drawable.queue_list),
+                            contentDescription = null,
+                            tint = if (songAndQueuePager.currentPage == 1) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface
+                        )
+
+                        SmallHorizontalSpacer()
+
+                        CustomText(
+
+                            text = "Up Next",
+                            color = if (songAndQueuePager.currentPage == 1) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            }
+
+            MediumHorizontalSpacer()
+
+            Box(
+                modifier = Modifier
+                    .height(35.dp)
+                    .width(35.dp)
+            ) {
+
+                if (songAndQueuePager.currentPage == 0) {
+                    ClickableMediumIcon(
+                        id = R.drawable.smartphone,
+                        onClick = {
+
+                            mainVM.updateShowCarPlayer(false)
+                            vm.updateShowMenu(false)
+                        },
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+
+        HorizontalPager(
+            modifier = Modifier.fillMaxSize(),
+            state = songAndQueuePager
+        ) { selectedPage ->
+
+            if (selectedPage == 0) {
+                Column {
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                            .weight(1f)
+                    ) {
+                        HorizontalPager(
+                            state = songsCoversPager,
+                            itemSpacing = SMALL_SPACING,
+                        ) { currentCoverIndex ->
+
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                queue?.get(currentCoverIndex)?.let {
+                                    CustomText(
+                                        modifier = Modifier,
+                                        text = it.title,
+                                        size = 40.sp,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+
+                                MediumVerticalSpacer()
+
+                                queue?.get(currentCoverIndex)?.let {
+                                    CustomText(
+                                        text = mainVM.getSongArtist(it).name,
+                                        size = 30.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Slider(
+                        value = secondsSliderValue,
+                        interactionSource = secondsSliderInteractionSource,
+                        onValueChange = {
+
+                            secondsSliderValue = it
+                            mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds(it.toInt()))
+                        },
+                        onValueChangeFinished = {
+
+                            if (!musicPlaying)
+                                mainVM.pauseResumeMusic()
+
+                            mainVM.seekSongSeconds(secondsSliderValue.toInt())
+                        },
+                        valueRange = 1f..(currentSong.duration / 1000).toFloat(),
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.primary,
+                            activeTrackColor = MaterialTheme.colorScheme.primary,
+                            inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                    ) {
+
+                        Text(
+                            modifier = Modifier.offset(x = 8.dp),
+                            text = currentSongMinutesAndSecondsText,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f, fill = true))
+
+                        Text(
+                            modifier = Modifier.offset(x = (-8).dp),
+                            text = songMinutesAndSecondsText,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    MediumVerticalSpacer()
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                    ) {
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f, fill = true)
+                        ){
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ){
+                                Icon(
+                                    painter = painterResource(id = R.drawable.previous),
+                                    contentDescription = "Select Previous Song",
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(20.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            mainVM.selectPreviousSong()
+                                        }
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ){
+                                Icon(
+                                    bitmap = if (musicPlaying) {
+                                        remember { getImage(context, R.drawable.icon_pause_round_solid, ImageSizes.MEDIUM) }
+                                    } else {
+                                        remember { getImage(context, R.drawable.icon_play_round_solid, ImageSizes.MEDIUM) }
+                                    }.asImageBitmap(),
+                                    contentDescription = "Play/Pause Button",
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .aspectRatio(1f)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            mainVM.pauseResumeMusic()
+                                        }
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ){
+                                Icon(
+                                    painter = painterResource(id = R.drawable.next),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .padding(20.dp)
+                                        .fillMaxSize()
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+
+                                            mainVM.selectNextSong()
+                                        }
+                                )
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f, fill = true)
+                                .padding(40.dp),
+                        ){
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ){
+
+                                Icon(
+                                    painter = painterResource(id = R.drawable.shuffle),
+                                    contentDescription = "",
+                                    tint = if (queueShuffled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .weight(1f, fill = true)
+                                        .aspectRatio(1f)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+
+                                            mainVM.toggleShuffle()
+                                        }
+                                )
+
+                                if (queueShuffled) {
+                                    Dot(carMode = true)
+                                }else{
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
+                            }
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ){
+
+                                Icon(
+                                    painter = painterResource(id = R.drawable.repeat),
+                                    contentDescription = "Repeat Song",
+                                    tint = if (songOnRepeat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .weight(1f, fill = true)
+                                        .aspectRatio(1f)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            mainVM.toggleRepeat()
+                                        }
+                                )
+
+                                if (songOnRepeat) {
+                                    Dot(carMode = true)
+                                }else{
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (selectedPage == 1) {
+
+                Column {
+
+                    MediumVerticalSpacer()
+
+                    if (upNextQueue!!.isEmpty()) {
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            SmallVerticalSpacer()
+
+                            CustomText(text = stringResource(id = R.string.Shrug))
+                        }
+                    } else {
+
+                        val state = rememberReorderableLazyListState(onMove = mainVM::onUpNextQueueMove)
+
+                        androidx.compose.foundation.lazy.LazyColumn(
+                            state = state.listState,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .then(Modifier.reorderable(state))
+                        ) {
+                            itemsIndexed(items = upNextQueue, key = {_, song -> song.id }) { index, song ->
+                                ReorderableItem(state, key = song.id) { isDragging ->
+
+                                    ReorderableSongItem(
+                                        mainVM = mainVM,
+                                        song = song,
+                                        state = state,
+                                        isDragging = isDragging,
+                                        carMode = true,
+                                        onClick = {
+                                            mainVM.onUpNextQueueMove(ItemPosition(index, song.id), ItemPosition(0, upNextQueue[0].id))
+                                        }
                                     )
                                 }
                             }
@@ -701,6 +1256,7 @@ fun LandscapePlayer(
     scope: CoroutineScope,
     vm: PlayerScreenVM,
     mainVM: MainVM,
+    settingsVM: SettingsVM,
     surfaceColor: Color,
     currentSong: Song,
     queue: List<Song>?,
@@ -895,6 +1451,18 @@ fun LandscapePlayer(
                                 vm.updateShowMenu(false)
                             }
                         )
+
+                        if (settingsVM.carPlayerSetting.collectAsState().value) {
+                            DropdownMenuItem(
+                                text = {
+                                    CustomText(text = stringResource(id = R.string.ShowCarPlayer))
+                                },
+                                onClick = {
+
+                                    mainVM.updateShowCarPlayer(true)
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -1171,14 +1739,483 @@ fun LandscapePlayer(
                                 .fillMaxSize()
                                 .then(Modifier.reorderable(state))
                         ) {
-                            items(upNextQueue, { it.id }) { song ->
+                            itemsIndexed(upNextQueue, { _, song -> song.id }) { index, song ->
                                 ReorderableItem(state, key = song.id) { isDragging ->
 
                                     ReorderableSongItem(
                                         mainVM = mainVM,
                                         song = song,
                                         state = state,
-                                        isDragging = isDragging
+                                        isDragging = isDragging,
+                                        onClick = {
+                                            mainVM.onUpNextQueueMove(ItemPosition(index, song.id), ItemPosition(0, upNextQueue[0].id))
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun LandscapeCarPlayer(
+    context: Context,
+    scope: CoroutineScope,
+    vm: PlayerScreenVM,
+    mainVM: MainVM,
+    currentSong: Song,
+    queue: List<Song>?,
+    upNextQueue: List<Song>?,
+    musicPlaying: Boolean,
+    songSeconds: Float,
+    songAndQueuePager: PagerState,
+    songsCoversPager: PagerState,
+    currentSongMinutesAndSecondsText: String,
+    songMinutesAndSecondsText: String,
+    queueShuffled: Boolean,
+    songOnRepeat: Boolean,
+    onClosePLayer: () -> Unit
+) {
+
+    var secondsSliderValue by remember { mutableStateOf(songSeconds) }
+    val secondsSliderInteractionSource = remember { MutableInteractionSource() }
+    val draggingSecondsSlider = secondsSliderInteractionSource.collectIsDraggedAsState().value
+
+    LaunchedEffect(songSeconds) {
+        if (!draggingSecondsSlider) {
+            secondsSliderValue = songSeconds
+        }
+
+        mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds((secondsSliderValue).toInt()))
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            ClickableMediumIcon(
+                id = R.drawable.icon_arrow_down_solid,
+                onClick = { onClosePLayer() },
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            MediumHorizontalSpacer()
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f, fill = true),
+                horizontalArrangement = Arrangement.Center
+            ) {
+
+                Row(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface)
+                ) {
+
+
+                    Row(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(if (songAndQueuePager.currentPage == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
+                            .clickable {
+                                scope.launch {
+                                    songAndQueuePager.scrollToPage(0)
+                                }
+                            }
+                            .padding(
+                                top = 10.dp,
+                                bottom = 10.dp,
+                                start = MEDIUM_SPACING,
+                                end = MEDIUM_SPACING
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+
+                        Icon(
+                            modifier = Modifier
+                                .height(18.dp)
+                                .width(18.dp),
+                            painter = painterResource(id = R.drawable.music_note),
+                            contentDescription = null,
+                            tint = if (songAndQueuePager.currentPage == 0) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface
+                        )
+
+                        SmallHorizontalSpacer()
+
+                        CustomText(
+
+                            text = "Song",
+                            color = if (songAndQueuePager.currentPage == 0) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+
+                    Row(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(if (songAndQueuePager.currentPage == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
+                            .clickable {
+                                scope.launch {
+                                    songAndQueuePager.scrollToPage(1)
+                                }
+                            }
+                            .padding(
+                                top = 10.dp,
+                                bottom = 10.dp,
+                                start = MEDIUM_SPACING,
+                                end = MEDIUM_SPACING
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+
+                        Icon(
+                            modifier = Modifier
+                                .height(18.dp)
+                                .width(18.dp),
+                            painter = painterResource(id = R.drawable.queue_list),
+                            contentDescription = null,
+                            tint = if (songAndQueuePager.currentPage == 1) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface
+                        )
+
+                        SmallHorizontalSpacer()
+
+                        CustomText(
+
+                            text = "Up Next",
+                            color = if (songAndQueuePager.currentPage == 1) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            }
+
+            MediumHorizontalSpacer()
+
+            Box(
+                modifier = Modifier
+                    .height(35.dp)
+                    .width(35.dp)
+            ) {
+
+                if (songAndQueuePager.currentPage == 0) {
+                    ClickableMediumIcon(
+                        id = R.drawable.smartphone,
+                        onClick = {
+                            mainVM.updateShowCarPlayer(false)
+                            vm.updateShowMenu(false)
+                        },
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+
+        HorizontalPager(
+            modifier = Modifier.fillMaxSize(),
+            state = songAndQueuePager
+        ) { selectedPage ->
+
+            if (selectedPage == 0) {
+                Row {
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                            .weight(1f)
+                    ) {
+                        HorizontalPager(
+                            state = songsCoversPager,
+                            itemSpacing = SMALL_SPACING,
+                        ) { currentCoverIndex ->
+
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                queue?.get(currentCoverIndex)?.let {
+                                    CustomText(
+                                        modifier = Modifier,
+                                        text = it.title,
+                                        size = 40.sp,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+
+                                MediumVerticalSpacer()
+
+                                queue?.get(currentCoverIndex)?.let {
+                                    CustomText(
+                                        text = mainVM.getSongArtist(it).name,
+                                        size = 30.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .fillMaxHeight()
+                    ) {
+
+                        Slider(
+                            value = secondsSliderValue,
+                            interactionSource = secondsSliderInteractionSource,
+                            onValueChange = {
+
+                                secondsSliderValue = it
+                                mainVM.updateCurrentSongMinutesAndSecondsText(mainVM.getMinutesAndSeconds(it.toInt()))
+                            },
+                            onValueChangeFinished = {
+
+                                if (!musicPlaying)
+                                    mainVM.pauseResumeMusic()
+
+                                mainVM.seekSongSeconds(secondsSliderValue.toInt())
+                            },
+                            valueRange = 1f..(currentSong.duration / 1000).toFloat(),
+                            colors = SliderDefaults.colors(
+                                thumbColor = MaterialTheme.colorScheme.primary,
+                                activeTrackColor = MaterialTheme.colorScheme.primary,
+                                inactiveTrackColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                        ) {
+
+                            Text(
+                                modifier = Modifier.offset(x = 8.dp),
+                                text = currentSongMinutesAndSecondsText,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+
+                            Spacer(modifier = Modifier.weight(1f, fill = true))
+
+                            Text(
+                                modifier = Modifier.offset(x = (-8).dp),
+                                text = songMinutesAndSecondsText,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        MediumVerticalSpacer()
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f, fill = true)
+                        ){
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ){
+                                Icon(
+                                    painter = painterResource(id = R.drawable.previous),
+                                    contentDescription = "Select Previous Song",
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(5.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            mainVM.selectPreviousSong()
+                                        }
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ){
+                                Icon(
+                                    bitmap = if (musicPlaying) {
+                                        remember { getImage(context, R.drawable.icon_pause_round_solid, ImageSizes.MEDIUM) }
+                                    } else {
+                                        remember { getImage(context, R.drawable.icon_play_round_solid, ImageSizes.MEDIUM) }
+                                    }.asImageBitmap(),
+                                    contentDescription = "Play/Pause Button",
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .aspectRatio(1f)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            mainVM.pauseResumeMusic()
+                                        }
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ){
+                                Icon(
+                                    painter = painterResource(id = R.drawable.next),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .padding(5.dp)
+                                        .fillMaxSize()
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+
+                                            mainVM.selectNextSong()
+                                        }
+                                )
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f, fill = true)
+                                .padding(10.dp),
+                        ){
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ){
+
+                                Icon(
+                                    painter = painterResource(id = R.drawable.shuffle),
+                                    contentDescription = "",
+                                    tint = if (queueShuffled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .weight(1f, fill = true)
+                                        .aspectRatio(1f)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+
+                                            mainVM.toggleShuffle()
+                                        }
+                                )
+
+                                if (queueShuffled) {
+                                    Dot(carMode = true)
+                                }else{
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
+                            }
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ){
+
+                                Icon(
+                                    painter = painterResource(id = R.drawable.repeat),
+                                    contentDescription = "Repeat Song",
+                                    tint = if (songOnRepeat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .weight(1f, fill = true)
+                                        .aspectRatio(1f)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            mainVM.toggleRepeat()
+                                        }
+                                )
+
+                                if (songOnRepeat) {
+                                    Dot(carMode = true)
+                                }else{
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (selectedPage == 1) {
+
+                Column {
+
+                    MediumVerticalSpacer()
+
+                    if (upNextQueue!!.isEmpty()) {
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            SmallVerticalSpacer()
+
+                            CustomText(text = stringResource(id = R.string.Shrug))
+                        }
+                    } else {
+
+                        val state = rememberReorderableLazyListState(onMove = mainVM::onUpNextQueueMove)
+
+                        androidx.compose.foundation.lazy.LazyColumn(
+                            state = state.listState,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .then(Modifier.reorderable(state))
+                        ) {
+                            itemsIndexed(items = upNextQueue, key = { _, song -> song.id }) { index, song ->
+                                ReorderableItem(state, key = song.id) { isDragging ->
+
+                                    ReorderableSongItem(
+                                        mainVM = mainVM,
+                                        song = song,
+                                        state = state,
+                                        isDragging = isDragging,
+                                        carMode = true,
+                                        onClick = {
+                                            mainVM.onUpNextQueueMove(ItemPosition(index, song.id), ItemPosition(0, upNextQueue[0].id))
+                                        }
                                     )
                                 }
                             }
@@ -1191,11 +2228,16 @@ fun LandscapePlayer(
 }
 
 @Composable
-fun Dot() {
+fun KeepScreenOn() = AndroidView({ View(it).apply { keepScreenOn = true } })
+
+@Composable
+fun Dot(
+    carMode: Boolean = false
+) {
     Box(
         modifier = Modifier
-            .height(XSMALL_SPACING)
-            .width(XSMALL_SPACING)
+            .height(if (carMode) 8.dp else XSMALL_SPACING)
+            .width(if (carMode) 8.dp else XSMALL_SPACING)
             .clip(RoundedCornerShape(percent = 100))
             .background(MaterialTheme.colorScheme.primary)
     )

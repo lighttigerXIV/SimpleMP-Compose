@@ -55,6 +55,9 @@ fun AlbumsScreen(
     val oldestAlbums = vm.oldestAlbums.collectAsState().value
     val ascendentAlbums = vm.ascendentAlbums.collectAsState().value
     val descendentAlbums = vm.descendentAlbums.collectAsState().value
+    val artistAscendentAlbums = vm.artistAscendentAlbums.collectAsState().value
+    val artistDescendentAlbums = vm.artistDescendentAlbums.collectAsState().value
+
     val gridCellsCount = when (LocalConfiguration.current.orientation) {
         Configuration.ORIENTATION_PORTRAIT -> 2
         else -> 4
@@ -154,6 +157,36 @@ fun AlbumsScreen(
                                     .height(20.dp)
                                     .width(20.dp),
                                 painter = painterResource(id = R.drawable.alphabetic_sort),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = {
+                            Text(text = stringResource(id = R.string.SortByArtist))
+                        },
+                        onClick = {
+
+                            val currentSort = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE).getString(Settings.ALBUMS_SORT, Settings.Values.Sort.RECENT)
+                            val filterAlgorithm = if (currentSort == Settings.Values.Sort.ARTIST_ASCENDENT) Settings.Values.Sort.ARTIST_DESCENDENT else Settings.Values.Sort.ARTIST_ASCENDENT
+                            val filterAlbums = if(currentSort == Settings.Values.Sort.ARTIST_ASCENDENT) artistDescendentAlbums else artistAscendentAlbums
+
+                            vm.updateSortType(filterAlgorithm)
+                            vm.updateCurrentAlbums(filterAlbums)
+                            scope.launch {
+                                vm.updateMenuExpanded(false)
+                                delay(200)
+                                listState.scrollToItem(index = 0)
+                            }
+                        },
+                        leadingIcon = {
+                            Icon(
+                                modifier = Modifier
+                                    .height(20.dp)
+                                    .width(20.dp),
+                                painter = painterResource(id = R.drawable.person),
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurface
                             )

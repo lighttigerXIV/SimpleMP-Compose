@@ -44,7 +44,7 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
 
     private val _currentAlbums = MutableStateFlow<List<Album>?>(null)
     val currentAlbums = _currentAlbums.asStateFlow()
-    fun updateCurrentAlbums(newValue: List<Album>?){
+    fun updateCurrentAlbums(newValue: List<Album>?) {
         _currentAlbums.update { newValue }
     }
 
@@ -60,6 +60,12 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
     private val _descendentAlbums = MutableStateFlow<List<Album>?>(null)
     val descendentAlbums = _descendentAlbums.asStateFlow()
 
+    private val _artistAscendentAlbums = MutableStateFlow<List<Album>?>(null)
+    val artistAscendentAlbums = _artistAscendentAlbums.asStateFlow()
+
+    private val _artistDescendentAlbums = MutableStateFlow<List<Album>?>(null)
+    val artistDescendentAlbums = _artistDescendentAlbums.asStateFlow()
+
 
     //************************************************
     // Functions
@@ -68,11 +74,12 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun loadScreen(mainVM: MainVM) {
 
-        fun load(){
+        fun load() {
             val sortType = preferences.getString(Settings.ALBUMS_SORT, Settings.Values.Sort.RECENT)
             val albums = mainVM.songsData.value?.albums
+            val artists = mainVM.songsData.value?.artists
 
-            if (albums != null) {
+            if (albums != null && artists != null) {
 
                 _recentAlbums.update { albums }
 
@@ -82,12 +89,19 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
 
                 _descendentAlbums.update { albums.sortedByDescending { it.title } }
 
+                _artistAscendentAlbums.update { albums.sortedBy { it.artistID } }
+
+                _artistDescendentAlbums.update { albums.sortedByDescending { it.artistID } }
+
+
                 _currentAlbums.update {
                     when (sortType) {
                         Settings.Values.Sort.RECENT -> recentAlbums.value
                         Settings.Values.Sort.OLDEST -> oldestAlbums.value
                         Settings.Values.Sort.ASCENDENT -> ascendentAlbums.value
-                        else -> descendentAlbums.value
+                        Settings.Values.Sort.DESCENDENT -> descendentAlbums.value
+                        Settings.Values.Sort.ARTIST_ASCENDENT -> artistAscendentAlbums.value
+                        else -> artistDescendentAlbums.value
                     }
                 }
 
@@ -97,9 +111,9 @@ class AlbumsScreenVM(application: Application) : AndroidViewModel(application) {
 
         load()
 
-        viewModelScope.launch{
-            withContext(Dispatchers.IO){
-                mainVM.songsData.collect{
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                mainVM.songsData.collect {
                     load()
                     filterAlbums()
                 }

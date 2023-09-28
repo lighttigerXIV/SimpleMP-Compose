@@ -460,6 +460,15 @@ class SimpleMPService : Service() {
 
         } catch (exc: Exception) {
             Log.e("Service Error", exc.toString())
+
+            //Removes song from queues
+            val song = getQueue()[currentSongPosition]
+
+            queueList.remove(song)
+            shuffledQueueList.remove(song)
+
+            currentSongPosition -= 1
+
             selectNextSong(context)
         }
     }

@@ -54,7 +54,7 @@ fun HomeScreen(
     val descendentSongs = vm.descendentSongs.collectAsState().value
     val syncingSongs = vm.syncingSongs.collectAsState().value
 
-    val pullRefresState = rememberPullRefreshState(
+    val pullRefreshState = rememberPullRefreshState(
         refreshing = syncingSongs,
         onRefresh = {
             vm.reloadSongs(mainVM)
@@ -119,7 +119,7 @@ fun HomeScreen(
                         .fillMaxSize()
                         .background(mainVM.surfaceColor.collectAsState().value)
                         .padding(scaffoldPadding)
-                        .pullRefresh(pullRefresState)
+                        .pullRefresh(pullRefreshState)
                 ) {
 
                     Column {
@@ -317,7 +317,7 @@ fun HomeScreen(
 
                     PullRefreshIndicator(
                         refreshing = syncingSongs,
-                        state = pullRefresState,
+                        state = pullRefreshState,
                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                         contentColor = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.align(Alignment.TopCenter)

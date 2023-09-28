@@ -73,4 +73,18 @@ class SettingsVM(application: Application) : AndroidViewModel(application){
         preferences.edit().putBoolean(Settings.DOWNLOAD_OVER_DATA, newValue).apply()
         _downloadOverDataSetting.update { newValue }
     }
+
+    private val _carPlayerSetting = MutableStateFlow(preferences.getBoolean(Settings.CAR_PLAYER, false))
+    val carPlayerSetting = _carPlayerSetting.asStateFlow()
+    fun updateCarPlayerSetting(newValue:Boolean) {
+        preferences.edit().putBoolean(Settings.CAR_PLAYER, newValue).apply()
+        _carPlayerSetting.update { newValue }
+    }
+
+    private val _keepScreenOnInCarModeSetting = MutableStateFlow(preferences.getBoolean(Settings.KEEP_SCREEN_ON_IN_CAR_MODE, true))
+    val keepScreenOnInCarModeSetting = _keepScreenOnInCarModeSetting.asStateFlow()
+    fun updateKeepScreenOnCarModeSetting(newValue:Boolean) {
+        preferences.edit().putBoolean(Settings.KEEP_SCREEN_ON_IN_CAR_MODE, newValue).apply()
+        _keepScreenOnInCarModeSetting.update { newValue }
+    }
 }

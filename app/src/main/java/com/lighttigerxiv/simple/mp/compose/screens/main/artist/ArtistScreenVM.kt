@@ -91,11 +91,16 @@ class ArtistScreenVM(application: Application) : AndroidViewModel(application) {
 
     fun loadScreen(artistID: Long, mainVM: MainVM, settingsVM: SettingsVM) {
 
-        fun load(){
+        fun load() {
             val songsData = mainVM.songsData.value
             val songs = songsData?.songs
             val artists = songsData?.artists
             val albums = songsData?.albums
+
+            val canDownloadArtistCover = settingsVM.downloadArtistCoverSetting.value
+            val isInternetAvailable = isNetworkAvailable(context)
+            val canDownloadOverData = settingsVM.downloadOverDataSetting.value
+            val isMobileDataEnabled = isOnMobileData(context)
 
             if (songs != null && artists != null && albums != null) {
 
@@ -117,7 +122,7 @@ class ArtistScreenVM(application: Application) : AndroidViewModel(application) {
                 val newAlbums = ArrayList<Album>()
 
                 artistSongs.value?.forEach { song ->
-                    if( !newAlbums.any { it.id == song.albumID}){
+                    if (!newAlbums.any { it.id == song.albumID }) {
                         newAlbums.add(albums.first { it.id == song.albumID })
                     }
                 }
@@ -127,22 +132,18 @@ class ArtistScreenVM(application: Application) : AndroidViewModel(application) {
                 _screenLoaded.update { true }
 
                 //Loads Artist Image
+
                 if (artistQuery!!.alreadyRequested) {
 
                     if (artistQuery.image != null) {
-
                         val imageBytes = Base64.decode(artistQuery.image, Base64.DEFAULT)
 
                         _tintCover.update { false }
 
                         _artistCover.update { BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size) }
                     }
-                } else {
 
-                    val canDownloadArtistCover = settingsVM.downloadArtistCoverSetting.value
-                    val isInternetAvailable = isNetworkAvailable(context)
-                    val canDownloadOverData = settingsVM.downloadOverDataSetting.value
-                    val isMobileDataEnabled = isOnMobileData(context)
+                } else {
 
                     if (isInternetAvailable && canDownloadArtistCover) {
                         if ((canDownloadOverData && isMobileDataEnabled) || (!canDownloadOverData && !isMobileDataEnabled)) {
@@ -223,8 +224,8 @@ class ArtistScreenVM(application: Application) : AndroidViewModel(application) {
         load()
 
         viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                mainVM.songsData.collect{
+            withContext(Dispatchers.IO) {
+                mainVM.songsData.collect {
                     load()
                 }
             }

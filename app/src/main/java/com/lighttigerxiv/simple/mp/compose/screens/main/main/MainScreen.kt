@@ -67,6 +67,7 @@ import java.net.URLDecoder
 @Composable
 fun MainScreen(
     mainVM: MainVM,
+    settingsVM: SettingsVM,
     activityContext: ViewModelStoreOwner,
     rootNavController: NavHostController,
     onGetPlaylistImage: () -> Unit,
@@ -109,6 +110,7 @@ fun MainScreen(
             context,
             activityContext,
             mainVM,
+            settingsVM,
             hideNavbarMotionProgress,
             playerSheetScaffoldState,
             miniPlayerHeight,
@@ -126,6 +128,7 @@ fun MainScreen(
             context,
             activityContext,
             mainVM,
+            settingsVM,
             playerSheetScaffoldState,
             miniPlayerHeight,
             currentSong,
@@ -146,6 +149,7 @@ fun PortraitScreen(
     context: Context,
     activityContext: ViewModelStoreOwner,
     mainVM: MainVM,
+    settingsVM: SettingsVM,
     hideNavbarMotionProgress: Float,
     playerSheetScaffoldState: BottomSheetScaffoldState,
     miniPlayerHeight: Dp,
@@ -176,6 +180,7 @@ fun PortraitScreen(
         MainScaffold(
             activityContext,
             mainVM,
+            settingsVM,
             playerSheetScaffoldState,
             miniPlayerHeight,
             currentSong,
@@ -206,6 +211,7 @@ fun LandscapeScreen(
     context: Context,
     activityContext: ViewModelStoreOwner,
     mainVM: MainVM,
+    settingsVM: SettingsVM,
     playerSheetScaffoldState: BottomSheetScaffoldState,
     miniPlayerHeight: Dp,
     currentSong: Song?,
@@ -241,6 +247,7 @@ fun LandscapeScreen(
         MainScaffold(
             activityContext,
             mainVM,
+            settingsVM,
             playerSheetScaffoldState,
             miniPlayerHeight,
             currentSong,
@@ -260,6 +267,7 @@ fun LandscapeScreen(
 fun MainScaffold(
     activityContext: ViewModelStoreOwner,
     mainVM: MainVM,
+    settingsVM: SettingsVM,
     playerSheetState: BottomSheetScaffoldState,
     miniPlayerHeight: Dp,
     currentSong: Song?,
@@ -308,6 +316,7 @@ fun MainScaffold(
 
                     Player(
                         mainVM = mainVM,
+                        settingsVM = settingsVM,
                         vm = ViewModelProvider(activityContext)[PlayerScreenVM::class.java],
                         selectedSong = currentSong,
                         queue = queue,

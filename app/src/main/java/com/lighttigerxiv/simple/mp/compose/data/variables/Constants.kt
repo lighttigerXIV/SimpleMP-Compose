@@ -58,6 +58,8 @@ object Settings{
     const val HOME_SORT = "HomeSort"
     const val ARTISTS_SORT = "ArtistsSort"
     const val ALBUMS_SORT = "AlbumsSort"
+    const val CAR_PLAYER = "CarPlayer"
+    const val KEEP_SCREEN_ON_IN_CAR_MODE = "KeepScreenOnInCarMode"
 
     object Values{
         object ColorScheme{
@@ -143,6 +145,8 @@ object Settings{
             const val OLDEST = "oldest"
             const val ASCENDENT = "ascendent"
             const val DESCENDENT = "descendent"
+            const val ARTIST_ASCENDENT = "artistAscendent"
+            const val ARTIST_DESCENDENT = "artistDescendent"
         }
     }
 }

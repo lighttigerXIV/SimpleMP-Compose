@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.car.app.connection.CarConnection
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -55,6 +56,7 @@ import com.lighttigerxiv.simple.mp.compose.screens.main.floating_album.FloatingA
 import com.lighttigerxiv.simple.mp.compose.screens.main.floating_artist.FloatingArtistScreen
 import com.lighttigerxiv.simple.mp.compose.screens.main.floating_artist.FloatingArtistScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.main.MainScreen
+import com.lighttigerxiv.simple.mp.compose.screens.main.player.PlayerScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.PlaylistsScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.PlaylistScreenVM
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.add_songs.AddSongsScreen
@@ -82,8 +84,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
         if (!getSharedPreferences(packageName, MODE_PRIVATE).getBoolean("setupCompleted", false)) {
 
             startActivity(
@@ -93,12 +93,39 @@ class MainActivity : ComponentActivity() {
             finish()
         }
 
+
         createNotificationChannels()
 
 
         val vm = ViewModelProvider(this)[MainVM::class.java]
         val settingsVM = ViewModelProvider(this)[SettingsVM::class.java]
 
+        fun onAndroidAutoStateUpdate(connectionState: Int){
+
+            val carPlayerEnabled = settingsVM.carPlayerSetting.value
+            val showCarPlayer = vm.showCarPlayer.value
+
+            when(connectionState){
+                CarConnection.CONNECTION_TYPE_NOT_CONNECTED -> {
+
+                    if(carPlayerEnabled && !showCarPlayer){
+                        vm.updateShowCarPlayer(false)
+                    }
+                }
+                CarConnection.CONNECTION_TYPE_NATIVE ->{
+                    if(carPlayerEnabled && !showCarPlayer){
+                        vm.updateShowCarPlayer(true)
+                    }
+                }
+                CarConnection.CONNECTION_TYPE_PROJECTION ->{
+                    if(carPlayerEnabled && !showCarPlayer){
+                        vm.updateShowCarPlayer(true)
+                    }
+                }
+            }
+        }
+
+        CarConnection(application).type.observe(this, ::onAndroidAutoStateUpdate)
 
 
         setContent {
@@ -200,6 +227,7 @@ class MainActivity : ComponentActivity() {
 
                                     MainScreen(
                                         mainVM = vm,
+                                        settingsVM = settingsVM,
                                         activityContext = activityContext,
                                         rootNavController = rootNavController,
                                         onGetPlaylistImage = {

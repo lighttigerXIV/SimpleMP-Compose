@@ -20,10 +20,18 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 class SyncSongsWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
+
+
     @SuppressLint("Range")
     override suspend fun doWork(): Result {
+        return withContext(Dispatchers.IO) {
 
-        return withContext(Dispatchers.IO){
+            val preferences = applicationContext.getSharedPreferences(applicationContext.packageName, Context.MODE_PRIVATE)
+            val indexingSongs = preferences.getBoolean("indexingSongs", false)
+
+            if (indexingSongs) return@withContext Result.success()
+
+            preferences.edit().putBoolean("indexingSongs", true).apply()
 
             val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val notificationBuilder = NotificationCompat.Builder(applicationContext, "Sync")
@@ -144,6 +152,8 @@ class SyncSongsWorker(appContext: Context, params: WorkerParameters) : Coroutine
             cursor?.close()
 
             notificationManager.cancel(3)
+
+            preferences.edit().putBoolean("indexingSongs", false).apply()
 
             return@withContext Result.success()
         }

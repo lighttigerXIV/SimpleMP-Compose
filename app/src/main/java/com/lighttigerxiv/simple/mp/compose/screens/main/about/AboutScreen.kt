@@ -92,17 +92,11 @@ fun AboutScreen(
                     .background(MaterialTheme.colorScheme.surfaceVariant)
                     .padding(MEDIUM_SPACING),
                 color = MaterialTheme.colorScheme.onSurface,
-                text = "- Added a smooth animation when opening and closing player \n\n" +
-                        "- Added Latte theme \n\n" +
-                        "- Added Light theme and Dark Theme options \n\n" +
-                        "- Fixed Oled theme on home screen\n\n" +
-                        "- Fixed empty albums and artists showing up due to filter\n\n" +
-                        "- Fixed crash on Android 9 devices\n\n" +
-                        "- Fixed notification on Android 9\n\n" +
-                        "- Fixed songs that don't have artist id or album id showing up" +
-                        "- App now syncs songs in background when opening\n\n" +
-                        "- Added swipe to resync songs on home screen \n\n" +
-                        "- Other small UI Updates "
+                text = "- Added Experimental Car Player Mode - (It should open when connecting to android auto)\n\n" +
+                        "- Added sort by artist option in Albums\n\n" +
+                        "- Added German Translation (@Integraluminium)\n\n" +
+                        "- Fixed local artist image not showing\n\n" +
+                        "- Fixed other small bugs"
             )
 
             MediumVerticalSpacer()

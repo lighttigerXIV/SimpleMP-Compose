@@ -6,6 +6,8 @@
 
 </div>
 
+> ⚠️ The app will have a major refactoring in order to improve performance and bad jetpack compose practices. It might take some months until the next update.
+
 ### About
 Simple MP (Simple Music Player) is music player based on material you design.
 This app is for those who like a minimalist look too their apps.

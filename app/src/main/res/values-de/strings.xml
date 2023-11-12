@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SimpleMP</string>
-    <string name="Undefined">Undefiniert</string>
+    <string name="undefined">Undefiniert</string>
     <string name="appwidget_text">BEISPIEL</string>
     <string name="add_widget">Füge Widget hinzu</string>
     <string name="noMusicPlaying">Es spielt keine Musik. Zum Öffnen klicken.</string>
@@ -66,15 +66,15 @@
     <string name="Green">Grün</string>
     <string name="Pink">Rosa</string>
     <string name="Common">Voreingestellt</string>
-    <string name="WelcomeToSimpleMP">Herzlich Willkommen zu Simple MP</string>
-    <string name="Next">Weiter</string>
+    <string name="title_welcome">Herzlich Willkommen zu Simple MP</string>
+    <string name="next">Weiter</string>
     <string name="Granted">Erteilt</string>
     <string name="Grant">Erteilen</string>
-    <string name="Permissions">Berechtigungen</string>
+    <string name="permissions">Berechtigungen</string>
     <string name="OtherSettings">Andere Einstellungen</string>
     <string name="EnableStorageExplanation">Erlauben Sie die Speicherberechtigung, um alle Musikdateien auf Ihrem Gerät laden zu können.</string>
     <string name="EnableNotificationExplanation">Erlauben Sie die Berechtigung für Benachrichtigungen, um Benachrichtigungen zur Musik anzeigen zu können.</string>
-    <string name="Back">Zurück</string>
+    <string name="back">Zurück</string>
     <string name="Accents">Akzente</string>
     <string name="Finish">Fertigstellen</string>
     <string name="ImageTooBig">Dieses Bild ist zu groß. Bitte versuchen Sie das Bild zu verkleinern.</string>

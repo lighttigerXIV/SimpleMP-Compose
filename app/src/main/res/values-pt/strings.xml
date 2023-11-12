@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SimpleMP</string>
-    <string name="Undefined">Indefinido</string>
+    <string name="undefined">Indefinido</string>
     <string name="appwidget_text">EXEMPLO</string>
     <string name="add_widget">Adicionar Widget</string>
     <string name="noMusicPlaying">Sem música a tocar. Clique para abir a aplicação</string>
@@ -64,15 +64,15 @@
     <string name="Green">Verde</string>
     <string name="Pink">Rosa</string>
     <string name="Common">Comum</string>
-    <string name="WelcomeToSimpleMP">Bem vindo ao Simple MP</string>
-    <string name="Next">Seguinte</string>
+    <string name="title_welcome">Bem vindo ao Simple MP</string>
+    <string name="next">Seguinte</string>
     <string name="Granted">Permitido</string>
     <string name="Grant">Permitir</string>
-    <string name="Permissions">Permissões</string>
+    <string name="permissions">Permissões</string>
     <string name="OtherSettings">Outras Definições</string>
     <string name="EnableStorageExplanation">Ative a permissão de leitura de ficheiros para conseguir ver os ficheiros de música no dispositivo</string>
     <string name="EnableNotificationExplanation">Ative a permissão de notificações para conseguir mostrar a notificação da música</string>
-    <string name="Back">Voltar</string>
+    <string name="back">Voltar</string>
     <string name="Accents">Cor De Realce</string>
     <string name="Finish">Completar</string>
     <string name="ImageTooBig">Imagem muito grande. Considere comprimir a imagem</string>

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SimpleMP</string>
-    <string name="Undefined">Undefined</string>
-    <string name="notificationChannelName" translatable="false">Playback</string>
+    <string name="undefined">Undefined</string>
+    <string name="notification_channel_name" translatable="false">Playback</string>
     <string name="notificationChannelDescription" translatable="false">Simple MP Playback</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
@@ -73,15 +73,15 @@
     <string name="Green">Green</string>
     <string name="Pink">Pink</string>
     <string name="Common">Common</string>
-    <string name="WelcomeToSimpleMP">Welcome to Simple MP</string>
-    <string name="Next">Next</string>
+    <string name="title_welcome">Welcome</string>
+    <string name="next">Next</string>
     <string name="Granted">Granted</string>
     <string name="Grant">Grant</string>
-    <string name="Permissions">Permissions</string>
+    <string name="permissions">Permissions</string>
     <string name="OtherSettings">Other Settings</string>
     <string name="EnableStorageExplanation">Enable storage permission in order to read all music files in your device</string>
     <string name="EnableNotificationExplanation">Enable notifications permission in order to show the music notification</string>
-    <string name="Back">Back</string>
+    <string name="back">Back</string>
     <string name="Accents">Accents</string>
     <string name="Finish">Finish</string>
     <string name="ImageTooBig">Image is too big. Consider compressing the image</string>

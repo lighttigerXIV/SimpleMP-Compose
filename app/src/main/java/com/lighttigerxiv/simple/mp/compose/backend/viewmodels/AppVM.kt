@@ -28,15 +28,10 @@ import kotlinx.coroutines.launch
 
 class AppVM(application: Application) : AndroidViewModel(application) {
 
-    val Context.dataStore by preferencesDataStore(name = "settings")
-
-    val context = application
+    private val context = application
 
     private val _initialized = MutableStateFlow(false)
     val initialized = _initialized.asStateFlow()
-
-    private val _settings = MutableStateFlow<Settings?>(null)
-    val settings = _settings.asStateFlow()
 
     private val _songs = MutableStateFlow<List<Song>?>(null)
     val song = _songs.asStateFlow()
@@ -48,42 +43,19 @@ class AppVM(application: Application) : AndroidViewModel(application) {
     val albums = _albums.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.Main){
-            SettingsRepository(application.dataStore).settingsFlow.collect{settings->
-                _settings.update { settings }
 
+        if (hasStoragePermission(context) && hasNotificationsPermission(context)) {
+            val queries = Queries(getRealm())
 
-                if(hasStoragePermission(context) && hasNotificationsPermission(context)){
-                    val queries = Queries(getRealm())
+            _songs.update { queries.getSongs() }
+            _albums.update { queries.getAlbums() }
+            _artists.update { queries.getArtists() }
 
-                    _songs.update { queries.getSongs() }
-                    _albums.update { queries.getAlbums() }
-                    _artists.update { queries.getArtists() }
+            _initialized.update { true }
 
-                    _initialized.update { true }
+        } else {
 
-                }else{
-
-                    _initialized.update { true }
-                }
-            }
+            _initialized.update { true }
         }
-    }
-
-    @Composable
-    fun getSurfaceColor(): Color{
-        val settings = settings.collectAsState().value
-
-        settings?.let {
-            if(isSystemInDarkTheme() && settings.useOledOnDarkTheme){
-                return Color(0xff000000)
-            }
-
-            if(settings.colorScheme == SettingsOptions.ColorScheme.DARK && settings.useOledOnDarkTheme){
-                return Color(0xff000000)
-            }
-        }
-
-        return MaterialTheme.colorScheme.surface
     }
 }

@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.lighttigerxiv.simple.mp.compose.backend.utils.isAtLeastAndroid12
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -30,8 +31,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             setupCompleted = settings[Keys.SETUP_COMPLETED] ?: false,
             colorScheme = settings[Keys.COLOR_SCHEME] ?: SettingsOptions.ColorScheme.SYSTEM,
             useOledOnDarkTheme = settings[Keys.USE_OLED_IN_DARK_THEME] ?: false,
-            lightTheme = settings[Keys.LIGHT_THEME] ?: SettingsOptions.Themes.LATTE_ROSEWATER,
-            darkTheme = settings[Keys.DARK_THEME] ?: SettingsOptions.Themes.MACCHIATO_ROSEWATER,
+            lightTheme = settings[Keys.LIGHT_THEME] ?: if (isAtLeastAndroid12()) SettingsOptions.Themes.MATERIAL_YOU else SettingsOptions.Themes.BLUE,
+            darkTheme = settings[Keys.DARK_THEME] ?: if (isAtLeastAndroid12()) SettingsOptions.Themes.MATERIAL_YOU else SettingsOptions.Themes.BLUE,
             durationFilter = settings[Keys.DURATION_FILTER] ?: 60,
             downloadArtistCover = settings[Keys.DOWNLOAD_ARTIST_COVER] ?: false,
             downloadArtistCoverWithData = settings[Keys.DOWNLOAD_ARTIST_COVER_WITH_DATA] ?: false,

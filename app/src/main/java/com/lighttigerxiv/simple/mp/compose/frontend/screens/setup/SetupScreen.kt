@@ -9,15 +9,18 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.backend.viewmodels.AppVM
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.Routes
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.dark_theme.DarkThemeScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.light_theme.LightThemeScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.permissions.PermissionsScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.welcome.WelcomeScreen
 
 @Composable
 fun SetupScreen(
-    appVM: AppVM
+    appVM: AppVM,
+    settingsVM: SettingsVM
 ) {
 
     val navController = rememberNavController()
@@ -27,7 +30,7 @@ fun SetupScreen(
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp),
         navController = navController,
-        startDestination = Routes.Setup.WELCOME
+        startDestination = Routes.Setup.LIGHT_THEME
     ) {
 
         composable(Routes.Setup.WELCOME) {
@@ -39,7 +42,17 @@ fun SetupScreen(
         }
 
         composable(Routes.Setup.LIGHT_THEME){
-            LightThemeScreen(navController = navController)
+            LightThemeScreen(
+                navController = navController,
+                settingsVM = settingsVM
+            )
+        }
+
+        composable(Routes.Setup.DARK_THEME){
+            DarkThemeScreen(
+                navController = navController,
+                settingsVM = settingsVM
+            )
         }
     }
 }

@@ -4,6 +4,7 @@ import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,6 +35,7 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.backend.utils.isAtLeastAndroid13
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.HSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.PrimaryButton
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.VDivider
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goBack
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToLightTheme
@@ -91,28 +93,39 @@ fun PermissionsScreen(
 
             VSpacer(size = Sizes.LARGE)
 
-            PermissionCard(
-                checked = storagePermissionGranted,
-                description = stringResource(R.string.EnableStorageExplanation)
-            ) {
-                if (isAtLeastAndroid13()) {
-                    storagePermissionlauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
-                } else {
-                    storagePermissionlauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                }
-            }
-
-            if (isAtLeastAndroid13()) {
-
-                VSpacer(size = Sizes.SMALL)
+            Column(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(Sizes.XLARGE))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(Sizes.LARGE)
+            ){
 
                 PermissionCard(
-                    checked = notificationsPermissionGranted,
-                    description = stringResource(R.string.EnableNotificationExplanation)
+                    checked = storagePermissionGranted,
+                    iconId = R.drawable.folder,
+                    description = stringResource(R.string.EnableStorageExplanation)
                 ) {
-                    notificationPermissionlauncher.launch((Manifest.permission.POST_NOTIFICATIONS))
+                    if (isAtLeastAndroid13()) {
+                        storagePermissionlauncher.launch(Manifest.permission.READ_MEDIA_AUDIO)
+                    } else {
+                        storagePermissionlauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    }
+                }
+
+                if (isAtLeastAndroid13()) {
+
+                    VSpacer(size = Sizes.LARGE)
+
+                    PermissionCard(
+                        checked = notificationsPermissionGranted,
+                        iconId = R.drawable.notification,
+                        description = stringResource(R.string.EnableNotificationExplanation)
+                    ) {
+                        notificationPermissionlauncher.launch((Manifest.permission.POST_NOTIFICATIONS))
+                    }
                 }
             }
+
         }
 
         VSpacer(size = Sizes.LARGE)
@@ -141,25 +154,36 @@ fun PermissionsScreen(
 @Composable
 fun PermissionCard(
     checked: Boolean,
+    iconId: Int,
     description: String,
     onCheckedChange: () -> Unit
 ) {
 
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(Sizes.XLARGE))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .padding(Sizes.LARGE)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
+
+        Icon(
+            modifier = Modifier.size(30.dp),
+            painter = painterResource(id = iconId),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary
+        )
+
+        HSpacer(size = Sizes.LARGE)
 
         Text(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f, fill = true),
             text = description,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Medium
         )
+
+        HSpacer(size = Sizes.SMALL)
 
         Switch(checked = checked, onCheckedChange = { if (!checked) onCheckedChange() })
     }

@@ -1,4 +1,4 @@
-package com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.light_theme
+package com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.dark_theme
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,7 +32,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToDarkTheme
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 
 @Composable
-fun LightThemeScreen(
+fun DarkThemeScreen(
     navController: NavHostController,
     settingsVM: SettingsVM
 ) {
@@ -63,7 +63,7 @@ fun LightThemeScreen(
                 )
 
                 Text(
-                    text = stringResource(id = R.string.light_theme),
+                    text = stringResource(id = R.string.dark_theme),
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.primary,
                     fontSize = 24.sp
@@ -73,8 +73,8 @@ fun LightThemeScreen(
             VSpacer(size = Sizes.LARGE)
 
             ThemeSelector(
-                selectedTheme = settings!!.lightTheme,
-                onThemeSelected = { settingsVM.updateLightTheme(it) }
+                selectedTheme = settings!!.darkTheme,
+                onThemeSelected = { settingsVM.updateDarkTheme(it) }
             )
         }
 

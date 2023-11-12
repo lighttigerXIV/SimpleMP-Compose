@@ -115,8 +115,8 @@
     <string name="DontCloseAppWhileReloading">Don\'t close the app while reloading the songs!!</string>
     <string name="ReloadingSongs">Reloading Songs</string>
     <string name="ColorScheme">Color Scheme</string>
-    <string name="DarkColorScheme">Dark Color Scheme</string>
-    <string name="LightColorScheme">Light Color Scheme</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="light_theme">Light Theme</string>
     <string name="IndexingSongs">Indexing Songs. Don\'t close the app.</string>
     <string name="ExperimentalFeatures">Experimental Features</string>
     <string name="CarPlayer">Car Player</string>

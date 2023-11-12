@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import com.lighttigerxiv.simple.mp.compose.R
+import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.backend.viewmodels.AppVM
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.SetupScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.theme.SimpleMPTheme
@@ -31,10 +32,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val vm = ViewModelProvider(this)[AppVM::class.java]
+        val settingsVM = ViewModelProvider(this)[SettingsVM::class.java]
 
         setContent {
 
-            val settings = vm.settings.collectAsState().value
+            val settings = settingsVM.settings.collectAsState().value
 
             SimpleMPTheme(settings){
 
@@ -43,10 +45,10 @@ class MainActivity : ComponentActivity() {
 
                 val initialized = vm.initialized.collectAsState().value
                 
-                if(initialized){
+                if(initialized && settings != null){
                     
-                    if(!settings!!.setupCompleted){
-                        SetupScreen(appVM = vm)
+                    if(!settings.setupCompleted){
+                        SetupScreen(appVM = vm, settingsVM = settingsVM)
                     }
 
                 }else{

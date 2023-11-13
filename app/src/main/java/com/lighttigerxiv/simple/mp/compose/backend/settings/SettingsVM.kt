@@ -41,4 +41,22 @@ class SettingsVM(application: Application) : AndroidViewModel(application) {
             SettingsRepository(context.dataStore).updateDarkTheme(id)
         }
     }
+
+    fun updateDownloadArtistCover(v: Boolean){
+        viewModelScope.launch(Dispatchers.Default){
+            SettingsRepository(context.dataStore).updateDownloadArtistCover(v)
+        }
+    }
+
+    fun updateDownloadArtistCoverWithData(v: Boolean){
+        viewModelScope.launch(Dispatchers.Default){
+            SettingsRepository(context.dataStore).updateDownloadArtistCoverWithData(v)
+        }
+    }
+
+    fun updateSetupCompleted(v: Boolean){
+        viewModelScope.launch(Dispatchers.Default){
+            SettingsRepository(context.dataStore).updateSetupCompleted(true)
+        }
+    }
 }

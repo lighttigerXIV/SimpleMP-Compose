@@ -71,7 +71,7 @@
     <string name="Granted">Erteilt</string>
     <string name="Grant">Erteilen</string>
     <string name="permissions">Berechtigungen</string>
-    <string name="OtherSettings">Andere Einstellungen</string>
+    <string name="other_settings">Andere Einstellungen</string>
     <string name="EnableStorageExplanation">Erlauben Sie die Speicherberechtigung, um alle Musikdateien auf Ihrem Gerät laden zu können.</string>
     <string name="EnableNotificationExplanation">Erlauben Sie die Berechtigung für Benachrichtigungen, um Benachrichtigungen zur Musik anzeigen zu können.</string>
     <string name="back">Zurück</string>
@@ -85,7 +85,7 @@
     <string name="EnableInternetToGetCovers">Aktiviere das Internet um Cover zu erhalten.</string>
     <string name="UseDefault">Standard verwenden</string>
     <string name="Data">Daten</string>
-    <string name="DownloadArtistCoverFromInternet">Lade Künstler-Cover über das Internet herunter.</string>
+    <string name="download_artist_cover">Lade Künstler-Cover über das Internet herunter.</string>
     <string name="DownloadArtistCoverOnData">Lade Künstler-Cover über mobile Daten herunter. (möglicherweise fallen Kosten an)</string>
     <string name="Playlists">Playlists</string>
     <string name="SongAlreadyInPlaylist">Dieser Titel ist bereits in der Playlist</string>

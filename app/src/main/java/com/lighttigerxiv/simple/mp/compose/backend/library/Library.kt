@@ -13,7 +13,7 @@ import com.lighttigerxiv.simple.mp.compose.backend.realm.getRealm
 
 val MEDIA_URI: Uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 
-suspend fun indexSongs(
+suspend fun indexLibrary(
     context: Context,
     onFinish: () -> Unit
 ) {

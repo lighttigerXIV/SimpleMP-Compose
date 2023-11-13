@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.backend.viewmodels.AppVM
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.MainScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.SetupScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.theme.SimpleMPTheme
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeNavigationBarsColor
@@ -48,11 +49,14 @@ class MainActivity : ComponentActivity() {
                 if(initialized && settings != null){
                     
                     if(!settings.setupCompleted){
-                        SetupScreen(appVM = vm, settingsVM = settingsVM)
+                        SetupScreen(appVM = vm,settingsVM = settingsVM)
+                    }else{
+                        MainScreen(appVM = vm, settingsVM = settingsVM)
                     }
 
                 }else{
 
+                    //Splash Screen
                     Column(
                         modifier = Modifier
                             .fillMaxSize()

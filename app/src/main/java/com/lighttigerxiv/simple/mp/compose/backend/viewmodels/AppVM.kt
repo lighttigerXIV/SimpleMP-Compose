@@ -30,6 +30,8 @@ class AppVM(application: Application) : AndroidViewModel(application) {
 
     private val context = application
 
+    private val queries = Queries(getRealm())
+
     private val _initialized = MutableStateFlow(false)
     val initialized = _initialized.asStateFlow()
 
@@ -42,10 +44,18 @@ class AppVM(application: Application) : AndroidViewModel(application) {
     private val _albums = MutableStateFlow<List<Album>?>(null)
     val albums = _albums.asStateFlow()
 
+
+    fun refreshLibrary(){
+        viewModelScope.launch(Dispatchers.Main){
+            _songs.update { queries.getSongs() }
+            _albums.update { queries.getAlbums() }
+            _artists.update { queries.getArtists() }
+        }
+    }
+
     init {
 
         if (hasStoragePermission(context) && hasNotificationsPermission(context)) {
-            val queries = Queries(getRealm())
 
             _songs.update { queries.getSongs() }
             _albums.update { queries.getAlbums() }

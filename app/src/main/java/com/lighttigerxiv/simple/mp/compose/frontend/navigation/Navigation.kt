@@ -19,3 +19,13 @@ fun NavController.goToLightTheme(){
 fun NavController.goToDarkTheme(){
     this.navigate(Routes.Setup.DARK_THEME)
 }
+
+fun NavController.goToOtherSettings(){
+    this.navigate(Routes.Setup.OTHER_SETTINGS)
+}
+
+fun NavController.goToSyncLibrary(){
+    this.navigate(Routes.Setup.SYNC_LIBRARY){
+        popBackStack()
+    }
+}

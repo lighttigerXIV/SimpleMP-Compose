@@ -78,7 +78,7 @@
     <string name="Granted">Granted</string>
     <string name="Grant">Grant</string>
     <string name="permissions">Permissions</string>
-    <string name="OtherSettings">Other Settings</string>
+    <string name="other_settings">Other Settings</string>
     <string name="EnableStorageExplanation">Enable storage permission in order to read all music files in your device</string>
     <string name="EnableNotificationExplanation">Enable notifications permission in order to show the music notification</string>
     <string name="back">Back</string>
@@ -92,7 +92,7 @@
     <string name="EnableInternetToGetCovers">Enable internet to get covers</string>
     <string name="UseDefault">Use default</string>
     <string name="Data">Data</string>
-    <string name="DownloadArtistCoverFromInternet">Download artist cover from internet</string>
+    <string name="download_artist_cover">Download artist cover from internet</string>
     <string name="DownloadArtistCoverOnData">Download artist cover on mobile data</string>
     <string name="Playlists">Playlists</string>
     <string name="SongAlreadyInPlaylist">Song already in playlist</string>
@@ -123,4 +123,5 @@
     <string name="KeepScreenOnInCarMode">Keep Screen On In Car Mode</string>
     <string name="ShowCarPlayer">Show Car Player</string>
     <string name="SortByArtist">Sort By Artist</string>
+    <string name="loading_library">Loading Library ...</string>
 </resources>

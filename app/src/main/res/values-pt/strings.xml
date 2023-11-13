@@ -69,7 +69,7 @@
     <string name="Granted">Permitido</string>
     <string name="Grant">Permitir</string>
     <string name="permissions">Permissões</string>
-    <string name="OtherSettings">Outras Definições</string>
+    <string name="other_settings">Outras Definições</string>
     <string name="EnableStorageExplanation">Ative a permissão de leitura de ficheiros para conseguir ver os ficheiros de música no dispositivo</string>
     <string name="EnableNotificationExplanation">Ative a permissão de notificações para conseguir mostrar a notificação da música</string>
     <string name="back">Voltar</string>
@@ -83,7 +83,7 @@
     <string name="EnableInternetToGetCovers">Ative a internet para transferir imagens</string>
     <string name="UseDefault">Usar padrão</string>
     <string name="Data">Dados</string>
-    <string name="DownloadArtistCoverFromInternet">Transferir imagem do artista pela internet</string>
+    <string name="download_artist_cover">Transferir imagem do artista pela internet</string>
     <string name="DownloadArtistCoverOnData">Transferir imagem do artista pelos dados móveis</string>
     <string name="Playlists">Playlists</string>
     <string name="SongAlreadyInPlaylist">Musica já adicionada à playlist</string>

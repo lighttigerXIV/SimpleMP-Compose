@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +41,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goBack
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToLightTheme
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 
 @Composable
 fun PermissionsScreen(
@@ -97,7 +99,6 @@ fun PermissionsScreen(
                 modifier = Modifier
                     .clip(RoundedCornerShape(Sizes.XLARGE))
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(Sizes.LARGE)
             ){
 
                 PermissionCard(
@@ -113,8 +114,6 @@ fun PermissionsScreen(
                 }
 
                 if (isAtLeastAndroid13()) {
-
-                    VSpacer(size = Sizes.LARGE)
 
                     PermissionCard(
                         checked = notificationsPermissionGranted,
@@ -161,7 +160,11 @@ fun PermissionCard(
 
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .modifyIf(!checked){
+                clickable { onCheckedChange() }
+            }
+            .padding(Sizes.LARGE),
         verticalAlignment = Alignment.CenterVertically
     ) {
 

@@ -14,7 +14,9 @@ import com.lighttigerxiv.simple.mp.compose.backend.viewmodels.AppVM
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.Routes
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.dark_theme.DarkThemeScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.light_theme.LightThemeScreen
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.other_settings.OtherSettingsScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.permissions.PermissionsScreen
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.sync_library.SyncLibrarySscreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.welcome.WelcomeScreen
 
 @Composable
@@ -30,7 +32,7 @@ fun SetupScreen(
             .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp),
         navController = navController,
-        startDestination = Routes.Setup.LIGHT_THEME
+        startDestination = Routes.Setup.WELCOME
     ) {
 
         composable(Routes.Setup.WELCOME) {
@@ -51,6 +53,20 @@ fun SetupScreen(
         composable(Routes.Setup.DARK_THEME){
             DarkThemeScreen(
                 navController = navController,
+                settingsVM = settingsVM
+            )
+        }
+
+        composable(Routes.Setup.OTHER_SETTINGS){
+            OtherSettingsScreen(
+                navController = navController,
+                settingsVM = settingsVM
+            )
+        }
+
+        composable(Routes.Setup.SYNC_LIBRARY){
+            SyncLibrarySscreen(
+                appVM = appVM,
                 settingsVM = settingsVM
             )
         }

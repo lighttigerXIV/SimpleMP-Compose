@@ -1,5 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.composables
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -72,7 +73,7 @@ fun ThemeSelector(
     val inDarkMode = isSystemInDarkTheme()
     val showCommonThemes = remember { mutableStateOf(true) }
     val showCatppuccinThemes = remember { mutableStateOf(true) }
-    val commonThemes = getCommonColorSchemes(inDarkMode)
+    val commonThemes = remember{ getCommonColorSchemes(inDarkMode, context) }
 
     
     Column(
@@ -342,43 +343,42 @@ data class Theme(
     val setting: String
 )
 
-@Composable
-fun getCommonColorSchemes(inDarkMode: Boolean): List<Theme> {
+fun getCommonColorSchemes(inDarkMode: Boolean, context: Context): List<Theme> {
 
     return if (inDarkMode) {
         listOf(
             Theme(
-                stringResource(R.string.Blue),
+                context.getString(R.string.Blue),
                 DarkBlueColors,
                 SettingsOptions.Themes.BLUE
             ),
             Theme(
-                stringResource(R.string.Red),
+                context.getString(R.string.Red),
                 DarkRedColors,
                 SettingsOptions.Themes.RED
             ),
             Theme(
-                stringResource(R.string.Purple),
+                context.getString(R.string.Purple),
                 DarkPurpleColors,
                 SettingsOptions.Themes.PURPLE
             ),
             Theme(
-                stringResource(R.string.Orange),
+                context.getString(R.string.Orange),
                 DarkOrangeColors,
                 SettingsOptions.Themes.ORANGE
             ),
             Theme(
-                stringResource(R.string.Yellow),
+                context.getString(R.string.Yellow),
                 DarkYellowColors,
                 SettingsOptions.Themes.YELLOW
             ),
             Theme(
-                stringResource(R.string.Green),
+                context.getString(R.string.Green),
                 DarkGreenColors,
                 SettingsOptions.Themes.GREEN
             ),
             Theme(
-                stringResource(R.string.Pink),
+                context.getString(R.string.Pink),
                 DarkPinkColors,
                 SettingsOptions.Themes.PINK
             )
@@ -386,37 +386,37 @@ fun getCommonColorSchemes(inDarkMode: Boolean): List<Theme> {
     } else {
         listOf(
             Theme(
-                stringResource(R.string.Blue),
+                context.getString(R.string.Blue),
                 LightBlueColors,
                 SettingsOptions.Themes.BLUE
             ),
             Theme(
-                stringResource(R.string.Red),
+                context.getString(R.string.Red),
                 LightRedColors,
                 SettingsOptions.Themes.RED
             ),
             Theme(
-                stringResource(R.string.Purple),
+                context.getString(R.string.Purple),
                 LightPurpleColors,
                 SettingsOptions.Themes.PURPLE
             ),
             Theme(
-                stringResource(R.string.Orange),
+                context.getString(R.string.Orange),
                 LightOrangeColors,
                 SettingsOptions.Themes.ORANGE
             ),
             Theme(
-                stringResource(R.string.Yellow),
+                context.getString(R.string.Yellow),
                 LightYellowColors,
                 SettingsOptions.Themes.YELLOW
             ),
             Theme(
-                stringResource(R.string.Green),
+                context.getString(R.string.Green),
                 LightGreenColors,
                 SettingsOptions.Themes.GREEN
             ),
             Theme(
-                stringResource(R.string.Pink),
+                context.getString(R.string.Pink),
                 LightPinkColors,
                 SettingsOptions.Themes.PINK
             )

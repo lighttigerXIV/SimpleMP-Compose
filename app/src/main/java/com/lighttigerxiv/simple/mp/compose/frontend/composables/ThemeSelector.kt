@@ -264,7 +264,7 @@ fun ThemePreview(selectedTheme: String, theme: Theme, onClick: () -> Unit) {
                     modifier = Modifier
                         .height(60.dp)
                         .width(60.dp),
-                    painter = painterResource(id = R.drawable.cd),
+                    painter = painterResource(id = R.drawable.album),
                     contentDescription = null,
                     tint = theme.colorScheme.primary
                 )

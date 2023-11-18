@@ -5,7 +5,7 @@
     <string name="appwidget_text">BEISPIEL</string>
     <string name="add_widget">Füge Widget hinzu</string>
     <string name="noMusicPlaying">Es spielt keine Musik. Zum Öffnen klicken.</string>
-    <string name="SearchSongs">Suche Songs</string>
+    <string name="search_songs">Suche Songs</string>
     <string name="SearchArtists">Suche Künstler</string>
     <string name="SearchAlbums">Suche Album</string>
     <string name="SearchPlaylists">Suche Playlists</string>
@@ -21,7 +21,7 @@
     <string name="AppSource">Quelle der Anwendung</string>
     <string name="GetAppSourceOnGitHub">Quellcode auf GitHub</string>
     <string name="GetAppSourceOnGitLab">Quellcode auf GitLab</string>
-    <string name="Home">Start</string>
+    <string name="home">Start</string>
     <string name="Genres">Genres</string>
     <string name="YourPlaylists">Deine Playlisten</string>
     <string name="PlaylistName">Name der Playliste</string>
@@ -38,7 +38,7 @@
     <string name="Artists">Künstler</string>
     <string name="Songs">Titel</string>
     <string name="Albums">Alben</string>
-    <string name="Song">Titel</string>
+    <string name="song">Titel</string>
     <string name="Queue">Nächster Titel</string>
     <string name="GoToArtist">Zum Künstler</string>
     <string name="GoToAlbum">Zum Album</string>

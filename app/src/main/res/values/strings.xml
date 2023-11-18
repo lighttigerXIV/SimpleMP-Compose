@@ -11,7 +11,7 @@
     <string name="app_widget_description" translatable="false">Simple MP Widget</string>
     <string name="noMusicPlaying">No music playing. Click to open the app.</string>
 
-    <string name="SearchSongs">Search Songs</string>
+    <string name="search_songs">Search Songs</string>
     <string name="SearchArtists">Search Artists</string>
     <string name="SearchAlbums">Search Albums</string>
     <string name="SearchPlaylists">Search Playlists</string>
@@ -28,7 +28,7 @@
     <string name="AppSource">App Source</string>
     <string name="GetAppSourceOnGitHub">Get the app source on GitHub</string>
     <string name="GetAppSourceOnGitLab">Get the app source on GitLab</string>
-    <string name="Home">Home</string>
+    <string name="home">Home</string>
     <string name="Genres">Genres</string>
     <string name="YourPlaylists">Your Playlists</string>
     <string name="PlaylistName">Playlist name</string>
@@ -45,7 +45,7 @@
     <string name="Artists">Artists</string>
     <string name="Songs">Songs</string>
     <string name="Albums">Albums</string>
-    <string name="Song">Song</string>
+    <string name="song">Song</string>
     <string name="Queue">Up Next</string>
     <string name="GoToArtist">Go To Artist</string>
     <string name="GoToAlbum">Go To Album</string>

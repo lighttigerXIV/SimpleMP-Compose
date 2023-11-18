@@ -20,9 +20,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
-import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsVM
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.HSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.PrimaryButton
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.ThemeSelector
@@ -34,65 +34,68 @@ import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 @Composable
 fun LightThemeScreen(
     navController: NavHostController,
-    settingsVM: SettingsVM
+    vm: LightThemeScreenVM = viewModel(factory = LightThemeScreenVM.Factory)
 ) {
 
-    val settings = settingsVM.settings.collectAsState().value
+    val settings = vm.settings.collectAsState().value
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
+    if(settings != null){
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .weight(1f, fill = true)
-                .verticalScroll(rememberScrollState())
         ) {
-
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f, fill = true)
+                    .verticalScroll(rememberScrollState())
             ) {
 
-                Icon(
-                    modifier = Modifier.size(80.dp),
-                    painter = painterResource(id = R.drawable.brush_filled),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                Text(
-                    text = stringResource(id = R.string.light_theme),
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 24.sp
+                    Icon(
+                        modifier = Modifier.size(80.dp),
+                        painter = painterResource(id = R.drawable.brush_filled),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+
+                    Text(
+                        text = stringResource(id = R.string.light_theme),
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 24.sp
+                    )
+                }
+
+                VSpacer(size = Sizes.LARGE)
+
+                ThemeSelector(
+                    selectedTheme = settings.lightTheme,
+                    onThemeSelected = { vm.updateTheme(it) }
                 )
             }
 
             VSpacer(size = Sizes.LARGE)
 
-            ThemeSelector(
-                selectedTheme = settings!!.lightTheme,
-                onThemeSelected = { settingsVM.updateLightTheme(it) }
-            )
-        }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ){
 
-        VSpacer(size = Sizes.LARGE)
+                PrimaryButton(text = stringResource(id = R.string.back)) {
+                    navController.goBack()
+                }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ){
+                HSpacer(size = Sizes.MEDIUM)
 
-            PrimaryButton(text = stringResource(id = R.string.back)) {
-                navController.goBack()
-            }
-
-            HSpacer(size = Sizes.MEDIUM)
-
-            PrimaryButton(text = stringResource(id = R.string.next)) {
-                navController.goToDarkTheme()
+                PrimaryButton(text = stringResource(id = R.string.next)) {
+                    navController.goToDarkTheme()
+                }
             }
         }
     }

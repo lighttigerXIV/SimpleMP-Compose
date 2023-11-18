@@ -9,21 +9,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsVM
-import com.lighttigerxiv.simple.mp.compose.backend.viewmodels.AppVM
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.Routes
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.dark_theme.DarkThemeScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.light_theme.LightThemeScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.other_settings.OtherSettingsScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.permissions.PermissionsScreen
-import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.sync_library.SyncLibrarySscreen
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.sync_library.SyncLibraryScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.welcome.WelcomeScreen
 
 @Composable
-fun SetupScreen(
-    appVM: AppVM,
-    settingsVM: SettingsVM
-) {
+fun SetupScreen() {
 
     val navController = rememberNavController()
 
@@ -44,31 +39,19 @@ fun SetupScreen(
         }
 
         composable(Routes.Setup.LIGHT_THEME){
-            LightThemeScreen(
-                navController = navController,
-                settingsVM = settingsVM
-            )
+            LightThemeScreen(navController = navController)
         }
 
         composable(Routes.Setup.DARK_THEME){
-            DarkThemeScreen(
-                navController = navController,
-                settingsVM = settingsVM
-            )
+            DarkThemeScreen(navController = navController)
         }
 
         composable(Routes.Setup.OTHER_SETTINGS){
-            OtherSettingsScreen(
-                navController = navController,
-                settingsVM = settingsVM
-            )
+            OtherSettingsScreen(navController = navController)
         }
 
         composable(Routes.Setup.SYNC_LIBRARY){
-            SyncLibrarySscreen(
-                appVM = appVM,
-                settingsVM = settingsVM
-            )
+            SyncLibraryScreen()
         }
     }
 }

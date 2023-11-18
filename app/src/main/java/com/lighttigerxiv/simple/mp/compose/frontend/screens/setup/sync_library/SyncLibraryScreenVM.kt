@@ -1,33 +1,45 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.sync_library
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
-import com.lighttigerxiv.simple.mp.compose.backend.library.indexLibrary
-import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsVM
-import com.lighttigerxiv.simple.mp.compose.backend.viewmodels.AppVM
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.lighttigerxiv.simple.mp.compose.SimpleMPApplication
+import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
+import com.lighttigerxiv.simple.mp.compose.backend.repositories.SettingsRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class SyncLibraryScreenVM(application: Application) : AndroidViewModel(application){
+class SyncLibraryScreenVM(
+    private val application: Application,
+    private val settingsRepository: SettingsRepository,
+    private val libraryRepository: LibraryRepository
+) :  ViewModel(){
 
-    private val context = application
+    companion object Factory{
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as SimpleMPApplication)
+                val settingsRepository = application.container.settingsRepository
+                val libraryRepository = application.container.libraryRepository
 
-    private val _syncingLibrary = MutableStateFlow(false)
-    val syncingLibrary = _syncingLibrary.asStateFlow()
+                SyncLibraryScreenVM(application, settingsRepository, libraryRepository)
+            }
+        }
+    }
 
-    fun syncLibrary(settingsVM: SettingsVM, appVM: AppVM){
+    init {
 
-        _syncingLibrary.update { true }
-
-        viewModelScope.launch(Dispatchers.Main){
-            indexLibrary(context){
-                settingsVM.updateSetupCompleted(true)
-                appVM.refreshLibrary()
+        //Indexes The Library
+        viewModelScope.launch(Dispatchers.Default){
+            libraryRepository.indexLibrary(application){
+                withContext(Dispatchers.Default){
+                    settingsRepository.updateSetupCompleted(true)
+                }
             }
         }
     }

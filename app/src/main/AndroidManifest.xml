@@ -11,7 +11,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+
     <application
+        android:name=".SimpleMPApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:requestLegacyExternalStorage="true"
@@ -34,6 +36,11 @@
             </intent-filter>
         </activity>
 
+        <receiver android:name=".backend.playback.OpenAppReceiver"/>
+        <receiver android:name=".backend.playback.StopPlaybackReceiver"/>
+        <receiver android:name=".backend.playback.PreviousPlaybackReceiver"/>
+        <receiver android:name=".backend.playback.PauseResumePlaybackReceiver"/>
+        <receiver android:name=".backend.playback.SkipPlaybackReceiver"/>
 
         <receiver android:name="androidx.media.session.MediaButtonReceiver"
             android:exported="true">
@@ -42,6 +49,7 @@
             </intent-filter>
         </receiver>
 
+        <service android:name=".backend.playback.PlaybackService" android:foregroundServiceType="mediaPlayback"/>
     </application>
 
 </manifest>

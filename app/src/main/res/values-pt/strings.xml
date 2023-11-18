@@ -5,7 +5,7 @@
     <string name="appwidget_text">EXEMPLO</string>
     <string name="add_widget">Adicionar Widget</string>
     <string name="noMusicPlaying">Sem música a tocar. Clique para abir a aplicação</string>
-    <string name="SearchSongs">Procurar Músicas</string>
+    <string name="search_songs">Procurar Músicas</string>
     <string name="SearchArtists">Procurar Artistas</string>
     <string name="SearchAlbums">Procurar Álbums</string>
     <string name="SearchPlaylists">Procurar Playlists</string>
@@ -19,7 +19,7 @@
     <string name="AppSource">Código fonte da aplicação</string>
     <string name="GetAppSourceOnGitHub">Obter código da aplicação no GitHub</string>
     <string name="GetAppSourceOnGitLab">Obter código da aplicação no GitLab</string>
-    <string name="Home">Home</string>
+    <string name="home">Home</string>
     <string name="Genres">Géneros</string>
     <string name="YourPlaylists">Suas Playlists</string>
     <string name="PlaylistName">Nome da playlist</string>
@@ -36,7 +36,7 @@
     <string name="Artists">Artistas</string>
     <string name="Songs">Músicas</string>
     <string name="Albums">Álbums</string>
-    <string name="Song">Música</string>
+    <string name="song">Música</string>
     <string name="Queue">Fila De Espera</string>
     <string name="GoToArtist">Ver Artista</string>
     <string name="GoToAlbum">Ver Album</string>

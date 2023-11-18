@@ -4,11 +4,17 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.lighttigerxiv.simple.mp.compose.backend.settings.Settings
 import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
 import com.lighttigerxiv.simple.mp.compose.backend.utils.isAtLeastAndroid12
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 @Composable
 fun SimpleMPTheme(
@@ -19,9 +25,9 @@ fun SimpleMPTheme(
     settings?.let{
 
         val context = LocalContext.current
-        val colorScheme = settings.colorScheme
-        val darkTheme = settings.darkTheme
-        val lightTheme = settings.lightTheme
+        val colorScheme = it.colorScheme
+        val darkTheme = it.darkTheme
+        val lightTheme = it.lightTheme
         val supportsMaterialYou = isAtLeastAndroid12()
 
         val nightMode = when(colorScheme){
@@ -172,7 +178,7 @@ fun SimpleMPTheme(
             else -> getLatteScheme(AppTheme.CatppuccinLatte.ROSEWATER)
         }
 
-        val surfaceColor = if(useDarkTheme && settings.useOledOnDarkTheme) Color(0xff000000) else theme.surface
+        val surfaceColor = if(useDarkTheme && it.useOledOnDarkTheme) Color(0xff000000) else theme.surface
 
         MaterialTheme(
             colorScheme = theme.copy(surface = surfaceColor),

@@ -24,7 +24,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
@@ -56,7 +58,7 @@ fun AlbumScreen(
         if (!uiState.isLoading) {
             CollapsableHeader(
                 header = {
-                    AlbumArtAndName(uiState = uiState)
+                    AlbumArtAndNames(uiState = uiState)
                 }
             ) {
 
@@ -93,7 +95,7 @@ fun AlbumScreen(
 }
 
 @Composable
-fun AlbumArtAndName(
+fun AlbumArtAndNames(
     uiState: AlbumScreenVM.UiState
 ) {
     Column(
@@ -111,7 +113,7 @@ fun AlbumArtAndName(
                     .padding(Sizes.MEDIUM)
             ) {
                 Icon(
-                    modifier = Modifier.size(180.dp),
+                    modifier = Modifier.size(220.dp),
                     painter = painterResource(id = R.drawable.album),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
@@ -120,7 +122,7 @@ fun AlbumArtAndName(
         } else {
             Image(
                 modifier = Modifier
-                    .size(180.dp)
+                    .size(220.dp)
                     .clip(RoundedCornerShape(Sizes.XLARGE)),
                 bitmap = uiState.largeAlbumArt.asImageBitmap(),
                 contentDescription = null,
@@ -133,7 +135,18 @@ fun AlbumArtAndName(
             text = uiState.albumName,
             fontSize = FontSizes.HEADER,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Text(
+            text = uiState.artistName,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

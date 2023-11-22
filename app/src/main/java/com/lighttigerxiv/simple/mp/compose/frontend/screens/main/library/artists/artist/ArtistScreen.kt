@@ -175,7 +175,7 @@ fun ArtistAlbumAndName(
                     .padding(Sizes.MEDIUM)
             ) {
                 Icon(
-                    modifier = Modifier.size(180.dp),
+                    modifier = Modifier.size(220.dp),
                     painter = painterResource(id = R.drawable.artist),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary

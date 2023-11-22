@@ -48,8 +48,7 @@ fun Card(
                 .fillMaxWidth()
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(Sizes.MEDIUM))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(Sizes.LARGE),
+                .background(MaterialTheme.colorScheme.surface),
             contentAlignment = Alignment.Center
         ) {
 
@@ -63,7 +62,8 @@ fun Card(
             } else {
                 Icon(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .padding(Sizes.LARGE),
                     painter = painterResource(id = defaultIconId),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary

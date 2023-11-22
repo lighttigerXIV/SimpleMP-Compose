@@ -12,7 +12,7 @@
     <string name="noMusicPlaying">No music playing. Click to open the app.</string>
 
     <string name="search_songs">Search Songs</string>
-    <string name="SearchArtists">Search Artists</string>
+    <string name="search_artists">Search Artists</string>
     <string name="SearchAlbums">Search Albums</string>
     <string name="SearchPlaylists">Search Playlists</string>
     <string name="ModificationDate">Sort By Modification Date</string>
@@ -34,7 +34,7 @@
     <string name="PlaylistName">Playlist name</string>
     <string name="InsertPlaylistName">Insert playlist name</string>
     <string name="Create">Create</string>
-    <string name="Play">Play</string>
+    <string name="play">Play</string>
     <string name="Shuffle">Shuffle</string>
     <string name="EditPlaylist">Edit Playlist</string>
     <string name="DeletePlaylist">Delete Playlist</string>

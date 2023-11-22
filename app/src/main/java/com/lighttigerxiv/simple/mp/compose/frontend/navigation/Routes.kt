@@ -16,10 +16,17 @@ object Routes{
 
         object Library{
             const val HOME = "home"
+            const val ARTISTS_ROOT = "artists_root"
             const val ARTISTS = "artists"
+            const val ARTISTS_ARTIST = "artists_artist"
+            const val ARTISTS_ARTIST_ALBUM = "artists_artist_album"
+            const val ALBUMS_ROOT = "albums_root"
             const val ALBUMS = "albums"
+            const val ALBUMS_ALBUM = "album"
+            const val PLAYLISTS_ROOT = "playlists_root"
             const val PLAYLISTS = "playlists"
+            const val PLAYLISTS_GENRE = "playlists_genre"
+            const val PLAYLISTS_USER = "playlists_user"
         }
-
     }
 }

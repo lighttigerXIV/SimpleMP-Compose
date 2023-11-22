@@ -52,9 +52,9 @@ class HomeScreenVM(
     init {
 
         viewModelScope.launch(Dispatchers.Main) {
-            playbackRepository.currentSong.collect { song ->
+            playbackRepository.currentSongState.collect { newSongState ->
                 _uiState.update {
-                    uiSate.value.copy(currentSong = song)
+                    uiSate.value.copy(currentSong = newSongState?.currentSong)
                 }
             }
         }
@@ -112,7 +112,7 @@ class HomeScreenVM(
     }
 
     fun playSong(song: Song) {
-        playbackRepository.playSelectedSong(uiSate.value.songs, song)
+        playbackRepository.playSelectedSong(song, uiSate.value.songs)
     }
 
     fun shuffleAndPlay(){

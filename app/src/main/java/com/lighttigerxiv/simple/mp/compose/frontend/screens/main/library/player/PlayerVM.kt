@@ -2,7 +2,6 @@ package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.player
 
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.burnoutcrew.reorderable.ItemPosition
 
 class PlayerVM(
     private val playbackRepository: PlaybackRepository,
@@ -39,114 +37,67 @@ class PlayerVM(
     }
 
     data class UiState(
-        val playingPlaylist: List<Song>,
-        val upNextPlaylist: List<Song>,
-        val currentSong: Song?,
-        val currentSongPosition: Int,
-        val currentSongArtistName: String,
-        val currentSongArt: Bitmap?,
-        val pagerAlbumsArts: List<Bitmap?>,
-        val isPlaying: Boolean,
-        val shuffle: Boolean,
-        val repeatState: RepeatSate,
-        val currentProgress: Int,
-        val currentProgressAsTime: String,
-        val songDurationAsTime: String,
+        val playingPlaylist: List<Song> = ArrayList(),
+        val upNextPlaylist: List<Song> = ArrayList(),
+        val currentSong: Song? = null,
+        val currentSongPosition: Int = 0,
+        val currentSongArtistName: String = "",
+        val smallAlbumArt: Bitmap? = null,
+        val pagerAlbumsArts: List<Bitmap?> = ArrayList(),
+        val isPlaying: Boolean = false,
+        val shuffle: Boolean = false,
+        val repeatState: RepeatSate = RepeatSate.Off,
+        val currentProgress: Int = 0,
+        val currentProgressAsTime: String = "",
+        val songDurationAsTime: String = "",
+        val showUpNextPlaylist: Boolean = false
     )
 
 
-    private val _uiState = MutableStateFlow(
-        UiState(
-            playingPlaylist = ArrayList(),
-            upNextPlaylist = ArrayList(),
-            currentSong = null,
-            currentSongPosition = 0,
-            currentSongArtistName = "",
-            currentSongArt = null,
-            pagerAlbumsArts = ArrayList(),
-            isPlaying = false,
-            shuffle = false,
-            repeatState = RepeatSate.Off,
-            currentProgress = 0,
-            currentProgressAsTime = "",
-            songDurationAsTime = ""
-        )
-    )
+    private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
     init {
-
         viewModelScope.launch(Dispatchers.Main) {
-            playbackRepository.currentSong.collect { newSong ->
-
-                _uiState.update {
-                    uiState.value.copy(
-                        currentSong = newSong,
-                        currentSongPosition = playbackRepository.currentSongPosition.value,
-                        currentSongArt = playbackRepository.currentSongArt.value,
-                        currentSongArtistName = playbackRepository.currentSongArtistName.value,
-                        songDurationAsTime = (newSong?.duration ?: 0).asTime()
-                    )
+            playbackRepository.playlistsState.collect { newPlaylistsState ->
+                if (newPlaylistsState != null) {
+                    _uiState.update {
+                        uiState.value.copy(
+                            playingPlaylist = newPlaylistsState.current,
+                            upNextPlaylist = newPlaylistsState.upNext,
+                            currentSongPosition = newPlaylistsState.songPosition,
+                            pagerAlbumsArts = playbackRepository.getPlayingPlaylistAlbumArts()
+                        )
+                    }
                 }
             }
         }
 
         viewModelScope.launch(Dispatchers.Main) {
-            playbackRepository.playingPlaylist.collect { newPlayingPlaylist ->
-                _uiState.update {
-                    uiState.value.copy(
-                        playingPlaylist = newPlayingPlaylist
-                    )
+            playbackRepository.currentSongState.collect { newCurrentSongState ->
+                if (newCurrentSongState != null) {
+                    _uiState.update {
+                        uiState.value.copy(
+                            currentSong = newCurrentSongState.currentSong,
+                            currentSongArtistName = newCurrentSongState.artistName,
+                            smallAlbumArt = libraryRepository.getSmallAlbumArt(newCurrentSongState.currentSong.albumId)
+                        )
+                    }
                 }
             }
         }
 
         viewModelScope.launch(Dispatchers.Main) {
-            playbackRepository.upNextPlaylist.collect { newUpNextPlaylist ->
-                _uiState.update {
-                    uiState.value.copy(
-                        upNextPlaylist = newUpNextPlaylist
-                    )
-                }
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.Main) {
-            playbackRepository.currentSongPosition.collect {
-                _uiState.update {
-                    uiState.value.copy(
-                        currentSongPosition = playbackRepository.currentSongPosition.value,
-                        pagerAlbumsArts = playbackRepository.getCurrentPlaylistAlbumArts()
-                    )
-                }
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.Main) {
-            playbackRepository.isPlaying.collect { newIsPlaying ->
-                _uiState.update { uiState.value.copy(isPlaying = newIsPlaying) }
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.Main) {
-            playbackRepository.shuffle.collect { newShuffle ->
-                _uiState.update { uiState.value.copy(shuffle = newShuffle) }
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.Main) {
-            playbackRepository.repeatState.collect { newRepeatState ->
-                _uiState.update { uiState.value.copy(repeatState = newRepeatState) }
-            }
-        }
-
-        viewModelScope.launch(Dispatchers.Main) {
-            playbackRepository.currentProgress.collect { newProgress ->
-
-                _uiState.update {
-                    uiState.value.copy(
-                        currentProgress = newProgress
-                    )
+            playbackRepository.playbackState.collect { newPlaybackState ->
+                if (newPlaybackState != null) {
+                    _uiState.update {
+                        uiState.value.copy(
+                            isPlaying = newPlaybackState.isPlaying,
+                            shuffle = newPlaybackState.shuffle,
+                            repeatState = newPlaybackState.repeatSate,
+                            currentProgress = newPlaybackState.progress.toInt()
+                        )
+                    }
                 }
             }
         }
@@ -157,15 +108,15 @@ class PlayerVM(
     }
 
     fun pauseOrResume() {
-        playbackRepository.pauseOrResume()
+        playbackRepository.pauseResume()
     }
 
-    fun previous(testFiveSeconds: Boolean = true) {
-        playbackRepository.previous(testFiveSeconds)
+    fun skipToPrevious(testFiveSeconds: Boolean = true) {
+        playbackRepository.skipToPrevious(testFiveSeconds)
     }
 
-    fun skip() {
-        playbackRepository.skip()
+    fun skipToNext() {
+        playbackRepository.skipToNext()
     }
 
 
@@ -178,7 +129,7 @@ class PlayerVM(
     }
 
     fun toggleRepeatState() {
-        playbackRepository.toggleRepeatState()
+        playbackRepository.toggleRepeat()
     }
 
     fun updateCurrentProgressAsTime(newProgress: Int) {
@@ -205,5 +156,13 @@ class PlayerVM(
         if (fromId is Long && toId is Long) {
             playbackRepository.reorderPlayingPlaylist(fromId, toId)
         }
+    }
+
+    fun updateShowPlaylist(v: Boolean) {
+        _uiState.update { uiState.value.copy(showUpNextPlaylist = v) }
+    }
+
+    fun getSongPosition(): Int{
+        return uiState.value.currentSongPosition
     }
 }

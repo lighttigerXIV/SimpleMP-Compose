@@ -7,8 +7,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 fun NavController.openNavbarRoute(route: String) {
     val controller = this
 
-    this.navigate(route){
-        popUpTo(controller.graph.findStartDestination().id){
+    this.navigate(route) {
+        popUpTo(controller.graph.findStartDestination().id) {
             saveState = true
         }
         restoreState = true
@@ -47,13 +47,26 @@ fun NavController.goToHome() {
 }
 
 fun NavController.goToArtists() {
-    this.openNavbarRoute(Routes.Main.Library.ARTISTS)
+    this.openNavbarRoute(Routes.Main.Library.ARTISTS_ROOT)
 }
 
 fun NavController.goToAlbums() {
-    this.openNavbarRoute(Routes.Main.Library.ALBUMS)
+    this.openNavbarRoute(Routes.Main.Library.ALBUMS_ROOT)
 }
 
 fun NavController.goToPlaylists() {
     this.openNavbarRoute(Routes.Main.Library.PLAYLISTS)
+}
+
+fun NavController.goToArtist(artistId: Long) {
+    this.navigate("${Routes.Main.Library.ARTISTS_ARTIST}/$artistId")
+}
+
+
+fun NavController.goToArtistAlbum(albumId: Long) {
+    this.navigate("${Routes.Main.Library.ARTISTS_ARTIST_ALBUM}/$albumId")
+}
+
+fun NavController.goToAlbum(albumId: Long) {
+    this.navigate("${Routes.Main.Library.ALBUMS_ALBUM}/$albumId")
 }

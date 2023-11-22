@@ -60,12 +60,14 @@ class Queries(private val realm: Realm) {
 
     suspend fun addAlbum(
         id: Long,
-        name: String
+        name: String,
+        artistId: Long
     ){
 
         val album = Album()
         album.id = id
         album.name = name
+        album.artistId = artistId
 
         realm.write {
             copyToRealm(album)

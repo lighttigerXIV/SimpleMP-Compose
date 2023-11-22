@@ -19,18 +19,67 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.lighttigerxiv.simple.mp.compose.backend.playback.PlaybackService
 import com.lighttigerxiv.simple.mp.compose.backend.playback.RepeatSate
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
-import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import org.burnoutcrew.reorderable.ItemPosition
 
 class PlaybackRepository(
     private val libraryRepository: LibraryRepository,
     private val application: Application
 ) {
 
-    val player = ExoPlayer.Builder(application).build()
+    companion object States {
+        data class CurrentSongState(
+            val currentSong: Song,
+            val artistName: String,
+            val albumName: String,
+            val albumArt: Bitmap?
+        )
+
+        data class PlaylistsState(
+            val original: List<Song>,
+            val shuffled: List<Song>,
+            val current: List<Song>,
+            val upNext: List<Song>,
+            val songPosition: Int
+        )
+
+        data class PlaybackState(
+            val isPlaying: Boolean = false,
+            val shuffle: Boolean = false,
+            val repeatSate: RepeatSate = RepeatSate.Off,
+            val progress: Long = 0
+        )
+    }
+
+    val player = ExoPlayer.Builder(application).build().also { player ->
+        player.addListener(object : Player.Listener {
+
+            override fun onPlaybackStateChanged(state: Int) {
+
+                if (state == Player.STATE_ENDED) {
+
+                    if (playbackState.value!!.repeatSate == RepeatSate.One) {
+                        _playbackState.update { playbackState.value!!.copy(repeatSate = RepeatSate.Off) }
+                        player.seekTo(0)
+                        return
+                    }
+
+                    if (playbackState.value!!.repeatSate == RepeatSate.Endless) {
+                        player.seekTo(0)
+                        return
+                    }
+
+                    if (playlistsState.value!!.songPosition + 1 < playlistsState.value!!.current.size) {
+                        skipToNext()
+                    }
+                }
+
+                super.onPlaybackStateChanged(state)
+            }
+        })
+    }
+
     val session = MediaSessionCompat(application, "SimpleMPMediaSession").apply {
         setCallback(object : MediaSessionCompat.Callback() {
             override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
@@ -41,19 +90,19 @@ class PlaybackRepository(
 
                     when (keyEvent.keyCode) {
                         KeyEvent.KEYCODE_MEDIA_PREVIOUS -> {
-                            previous()
+                            skipToPrevious()
                         }
 
                         KeyEvent.KEYCODE_MEDIA_NEXT -> {
-                            skip()
+                            skipToNext()
                         }
 
                         KeyEvent.KEYCODE_MEDIA_PLAY -> {
-                            pauseOrResume()
+                            pauseResume()
                         }
 
                         KeyEvent.KEYCODE_MEDIA_PAUSE -> {
-                            pauseOrResume()
+                            pauseResume()
                         }
                     }
                 }
@@ -62,28 +111,33 @@ class PlaybackRepository(
             }
 
             override fun onPlay() {
+                pauseResume()
                 super.onPlay()
-                pauseOrResume()
             }
 
             override fun onPause() {
+                pauseResume()
                 super.onPause()
-                pauseOrResume()
             }
 
             override fun onSkipToNext() {
+                skipToNext()
                 super.onSkipToNext()
-                skip()
             }
 
             override fun onSkipToPrevious() {
+                skipToPrevious()
                 super.onSkipToPrevious()
-                previous()
             }
 
             override fun onStop() {
+                stop()
                 super.onStop()
-                onStop()
+            }
+
+            override fun onSeekTo(pos: Long) {
+                seekTo((pos / 1000).toInt())
+                super.onSeekTo(pos)
             }
         })
     }
@@ -106,8 +160,6 @@ class PlaybackRepository(
             }
         }
         build()
-
-
     }
 
     private fun requestFocusAndPlay() {
@@ -119,7 +171,12 @@ class PlaybackRepository(
             when (resource) {
                 AudioManager.AUDIOFOCUS_REQUEST_GRANTED -> {
                     player.play()
-                    _isPlaying.update { true }
+                    session.isActive = true
+
+                    setPlaybackState(PlaybackStateCompat.STATE_PLAYING)
+                    _playbackState.update { playbackState.value!!.copy(isPlaying = true) }
+
+                    updateNotification()
                 }
             }
         }
@@ -133,6 +190,8 @@ class PlaybackRepository(
                     PlaybackStateCompat.ACTION_PLAY_PAUSE
                             or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
                             or PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                            or PlaybackStateCompat.ACTION_SEEK_TO
+                            or PlaybackStateCompat.ACTION_STOP
                 )
                 .apply {
                     setState(state, player.currentPosition, 1.0f)
@@ -145,228 +204,18 @@ class PlaybackRepository(
         }
     }
 
-
     //==========================================//
     //============== PLAYBACK ==================//
     //==========================================//
 
-    private var playlist: List<Song> = ArrayList()
-    private var shuffledPlaylist: List<Song> = ArrayList()
+    private val _currentSongState = MutableStateFlow<CurrentSongState?>(null)
+    val currentSongState = _currentSongState.asStateFlow()
 
-    private val _currentSongPosition = MutableStateFlow(-1)
-    val currentSongPosition = _currentSongPosition.asStateFlow()
+    private val _playlistsState = MutableStateFlow<PlaylistsState?>(null)
+    val playlistsState = _playlistsState.asStateFlow()
 
-    private val _playingPlaylist = MutableStateFlow<List<Song>>(ArrayList())
-    val playingPlaylist = _playingPlaylist.asStateFlow()
-
-    private val _upNextPlaylist = MutableStateFlow<List<Song>>(ArrayList())
-    val upNextPlaylist = _upNextPlaylist.asStateFlow()
-    private fun updateUpNextPlaylist() {
-        _upNextPlaylist.update { playingPlaylist.value.filterIndexed { index, _ -> index > currentSongPosition.value } }
-    }
-
-    private val _currentSong = MutableStateFlow<Song?>(null)
-    val currentSong = _currentSong.asStateFlow()
-
-    private val _currentSongArt = MutableStateFlow<Bitmap?>(null)
-    val currentSongArt = _currentSongArt.asStateFlow()
-
-    private val _currentSongArtistName = MutableStateFlow("")
-    val currentSongArtistName = _currentSongArtistName.asStateFlow()
-
-    private val _currentSongAlbumName = MutableStateFlow("")
-    val currentSongAlbumName = _currentSongAlbumName.asStateFlow()
-
-    private val _currentProgress = MutableStateFlow(0)
-    val currentProgress = _currentProgress.asStateFlow()
-
-    private val _shuffle = MutableStateFlow(false)
-    val shuffle = _shuffle.asStateFlow()
-
-    private val _repeatState = MutableStateFlow(RepeatSate.Off)
-    val repeatState = _repeatState.asStateFlow()
-
-    private val _isPlaying = MutableStateFlow(false)
-    val isPlaying = _isPlaying.asStateFlow()
-
-
-    private fun updateCurrentSongInfo(song: Song) {
-
-        _currentSong.update { song }
-        _currentSongArt.update { libraryRepository.getLargeAlbumArt(song.albumId) }
-        _currentSongArtistName.update { libraryRepository.getArtistName(song.artistId) }
-        _currentSongAlbumName.update { libraryRepository.getAlbumName(song.albumId) }
-    }
-
-    fun playSelectedSong(newPlaylist: List<Song>, song: Song) {
-
-        playlist = newPlaylist
-        shuffledPlaylist = ArrayList()
-
-        if (shuffle.value) {
-
-            val newShuffledPlaylist = newPlaylist.shuffled().toMutableList().apply {
-                remove(song)
-                add(0, song)
-            }
-
-            _playingPlaylist.update { newShuffledPlaylist }
-            _currentSongPosition.update { 0 }
-            updateCurrentSongInfo(song)
-            updateUpNextPlaylist()
-        } else {
-
-            _playingPlaylist.update { playlist }
-            _currentSongPosition.update { playlist.indexOf(song) }
-            updateCurrentSongInfo(song)
-            updateUpNextPlaylist()
-        }
-
-        playSong(song)
-    }
-
-    fun shuffleAndPlay(newPlaylist: List<Song>) {
-
-        _shuffle.update { true }
-
-        playlist = newPlaylist
-        shuffledPlaylist = newPlaylist.shuffled()
-
-        _currentSongPosition.update { 0 }
-
-        _playingPlaylist.update { shuffledPlaylist }
-        updateCurrentSongInfo(shuffledPlaylist[0])
-        updateUpNextPlaylist()
-
-        playSong(shuffledPlaylist[0])
-    }
-
-    private fun playSong(song: Song) {
-        player.setMediaItem(MediaItem.fromUri(song.path))
-        player.prepare()
-
-        player.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(playbackState: Int) {
-
-                if (playbackState == Player.STATE_ENDED) {
-
-                    if (repeatState.value == RepeatSate.One) {
-                        _repeatState.update { RepeatSate.Off }
-                        player.seekTo(0)
-                        return
-                    }
-
-                    if (repeatState.value == RepeatSate.Endless) {
-                        player.seekTo(0)
-                        return
-                    }
-
-                    if (currentSongPosition.value + 1 < playingPlaylist.value.size) {
-                        _currentSongPosition.update { it + 1 }
-
-                        val nextSong = playingPlaylist.value[currentSongPosition.value]
-
-                        updateCurrentSongInfo(nextSong)
-                        playSong(nextSong)
-                        updateNotification()
-                    }
-
-                    updateUpNextPlaylist()
-                }
-
-                super.onPlaybackStateChanged(playbackState)
-            }
-        })
-
-        val handler = Handler(Looper.getMainLooper())
-        handler.post(object : Runnable {
-            override fun run() {
-                if (player.isPlaying)
-                    setPlaybackState(PlaybackStateCompat.STATE_PLAYING)
-                else
-                    setPlaybackState(PlaybackStateCompat.STATE_PAUSED)
-
-                _currentProgress.update { player.currentPosition.toInt() }
-
-                handler.postDelayed(this, 1000)
-            }
-        })
-
-        requestFocusAndPlay()
-        updateNotification()
-    }
-
-    fun getCurrentPlaylistAlbumArts(): List<Bitmap?> {
-        return playingPlaylist.value.map { libraryRepository.getLargeAlbumArt(it.albumId) }
-    }
-
-    private fun updateNotification() {
-        if (currentSong.value != null) {
-            val intent = Intent(application, PlaybackService::class.java)
-            intent.action = PlaybackService.Actions.NOTIFY
-            application.startService(intent)
-        }
-    }
-
-
-    private fun pause() {
-        if (player.isPlaying) {
-            player.pause()
-            _isPlaying.update { false }
-        }
-    }
-
-    private fun resume() {
-        if (!player.isPlaying) {
-            requestFocusAndPlay()
-        }
-    }
-
-    fun pauseOrResume() {
-
-        if (player.isPlaying) {
-            pause()
-        } else {
-            resume()
-        }
-    }
-
-    fun previous(testFiveSeconds: Boolean = true) {
-
-        if (testFiveSeconds && player.currentPosition > 5000) {
-            player.seekTo(0)
-            return
-        }
-
-        if (currentSongPosition.value - 1 >= 0) {
-            _currentSongPosition.update { it - 1 }
-
-            val song = playingPlaylist.value[currentSongPosition.value]
-
-            playSong(song)
-            updateCurrentSongInfo(song)
-            updateUpNextPlaylist()
-            updateNotification()
-        }
-    }
-
-    fun skip() {
-
-        if (currentSongPosition.value + 1 < playingPlaylist.value.size) {
-            _currentSongPosition.update { it + 1 }
-
-            val song = playingPlaylist.value[currentSongPosition.value]
-
-            playSong(song)
-            updateCurrentSongInfo(song)
-            updateUpNextPlaylist()
-            updateNotification()
-
-            if (repeatState.value != RepeatSate.Off) {
-                _repeatState.update { RepeatSate.Off }
-            }
-        }
-    }
+    private val _playbackState = MutableStateFlow<PlaybackState?>(null)
+    val playbackState = _playbackState.asStateFlow()
 
     fun seekTo(seconds: Int) {
         player.seekTo((seconds * 1000).toLong())
@@ -374,66 +223,238 @@ class PlaybackRepository(
 
     fun toggleShuffle() {
 
-        if (shuffle.value) {
-            _shuffle.update { false }
-            _currentSongPosition.update { playlist.indexOf(currentSong.value) }
-            _playingPlaylist.update { playlist }
-            updateCurrentSongInfo(playlist[playlist.indexOf(currentSong.value)])
-            updateUpNextPlaylist()
+        if (playbackState.value!!.shuffle) {
+
+            _playbackState.update { playbackState.value!!.copy(shuffle = false) }
+
+
+
+            _playlistsState.update {
+                playlistsState.value?.copy(
+                    current = playlistsState.value!!.original,
+                    upNext = playlistsState.value!!.original.filterIndexed { index, _ -> index > 0 },
+                    songPosition = playlistsState.value!!.original.indexOf(currentSongState.value?.currentSong)
+                )
+            }
 
         } else {
-            _shuffle.update { true }
 
-            val song = playlist[playlist.indexOf(currentSong.value)]
+            _playbackState.update { playbackState.value!!.copy(shuffle = true) }
 
-            val newShuffledPlaylist = playlist.shuffled().toMutableList().apply {
+            val shuffledPlaylist = playlistsState.value!!.original.shuffled().toMutableList().apply {
+                remove(currentSongState.value!!.currentSong)
+                add(0, currentSongState.value!!.currentSong)
+            }
+
+            _playlistsState.update {
+                playlistsState.value?.copy(
+                    shuffled = shuffledPlaylist,
+                    current = shuffledPlaylist,
+                    upNext = shuffledPlaylist.filterIndexed { index, _ -> index > 0 },
+                    songPosition = 0
+                )
+            }
+        }
+    }
+
+    fun skipToPrevious(testFiveSeconds: Boolean = true) {
+        if (testFiveSeconds) {
+
+            if (player.currentPosition > 5000) {
+                player.seekTo(0)
+                return
+            }
+        }
+
+        if (playlistsState.value!!.songPosition - 1 >= 0) {
+
+            val newPosition = playlistsState.value!!.songPosition - 1
+
+            _playlistsState.update {
+                playlistsState.value!!.copy(
+                    songPosition = newPosition
+                )
+            }
+
+            playSong()
+        }
+    }
+
+    fun pauseResume() {
+        if (playbackState.value?.isPlaying == true) {
+            pause()
+        } else {
+            resume()
+        }
+    }
+
+    private fun pause() {
+        player.pause()
+        session.isActive = false
+        _playbackState.update { playbackState.value?.copy(isPlaying = false) }
+
+        setPlaybackState(PlaybackStateCompat.STATE_PAUSED)
+    }
+
+    private fun resume() {
+        player.play()
+        session.isActive = true
+        _playbackState.update { playbackState.value?.copy(isPlaying = true) }
+
+        setPlaybackState(PlaybackStateCompat.STATE_PLAYING)
+    }
+
+    fun skipToNext() {
+        if (playlistsState.value!!.songPosition + 1 < playlistsState.value!!.current.size) {
+
+            val newPosition = playlistsState.value!!.songPosition + 1
+
+            _playlistsState.update {
+                playlistsState.value!!.copy(
+                    songPosition = newPosition
+                )
+            }
+
+            playSong()
+        }
+    }
+
+    fun toggleRepeat() {
+        when (playbackState.value!!.repeatSate) {
+            RepeatSate.Off -> {
+                _playbackState.update { playbackState.value!!.copy(repeatSate = RepeatSate.One) }
+            }
+
+            RepeatSate.One -> {
+                _playbackState.update { playbackState.value!!.copy(repeatSate = RepeatSate.Endless) }
+            }
+
+            RepeatSate.Endless -> {
+                _playbackState.update { playbackState.value!!.copy(repeatSate = RepeatSate.Off) }
+            }
+        }
+    }
+
+    fun playSelectedSong(song: Song, playlist: List<Song>) {
+
+        if (playbackState.value == null) {
+            _playbackState.update { PlaybackState() }
+        }
+
+        if (playbackState.value!!.shuffle) {
+
+            val shuffledPlaylist = playlist.shuffled().toMutableList().apply {
                 remove(song)
                 add(0, song)
             }
 
-            _playingPlaylist.update { newShuffledPlaylist }
-            _currentSongPosition.update { 0 }
-            updateCurrentSongInfo(song)
-            updateUpNextPlaylist()
+            _playlistsState.update {
+                PlaylistsState(
+                    original = playlist,
+                    shuffled = shuffledPlaylist,
+                    current = shuffledPlaylist,
+                    upNext = shuffledPlaylist.filterIndexed { index, _ -> index > 0 },
+                    songPosition = 0
+                )
+            }
+
+        } else {
+
+            val songPosition = playlist.indexOf(song)
+
+            _playlistsState.update {
+                PlaylistsState(
+                    original = playlist,
+                    shuffled = ArrayList(),
+                    current = playlist,
+                    upNext = playlist.filterIndexed { index, _ -> index > songPosition },
+                    songPosition = songPosition
+                )
+            }
         }
 
-        updateUpNextPlaylist()
+        playSong()
     }
 
-    fun toggleRepeatState() {
+    fun shuffleAndPlay(playlist: List<Song>) {
 
-        when (repeatState.value) {
-            RepeatSate.Off -> {
-                _repeatState.update { RepeatSate.One }
-            }
+        _playbackState.update { PlaybackState(shuffle = true) }
 
-            RepeatSate.One -> {
-                _repeatState.update { RepeatSate.Endless }
-            }
+        val shuffledPlaylist = playlist.shuffled()
 
-            RepeatSate.Endless -> {
-                _repeatState.update { RepeatSate.Off }
-            }
+        _playlistsState.update {
+            PlaylistsState(
+                original = playlist,
+                shuffled = shuffledPlaylist,
+                current = shuffledPlaylist,
+                upNext = shuffledPlaylist.filterIndexed { index, _ -> index > 0 },
+                songPosition = 0
+            )
         }
+
+        playSong()
     }
 
+    private fun playSong() {
 
-    fun resetPlayback() {
-        _currentSong.update { null }
-        _currentSongArt.update { null }
-        _currentSongAlbumName.update { "" }
-        _currentSongArtistName.update { "" }
-        _currentProgress.update { 0 }
+        val songPosition = playlistsState.value!!.songPosition
+        val song = playlistsState.value!!.current[songPosition]
+
+        _currentSongState.update {
+            CurrentSongState(
+                currentSong = song,
+                artistName = libraryRepository.getArtistName(song.artistId),
+                albumName = libraryRepository.getAlbumName(song.albumId),
+                albumArt = libraryRepository.getLargeAlbumArt(song.albumId)
+            )
+        }
+
+        _playlistsState.update {
+            playlistsState.value!!.copy(
+                upNext = playlistsState.value!!.current.filterIndexed { index, _ -> index > songPosition }
+            )
+        }
+
+        player.setMediaItem(MediaItem.fromUri(song.path))
+        player.prepare()
+        requestFocusAndPlay()
+
+        val handler = Handler(Looper.getMainLooper())
+        handler.post(object : Runnable {
+            override fun run() {
+
+                _playbackState.update { playbackState.value!!.copy(progress = player.currentPosition) }
+
+                handler.postDelayed(this, 1000)
+            }
+        })
     }
 
-    fun stop() {
+    fun stop(skipStopService: Boolean = false) {
+
+        if (!skipStopService) {
+            val intent = Intent(application, PlaybackService::class.java)
+            intent.action = PlaybackService.Actions.STOP
+            application.startService(intent)
+        }
+
+        player.stop()
+        player.release()
+        session.isActive = false
+
+        _playbackState.update { null }
+        _currentSongState.update { null }
+        _playlistsState.update { null }
+    }
+
+    private fun updateNotification() {
         val intent = Intent(application, PlaybackService::class.java)
-        intent.action = PlaybackService.Actions.STOP
+        intent.action = PlaybackService.Actions.NOTIFY
         application.startService(intent)
     }
 
     fun reorderPlayingPlaylist(fromId: Long, toId: Long) {
-        val newPlaylist = playingPlaylist.value.toMutableList()
+        val newPlaylist = playlistsState.value!!.current.toMutableList()
         val fromIndex = newPlaylist.indexOfFirst { it.id == fromId }
         val toIndex = newPlaylist.indexOfFirst { it.id == toId }
 
@@ -441,7 +462,15 @@ class PlaybackRepository(
         newPlaylist[fromIndex] = newPlaylist[toIndex]
         newPlaylist[toIndex] = temp
 
-        _playingPlaylist.update { newPlaylist }
-        updateUpNextPlaylist()
+        _playlistsState.update {
+            playlistsState.value!!.copy(
+                current = newPlaylist,
+                upNext = newPlaylist.filterIndexed { index, _ -> index > playlistsState.value!!.songPosition }
+            )
+        }
+    }
+
+    fun getPlayingPlaylistAlbumArts(): List<Bitmap?> {
+        return playlistsState.value!!.current.map { song -> libraryRepository.getLargeAlbumArt(song.albumId) }
     }
 }

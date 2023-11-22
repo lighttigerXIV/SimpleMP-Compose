@@ -27,6 +27,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
@@ -90,12 +93,14 @@ fun SongCard(
 
             Text(
                 text = artistName,
-                fontWeight = FontWeight.Normal,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
+
     }
 }
 
@@ -122,7 +127,7 @@ fun PlayingListSongCard(
                 modifier = Modifier
                     .size(70.dp)
                     .clip(RoundedCornerShape(Sizes.SMALL)),
-                bitmap = remember { mutableStateOf(art.asImageBitmap()) }.value,
+                bitmap = remember{art}.asImageBitmap(),
                 contentDescription = null
             )
         } else {
@@ -144,6 +149,7 @@ fun PlayingListSongCard(
 
 
         HSpacer(size = Sizes.LARGE)
+
 
         Column(
             modifier = Modifier

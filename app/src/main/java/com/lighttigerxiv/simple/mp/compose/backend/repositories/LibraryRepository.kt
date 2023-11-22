@@ -54,6 +54,10 @@ class LibraryRepository() {
             _songs.update { queries.getSongs() }
             _artists.update { queries.getArtists() }
             _albums.update { queries.getAlbums() }
+
+            Log.d("Songs", _songs.value.toString())
+            Log.d("Artists", _artists.value.toString())
+            Log.d("Albums", _albums.value.toString())
         }
     }
 
@@ -144,6 +148,9 @@ class LibraryRepository() {
                             val album = Album()
                             album.id = albumId
                             album.name = albumName
+                            album.artistId = artistId
+
+                            albums.add(album)
                         }
 
                         val song = Song()
@@ -165,7 +172,7 @@ class LibraryRepository() {
 
             queries.clearCache()
 
-            albums.forEach { album -> queries.addAlbum(album.id, album.name) }
+            albums.forEach { album -> queries.addAlbum(album.id, album.name, album.artistId) }
             artists.forEach { artist -> queries.addArtist(artist.id, artist.name) }
             songs.forEach { song ->
                 queries.addSong(
@@ -235,7 +242,20 @@ class LibraryRepository() {
         return artists.value.find { it.id == artistId }?.name ?: "n/a"
     }
 
+
+    fun getArtistSongs(artistId: Long): List<Song>{
+        return songs.value.filter { it.artistId == artistId }
+    }
+
+    fun getArtistAlbums(artistId: Long): List<Album>{
+        return albums.value.filter { it.artistId == artistId }
+    }
+
     fun getAlbumName(albumId: Long): String{
         return albums.value.find { it.id == albumId }?.name ?: "n/a"
+    }
+
+    fun getAlbumSongs(albumId: Long): List<Song>{
+        return songs.value.filter { it.albumId == albumId }
     }
 }

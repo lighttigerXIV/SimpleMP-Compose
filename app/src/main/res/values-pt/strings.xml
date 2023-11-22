@@ -6,7 +6,7 @@
     <string name="add_widget">Adicionar Widget</string>
     <string name="noMusicPlaying">Sem música a tocar. Clique para abir a aplicação</string>
     <string name="search_songs">Procurar Músicas</string>
-    <string name="SearchArtists">Procurar Artistas</string>
+    <string name="search_artists">Procurar Artistas</string>
     <string name="SearchAlbums">Procurar Álbums</string>
     <string name="SearchPlaylists">Procurar Playlists</string>
     <string name="SortByRecentlyAdded">Ordenar Por Mais Recente</string>
@@ -25,7 +25,7 @@
     <string name="PlaylistName">Nome da playlist</string>
     <string name="InsertPlaylistName">Insira o nome da playlist</string>
     <string name="Create">Criar</string>
-    <string name="Play">Tocar</string>
+    <string name="play">Tocar</string>
     <string name="Shuffle">Aleatório</string>
     <string name="EditPlaylist">Editar Playlist</string>
     <string name="DeletePlaylist">Eliminar Playlist</string>

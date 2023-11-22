@@ -1,6 +1,7 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.player
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalOverscrollConfiguration
@@ -23,7 +24,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,7 +39,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -66,31 +65,27 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
-@OptIn(ExperimentalMotionApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMotionApi::class)
 @Composable
 fun Player(
     vm: PlayerVM = viewModel(factory = PlayerVM.Factory),
     hideMiniPlayer: Boolean,
     onOpenPlayer: () -> Unit,
     onClosePlayer: () -> Unit,
-    showPlayerProgress: Float,
-    mainPagerState: PagerState
+    showPlayerProgress: Float
 ) {
 
     val uiState = vm.uiState.collectAsState().value
     val playingPlaylistListState = rememberReorderableLazyListState(onMove = { from, to -> vm.reorderPlayingPlaylist(from.key, to.key) })
     val context = LocalContext.current
 
-    LaunchedEffect(mainPagerState.currentPage, uiState.currentSong, uiState.upNextPlaylist) {
-        if (mainPagerState.currentPage == 0 && uiState.upNextPlaylist.isNotEmpty()) {
-            playingPlaylistListState.listState.scrollToItem(0)
-        }
+    LaunchedEffect(uiState.showUpNextPlaylist) {
+        playingPlaylistListState.listState.scrollToItem(0)
     }
 
     if (!hideMiniPlayer) {
@@ -121,37 +116,37 @@ fun Player(
                     .padding(Sizes.XLARGE)
             ) {
 
-                TopRow(onClosePlayer = { onClosePlayer() }, mainPagerState)
+                TopRow(
+                    vm = vm,
+                    uiState = uiState,
+                    onClosePlayer = { onClosePlayer() }
+                )
 
                 VSpacer(size = Sizes.LARGE)
 
-                HorizontalPager(
-                    state = mainPagerState,
-                    pageSpacing = Sizes.XLARGE
-                ) { page ->
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        if (page == 0) {
-                            AlbumArtPager(vm = vm, uiState = uiState)
 
-                            VSpacer(size = Sizes.LARGE)
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    if (!uiState.showUpNextPlaylist) {
+                        AlbumArtPager(vm = vm, uiState = uiState)
 
-                            NameAndTitleRow(uiState = uiState)
+                        VSpacer(size = Sizes.LARGE)
 
-                            VSpacer(size = Sizes.LARGE)
+                        NameAndTitleRow(uiState = uiState)
 
-                            PlayerSlider(vm = vm, uiState = uiState)
+                        VSpacer(size = Sizes.LARGE)
 
-                            VSpacer(size = Sizes.LARGE)
+                        PlayerSlider(vm = vm, uiState = uiState)
 
-                            MediaButtons(vm = vm, uiState = uiState)
-                        }
+                        VSpacer(size = Sizes.LARGE)
 
-                        if (page == 1) {
+                        MediaButtons(vm = vm, uiState = uiState)
+                    }
 
-                            PlayingPlaylist(uiState, vm, playingPlaylistListState)
-                        }
+                    if (uiState.showUpNextPlaylist) {
+
+                        PlayingPlaylist(uiState, vm, playingPlaylistListState)
                     }
                 }
             }
@@ -178,13 +173,13 @@ fun MiniPlayer(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            if (uiState.currentSongArt != null) {
+            if (uiState.smallAlbumArt != null) {
                 Image(
                     modifier = Modifier
                         .fillMaxHeight()
                         .aspectRatio(1f)
                         .clip(RoundedCornerShape(Sizes.SMALL)),
-                    bitmap = uiState.currentSongArt.asImageBitmap(),
+                    bitmap = uiState.smallAlbumArt.asImageBitmap(),
                     contentDescription = null
                 )
             } else {
@@ -244,14 +239,12 @@ fun MiniPlayer(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TopRow(
-    onClosePlayer: () -> Unit,
-    mainPagerState: PagerState
+    vm: PlayerVM,
+    uiState: PlayerVM.UiState,
+    onClosePlayer: () -> Unit
 ) {
-
-    val scope = rememberCoroutineScope()
 
     Row(
         modifier = Modifier
@@ -284,9 +277,9 @@ fun TopRow(
             Row(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .background(if (mainPagerState.currentPage == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
+                    .background(if (!uiState.showUpNextPlaylist) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
                     .clickable {
-                        scope.launch { mainPagerState.scrollToPage(0) }
+                        vm.updateShowPlaylist(false)
                     }
                     .padding(Sizes.SMALL)
                     .padding(start = Sizes.LARGE, end = Sizes.LARGE),
@@ -296,23 +289,23 @@ fun TopRow(
                     modifier = Modifier.size(20.dp),
                     painter = painterResource(id = R.drawable.music_note),
                     contentDescription = null,
-                    tint = if (mainPagerState.currentPage == 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                    tint = if (!uiState.showUpNextPlaylist) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                 )
 
                 HSpacer(size = Sizes.XSMALL)
 
                 Text(
                     text = stringResource(id = R.string.song),
-                    color = if (mainPagerState.currentPage == 0) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                    color = if (!uiState.showUpNextPlaylist) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                 )
             }
 
             Row(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .background(if (mainPagerState.currentPage == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
+                    .background(if (uiState.showUpNextPlaylist) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface)
                     .clickable {
-                        scope.launch { mainPagerState.scrollToPage(1) }
+                        vm.updateShowPlaylist(true)
                     }
                     .padding(Sizes.SMALL)
                     .padding(start = Sizes.LARGE, end = Sizes.LARGE),
@@ -322,14 +315,14 @@ fun TopRow(
                     modifier = Modifier.size(20.dp),
                     painter = painterResource(id = R.drawable.queue_list),
                     contentDescription = null,
-                    tint = if (mainPagerState.currentPage == 1) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                    tint = if (uiState.showUpNextPlaylist) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                 )
 
                 HSpacer(size = Sizes.XSMALL)
 
                 Text(
                     text = stringResource(id = R.string.Playlist),
-                    color = if (mainPagerState.currentPage == 1) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                    color = if (uiState.showUpNextPlaylist) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -360,20 +353,26 @@ fun AlbumArtPager(
 
     val pagerState = rememberPagerState(pageCount = { uiState.playingPlaylist.size })
 
-
-    LaunchedEffect(uiState.currentSong, uiState.playingPlaylist, uiState.currentSongPosition) {
+    LaunchedEffect(uiState.currentSong, uiState.playingPlaylist) {
         if (uiState.playingPlaylist.isNotEmpty()) {
             pagerState.scrollToPage(uiState.currentSongPosition)
         }
     }
 
-    LaunchedEffect(pagerState.currentPage) {
-        if (pagerState.currentPage < uiState.currentSongPosition) {
-            vm.previous(testFiveSeconds = false)
-        }
-        if (pagerState.currentPage > uiState.currentSongPosition) {
-            vm.skip()
-        }
+    LaunchedEffect(pagerState) {
+        snapshotFlow(pagerState::isScrollInProgress)
+            .drop(1)
+            .collect {scrolling->
+                if(!scrolling){
+                    if(pagerState.settledPage < vm.getSongPosition()){
+                        vm.skipToPrevious(false)
+                    }
+
+                    if(pagerState.settledPage > vm.getSongPosition()){
+                        vm.skipToNext()
+                    }
+                }
+            }
     }
 
     HorizontalPager(
@@ -391,7 +390,7 @@ fun AlbumArtPager(
 
             PlayerAlbumArt(art = art)
         } else {
-            PlayerAlbumArt(art = uiState.currentSongArt)
+            PlayerAlbumArt(art = uiState.smallAlbumArt)
         }
     }
 }
@@ -561,7 +560,7 @@ fun MediaButtons(
             modifier = Modifier
                 .size(40.dp)
                 .clip(RoundedCornerShape(Sizes.SMALL))
-                .clickable { vm.previous() },
+                .clickable { vm.skipToPrevious() },
             painter = painterResource(id = R.drawable.previous),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -581,7 +580,7 @@ fun MediaButtons(
             modifier = Modifier
                 .size(40.dp)
                 .clip(RoundedCornerShape(Sizes.SMALL))
-                .clickable { vm.skip() },
+                .clickable { vm.skipToNext() },
             painter = painterResource(id = R.drawable.next),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant

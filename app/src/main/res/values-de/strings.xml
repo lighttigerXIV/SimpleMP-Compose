@@ -6,7 +6,7 @@
     <string name="add_widget">Füge Widget hinzu</string>
     <string name="noMusicPlaying">Es spielt keine Musik. Zum Öffnen klicken.</string>
     <string name="search_songs">Suche Songs</string>
-    <string name="SearchArtists">Suche Künstler</string>
+    <string name="search_artists">Suche Künstler</string>
     <string name="SearchAlbums">Suche Album</string>
     <string name="SearchPlaylists">Suche Playlists</string>
     <string name="ModificationDate">nach Änderungsdatum sortieren</string>
@@ -27,7 +27,7 @@
     <string name="PlaylistName">Name der Playliste</string>
     <string name="InsertPlaylistName">Füge Name der Playliste hinzu</string>
     <string name="Create">Erstellen</string>
-    <string name="Play">Abspielen</string>
+    <string name="play">Abspielen</string>
     <string name="Shuffle">Shuffle</string>
     <string name="EditPlaylist">Bearbeite Playlist</string>
     <string name="DeletePlaylist">Lösche Playlist</string>

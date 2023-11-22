@@ -14,7 +14,6 @@ import android.support.v4.media.MediaMetadataCompat
 import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.session.MediaStyleNotificationHelper
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.SimpleMPApplication
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaybackRepository
@@ -37,22 +36,20 @@ class PlaybackService : Service() {
             }
 
             Actions.PREVIOUS -> {
-                playbackRepository.previous()
+                playbackRepository.skipToPrevious()
             }
 
             Actions.PAUSE_RESUME -> {
-                playbackRepository.pauseOrResume()
+                playbackRepository.pauseResume()
             }
 
             Actions.SKIP -> {
-                playbackRepository.skip()
+                playbackRepository.skipToNext()
             }
 
             Actions.STOP -> {
                 stopForeground(STOP_FOREGROUND_REMOVE)
-                playbackRepository.player.stop()
-                playbackRepository.player.release()
-                playbackRepository.resetPlayback()
+                playbackRepository.stop(true)
             }
         }
 
@@ -72,7 +69,7 @@ class PlaybackService : Service() {
 
         createNotificationChannel()
 
-        if (playbackRepository.currentSong.value != null && playbackRepository.currentSongArt.value != null) {
+        if (playbackRepository.playbackState.value != null) {
 
             val openAppIntent = Intent(this, MainActivity::class.java)
             val pendingOpenAppIntent = TaskStackBuilder.create(this).run {
@@ -102,9 +99,9 @@ class PlaybackService : Service() {
                         .setCancelButtonIntent(pendingStopIntent)
                 )
                 .setSmallIcon(R.drawable.play_empty)
-                .setLargeIcon(playbackRepository.currentSongArt.value)
-                .setContentTitle(playbackRepository.currentSong.value?.name ?: "n/a")
-                .setContentText(playbackRepository.currentSongArtistName.value)
+                .setLargeIcon(playbackRepository.currentSongState.value?.albumArt)
+                .setContentTitle(playbackRepository.currentSongState.value?.currentSong?.name ?: "n/a")
+                .setContentText(playbackRepository.currentSongState.value?.artistName)
                 .addAction(R.drawable.close, "Stop Player", pendingStopIntent)
                 .addAction(R.drawable.previous_notification, "Previous Song", pendingPreviousIntent)
                 .addAction(if (playbackRepository.player.isPlaying) R.drawable.pause_notification else R.drawable.play_notification, "Pause/Resume song", pendingPauseResumeIntent)
@@ -113,13 +110,13 @@ class PlaybackService : Service() {
 
             playbackRepository.session.setMetadata(
                 MediaMetadataCompat.Builder()
-                    .putString(MediaMetadata.METADATA_KEY_TITLE, playbackRepository.currentSong.value?.name)
-                    .putString(MediaMetadata.METADATA_KEY_ARTIST, playbackRepository.currentSongArtistName.value)
-                    .putString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST, playbackRepository.currentSongArtistName.value)
-                    .putString(MediaMetadata.METADATA_KEY_ALBUM, playbackRepository.currentSongAlbumName.value)
-                    .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, playbackRepository.currentSongArt.value ?: BitmapFactory.decodeResource(application.resources, R.drawable.album))
-                    .putBitmap(MediaMetadata.METADATA_KEY_ART, playbackRepository.currentSongArt.value ?: BitmapFactory.decodeResource(application.resources, R.drawable.album))
-                    .putLong(MediaMetadata.METADATA_KEY_DURATION, playbackRepository.currentSong.value?.duration?.toLong() ?: 0L)
+                    .putString(MediaMetadata.METADATA_KEY_TITLE, playbackRepository.currentSongState.value?.currentSong?.name)
+                    .putString(MediaMetadata.METADATA_KEY_ARTIST, playbackRepository.currentSongState.value?.artistName)
+                    .putString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST, playbackRepository.currentSongState.value?.artistName)
+                    .putString(MediaMetadata.METADATA_KEY_ALBUM, playbackRepository.currentSongState.value?.albumName)
+                    .putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, playbackRepository.currentSongState.value?.albumArt ?: BitmapFactory.decodeResource(application.resources, R.drawable.album))
+                    .putBitmap(MediaMetadata.METADATA_KEY_ART, playbackRepository.currentSongState.value?.albumArt ?: BitmapFactory.decodeResource(application.resources, R.drawable.album))
+                    .putLong(MediaMetadata.METADATA_KEY_DURATION, playbackRepository.currentSongState.value?.currentSong?.duration?.toLong() ?: 0L)
                     .build()
             )
 

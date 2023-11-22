@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
@@ -42,10 +40,13 @@ import androidx.constraintlayout.compose.MotionScene
 import androidx.constraintlayout.compose.layoutId
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.Routes
@@ -55,16 +56,17 @@ import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToArtists
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToHome
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToPlaylists
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.albums.AlbumsScreen
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.albums.album.AlbumScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.artists.ArtistsScreen
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.artists.artist.ArtistScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.home.HomeScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.player.Player
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.playlists.PlaylistsScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeNavigationBarsColor
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMotionApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LibraryScreen(
     vm: LibraryScreenVM = viewModel(factory = LibraryScreenVM.Factory)
@@ -75,7 +77,6 @@ fun LibraryScreen(
     val sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
     val scope = rememberCoroutineScope()
-    val playerMainPagerState = rememberPagerState(pageCount = { 2 })
 
     ChangeNavigationBarsColor(color = MaterialTheme.colorScheme.surfaceVariant)
 
@@ -86,17 +87,6 @@ fun LibraryScreen(
                 vm.updateNavbarAnimation(progress, sheetState)
             }
     }
-
-    LaunchedEffect(sheetState){
-        snapshotFlow { sheetState.currentValue }
-            .collect{value->
-                if(value == BottomSheetValue.Collapsed){
-                    playerMainPagerState.scrollToPage(0)
-                }
-            }
-    }
-
-
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -111,8 +101,7 @@ fun LibraryScreen(
                     hideMiniPlayer = uiState.hideMiniPlayer,
                     onOpenPlayer = { scope.launch { scaffoldState.bottomSheetState.expand() } },
                     onClosePlayer = { scope.launch { scaffoldState.bottomSheetState.collapse() } },
-                    showPlayerProgress = uiState.showPlayerProgress,
-                    mainPagerState = playerMainPagerState
+                    showPlayerProgress = uiState.showPlayerProgress
                 )
             }
         }
@@ -135,13 +124,71 @@ fun LibraryScreen(
                     HomeScreen(navController)
                 }
 
-                composable(Routes.Main.Library.ARTISTS) {
-                    ArtistsScreen(navController)
+                navigation(
+                    route = Routes.Main.Library.ARTISTS_ROOT,
+                    startDestination = Routes.Main.Library.ARTISTS
+                ){
+
+                    composable(Routes.Main.Library.ARTISTS) {
+                        ArtistsScreen(navController = navController)
+                    }
+
+                    composable(
+                        "${Routes.Main.Library.ARTISTS_ARTIST}/{id}",
+                        arguments = listOf(
+                            navArgument("id") { type = NavType.LongType }
+                        )
+                    ) { navBackStackEntry ->
+
+                        val id = navBackStackEntry.arguments?.getLong("id") ?: 0L
+
+                        ArtistScreen(
+                            artistId = id,
+                            navController = navController
+                        )
+                    }
+
+                    composable(
+                        "${Routes.Main.Library.ARTISTS_ARTIST_ALBUM}/{id}",
+                        arguments = listOf(
+                            navArgument("id") { type = NavType.LongType }
+                        )
+                    ) { navBackStackEntry ->
+
+                        val id = navBackStackEntry.arguments?.getLong("id") ?: 0L
+
+                        AlbumScreen(
+                            albumId = id,
+                            navController = navController
+                        )
+                    }
                 }
 
-                composable(Routes.Main.Library.ALBUMS) {
-                    AlbumsScreen()
+                navigation(
+                    route = Routes.Main.Library.ALBUMS_ROOT,
+                    startDestination = Routes.Main.Library.ALBUMS
+                ){
+
+                    composable(Routes.Main.Library.ALBUMS) {
+                        AlbumsScreen(navController = navController)
+                    }
+
+                    composable(
+                        "${Routes.Main.Library.ALBUMS_ALBUM}/{id}",
+                        arguments = listOf(
+                            navArgument("id") { type = NavType.LongType }
+                        )
+                    ) { navBackStackEntry ->
+
+                        val id = navBackStackEntry.arguments?.getLong("id") ?: 0L
+
+                        AlbumScreen(
+                            albumId = id,
+                            navController = navController
+                        )
+                    }
                 }
+
 
                 composable(Routes.Main.Library.PLAYLISTS) {
                     PlaylistsScreen()
@@ -171,7 +218,7 @@ fun NavigationBar(
             .fillMaxSize(),
         motionScene = MotionScene(
             content = context.resources
-                .openRawResource(R.raw.hide_navbar_motion)
+                .openRawResource(R.raw.hide_navbar)
                 .readBytes()
                 .decodeToString()
         ),
@@ -189,6 +236,13 @@ fun NavigationBar(
             items.forEach { navbarItem ->
 
                 val isSelected = navbarItem.route == destinationRoute
+                        || navbarItem.route == Routes.Main.Library.ARTISTS_ROOT && destinationRoute == Routes.Main.Library.ARTISTS
+                        || navbarItem.route == Routes.Main.Library.ARTISTS_ROOT && destinationRoute?.startsWith(Routes.Main.Library.ARTISTS_ARTIST) ?: false
+                        || navbarItem.route == Routes.Main.Library.ARTISTS_ROOT && destinationRoute?.startsWith(Routes.Main.Library.ARTISTS_ARTIST_ALBUM) ?: false
+                        || navbarItem.route == Routes.Main.Library.ALBUMS_ROOT && destinationRoute == Routes.Main.Library.ALBUMS
+                        || navbarItem.route == Routes.Main.Library.ALBUMS_ROOT && destinationRoute?.startsWith(Routes.Main.Library.ALBUMS_ALBUM) ?: false
+
+
                 val icon = if (isSelected) navbarItem.activeIconId else navbarItem.inactiveIconId
                 val tintColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
 
@@ -196,7 +250,7 @@ fun NavigationBar(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f, fill = true)
-                        .clickable { openRoute(navController, navbarItem.route) }
+                        .clickable { openNavbarRoute(navController, navbarItem.route) }
                         .padding(Sizes.SMALL),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -223,11 +277,11 @@ fun NavigationBar(
     }
 }
 
-fun openRoute(navController: NavHostController, route: String) {
+fun openNavbarRoute(navController: NavHostController, route: String) {
     when (route) {
         Routes.Main.Library.HOME -> navController.goToHome()
-        Routes.Main.Library.ARTISTS -> navController.goToArtists()
-        Routes.Main.Library.ALBUMS -> navController.goToAlbums()
+        Routes.Main.Library.ARTISTS_ROOT -> navController.goToArtists()
+        Routes.Main.Library.ALBUMS_ROOT -> navController.goToAlbums()
         Routes.Main.Library.PLAYLISTS -> navController.goToPlaylists()
     }
 }

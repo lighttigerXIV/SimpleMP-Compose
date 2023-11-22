@@ -69,11 +69,11 @@ class LibraryScreenVM(
         }
 
         viewModelScope.launch(Dispatchers.Main) {
-            playbackRepository.currentSong.collect { newSong ->
+            playbackRepository.currentSongState.collect { newSongState ->
                 _uiState.update {
                     uiState.value.copy(
-                        currentSong = newSong,
-                        peekHeight = if (newSong != null) 125.dp else 0.dp
+                        currentSong = newSongState?.currentSong,
+                        peekHeight = if (newSongState != null) 125.dp else 0.dp
                     )
                 }
             }

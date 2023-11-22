@@ -16,12 +16,12 @@ fun getNavbarItems(): List<NavbarItem>{
             inactiveIconId = R.drawable.home
         ),
         NavbarItem(
-            route = Routes.Main.Library.ARTISTS,
+            route = Routes.Main.Library.ARTISTS_ROOT,
             activeIconId = R.drawable.person_filled,
-            inactiveIconId = R.drawable.person
+            inactiveIconId = R.drawable.artist
         ),
         NavbarItem(
-            route = Routes.Main.Library.ALBUMS,
+            route = Routes.Main.Library.ALBUMS_ROOT,
             activeIconId = R.drawable.album_filled,
             inactiveIconId = R.drawable.album
         ),

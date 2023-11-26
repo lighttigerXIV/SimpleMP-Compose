@@ -59,6 +59,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.albums.
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.albums.album.AlbumScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.artists.ArtistsScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.artists.artist.ArtistScreen
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.artists.artist.select_cover.SelectArtistCoverScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.home.HomeScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.player.Player
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.playlists.PlaylistsScreen
@@ -69,6 +70,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LibraryScreen(
+    rootController: NavHostController,
     vm: LibraryScreenVM = viewModel(factory = LibraryScreenVM.Factory)
 ) {
 
@@ -121,13 +123,13 @@ fun LibraryScreen(
                 startDestination = Routes.Main.Library.HOME
             ) {
                 composable(Routes.Main.Library.HOME) {
-                    HomeScreen(navController)
+                    HomeScreen(rootController)
                 }
 
                 navigation(
                     route = Routes.Main.Library.ARTISTS_ROOT,
                     startDestination = Routes.Main.Library.ARTISTS
-                ){
+                ) {
 
                     composable(Routes.Main.Library.ARTISTS) {
                         ArtistsScreen(navController = navController)
@@ -162,12 +164,24 @@ fun LibraryScreen(
                             navController = navController
                         )
                     }
+
+                    composable(
+                        "${Routes.Main.Library.ARTISTS_ARTIST_SELECT_COVER}/{id}",
+                        arguments = listOf(
+                            navArgument("id") { type = NavType.LongType }
+                        )
+                    ) { navBackStackEntry ->
+
+                        val id = navBackStackEntry.arguments?.getLong("id") ?: 0L
+
+                        SelectArtistCoverScreen(artistId = id, navController = navController)
+                    }
                 }
 
                 navigation(
                     route = Routes.Main.Library.ALBUMS_ROOT,
                     startDestination = Routes.Main.Library.ALBUMS
-                ){
+                ) {
 
                     composable(Routes.Main.Library.ALBUMS) {
                         AlbumsScreen(navController = navController)

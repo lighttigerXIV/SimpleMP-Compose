@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.lighttigerxiv.simple.mp.compose.SimpleMPApplication
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Artist
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
+import com.lighttigerxiv.simple.mp.compose.backend.utils.matchesSearch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -58,12 +59,12 @@ class ArtistsScreenVM(
     private fun filter() {
         _uiState.update {
             uiState.value.copy(
-                artists = artists.value.filter { artist -> artist.name.lowercase().trim().contains(uiState.value.searchText.lowercase().trim()) }
+                artists = artists.value.filter { artist -> matchesSearch(artist.name, uiState.value.searchText) }
             )
         }
     }
 
-    fun updateSearchText(text: String){
+    fun updateSearchText(text: String) {
         _uiState.update { uiState.value.copy(searchText = text) }
         filter()
     }

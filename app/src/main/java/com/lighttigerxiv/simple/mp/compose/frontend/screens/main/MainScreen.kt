@@ -9,7 +9,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.Routes
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.about.AboutScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.LibraryScreen
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.settings.SettingsScreen
 
 @Composable
 fun MainScreen(){
@@ -24,7 +26,15 @@ fun MainScreen(){
     ){
 
         composable(Routes.Main.LIBRARY){
-            LibraryScreen()
+            LibraryScreen(navController)
+        }
+
+        composable(Routes.Main.ABOUT){
+            AboutScreen(rootController = navController)
+        }
+
+        composable(Routes.Main.SETTINGS){
+            SettingsScreen(rootController = navController)
         }
     }
 }

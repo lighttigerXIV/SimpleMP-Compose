@@ -1,9 +1,11 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +50,34 @@ fun PrimaryButton(
             else
                 MaterialTheme.colorScheme.onPrimary
 
+        )
+    }
+}
+
+@Composable
+fun SecondaryButton(
+    text: String,
+    onClick: () -> Unit,
+    fillWidth: Boolean = false
+) {
+
+    Row(
+        modifier = Modifier
+            .modifyIf(fillWidth){
+                fillMaxWidth()
+            }
+            .clip(CircleShape)
+            .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
+            .clickable { onClick() }
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+
+        Text(
+            text = text,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }

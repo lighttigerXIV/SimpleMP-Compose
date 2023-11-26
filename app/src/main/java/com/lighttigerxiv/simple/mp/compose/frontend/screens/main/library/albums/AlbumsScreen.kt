@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -18,8 +17,6 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.Card
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.TextField
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToAlbum
-import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToArtist
-import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.artists.ArtistsScreenVM
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 
 @Composable
@@ -38,7 +35,7 @@ fun AlbumsScreen(
         TextField(
             text = uiState.searchText,
             onTextChange = { vm.updateSearchText(it) },
-            placeholder = stringResource(id = R.string.search_artists),
+            placeholder = stringResource(id = R.string.search_albums),
             startIcon = R.drawable.sort,
             onStartIconClick = {}
         )

@@ -58,7 +58,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         )
     }
 
-    fun getDefaultSettings(): Settings {
+    private fun getDefaultSettings(): Settings {
         return Settings(
             setupCompleted = false,
             colorScheme = SettingsOptions.ColorScheme.SYSTEM,

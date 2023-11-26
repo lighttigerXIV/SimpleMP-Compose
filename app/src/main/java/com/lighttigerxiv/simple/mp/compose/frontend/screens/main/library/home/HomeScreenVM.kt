@@ -2,6 +2,7 @@ package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.home
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -13,6 +14,7 @@ import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaybackRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.SettingsRepository
+import com.lighttigerxiv.simple.mp.compose.backend.utils.matchesSearch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,12 +23,13 @@ import kotlinx.coroutines.launch
 
 
 data class HomeUiState(
-    val isLoading: Boolean,
-    val songs: List<Song>,
-    val albumArts: List<LibraryRepository.AlbumArt>,
-    val searchText: String,
-    val showMenu: Boolean,
-    val currentSong: Song?
+    val isLoading: Boolean = true,
+    val songs: List<Song> = ArrayList(),
+    val albumArts: List<LibraryRepository.AlbumArt> = ArrayList(),
+    val searchText: String = "",
+    val showMenu: Boolean = false,
+    val currentSong: Song? = null,
+    val indexingLibrary: Boolean = false
 )
 
 class HomeScreenVM(
@@ -73,24 +76,21 @@ class HomeScreenVM(
                 filterSongs()
             }
         }
+
+        viewModelScope.launch(Dispatchers.Main) {
+            libraryRepository.indexingLibrary.collect { newIndexingLIbrary ->
+                _uiState.update { uiSate.value.copy(indexingLibrary = newIndexingLIbrary) }
+            }
+        }
     }
 
     private var librarySongs: List<Song> = ArrayList()
 
-    private val _uiState = MutableStateFlow(
-        HomeUiState(
-            isLoading = true,
-            songs = ArrayList(),
-            albumArts = ArrayList(),
-            searchText = "",
-            currentSong = null,
-            showMenu = false
-        )
-    )
+    private val _uiState = MutableStateFlow(HomeUiState())
     val uiSate = _uiState.asStateFlow()
 
     private fun filterSongs() {
-        val newSongs = librarySongs.filter { song -> song.name.trim().lowercase().contains(uiSate.value.searchText.trim().lowercase()) }
+        val newSongs = librarySongs.filter { song -> matchesSearch(song.name, uiSate.value.searchText) }
         _uiState.update { uiSate.value.copy(songs = newSongs) }
     }
 
@@ -115,7 +115,13 @@ class HomeScreenVM(
         playbackRepository.playSelectedSong(song, uiSate.value.songs)
     }
 
-    fun shuffleAndPlay(){
+    fun shuffleAndPlay() {
         playbackRepository.shuffleAndPlay(librarySongs)
+    }
+
+    fun indexLibrary() {
+        viewModelScope.launch(Dispatchers.Main) {
+            libraryRepository.indexLibrary(application)
+        }
     }
 }

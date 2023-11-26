@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.lighttigerxiv.simple.mp.compose.SimpleMPApplication
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Album
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
+import com.lighttigerxiv.simple.mp.compose.backend.utils.matchesSearch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,19 +51,19 @@ class AlbumsScreenVM(
         }
     }
 
-    fun getAlbumArt(albumId: Long): Bitmap?{
+    fun getAlbumArt(albumId: Long): Bitmap? {
         return libraryRepository.getLargeAlbumArt(albumId)
     }
 
     private fun filter() {
         _uiState.update {
             uiState.value.copy(
-                albums = albums.filter { album -> album.name.lowercase().trim().contains(uiState.value.searchText.lowercase().trim()) }
+                albums = albums.filter { album -> matchesSearch(album.name, uiState.value.searchText) }
             )
         }
     }
 
-    fun updateSearchText(text: String){
+    fun updateSearchText(text: String) {
         _uiState.update { uiState.value.copy(searchText = text) }
         filter()
     }

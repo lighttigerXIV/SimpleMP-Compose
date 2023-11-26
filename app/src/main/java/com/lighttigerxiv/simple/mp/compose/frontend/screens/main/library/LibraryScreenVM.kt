@@ -41,23 +41,15 @@ class LibraryScreenVM(
     }
 
     data class UiState(
-        val peekHeight: Dp,
-        val currentSong: Song?,
-        val hideNavBarProgress: Float,
-        val showPlayerProgress: Float,
-        val hideMiniPlayer: Boolean
+        val peekHeight: Dp = 0.dp,
+        val currentSong: Song? = null,
+        val hideNavBarProgress: Float = 0f,
+        val showPlayerProgress: Float = 0f,
+        val hideMiniPlayer: Boolean = false
     )
 
 
-    private val _uiState = MutableStateFlow(
-        UiState(
-            peekHeight = 0.dp,
-            currentSong = null,
-            hideNavBarProgress = 0f,
-            showPlayerProgress = 0f,
-            hideMiniPlayer = false
-        )
-    )
+    private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
 
@@ -81,7 +73,7 @@ class LibraryScreenVM(
     }
 
     @OptIn(ExperimentalMaterialApi::class)
-    fun updateNavbarAnimation(progress: Float, sheetState: BottomSheetState){
+    fun updateNavbarAnimation(progress: Float, sheetState: BottomSheetState) {
         viewModelScope.launch(Dispatchers.Main) {
 
             if (progress > 0 && sheetState.currentValue == BottomSheetValue.Collapsed && sheetState.targetValue == BottomSheetValue.Expanded) {
@@ -105,7 +97,7 @@ class LibraryScreenVM(
                 if (sheetState.targetValue == BottomSheetValue.Expanded) {
                     _uiState.update { uiState.value.copy(hideNavBarProgress = 0 + progress, showPlayerProgress = 0 + progress) }
                 } else {
-                    _uiState.update { uiState.value.copy( hideNavBarProgress = 1 - progress, showPlayerProgress = 1 - progress) }
+                    _uiState.update { uiState.value.copy(hideNavBarProgress = 1 - progress, showPlayerProgress = 1 - progress) }
                 }
             }
         }

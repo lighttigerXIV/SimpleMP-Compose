@@ -70,3 +70,15 @@ fun NavController.goToArtistAlbum(albumId: Long) {
 fun NavController.goToAlbum(albumId: Long) {
     this.navigate("${Routes.Main.Library.ALBUMS_ALBUM}/$albumId")
 }
+
+fun NavController.goToSelectArtistCover(artistId: Long){
+    this.navigate("${Routes.Main.Library.ARTISTS_ARTIST_SELECT_COVER}/$artistId")
+}
+
+fun NavController.goToAbout(){
+    this.navigate(Routes.Main.ABOUT)
+}
+
+fun NavController.goToSettings(){
+    this.navigate(Routes.Main.SETTINGS)
+}

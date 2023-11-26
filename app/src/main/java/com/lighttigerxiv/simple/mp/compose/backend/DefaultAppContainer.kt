@@ -12,7 +12,7 @@ class DefaultAppContainer(
     dataStore: DataStore<Preferences>
 ) : AppContainer {
     override val libraryRepository: LibraryRepository by lazy {
-        LibraryRepository()
+        LibraryRepository(settingsRepository)
     }
 
     override val playbackRepository: PlaybackRepository by lazy {

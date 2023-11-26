@@ -14,14 +14,19 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.view.KeyEvent
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.lighttigerxiv.simple.mp.compose.backend.playback.PlaybackService
 import com.lighttigerxiv.simple.mp.compose.backend.playback.RepeatSate
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PlaybackRepository(
     private val libraryRepository: LibraryRepository,
@@ -76,6 +81,44 @@ class PlaybackRepository(
                 }
 
                 super.onPlaybackStateChanged(state)
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+
+                val corruptedSong = playlistsState.value!!.current[playlistsState.value!!.songPosition]
+                val newOriginalPlaylist = playlistsState.value!!.original.toMutableList().apply {
+                    remove(corruptedSong)
+                }
+
+                val newShuffledPlaylist = playlistsState.value!!.shuffled.toMutableList().apply {
+                    remove(corruptedSong)
+                }
+
+                val newCurrentPlaylist = playlistsState.value!!.current.toMutableList().apply {
+                    remove(corruptedSong)
+                }
+
+                _playlistsState.update {
+                    playlistsState.value?.copy(
+                        original = newOriginalPlaylist,
+                        shuffled = newShuffledPlaylist,
+                        current = newCurrentPlaylist,
+                        songPosition = playlistsState.value!!.songPosition - 1
+                    )
+                }
+
+                skipToNext()
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    libraryRepository.indexLibrary(application, onFinish = {
+                        withContext(Dispatchers.Main){
+                            libraryRepository.initLibrary(application)
+                        }
+                    })
+                }
+
+
+                super.onPlayerError(error)
             }
         })
     }
@@ -219,6 +262,10 @@ class PlaybackRepository(
 
     fun seekTo(seconds: Int) {
         player.seekTo((seconds * 1000).toLong())
+
+        if(!player.isPlaying){
+            resume()
+        }
     }
 
     fun toggleShuffle() {

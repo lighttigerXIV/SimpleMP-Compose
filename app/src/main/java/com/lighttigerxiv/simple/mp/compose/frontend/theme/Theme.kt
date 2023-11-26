@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.lighttigerxiv.simple.mp.compose.backend.settings.Settings
 import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
 import com.lighttigerxiv.simple.mp.compose.backend.utils.isAtLeastAndroid12
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeStatusBarColor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
@@ -22,7 +23,7 @@ fun SimpleMPTheme(
     content: @Composable () -> Unit
 ) {
 
-    settings?.let{
+    settings?.let {
 
         val context = LocalContext.current
         val colorScheme = it.colorScheme
@@ -30,7 +31,7 @@ fun SimpleMPTheme(
         val lightTheme = it.lightTheme
         val supportsMaterialYou = isAtLeastAndroid12()
 
-        val nightMode = when(colorScheme){
+        val nightMode = when (colorScheme) {
             SettingsOptions.ColorScheme.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             SettingsOptions.ColorScheme.DARK -> AppCompatDelegate.MODE_NIGHT_YES
             else -> AppCompatDelegate.MODE_NIGHT_NO
@@ -178,11 +179,102 @@ fun SimpleMPTheme(
             else -> getLatteScheme(AppTheme.CatppuccinLatte.ROSEWATER)
         }
 
-        val surfaceColor = if(useDarkTheme && it.useOledOnDarkTheme) Color(0xff000000) else theme.surface
+        val surfaceColor = if (useDarkTheme && it.useOledOnDarkTheme) Color(0xff000000) else theme.surface
 
         MaterialTheme(
             colorScheme = theme.copy(surface = surfaceColor),
             content = content
         )
     }
+}
+
+@Composable
+fun PreviewTheme(
+    themeId: String,
+    darkTheme: Boolean,
+    content: @Composable () -> Unit,
+) {
+
+    val context = LocalContext.current
+
+    val theme = when {
+        themeId == SettingsOptions.Themes.MATERIAL_YOU && darkTheme -> dynamicDarkColorScheme(context)
+        themeId == SettingsOptions.Themes.MATERIAL_YOU && !darkTheme -> dynamicLightColorScheme(context)
+        themeId == SettingsOptions.Themes.RED && darkTheme -> DarkRedColors
+        themeId == SettingsOptions.Themes.RED && !darkTheme -> LightRedColors
+        themeId == SettingsOptions.Themes.GREEN && darkTheme -> DarkGreenColors
+        themeId == SettingsOptions.Themes.GREEN && !darkTheme -> LightGreenColors
+        themeId == SettingsOptions.Themes.BLUE && darkTheme -> DarkBlueColors
+        themeId == SettingsOptions.Themes.BLUE && !darkTheme -> LightBlueColors
+        themeId == SettingsOptions.Themes.PURPLE && darkTheme -> DarkPurpleColors
+        themeId == SettingsOptions.Themes.PURPLE && !darkTheme -> LightPurpleColors
+        themeId == SettingsOptions.Themes.PINK && darkTheme -> DarkPinkColors
+        themeId == SettingsOptions.Themes.PINK && !darkTheme -> LightPinkColors
+        themeId == SettingsOptions.Themes.YELLOW && darkTheme -> DarkYellowColors
+        themeId == SettingsOptions.Themes.YELLOW && !darkTheme -> LightYellowColors
+        themeId == SettingsOptions.Themes.ORANGE && darkTheme -> DarkOrangeColors
+        themeId == SettingsOptions.Themes.ORANGE && !darkTheme -> LightOrangeColors
+        themeId == SettingsOptions.Themes.LATTE_ROSEWATER -> getLatteScheme(AppTheme.CatppuccinLatte.ROSEWATER)
+        themeId == SettingsOptions.Themes.LATTE_FLAMINGO -> getLatteScheme(AppTheme.CatppuccinLatte.FLAMINGO)
+        themeId == SettingsOptions.Themes.LATTE_PINK -> getLatteScheme(AppTheme.CatppuccinLatte.PINK)
+        themeId == SettingsOptions.Themes.LATTE_MAUVE -> getLatteScheme(AppTheme.CatppuccinLatte.MAUVE)
+        themeId == SettingsOptions.Themes.LATTE_RED -> getLatteScheme(AppTheme.CatppuccinLatte.RED)
+        themeId == SettingsOptions.Themes.LATTE_MAROON -> getLatteScheme(AppTheme.CatppuccinLatte.MAROON)
+        themeId == SettingsOptions.Themes.LATTE_PEACH -> getLatteScheme(AppTheme.CatppuccinLatte.PEACH)
+        themeId == SettingsOptions.Themes.LATTE_YELLOW -> getLatteScheme(AppTheme.CatppuccinLatte.YELLOW)
+        themeId == SettingsOptions.Themes.LATTE_GREEN -> getLatteScheme(AppTheme.CatppuccinLatte.GREEN)
+        themeId == SettingsOptions.Themes.LATTE_TEAL -> getLatteScheme(AppTheme.CatppuccinLatte.TEAL)
+        themeId == SettingsOptions.Themes.LATTE_SKY -> getLatteScheme(AppTheme.CatppuccinLatte.SKY)
+        themeId == SettingsOptions.Themes.LATTE_SAPPHIRE -> getLatteScheme(AppTheme.CatppuccinLatte.SAPPHIRE)
+        themeId == SettingsOptions.Themes.LATTE_BLUE -> getLatteScheme(AppTheme.CatppuccinLatte.BLUE)
+        themeId == SettingsOptions.Themes.LATTE_LAVENDER -> getLatteScheme(AppTheme.CatppuccinLatte.LAVENDER)
+        themeId == SettingsOptions.Themes.FRAPPE_ROSEWATER -> getFrappeScheme(AppTheme.CatppuccinFrappe.ROSEWATER)
+        themeId == SettingsOptions.Themes.FRAPPE_FLAMINGO -> getFrappeScheme(AppTheme.CatppuccinFrappe.FLAMINGO)
+        themeId == SettingsOptions.Themes.FRAPPE_PINK -> getFrappeScheme(AppTheme.CatppuccinFrappe.PINK)
+        themeId == SettingsOptions.Themes.FRAPPE_MAUVE -> getFrappeScheme(AppTheme.CatppuccinFrappe.MAUVE)
+        themeId == SettingsOptions.Themes.FRAPPE_RED -> getFrappeScheme(AppTheme.CatppuccinFrappe.RED)
+        themeId == SettingsOptions.Themes.FRAPPE_MAROON -> getFrappeScheme(AppTheme.CatppuccinFrappe.MAROON)
+        themeId == SettingsOptions.Themes.FRAPPE_PEACH -> getFrappeScheme(AppTheme.CatppuccinFrappe.PEACH)
+        themeId == SettingsOptions.Themes.FRAPPE_YELLOW -> getFrappeScheme(AppTheme.CatppuccinFrappe.YELLOW)
+        themeId == SettingsOptions.Themes.FRAPPE_GREEN -> getFrappeScheme(AppTheme.CatppuccinFrappe.GREEN)
+        themeId == SettingsOptions.Themes.FRAPPE_TEAL -> getFrappeScheme(AppTheme.CatppuccinFrappe.TEAL)
+        themeId == SettingsOptions.Themes.FRAPPE_SKY -> getFrappeScheme(AppTheme.CatppuccinFrappe.SKY)
+        themeId == SettingsOptions.Themes.FRAPPE_SAPPHIRE -> getFrappeScheme(AppTheme.CatppuccinFrappe.SAPPHIRE)
+        themeId == SettingsOptions.Themes.FRAPPE_BLUE -> getFrappeScheme(AppTheme.CatppuccinFrappe.BLUE)
+        themeId == SettingsOptions.Themes.FRAPPE_LAVENDER -> getFrappeScheme(AppTheme.CatppuccinFrappe.LAVENDER)
+        themeId == SettingsOptions.Themes.MACCHIATO_ROSEWATER -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.ROSEWATER)
+        themeId == SettingsOptions.Themes.MACCHIATO_FLAMINGO -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.FLAMINGO)
+        themeId == SettingsOptions.Themes.MACCHIATO_PINK -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.PINK)
+        themeId == SettingsOptions.Themes.MACCHIATO_MAUVE -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.MAUVE)
+        themeId == SettingsOptions.Themes.MACCHIATO_RED -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.RED)
+        themeId == SettingsOptions.Themes.MACCHIATO_MAROON -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.MAROON)
+        themeId == SettingsOptions.Themes.MACCHIATO_PEACH -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.PEACH)
+        themeId == SettingsOptions.Themes.MACCHIATO_YELLOW -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.YELLOW)
+        themeId == SettingsOptions.Themes.MACCHIATO_GREEN -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.GREEN)
+        themeId == SettingsOptions.Themes.MACCHIATO_TEAL -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.TEAL)
+        themeId == SettingsOptions.Themes.MACCHIATO_SKY -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.SKY)
+        themeId == SettingsOptions.Themes.MACCHIATO_SAPPHIRE -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.SAPPHIRE)
+        themeId == SettingsOptions.Themes.MACCHIATO_BLUE -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.BLUE)
+        themeId == SettingsOptions.Themes.MACCHIATO_LAVENDER -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.LAVENDER)
+        themeId == SettingsOptions.Themes.MOCHA_ROSEWATER -> getMochaScheme(AppTheme.CatppuccinMocha.ROSEWATER)
+        themeId == SettingsOptions.Themes.MOCHA_FLAMINGO -> getMochaScheme(AppTheme.CatppuccinMocha.FLAMINGO)
+        themeId == SettingsOptions.Themes.MOCHA_PINK -> getMochaScheme(AppTheme.CatppuccinMocha.PINK)
+        themeId == SettingsOptions.Themes.MOCHA_MAUVE -> getMochaScheme(AppTheme.CatppuccinMocha.MAUVE)
+        themeId == SettingsOptions.Themes.MOCHA_RED -> getMochaScheme(AppTheme.CatppuccinMocha.RED)
+        themeId == SettingsOptions.Themes.MOCHA_MAROON -> getMochaScheme(AppTheme.CatppuccinMocha.MAROON)
+        themeId == SettingsOptions.Themes.MOCHA_PEACH -> getMochaScheme(AppTheme.CatppuccinMocha.PEACH)
+        themeId == SettingsOptions.Themes.MOCHA_YELLOW -> getMochaScheme(AppTheme.CatppuccinMocha.YELLOW)
+        themeId == SettingsOptions.Themes.MOCHA_GREEN -> getMochaScheme(AppTheme.CatppuccinMocha.GREEN)
+        themeId == SettingsOptions.Themes.MOCHA_TEAL -> getMochaScheme(AppTheme.CatppuccinMocha.TEAL)
+        themeId == SettingsOptions.Themes.MOCHA_SKY -> getMochaScheme(AppTheme.CatppuccinMocha.SKY)
+        themeId == SettingsOptions.Themes.MOCHA_SAPPHIRE -> getMochaScheme(AppTheme.CatppuccinMocha.SAPPHIRE)
+        themeId == SettingsOptions.Themes.MOCHA_BLUE -> getMochaScheme(AppTheme.CatppuccinMocha.BLUE)
+        themeId == SettingsOptions.Themes.MOCHA_LAVENDER -> getMochaScheme(AppTheme.CatppuccinMocha.LAVENDER)
+        else -> getLatteScheme(AppTheme.CatppuccinLatte.ROSEWATER)
+    }
+
+    MaterialTheme(
+        colorScheme = theme,
+        content = content
+    )
 }

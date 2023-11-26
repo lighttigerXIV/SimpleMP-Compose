@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lighttigerxiv.simple.mp.compose.R
@@ -51,16 +52,17 @@ fun TextField(
     startIcon: Int? = null,
     onStartIconClick: () -> Unit = {},
     requestFocus: Boolean = false,
-    onFocusRequested: () -> Unit = {}
+    onFocusRequested: () -> Unit = {},
+    numberField: Boolean = false
 ) {
 
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     val showClearIcon = remember { mutableStateOf(text.isNotEmpty()) }
+    val fieldType = if (numberField) KeyboardType.Number else KeyboardType.Text
 
-
-    LaunchedEffect(requestFocus){
-        if(requestFocus){
+    LaunchedEffect(requestFocus) {
+        if (requestFocus) {
             focusRequester.requestFocus()
             onFocusRequested()
         }
@@ -112,7 +114,23 @@ fun TextField(
                         showClearIcon.value = focusState.hasFocus && text.isNotEmpty()
                     },
                 value = text,
-                onValueChange = { onTextChange(it) },
+                onValueChange = {
+
+                    if (it.isEmpty()) {
+                        onTextChange(it)
+
+                    } else if (numberField) {
+
+                        if (it.toIntOrNull() != null) {
+                            if (it.toInt() >= 0) {
+                                onTextChange(it)
+                            }
+                        }
+                    } else {
+
+                        onTextChange(it)
+                    }
+                },
                 textStyle = TextStyle(
                     color = textColor,
                     fontSize = 14.sp
@@ -124,6 +142,7 @@ fun TextField(
                     1.00f to MaterialTheme.colorScheme.primary
                 ),
                 keyboardOptions = KeyboardOptions(
+                    keyboardType = fieldType,
                     imeAction = if (hasFollowingField) ImeAction.Next else ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(

@@ -22,7 +22,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 
-class LibraryRepository() {
+class LibraryRepository(
+    private val settingsRepository: SettingsRepository
+) {
 
     data class AlbumArt(
         val albumId: Long,
@@ -49,15 +51,25 @@ class LibraryRepository() {
     private val _albumArts = MutableStateFlow<List<AlbumArt>>(ArrayList())
     val albumArts = _albumArts.asStateFlow()
 
-    private suspend fun loadLibrary() {
-        withContext(Dispatchers.Default) {
-            _songs.update { queries.getSongs() }
-            _artists.update { queries.getArtists() }
-            _albums.update { queries.getAlbums() }
+    private val _indexingLibrary = MutableStateFlow(false)
+    val indexingLibrary = _indexingLibrary.asStateFlow()
 
-            Log.d("Songs", _songs.value.toString())
-            Log.d("Artists", _artists.value.toString())
-            Log.d("Albums", _albums.value.toString())
+    private suspend fun loadLibrary(onFinish: suspend () -> Unit = {}) {
+        withContext(Dispatchers.Main) {
+            settingsRepository.settingsFlow.collect { settings ->
+
+                val durationFilter = settings.durationFilter * 1000
+
+                val newSongs = queries.getSongs().filter { it.duration >= durationFilter }
+                val newArtists = queries.getArtists().filter { artist -> newSongs.any { song -> song.artistId == artist.id } }
+                val newAlbums = queries.getAlbums().filter { album -> newSongs.any { song -> song.albumId == album.id } }
+
+                _songs.update { newSongs }
+                _artists.update { newArtists }
+                _albums.update { newAlbums }
+
+                onFinish()
+            }
         }
     }
 
@@ -93,8 +105,11 @@ class LibraryRepository() {
     }
 
     suspend fun initLibrary(context: Context) {
-        loadLibrary()
-        loadAlbumArts(context)
+        loadLibrary{
+            withContext(Dispatchers.Main){
+                loadAlbumArts(context)
+            }
+        }
     }
 
     suspend fun indexLibrary(
@@ -102,96 +117,102 @@ class LibraryRepository() {
         onFinish: suspend () -> Unit = {}
     ) {
 
-        val songs: ArrayList<Song> = ArrayList()
-        val artists: ArrayList<Artist> = ArrayList()
-        val albums: ArrayList<Album> = ArrayList()
+        if (!indexingLibrary.value) {
 
-        val mediaRetriever = MediaMetadataRetriever()
-        val queries = Queries(getRealm())
+            _indexingLibrary.update { true }
 
-        val cursor = context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, null)
+            val songs: ArrayList<Song> = ArrayList()
+            val artists: ArrayList<Artist> = ArrayList()
+            val albums: ArrayList<Album> = ArrayList()
 
-        cursor?.let {
+            val mediaRetriever = MediaMetadataRetriever()
+            val queries = Queries(getRealm())
 
-            while (cursor.moveToNext()) {
+            val cursor = context.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, null)
 
-                try {
+            cursor?.let {
 
-                    val id = cursor.getLong(cursor.getColumn(MediaStore.Audio.Media._ID))
-                    val path = cursor.getString(cursor.getColumn(MediaStore.Audio.Media.DATA))
+                while (cursor.moveToNext()) {
 
-                    mediaRetriever.setDataSource(path)
+                    try {
 
-                    val name = mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) ?: cursor.getString(cursor.getColumn(MediaStore.Audio.Media.TITLE))
-                    val albumName = mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM) ?: cursor.getString(cursor.getColumn(MediaStore.Audio.Albums.ALBUM))
-                    val albumId = cursor.getLong(cursor.getColumn(MediaStore.Audio.Media.ALBUM_ID))
-                    val duration = mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION) ?: cursor.getString(cursor.getColumn(MediaStore.Audio.Media.DURATION))
-                    val artistName = mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST) ?: cursor.getString(cursor.getColumn(MediaStore.Audio.Artists.ARTIST))
-                    val artistId = cursor.getLong(cursor.getColumn(MediaStore.Audio.Media.ARTIST_ID))
-                    val releaseYear = cursor.getInt(cursor.getColumn(MediaStore.Audio.Media.YEAR))
-                    val genre = mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE) ?: "Unknown"
+                        val id = cursor.getLong(cursor.getColumn(MediaStore.Audio.Media._ID))
+                        val path = cursor.getString(cursor.getColumn(MediaStore.Audio.Media.DATA))
+
+                        mediaRetriever.setDataSource(path)
+
+                        val name = mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) ?: cursor.getString(cursor.getColumn(MediaStore.Audio.Media.TITLE))
+                        val albumName = mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM) ?: cursor.getString(cursor.getColumn(MediaStore.Audio.Albums.ALBUM))
+                        val albumId = cursor.getLong(cursor.getColumn(MediaStore.Audio.Media.ALBUM_ID))
+                        val duration = mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION) ?: cursor.getString(cursor.getColumn(MediaStore.Audio.Media.DURATION))
+                        val artistName = mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST) ?: cursor.getString(cursor.getColumn(MediaStore.Audio.Artists.ARTIST))
+                        val artistId = cursor.getLong(cursor.getColumn(MediaStore.Audio.Media.ARTIST_ID))
+                        val releaseYear = cursor.getInt(cursor.getColumn(MediaStore.Audio.Media.YEAR))
+                        val genre = mediaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE) ?: "Unknown"
 
 
-                    if (name != null && duration != null && artistId != 0L && albumId != 0L) {
+                        if (name != null && duration != null && artistId != 0L && albumId != 0L) {
 
-                        if (!artists.any { it.id == artistId }) {
+                            if (!artists.any { it.id == artistId }) {
 
-                            val artist = Artist()
-                            artist.id = artistId
-                            artist.name = artistName
+                                val artist = Artist()
+                                artist.id = artistId
+                                artist.name = artistName
 
-                            artists.add(artist)
+                                artists.add(artist)
+                            }
+
+                            if (!albums.any { it.id == albumId }) {
+
+                                val album = Album()
+                                album.id = albumId
+                                album.name = albumName
+                                album.artistId = artistId
+
+                                albums.add(album)
+                            }
+
+                            val song = Song()
+                            song.id = id
+                            song.path = path
+                            song.name = name
+                            song.albumId = albumId
+                            song.artistId = artistId
+                            song.duration = duration.toInt()
+                            song.releaseYear = releaseYear
+                            song.genre = genre
+                            song.modificationDate
+
+                            songs.add(song)
                         }
-
-                        if (!albums.any { it.id == albumId }) {
-
-                            val album = Album()
-                            album.id = albumId
-                            album.name = albumName
-                            album.artistId = artistId
-
-                            albums.add(album)
-                        }
-
-                        val song = Song()
-                        song.id = id
-                        song.path = path
-                        song.name = name
-                        song.albumId = albumId
-                        song.artistId = artistId
-                        song.duration = duration.toInt()
-                        song.releaseYear = releaseYear
-                        song.genre = genre
-                        song.modificationDate
-
-                        songs.add(song)
+                    } catch (_: Exception) {
                     }
-                } catch (_: Exception) {
                 }
+
+                queries.clearCache()
+
+                albums.forEach { album -> queries.addAlbum(album.id, album.name, album.artistId) }
+                artists.forEach { artist -> queries.addArtist(artist.id, artist.name) }
+                songs.forEach { song ->
+                    queries.addSong(
+                        song.id,
+                        song.path,
+                        song.name,
+                        song.albumId,
+                        song.artistId,
+                        song.duration,
+                        song.releaseYear,
+                        song.genre,
+                        song.modificationDate
+                    )
+                }
+
+                cursor.close()
             }
 
-            queries.clearCache()
-
-            albums.forEach { album -> queries.addAlbum(album.id, album.name, album.artistId) }
-            artists.forEach { artist -> queries.addArtist(artist.id, artist.name) }
-            songs.forEach { song ->
-                queries.addSong(
-                    song.id,
-                    song.path,
-                    song.name,
-                    song.albumId,
-                    song.artistId,
-                    song.duration,
-                    song.releaseYear,
-                    song.genre,
-                    song.modificationDate
-                )
-            }
-
-            cursor.close()
+            _indexingLibrary.update { false }
+            onFinish()
         }
-
-        onFinish()
     }
 
     private fun Cursor.getColumn(column: String): Int {
@@ -230,32 +251,32 @@ class LibraryRepository() {
     }
 
 
-    fun getSmallAlbumArt(albumId: Long): Bitmap?{
+    fun getSmallAlbumArt(albumId: Long): Bitmap? {
         return smallAlbumArts.value.find { it.albumId == albumId }?.art
     }
 
-    fun getLargeAlbumArt(albumId: Long): Bitmap?{
+    fun getLargeAlbumArt(albumId: Long): Bitmap? {
         return albumArts.value.find { it.albumId == albumId }?.art
     }
 
-    fun getArtistName(artistId: Long): String{
+    fun getArtistName(artistId: Long): String {
         return artists.value.find { it.id == artistId }?.name ?: "n/a"
     }
 
 
-    fun getArtistSongs(artistId: Long): List<Song>{
+    fun getArtistSongs(artistId: Long): List<Song> {
         return songs.value.filter { it.artistId == artistId }
     }
 
-    fun getArtistAlbums(artistId: Long): List<Album>{
+    fun getArtistAlbums(artistId: Long): List<Album> {
         return albums.value.filter { it.artistId == artistId }
     }
 
-    fun getAlbumName(albumId: Long): String{
+    fun getAlbumName(albumId: Long): String {
         return albums.value.find { it.id == albumId }?.name ?: "n/a"
     }
 
-    fun getAlbumSongs(albumId: Long): List<Song>{
+    fun getAlbumSongs(albumId: Long): List<Song> {
         return songs.value.filter { it.albumId == albumId }
     }
 }

@@ -12,6 +12,7 @@ object Routes{
 
     object Main{
         const val SETTINGS = "settings"
+        const val ABOUT = "about"
         const val LIBRARY = "library"
 
         object Library{
@@ -20,6 +21,7 @@ object Routes{
             const val ARTISTS = "artists"
             const val ARTISTS_ARTIST = "artists_artist"
             const val ARTISTS_ARTIST_ALBUM = "artists_artist_album"
+            const val ARTISTS_ARTIST_SELECT_COVER = "artists_artist_select_cover"
             const val ALBUMS_ROOT = "albums_root"
             const val ALBUMS = "albums"
             const val ALBUMS_ALBUM = "album"

@@ -13,19 +13,19 @@
 
     <string name="search_songs">Search Songs</string>
     <string name="search_artists">Search Artists</string>
-    <string name="SearchAlbums">Search Albums</string>
+    <string name="search_albums">Search Albums</string>
     <string name="SearchPlaylists">Search Playlists</string>
     <string name="ModificationDate">Sort By Modification Date</string>
-    <string name="SortAlphabetically">Sort Alphabetically</string>
-    <string name="SortByRecentlyAdded">Sort By Recently Added</string>
+    <string name="sort_alphabetically">Sort Alphabetically</string>
+    <string name="SortByRecency">Sort By Recency</string>
     <string name="SortByOldestAdded">Sort By Oldest Added</string>
     <string name="SortByAscendent">Sort By Ascendent</string>
     <string name="SortByDescendent">Sort By Descendent</string>
-    <string name="Settings">Settings</string>
-    <string name="About">About</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
 
     <string name="AppVersion">App Version</string>
-    <string name="AppSource">App Source</string>
+    <string name="source_code">Source Code</string>
     <string name="GetAppSourceOnGitHub">Get the app source on GitHub</string>
     <string name="GetAppSourceOnGitLab">Get the app source on GitLab</string>
     <string name="home">Home</string>
@@ -54,24 +54,24 @@
     <string name="DarkMode">Dark Mode</string>
     <string name="AccentColor">Accent Color</string>
     <string name="SelectColorScheme">Select Color Scheme</string>
-    <string name="SystemDefault">System Default</string>
+    <string name="system_default">System Default</string>
     <string name="LightMode">Light Mode</string>
     <string name="Apply">Apply</string>
     <string name="Audio">Audio</string>
-    <string name="FilterAudioBelow">Filter Audio Below</string>
+    <string name="filter_audio_below">Filter Audio Below</string>
     <string name="SelectDarkMode">Select Dark Mode</string>
     <string name="Color">Color</string>
     <string name="Oled" translatable="false">Oled</string>
     <string name="FilterAudio">Filter Audio</string>
-    <string name="InsertMinimumSeconds">Insert minimum seconds</string>
+    <string name="seconds">Seconds</string>
     <string name="MaterialYou">Material You</string>
-    <string name="Blue">Blue</string>
-    <string name="Red">Red</string>
-    <string name="Purple">Purple</string>
-    <string name="Orange">Orange</string>
-    <string name="Yellow">Yellow</string>
-    <string name="Green">Green</string>
-    <string name="Pink">Pink</string>
+    <string name="blue">Blue</string>
+    <string name="red">Red</string>
+    <string name="purple">Purple</string>
+    <string name="orange">Orange</string>
+    <string name="yellow">Yellow</string>
+    <string name="green">Green</string>
+    <string name="pink">Pink</string>
     <string name="Common">Common</string>
     <string name="title_welcome">Welcome</string>
     <string name="next">Next</string>
@@ -85,15 +85,15 @@
     <string name="Accents">Accents</string>
     <string name="Finish">Finish</string>
     <string name="ImageTooBig">Image is too big. Consider compressing the image</string>
-    <string name="ChangeArtistCover">Change artist cover</string>
+    <string name="change_artist_image">Change artist cover</string>
     <string name="Artist">Artist</string>
-    <string name="SelectLocalCover">Select local cover</string>
+    <string name="select_local_cover">Select Local Cover</string>
     <string name="OnlineResults">Online Results</string>
     <string name="EnableInternetToGetCovers">Enable internet to get covers</string>
     <string name="UseDefault">Use default</string>
     <string name="Data">Data</string>
     <string name="download_artist_cover">Download artist cover from internet</string>
-    <string name="DownloadArtistCoverOnData">Download artist cover on mobile data</string>
+    <string name="download_artist_cover_on_mobile_data">Download artist cover on mobile data</string>
     <string name="Playlists">Playlists</string>
     <string name="SongAlreadyInPlaylist">Song already in playlist</string>
     <string name="AddSongs">Add Songs</string>
@@ -114,7 +114,7 @@
     <string name="ReloadSongs">Reload Songs</string>
     <string name="DontCloseAppWhileReloading">Don\'t close the app while reloading the songs!!</string>
     <string name="ReloadingSongs">Reloading Songs</string>
-    <string name="ColorScheme">Color Scheme</string>
+    <string name="color_scheme">Color Scheme</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="light_theme">Light Theme</string>
     <string name="IndexingSongs">Indexing Songs. Don\'t close the app.</string>
@@ -124,4 +124,15 @@
     <string name="ShowCarPlayer">Show Car Player</string>
     <string name="SortByArtist">Sort By Artist</string>
     <string name="loading_library">Loading Library ...</string>
+    <string name="use_default_cover">Use Default Cover</string>
+    <string name="sort_by_modification_date">Sort By Modification Date</string>
+    <string name="sort_by_default">Sort By Default</string>
+    <string name="reindex_library">Reindex Library</string>
+    <string name="light">Light</string>
+    <string name="system">System</string>
+    <string name="dark">Dark</string>
+    <string name="use_oled_in_dark_theme">Use oled in dark theme</string>
+    <string name="material_you">Material You</string>
+    <string name="save">Save</string>
+
 </resources>

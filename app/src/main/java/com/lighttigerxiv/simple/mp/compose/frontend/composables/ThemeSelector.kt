@@ -348,37 +348,37 @@ fun getCommonColorSchemes(inDarkMode: Boolean, context: Context): List<Theme> {
     return if (inDarkMode) {
         listOf(
             Theme(
-                context.getString(R.string.Blue),
+                context.getString(R.string.blue),
                 DarkBlueColors,
                 SettingsOptions.Themes.BLUE
             ),
             Theme(
-                context.getString(R.string.Red),
+                context.getString(R.string.red),
                 DarkRedColors,
                 SettingsOptions.Themes.RED
             ),
             Theme(
-                context.getString(R.string.Purple),
+                context.getString(R.string.purple),
                 DarkPurpleColors,
                 SettingsOptions.Themes.PURPLE
             ),
             Theme(
-                context.getString(R.string.Orange),
+                context.getString(R.string.orange),
                 DarkOrangeColors,
                 SettingsOptions.Themes.ORANGE
             ),
             Theme(
-                context.getString(R.string.Yellow),
+                context.getString(R.string.yellow),
                 DarkYellowColors,
                 SettingsOptions.Themes.YELLOW
             ),
             Theme(
-                context.getString(R.string.Green),
+                context.getString(R.string.green),
                 DarkGreenColors,
                 SettingsOptions.Themes.GREEN
             ),
             Theme(
-                context.getString(R.string.Pink),
+                context.getString(R.string.pink),
                 DarkPinkColors,
                 SettingsOptions.Themes.PINK
             )
@@ -386,37 +386,37 @@ fun getCommonColorSchemes(inDarkMode: Boolean, context: Context): List<Theme> {
     } else {
         listOf(
             Theme(
-                context.getString(R.string.Blue),
+                context.getString(R.string.blue),
                 LightBlueColors,
                 SettingsOptions.Themes.BLUE
             ),
             Theme(
-                context.getString(R.string.Red),
+                context.getString(R.string.red),
                 LightRedColors,
                 SettingsOptions.Themes.RED
             ),
             Theme(
-                context.getString(R.string.Purple),
+                context.getString(R.string.purple),
                 LightPurpleColors,
                 SettingsOptions.Themes.PURPLE
             ),
             Theme(
-                context.getString(R.string.Orange),
+                context.getString(R.string.orange),
                 LightOrangeColors,
                 SettingsOptions.Themes.ORANGE
             ),
             Theme(
-                context.getString(R.string.Yellow),
+                context.getString(R.string.yellow),
                 LightYellowColors,
                 SettingsOptions.Themes.YELLOW
             ),
             Theme(
-                context.getString(R.string.Green),
+                context.getString(R.string.green),
                 LightGreenColors,
                 SettingsOptions.Themes.GREEN
             ),
             Theme(
-                context.getString(R.string.Pink),
+                context.getString(R.string.pink),
                 LightPinkColors,
                 SettingsOptions.Themes.PINK
             )

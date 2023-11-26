@@ -20,6 +20,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,28 +32,26 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.Card
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.CollapsableHeader
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.MenuItem
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.PlayShuffleRow
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.SongCard
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.Toolbar
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToArtistAlbum
+import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToSelectArtistCover
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.FontSizes
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
-import moe.tlaster.nestedscrollview.rememberNestedScrollViewState
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ArtistScreen(
     artistId: Long,
@@ -59,15 +60,6 @@ fun ArtistScreen(
 ) {
 
     val uiState = vm.uiState.collectAsState().value
-    val pagerState = rememberPagerState(pageCount = { 2 })
-
-    LaunchedEffect(pagerState.currentPage) {
-        vm.updateCurrentPagerTab(pagerState.currentPage)
-    }
-
-    LaunchedEffect(uiState.currentPagerTab) {
-        pagerState.animateScrollToPage(uiState.currentPagerTab)
-    }
 
     LaunchedEffect(uiState.loadingRequested) {
         if (!uiState.loadingRequested) {
@@ -76,7 +68,25 @@ fun ArtistScreen(
     }
 
     Column {
-        Toolbar(navController = navController)
+        Toolbar(
+            navController = navController,
+            endContent = {
+                Column {
+
+                    Icon(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(CircleShape)
+                            .clickable { vm.updateShowMenu(true) },
+                        painter = painterResource(id = R.drawable.menu),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+
+                    Menu(uiState = uiState, vm = vm, navController = navController, artistId)
+                }
+            }
+        )
 
         CollapsableHeader(
             header = {
@@ -89,70 +99,31 @@ fun ArtistScreen(
 
             VSpacer(size = Sizes.LARGE)
 
-            TabRow(uiState = uiState, vm = vm)
-
-            VSpacer(size = Sizes.LARGE)
-
-            HorizontalPager(
-                state = pagerState
-            ) { page ->
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-
-                    if (page == 0) {
-
-                        PlayShuffleRow(
-                            onPlayClick = { vm.playSong(uiState.songs[0]) },
-                            onShuffleClick = { vm.shuffle() }
-                        )
-
-                        VSpacer(size = Sizes.LARGE)
-
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
-                        ) {
-                            items(
-                                items = uiState.songs,
-                                key = { it.id }
-                            ) { song ->
-                                SongCard(
-                                    song = song,
-                                    artistName = uiState.artistName,
-                                    art = vm.getAlbumArt(song.albumId),
-                                    onClick = { vm.playSong(song) },
-                                    highlight = uiState.currentSong == song
-                                )
-                            }
-                        }
-                    }
-
-                    if (page == 1) {
-
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(2),
-                            verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
-                            horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL)
-                        ) {
-                            items(
-                                items = uiState.albums,
-                                key = { it.id }
-                            ) { album ->
-
-                                Card(
-                                    image = vm.getAlbumArt(album.id),
-                                    defaultIconId = R.drawable.album,
-                                    text = album.name,
-                                    onClick = { navController.goToArtistAlbum(album.id) }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            SongsAndAlbumsPager(uiState = uiState, vm = vm, navController = navController)
         }
+    }
+
+}
+
+@Composable
+fun Menu(
+    uiState: ArtistScreenVM.UiState,
+    vm: ArtistScreenVM,
+    navController: NavHostController,
+    artistId: Long
+) {
+    DropdownMenu(
+        expanded = uiState.showMenu,
+        onDismissRequest = { vm.updateShowMenu(false) }
+    ) {
+        MenuItem(
+            iconId = R.drawable.artist,
+            text = stringResource(id = R.string.change_artist_image),
+            onClick = {
+                navController.goToSelectArtistCover(artistId)
+                vm.updateShowMenu(false)
+            }
+        )
     }
 }
 
@@ -241,6 +212,90 @@ fun TabRow(
                 fontWeight = FontWeight.Medium,
                 color = if (uiState.currentPagerTab == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
             )
+        }
+    }
+}
+
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun SongsAndAlbumsPager(
+    uiState: ArtistScreenVM.UiState,
+    vm: ArtistScreenVM,
+    navController: NavHostController
+) {
+
+    val pagerState = rememberPagerState(pageCount = { 2 })
+
+    LaunchedEffect(pagerState.currentPage) {
+        vm.updateCurrentPagerTab(pagerState.currentPage)
+    }
+
+    LaunchedEffect(uiState.currentPagerTab) {
+        pagerState.animateScrollToPage(uiState.currentPagerTab)
+    }
+
+    TabRow(uiState = uiState, vm = vm)
+
+    VSpacer(size = Sizes.LARGE)
+
+    HorizontalPager(
+        state = pagerState
+    ) { page ->
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+
+            if (page == 0) {
+
+                PlayShuffleRow(
+                    onPlayClick = { vm.playSong(uiState.songs[0]) },
+                    onShuffleClick = { vm.shuffle() }
+                )
+
+                VSpacer(size = Sizes.LARGE)
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+                ) {
+                    items(
+                        items = uiState.songs,
+                        key = { it.id }
+                    ) { song ->
+                        SongCard(
+                            song = song,
+                            artistName = uiState.artistName,
+                            art = vm.getAlbumArt(song.albumId),
+                            onClick = { vm.playSong(song) },
+                            highlight = uiState.currentSong == song
+                        )
+                    }
+                }
+            }
+
+            if (page == 1) {
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
+                    horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+                ) {
+                    items(
+                        items = uiState.albums,
+                        key = { it.id }
+                    ) { album ->
+
+                        Card(
+                            image = vm.getAlbumArt(album.id),
+                            defaultIconId = R.drawable.album,
+                            text = album.name,
+                            onClick = { navController.goToArtistAlbum(album.id) }
+                        )
+                    }
+                }
+            }
         }
     }
 }

@@ -37,28 +37,18 @@ class ArtistScreenVM(
     }
 
     data class UiState(
-        val loadingRequested: Boolean,
-        val isLoading: Boolean,
-        val artistImage: Bitmap?,
-        val artistName: String,
-        val songs: List<Song>,
-        val albums: List<Album>,
-        val currentSong: Song?,
-        val currentPagerTab: Int
+        val loadingRequested: Boolean = false,
+        val isLoading: Boolean = true,
+        val artistImage: Bitmap? = null,
+        val artistName: String = "",
+        val songs: List<Song> = ArrayList(),
+        val albums: List<Album> = ArrayList(),
+        val currentSong: Song? = null,
+        val currentPagerTab: Int = 0,
+        val showMenu: Boolean = false
     )
 
-    private val _uiState = MutableStateFlow(
-        UiState(
-            loadingRequested = false,
-            isLoading = true,
-            artistImage = null,
-            artistName = "",
-            songs = ArrayList(),
-            albums = ArrayList(),
-            currentSong = null,
-            currentPagerTab = 0
-        )
-    )
+    private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
     fun loadScreen(artistId: Long) {
@@ -98,5 +88,9 @@ class ArtistScreenVM(
 
     fun shuffle(){
         playbackRepository.shuffleAndPlay(uiState.value.songs)
+    }
+
+    fun updateShowMenu(v: Boolean){
+        _uiState.update { uiState.value.copy(showMenu = v) }
     }
 }

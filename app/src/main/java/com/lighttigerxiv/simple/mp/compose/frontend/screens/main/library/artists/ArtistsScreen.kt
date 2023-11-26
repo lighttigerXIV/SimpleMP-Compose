@@ -1,5 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.artists
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -95,6 +96,7 @@ fun Menu(
 ) {
     Column {
         DropdownMenu(
+            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
             expanded = uiState.showMenu,
             onDismissRequest = { vm.updateShowMenu(false) }
         ) {

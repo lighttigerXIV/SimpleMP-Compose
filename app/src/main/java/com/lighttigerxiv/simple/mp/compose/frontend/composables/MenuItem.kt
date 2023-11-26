@@ -25,21 +25,21 @@ fun MenuItem(
 ) {
 
     DropdownMenuItem(
-        modifier = Modifier.modifyIf(disabled) { background(MaterialTheme.colorScheme.surfaceVariant) },
+        modifier = Modifier.modifyIf(disabled) { background(MaterialTheme.colorScheme.surface) },
         enabled = !disabled,
         leadingIcon = {
             Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(id = iconId),
                 contentDescription = null,
-                tint = if(disabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
+                tint = if(disabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
         text = {
             Text(
                 text = text,
                 fontWeight = FontWeight.Medium,
-                color = if(disabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant
+                color = if(disabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
             )
         },
         onClick = { onClick() }

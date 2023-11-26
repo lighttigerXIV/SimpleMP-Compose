@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
@@ -25,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -139,6 +141,7 @@ fun Menu(
 ) {
 
     DropdownMenu(
+        modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
         expanded = uiState.showMenu,
         onDismissRequest = { vm.updateShowMenu(false) }
     ) {
@@ -206,7 +209,7 @@ fun Menu(
             }
         )
 
-        Divider(Modifier.height(1.dp), color = MaterialTheme.colorScheme.surfaceVariant)
+        Divider(Modifier.height(1.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
 
         MenuItem(
             iconId = R.drawable.reload,
@@ -215,7 +218,7 @@ fun Menu(
             disabled = uiState.indexingLibrary
         )
 
-        Divider(Modifier.height(1.dp), color = MaterialTheme.colorScheme.surfaceVariant)
+        Divider(Modifier.height(1.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
 
         MenuItem(
             iconId = R.drawable.settings,

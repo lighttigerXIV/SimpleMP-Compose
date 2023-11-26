@@ -1,5 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.albums
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +9,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -91,6 +93,7 @@ fun Menu(
 ) {
     Column {
         DropdownMenu(
+            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
             expanded = uiState.showMenu,
             onDismissRequest = { vm.updateShowMenu(false) }
         ) {

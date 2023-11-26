@@ -134,5 +134,6 @@
     <string name="use_oled_in_dark_theme">Use oled in dark theme</string>
     <string name="material_you">Material You</string>
     <string name="save">Save</string>
+    <string name="sort_by_year">Sort By Year</string>
 
 </resources>

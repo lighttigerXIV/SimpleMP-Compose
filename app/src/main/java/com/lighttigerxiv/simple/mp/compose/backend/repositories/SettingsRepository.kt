@@ -9,14 +9,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.lighttigerxiv.simple.mp.compose.backend.settings.Settings
 import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
 import com.lighttigerxiv.simple.mp.compose.backend.utils.isAtLeastAndroid12
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.withContext
 
 class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
@@ -52,9 +47,9 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             durationFilter = preferences[Keys.DURATION_FILTER] ?: 60,
             downloadArtistCover = preferences[Keys.DOWNLOAD_ARTIST_COVER] ?: false,
             downloadArtistCoverWithData = preferences[Keys.DOWNLOAD_ARTIST_COVER_WITH_DATA] ?: false,
-            homeSort = preferences[Keys.HOME_SORT] ?: SettingsOptions.Sort.DEFAULT,
-            albumsSort = preferences[Keys.ALBUMS_SORT] ?: SettingsOptions.Sort.DEFAULT,
-            artistsSort = preferences[Keys.ARTISTS_SORT] ?: SettingsOptions.Sort.DEFAULT
+            homeSort = preferences[Keys.HOME_SORT] ?: SettingsOptions.Sort.DEFAULT_REVERSED,
+            albumsSort = preferences[Keys.ALBUMS_SORT] ?: SettingsOptions.Sort.DEFAULT_REVERSED,
+            artistsSort = preferences[Keys.ARTISTS_SORT] ?: SettingsOptions.Sort.DEFAULT_REVERSED
         )
     }
 

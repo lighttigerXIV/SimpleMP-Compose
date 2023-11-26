@@ -9,16 +9,21 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.lighttigerxiv.simple.mp.compose.SimpleMPApplication
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Album
+import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Artist
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
+import com.lighttigerxiv.simple.mp.compose.backend.repositories.SettingsRepository
+import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
 import com.lighttigerxiv.simple.mp.compose.backend.utils.matchesSearch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AlbumsScreenVM(
-    private val libraryRepository: LibraryRepository
+    private val libraryRepository: LibraryRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
     companion object Factory {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
@@ -26,15 +31,18 @@ class AlbumsScreenVM(
 
                 val application = (this[APPLICATION_KEY] as SimpleMPApplication)
                 val libraryRepository = application.container.libraryRepository
+                val settingsRepository = application.container.settingsRepository
 
-                AlbumsScreenVM(libraryRepository)
+                AlbumsScreenVM(libraryRepository, settingsRepository)
             }
         }
     }
 
     data class UiState(
         val searchText: String = "",
-        val albums: List<Album> = ArrayList()
+        val albums: List<Album> = ArrayList(),
+        val showMenu: Boolean = false,
+        val sortType: String = ""
     )
 
     private val _uiState = MutableStateFlow(UiState())
@@ -44,9 +52,19 @@ class AlbumsScreenVM(
 
     init {
         viewModelScope.launch(Dispatchers.Main) {
-            libraryRepository.albums.collect { newAlbums ->
-                albums = newAlbums
-                _uiState.update { uiState.value.copy(albums = newAlbums) }
+            settingsRepository.settingsFlow.collect { newSettings ->
+
+                _uiState.update { uiState.value.copy(sortType = newSettings.albumsSort) }
+
+                viewModelScope.launch(Dispatchers.Main) {
+                    libraryRepository.albums.collect { newAlbums ->
+
+                        val sortedAlbums = newAlbums.sorted(newSettings.albumsSort)
+
+                        albums = sortedAlbums
+                        _uiState.update { uiState.value.copy(albums = sortedAlbums) }
+                    }
+                }
             }
         }
     }
@@ -66,5 +84,26 @@ class AlbumsScreenVM(
     fun updateSearchText(text: String) {
         _uiState.update { uiState.value.copy(searchText = text) }
         filter()
+    }
+
+    fun updateShowMenu(v: Boolean) {
+        _uiState.update { uiState.value.copy(showMenu = v) }
+    }
+
+    fun updateSort(sortType: String) {
+        viewModelScope.launch(Dispatchers.Main) {
+            settingsRepository.updateAlbumsSort(sortType)
+
+            albums = libraryRepository.albums.value.sorted(sortType)
+        }
+    }
+
+    private fun List<Album>.sorted(sortType: String): List<Album> {
+        return when (sortType) {
+            SettingsOptions.Sort.DEFAULT_REVERSED -> this.reversed()
+            SettingsOptions.Sort.ALPHABETICALLY_ASCENDENT -> this.sortedBy { it.name }
+            SettingsOptions.Sort.ALPHABETICALLY_DESCENDENT -> this.sortedByDescending { it.name }
+            else -> this
+        }
     }
 }

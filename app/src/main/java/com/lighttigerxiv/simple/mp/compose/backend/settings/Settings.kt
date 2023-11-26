@@ -90,7 +90,12 @@ object SettingsOptions{
 
     object Sort{
         const val DEFAULT = "default"
-        const val MODIFICATION_DATE = "modification_date"
-        const val YEAR = "year"
+        const val DEFAULT_REVERSED = "default_reversed"
+        const val MODIFICATION_DATE_RECENT = "modification_date_recent"
+        const val MODIFICATION_DATE_OLD = "modification_date_old"
+        const val YEAR_RECENT = "year_recent"
+        const val YEAR_OLD = "year_old"
+        const val ALPHABETICALLY_ASCENDENT = "alphabetically_ascendent"
+        const val ALPHABETICALLY_DESCENDENT = "alphabetically_descendent"
     }
 }

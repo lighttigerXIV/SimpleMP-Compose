@@ -14,6 +14,8 @@ object Routes{
         const val SETTINGS = "settings"
         const val ABOUT = "about"
         const val LIBRARY = "library"
+        const val PREVIEW_ARTIST = "preview_artist"
+        const val PREVIEW_ALBUM = "preview_album"
 
         object Library{
             const val HOME = "home"

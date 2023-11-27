@@ -1,5 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.home
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -9,11 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
@@ -22,11 +21,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,13 +34,15 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.MenuItem
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.SongCard
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.SongMenuItem
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.TextField
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToAbout
+import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToPreviewAlbum
+import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToPreviewArtist
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToSettings
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
@@ -53,10 +53,11 @@ fun HomeScreen(
 
     val uiState = vm.uiSate.collectAsState().value
     val lazyColumnState = rememberLazyListState()
+    val context = LocalContext.current
 
-    LaunchedEffect(uiState.sortType){
-        withContext(Dispatchers.Main){
-            if(uiState.songs.isNotEmpty()){
+    LaunchedEffect(uiState.sortType) {
+        withContext(Dispatchers.Main) {
+            if (uiState.songs.isNotEmpty()) {
                 lazyColumnState.scrollToItem(0)
             }
         }
@@ -109,7 +110,7 @@ fun HomeScreen(
 
             VSpacer(size = Sizes.LARGE)
 
-            LazyColumn(state = lazyColumnState){
+            LazyColumn(state = lazyColumnState) {
                 items(
                     items = uiState.songs,
                     key = { "song-${it.id}" }
@@ -122,7 +123,14 @@ fun HomeScreen(
                             art = vm.getSongArt(song.albumId),
                             artistName = vm.getArtistName(song.artistId),
                             highlight = song.id == uiState.currentSong?.id,
-                            onClick = { vm.playSong(song) }
+                            onClick = { vm.playSong(song) },
+                            menuItems = getSongMenuItems(context),
+                            onMenuItemClick = {menuItemId->
+                                when(menuItemId){
+                                    "preview_artist" -> rootController.goToPreviewArtist(song.artistId)
+                                    "preview_album" -> rootController.goToPreviewAlbum(song.albumId)
+                                }
+                            }
                         )
 
                         VSpacer(size = Sizes.SMALL)
@@ -131,6 +139,13 @@ fun HomeScreen(
             }
         }
     }
+}
+
+fun getSongMenuItems(context: Context): List<SongMenuItem> {
+    return listOf(
+        SongMenuItem("preview_artist", context.getString(R.string.go_to_artist), R.drawable.artist),
+        SongMenuItem("preview_album", context.getString(R.string.go_to_album), R.drawable.album),
+    )
 }
 
 @Composable

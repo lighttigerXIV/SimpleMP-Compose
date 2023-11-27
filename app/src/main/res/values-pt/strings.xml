@@ -38,8 +38,8 @@
     <string name="Albums">Álbums</string>
     <string name="song">Música</string>
     <string name="Queue">Fila De Espera</string>
-    <string name="GoToArtist">Ver Artista</string>
-    <string name="GoToAlbum">Ver Album</string>
+    <string name="go_to_artist">Ver Artista</string>
+    <string name="go_to_album">Ver Album</string>
     <string name="AddToPlaylist">Adicionar A Uma Playlist</string>
     <string name="Theming">Tema</string>
     <string name="color_scheme">Tema</string>

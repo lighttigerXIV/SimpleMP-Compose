@@ -40,8 +40,8 @@
     <string name="Albums">Alben</string>
     <string name="song">Titel</string>
     <string name="Queue">Nächster Titel</string>
-    <string name="GoToArtist">Zum Künstler</string>
-    <string name="GoToAlbum">Zum Album</string>
+    <string name="go_to_artist">Zum Künstler</string>
+    <string name="go_to_album">Zum Album</string>
     <string name="AddToPlaylist">Füge zur Playlist hinzu</string>
     <string name="Theming">Theming</string>
     <string name="color_scheme">Farbschema</string>

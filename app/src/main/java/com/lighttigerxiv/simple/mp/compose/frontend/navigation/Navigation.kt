@@ -82,3 +82,11 @@ fun NavController.goToAbout(){
 fun NavController.goToSettings(){
     this.navigate(Routes.Main.SETTINGS)
 }
+
+fun NavController.goToPreviewArtist(artistId: Long){
+    this.navigate("${Routes.Main.PREVIEW_ARTIST}/$artistId")
+}
+
+fun NavController.goToPreviewAlbum(albumId: Long){
+    this.navigate("${Routes.Main.PREVIEW_ALBUM}/$albumId")
+}

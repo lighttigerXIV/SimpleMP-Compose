@@ -524,7 +524,7 @@ fun DurationFilterDialog(
         Dialog(
             onDismissRequest = {
                 vm.updateShowDurationFilterDialog(false)
-                vm.updateColorSchemeDialogSelectedRadioButton(uiState.colorScheme)
+                vm.updateDurationFilterDialogText(uiState.durationFilter.toString())
             }
         ) {
             Surface(

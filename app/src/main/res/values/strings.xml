@@ -47,8 +47,8 @@
     <string name="Albums">Albums</string>
     <string name="song">Song</string>
     <string name="Queue">Up Next</string>
-    <string name="GoToArtist">Go To Artist</string>
-    <string name="GoToAlbum">Go To Album</string>
+    <string name="go_to_artist">Go to artist</string>
+    <string name="go_to_album">Go to album</string>
     <string name="AddToPlaylist">Add To Playlist</string>
     <string name="Theming">Theming</string>
     <string name="DarkMode">Dark Mode</string>

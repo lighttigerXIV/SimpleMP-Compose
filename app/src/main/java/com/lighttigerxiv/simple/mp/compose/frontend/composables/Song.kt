@@ -1,9 +1,11 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.composables
 
 import android.graphics.Bitmap
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,12 +16,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
@@ -37,51 +44,97 @@ import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
 
+
+data class SongMenuItem(
+    val id: String,
+    val text: String,
+    val iconId: Int
+)
+
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SongCard(
     song: Song,
     artistName: String,
     art: Bitmap?,
     highlight: Boolean = false,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    menuItems: List<SongMenuItem>? = null,
+    onMenuItemClick: (id: String) -> Unit = {}
 ) {
+
+    var showMenu by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(Sizes.SMALL))
-            .clickable { onClick() }
+            .combinedClickable(
+                onClick = { onClick() },
+                onLongClick = {
+                    if (menuItems != null) {
+                        showMenu = true
+                    }
+                }
+            )
     ) {
 
         if (art != null) {
-            Image(
-                modifier = Modifier
-                    .size(70.dp)
-                    .clip(RoundedCornerShape(Sizes.SMALL)),
-                bitmap = remember { mutableStateOf(art.asImageBitmap()) }.value,
-                contentDescription = null
-            )
+            Box(contentAlignment = Alignment.Center) {
+                Image(
+                    modifier = Modifier
+                        .size(70.dp)
+                        .clip(RoundedCornerShape(Sizes.SMALL)),
+                    bitmap = remember { mutableStateOf(art.asImageBitmap()) }.value,
+                    contentDescription = null,
+                    alpha = if (highlight) 0.1f else 1f
+                )
+
+                if (highlight) {
+                    Icon(
+                        modifier = Modifier.size(50.dp),
+                        painter = painterResource(id = R.drawable.sound),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
         } else {
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(Sizes.SMALL))
                     .size(70.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    modifier = Modifier.size(70.dp),
-                    painter = painterResource(id = R.drawable.album),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
+
+                if (highlight) {
+                    Icon(
+                        modifier = Modifier.size(50.dp),
+                        painter = painterResource(id = R.drawable.sound),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                } else {
+                    Icon(
+                        modifier = Modifier.size(50.dp),
+                        painter = painterResource(id = R.drawable.album),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
 
 
         HSpacer(size = Sizes.LARGE)
 
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f, fill = true)
+        ) {
 
             Text(
                 text = song.name,
@@ -101,6 +154,22 @@ fun SongCard(
             )
         }
 
+        DropdownMenu(
+            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            menuItems?.forEach { menuItem ->
+                MenuItem(
+                    iconId = menuItem.iconId,
+                    text = menuItem.text,
+                    onClick = {
+                        showMenu = false
+                        onMenuItemClick(menuItem.id)
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -127,7 +196,7 @@ fun PlayingListSongCard(
                 modifier = Modifier
                     .size(70.dp)
                     .clip(RoundedCornerShape(Sizes.SMALL)),
-                bitmap = remember{art}.asImageBitmap(),
+                bitmap = remember { art }.asImageBitmap(),
                 contentDescription = null
             )
         } else {

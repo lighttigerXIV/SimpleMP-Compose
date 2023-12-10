@@ -2,9 +2,12 @@ package com.lighttigerxiv.simple.mp.compose.backend.realm
 
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Album
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Artist
+import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Playlist
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.ext.toRealmList
+import org.mongodb.kbson.ObjectId
 
 class Queries(private val realm: Realm) {
 
@@ -18,7 +21,7 @@ class Queries(private val realm: Realm) {
         releaseYear: Int,
         genre: String,
         modificationDate: Long
-    ){
+    ) {
 
         val song = Song()
         song.id = id
@@ -36,14 +39,14 @@ class Queries(private val realm: Realm) {
         }
     }
 
-    fun getSongs(): List<Song>{
+    fun getSongs(): List<Song> {
         return realm.query<Song>().find()
     }
 
     suspend fun addArtist(
         id: Long,
         name: String
-    ){
+    ) {
 
         val artist = Artist()
         artist.id = id
@@ -54,7 +57,7 @@ class Queries(private val realm: Realm) {
         }
     }
 
-    fun getArtists(): List<Artist>{
+    fun getArtists(): List<Artist> {
         return realm.query<Artist>().find()
     }
 
@@ -62,7 +65,7 @@ class Queries(private val realm: Realm) {
         id: Long,
         name: String,
         artistId: Long
-    ){
+    ) {
 
         val album = Album()
         album.id = id
@@ -74,11 +77,45 @@ class Queries(private val realm: Realm) {
         }
     }
 
-    fun getAlbums(): List<Album>{
+    fun getAlbums(): List<Album> {
         return realm.query<Album>().find()
     }
 
-    suspend fun clearCache(){
+    fun getUserPlaylists(): List<Playlist> {
+        return realm.query<Playlist>().find()
+    }
+
+    suspend fun addPlaylist(name: String) {
+        val playlist = Playlist()
+        playlist.name = name
+
+        realm.write {
+            copyToRealm(playlist)
+        }
+    }
+
+    suspend fun addSongToPlaylist(playlistId: ObjectId, songId: Long) {
+        realm.write {
+            val playlist = this.query<Playlist>("_id == $0", playlistId).first().find()
+            playlist?.songs?.add(songId)
+        }
+    }
+
+    suspend fun updatePlaylistSongs(playlistId: ObjectId, songsIds: List<Long>) {
+        realm.write {
+            val playlist = this.query<Playlist>("_id == $0", playlistId).first().find()
+            playlist?.songs = songsIds.toRealmList()
+        }
+    }
+
+    suspend fun updatePlaylistName(playlistId: ObjectId, name: String) {
+        realm.write {
+            val playlist = this.query<Playlist>("_id == $0", playlistId).first().find()
+            playlist?.name = name
+        }
+    }
+
+    suspend fun clearCache() {
         realm.write {
             val songs = query<Song>().find()
             val artists = query<Artist>().find()
@@ -87,6 +124,13 @@ class Queries(private val realm: Realm) {
             delete(songs)
             delete(artists)
             delete(albums)
+        }
+    }
+
+    suspend fun deletePlaylist(playlistId: ObjectId) {
+        realm.write {
+            val playlist = this.query<Playlist>("_id == $0", playlistId).find()
+            delete(playlist)
         }
     }
 }

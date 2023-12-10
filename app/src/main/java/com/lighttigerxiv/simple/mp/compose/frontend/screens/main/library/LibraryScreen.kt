@@ -63,9 +63,12 @@ import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.artists
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.home.HomeScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.player.Player
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.playlists.PlaylistsScreen
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.playlists.genre_playlist.GenrePlaylistScreen
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.playlists.playlist.PlaylistScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeNavigationBarsColor
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 import kotlinx.coroutines.launch
+import org.mongodb.kbson.ObjectId
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -203,8 +206,40 @@ fun LibraryScreen(
                     }
                 }
 
-                composable(Routes.Main.Library.PLAYLISTS) {
-                    PlaylistsScreen()
+                navigation(
+                    route = Routes.Main.Library.PLAYLISTS_ROOT,
+                    startDestination = Routes.Main.Library.PLAYLISTS
+                ) {
+                    composable(Routes.Main.Library.PLAYLISTS) {
+                        PlaylistsScreen(navController)
+                    }
+
+                    composable(
+                        "${Routes.Main.Library.PLAYLISTS_GENRE}/{id}",
+                        arguments = listOf(
+                            navArgument("id") { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+
+                        GenrePlaylistScreen(
+                            navController = navController,
+                            playlistId = ObjectId(backStackEntry.arguments?.getString("id") ?: "n/a")
+                        )
+                    }
+
+                    composable(
+                        "${Routes.Main.Library.PLAYLISTS_USER}/{id}",
+                        arguments = listOf(
+                            navArgument("id") { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+
+                        PlaylistScreen(
+                            navController = navController,
+                            rootController = rootController,
+                            playlistId = ObjectId(backStackEntry.arguments?.getString("id") ?: "n/a")
+                        )
+                    }
                 }
             }
         }
@@ -254,6 +289,9 @@ fun NavigationBar(
                         || navbarItem.route == Routes.Main.Library.ARTISTS_ROOT && destinationRoute?.startsWith(Routes.Main.Library.ARTISTS_ARTIST_ALBUM) ?: false
                         || navbarItem.route == Routes.Main.Library.ALBUMS_ROOT && destinationRoute == Routes.Main.Library.ALBUMS
                         || navbarItem.route == Routes.Main.Library.ALBUMS_ROOT && destinationRoute?.startsWith(Routes.Main.Library.ALBUMS_ALBUM) ?: false
+                        || navbarItem.route == Routes.Main.Library.PLAYLISTS_ROOT && destinationRoute == Routes.Main.Library.PLAYLISTS
+                        || navbarItem.route == Routes.Main.Library.PLAYLISTS_ROOT && destinationRoute?.startsWith(Routes.Main.Library.PLAYLISTS_GENRE) ?: false
+                        || navbarItem.route == Routes.Main.Library.PLAYLISTS_ROOT && destinationRoute?.startsWith(Routes.Main.Library.PLAYLISTS_USER) ?: false
 
 
                 val icon = if (isSelected) navbarItem.activeIconId else navbarItem.inactiveIconId
@@ -295,6 +333,6 @@ fun openNavbarRoute(navController: NavHostController, route: String) {
         Routes.Main.Library.HOME -> navController.goToHome()
         Routes.Main.Library.ARTISTS_ROOT -> navController.goToArtists()
         Routes.Main.Library.ALBUMS_ROOT -> navController.goToAlbums()
-        Routes.Main.Library.PLAYLISTS -> navController.goToPlaylists()
+        Routes.Main.Library.PLAYLISTS_ROOT -> navController.goToPlaylists()
     }
 }

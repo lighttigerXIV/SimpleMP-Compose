@@ -56,7 +56,7 @@ class LibraryScreenVM(
     init {
         if (!libraryRepository.initialized.value) {
             viewModelScope.launch(Dispatchers.Main) {
-                libraryRepository.initLibrary(application)
+                libraryRepository.initLibrary()
             }
         }
 

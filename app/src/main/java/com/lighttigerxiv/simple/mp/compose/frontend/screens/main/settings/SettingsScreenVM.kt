@@ -153,7 +153,7 @@ class SettingsScreenVM(
     fun updateDurationFilter() {
         viewModelScope.launch(Dispatchers.Main) {
             settingsRepository.updateDurationFilter(uiState.value.durationFilterDialogText.toInt())
-            libraryRepository.initLibrary(application)
+            libraryRepository.initLibrary()
         }
     }
 

@@ -24,8 +24,7 @@ fun SetupScreen() {
 
     NavHost(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp),
+            .background(MaterialTheme.colorScheme.surface),
         navController = navController,
         startDestination = Routes.Setup.WELCOME
     ) {

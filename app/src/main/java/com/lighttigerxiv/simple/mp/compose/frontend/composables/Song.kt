@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -254,5 +255,184 @@ fun PlayingListSongCard(
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+}
+
+
+@Composable
+fun AddToPlaylistSongCard(
+    song: Song,
+    artistName: String,
+    art: Bitmap?,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .clip(RoundedCornerShape(Sizes.SMALL))
+            .clickable { onClick() }
+    ) {
+
+        if (art != null) {
+            Box(contentAlignment = Alignment.Center) {
+                Image(
+                    modifier = Modifier
+                        .size(70.dp)
+                        .clip(RoundedCornerShape(Sizes.SMALL)),
+                    bitmap = remember { mutableStateOf(art.asImageBitmap()) }.value,
+                    contentDescription = null
+                )
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(Sizes.SMALL))
+                    .size(70.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Icon(
+                    modifier = Modifier.size(50.dp),
+                    painter = painterResource(id = R.drawable.album),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        HSpacer(size = Sizes.LARGE)
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f, fill = true)
+        ) {
+
+            Text(
+                text = song.name,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Text(
+                text = artistName,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        HSpacer(size = Sizes.LARGE)
+
+        Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
+            Box(modifier = Modifier.size(30.dp)) {
+                if (selected) {
+                    Icon(
+                        modifier = Modifier.fillMaxSize(),
+                        painter = painterResource(id = R.drawable.check),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+
+        HSpacer(size = Sizes.LARGE)
+    }
+}
+
+
+@Composable
+fun RemoveFromPlaylistSongCard(
+    song: Song,
+    artistName: String,
+    art: Bitmap?,
+    onClick: () -> Unit
+) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .clip(RoundedCornerShape(Sizes.SMALL))
+    ) {
+
+        if (art != null) {
+            Box(contentAlignment = Alignment.Center) {
+                Image(
+                    modifier = Modifier
+                        .size(70.dp)
+                        .clip(RoundedCornerShape(Sizes.SMALL)),
+                    bitmap = remember { mutableStateOf(art.asImageBitmap()) }.value,
+                    contentDescription = null
+                )
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(Sizes.SMALL))
+                    .size(70.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Icon(
+                    modifier = Modifier.size(50.dp),
+                    painter = painterResource(id = R.drawable.album),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        HSpacer(size = Sizes.LARGE)
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f, fill = true)
+        ) {
+
+            Text(
+                text = song.name,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Text(
+                text = artistName,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        HSpacer(size = Sizes.LARGE)
+
+        Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
+
+            Icon(
+                modifier = Modifier
+                    .size(30.dp)
+                    .clickable { onClick() },
+                painter = painterResource(id = R.drawable.remove),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        HSpacer(size = Sizes.LARGE)
     }
 }

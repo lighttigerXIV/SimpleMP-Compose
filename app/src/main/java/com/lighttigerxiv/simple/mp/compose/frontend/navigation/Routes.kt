@@ -17,6 +17,7 @@ object Routes{
         const val PREVIEW_ARTIST = "preview_artist"
         const val PREVIEW_ALBUM = "preview_album"
 
+
         object Library{
             const val HOME = "home"
             const val ARTISTS_ROOT = "artists_root"
@@ -31,6 +32,7 @@ object Routes{
             const val PLAYLISTS = "playlists"
             const val PLAYLISTS_GENRE = "playlists_genre"
             const val PLAYLISTS_USER = "playlists_user"
+            const val ADD_SONGS_TO_PLAYLIST = "add_songs_to_playlist"
         }
     }
 }

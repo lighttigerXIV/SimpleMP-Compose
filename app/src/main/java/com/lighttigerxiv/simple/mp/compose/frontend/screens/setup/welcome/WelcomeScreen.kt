@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -22,6 +23,7 @@ import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.PrimaryButton
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToPermissions
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 
 @Composable
 fun WelcomeScreen(
@@ -31,6 +33,7 @@ fun WelcomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(Sizes.LARGE)
     ) {
 
         Column(

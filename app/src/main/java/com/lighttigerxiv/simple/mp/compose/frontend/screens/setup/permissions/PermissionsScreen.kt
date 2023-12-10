@@ -40,6 +40,8 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.VDivider
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goBack
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToLightTheme
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeNavigationBarsColor
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeStatusBarColor
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 
@@ -62,8 +64,13 @@ fun PermissionsScreen(
         onResult = { granted -> vm.updateNotificationsPermissionGranted(granted) }
     )
 
+    ChangeNavigationBarsColor(color = MaterialTheme.colorScheme.surface)
+    ChangeStatusBarColor(color = MaterialTheme.colorScheme.surface)
+
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(Sizes.LARGE)
     ) {
 
         Column(
@@ -99,7 +106,7 @@ fun PermissionsScreen(
                 modifier = Modifier
                     .clip(RoundedCornerShape(Sizes.XLARGE))
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-            ){
+            ) {
 
                 PermissionCard(
                     checked = storagePermissionGranted,
@@ -161,7 +168,7 @@ fun PermissionCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .modifyIf(!checked){
+            .modifyIf(!checked) {
                 clickable { onCheckedChange() }
             }
             .padding(Sizes.LARGE),

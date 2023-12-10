@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -29,6 +30,8 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.ThemeSelector
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goBack
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToOtherSettings
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeNavigationBarsColor
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeStatusBarColor
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 
 @Composable
@@ -39,11 +42,15 @@ fun DarkThemeScreen(
 
     val settings = vm.settings.collectAsState().value
 
+    ChangeNavigationBarsColor(color = MaterialTheme.colorScheme.surface)
+    ChangeStatusBarColor(color = MaterialTheme.colorScheme.surface)
+
     if(settings != null){
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(Sizes.LARGE)
         ) {
 
             Column(
@@ -77,7 +84,8 @@ fun DarkThemeScreen(
 
                 ThemeSelector(
                     selectedTheme = settings.darkTheme,
-                    onThemeSelected = { vm.updateTheme(it) }
+                    onThemeSelected = { vm.updateTheme(it) },
+                    darkTheme = true
                 )
             }
 

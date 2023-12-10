@@ -60,20 +60,22 @@ import com.lighttigerxiv.simple.mp.compose.frontend.theme.getFrappeScheme
 import com.lighttigerxiv.simple.mp.compose.frontend.theme.getLatteScheme
 import com.lighttigerxiv.simple.mp.compose.frontend.theme.getMacchiatoScheme
 import com.lighttigerxiv.simple.mp.compose.frontend.theme.getMochaScheme
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeNavigationBarsColor
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeStatusBarColor
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.FontSizes
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 
 @Composable
 fun ThemeSelector(
     selectedTheme: String,
-    onThemeSelected: (theme: String) -> Unit
+    onThemeSelected: (theme: String) -> Unit,
+    darkTheme: Boolean
 ) {
 
     val context = LocalContext.current
-    val inDarkMode = isSystemInDarkTheme()
     val showCommonThemes = remember { mutableStateOf(true) }
     val showCatppuccinThemes = remember { mutableStateOf(true) }
-    val commonThemes = remember{ getCommonColorSchemes(inDarkMode, context) }
+    val commonThemes = remember{ getCommonColorSchemes(darkTheme, context) }
 
     
     Column(
@@ -91,7 +93,7 @@ fun ThemeSelector(
 
                 val theme = Theme(
                     name = stringResource(id = R.string.MaterialYou),
-                    colorScheme = if(isSystemInDarkTheme()) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context),
+                    colorScheme = if(darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context),
                     setting = SettingsOptions.Themes.MATERIAL_YOU
                 )
 

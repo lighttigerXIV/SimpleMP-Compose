@@ -3,6 +3,7 @@ package com.lighttigerxiv.simple.mp.compose.backend.repositories
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
@@ -17,8 +18,10 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import com.lighttigerxiv.simple.mp.compose.backend.playback.BluetoothReceiver
 import com.lighttigerxiv.simple.mp.compose.backend.playback.PlaybackService
 import com.lighttigerxiv.simple.mp.compose.backend.playback.RepeatSate
+import com.lighttigerxiv.simple.mp.compose.backend.playback.StopPlaybackReceiver
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -112,7 +115,7 @@ class PlaybackRepository(
                 CoroutineScope(Dispatchers.Main).launch {
                     libraryRepository.indexLibrary(application, onFinish = {
                         withContext(Dispatchers.Main){
-                            libraryRepository.initLibrary(application)
+                            libraryRepository.initLibrary()
                         }
                     })
                 }
@@ -205,6 +208,8 @@ class PlaybackRepository(
         build()
     }
 
+    private val bluetoothReceiver = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+
     private fun requestFocusAndPlay() {
 
         val focusLock = Any()
@@ -223,6 +228,10 @@ class PlaybackRepository(
                 }
             }
         }
+    }
+
+    init {
+        application.registerReceiver(BluetoothReceiver(), bluetoothReceiver)
     }
 
     private fun setPlaybackState(state: Int) {

@@ -16,9 +16,11 @@ import com.lighttigerxiv.simple.mp.compose.frontend.navigation.Routes
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.about.AboutScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.LibraryScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.albums.album.AlbumScreen
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.playlists.playlist.add_songs.AddSongsToPlaylistScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.preview_artist.PreviewArtistScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.settings.SettingsScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
+import org.mongodb.kbson.ObjectId
 
 @Composable
 fun MainScreen() {
@@ -47,12 +49,12 @@ fun MainScreen() {
         composable(
             "${Routes.Main.PREVIEW_ARTIST}/{id}",
             arguments = listOf(
-                navArgument("id"){ type = NavType.LongType }
+                navArgument("id") { type = NavType.LongType }
             )
-        ) {backstackEntry->
+        ) { backstackEntry ->
             val artistId = backstackEntry.arguments?.getLong("id") ?: 0L
 
-            Column(modifier = Modifier.padding(Sizes.LARGE)){
+            Column(modifier = Modifier.padding(Sizes.LARGE)) {
                 PreviewArtistScreen(artistId = artistId, navController = navController)
             }
         }
@@ -60,14 +62,26 @@ fun MainScreen() {
         composable(
             "${Routes.Main.PREVIEW_ALBUM}/{id}",
             arguments = listOf(
-                navArgument("id"){ type = NavType.LongType }
+                navArgument("id") { type = NavType.LongType }
             )
-        ) {backstackEntry->
+        ) { backstackEntry ->
             val albumId = backstackEntry.arguments?.getLong("id") ?: 0L
 
-            Column(modifier = Modifier.padding(Sizes.LARGE)){
+            Column(modifier = Modifier.padding(Sizes.LARGE)) {
                 AlbumScreen(albumId = albumId, navController = navController)
             }
+        }
+
+        composable(
+            "${Routes.Main.Library.ADD_SONGS_TO_PLAYLIST}/{id}",
+            arguments = listOf(
+                navArgument("id") { type = NavType.StringType }
+            )
+        ) {backstackEntry->
+
+            val playlistId = ObjectId(backstackEntry.arguments?.getString("id") ?: "")
+
+            AddSongsToPlaylistScreen(playlistId = playlistId, navController = navController)
         }
     }
 }

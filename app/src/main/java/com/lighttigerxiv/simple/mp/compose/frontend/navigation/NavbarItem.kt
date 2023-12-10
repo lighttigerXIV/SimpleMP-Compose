@@ -26,7 +26,7 @@ fun getNavbarItems(): List<NavbarItem>{
             inactiveIconId = R.drawable.album
         ),
         NavbarItem(
-            route = Routes.Main.Library.PLAYLISTS,
+            route = Routes.Main.Library.PLAYLISTS_ROOT,
             activeIconId = R.drawable.playlist_filled,
             inactiveIconId = R.drawable.playlist
         )

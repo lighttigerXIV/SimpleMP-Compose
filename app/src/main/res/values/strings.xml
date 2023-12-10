@@ -14,7 +14,7 @@
     <string name="search_songs">Search Songs</string>
     <string name="search_artists">Search Artists</string>
     <string name="search_albums">Search Albums</string>
-    <string name="SearchPlaylists">Search Playlists</string>
+    <string name="search_playlists">Search Playlists</string>
     <string name="ModificationDate">Sort By Modification Date</string>
     <string name="sort_alphabetically">Sort Alphabetically</string>
     <string name="SortByRecency">Sort By Recency</string>
@@ -29,19 +29,19 @@
     <string name="GetAppSourceOnGitHub">Get the app source on GitHub</string>
     <string name="GetAppSourceOnGitLab">Get the app source on GitLab</string>
     <string name="home">Home</string>
-    <string name="Genres">Genres</string>
+    <string name="genres">Genres</string>
     <string name="YourPlaylists">Your Playlists</string>
-    <string name="PlaylistName">Playlist name</string>
+    <string name="playlist_name">Playlist name</string>
     <string name="InsertPlaylistName">Insert playlist name</string>
     <string name="Create">Create</string>
     <string name="play">Play</string>
     <string name="Shuffle">Shuffle</string>
-    <string name="EditPlaylist">Edit Playlist</string>
-    <string name="DeletePlaylist">Delete Playlist</string>
-    <string name="ConfirmDeletePlaylist">Are you sure that you want to delete the playlist</string>
-    <string name="Cancel">Cancel</string>
-    <string name="Delete">Delete</string>
-    <string name="NoSongsAdded">No songs added</string>
+    <string name="edit">Edit</string>
+    <string name="delete_playlist">Delete Playlist</string>
+    <string name="confirm_delete_playlist">Are you sure that you want to delete the playlist?</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="no_songs_added">No songs added</string>
     <string name="Artists">Artists</string>
     <string name="Songs">Songs</string>
     <string name="Albums">Albums</string>
@@ -94,11 +94,11 @@
     <string name="Data">Data</string>
     <string name="download_artist_cover">Download artist cover from internet</string>
     <string name="download_artist_cover_on_mobile_data">Download artist cover on mobile data</string>
-    <string name="Playlists">Playlists</string>
+    <string name="playlists">Playlists</string>
     <string name="SongAlreadyInPlaylist">Song already in playlist</string>
-    <string name="AddSongs">Add Songs</string>
+    <string name="add_songs">Add Songs</string>
     <string name="Playlist">Playlist</string>
-    <string name="Add">Add</string>
+    <string name="add">Add</string>
     <string name="Select">Select</string>
     <string name="SelectImage">Select Image</string>
     <string name="DeleteImage">Delete Image</string>
@@ -135,5 +135,7 @@
     <string name="material_you">Material You</string>
     <string name="save">Save</string>
     <string name="sort_by_year">Sort By Year</string>
+    <string name="add_playlist">Add Playlist</string>
+    <string name="edit_name">Edit Name</string>
 
 </resources>

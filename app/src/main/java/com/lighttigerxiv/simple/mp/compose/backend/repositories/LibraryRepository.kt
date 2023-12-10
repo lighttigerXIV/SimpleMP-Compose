@@ -1,5 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.backend.repositories
 
+import android.app.Application
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -23,7 +24,9 @@ import kotlinx.coroutines.withContext
 
 
 class LibraryRepository(
-    private val settingsRepository: SettingsRepository
+    private val application: Application,
+    private val settingsRepository: SettingsRepository,
+    private val playlistsRepository: PlaylistsRepository
 ) {
 
     data class AlbumArt(
@@ -54,7 +57,7 @@ class LibraryRepository(
     private val _indexingLibrary = MutableStateFlow(false)
     val indexingLibrary = _indexingLibrary.asStateFlow()
 
-    private suspend fun loadLibrary(onFinish: suspend () -> Unit = {}) {
+    private suspend fun loadLibrary(onFinish: () -> Unit = {}) {
         withContext(Dispatchers.Main) {
             settingsRepository.settingsFlow.collect { settings ->
 
@@ -67,13 +70,14 @@ class LibraryRepository(
                 _songs.update { newSongs }
                 _artists.update { newArtists }
                 _albums.update { newAlbums }
+                playlistsRepository.loadPlaylists(songs.value)
 
-                onFinish()
+                loadAlbumArts(onFinish = { onFinish() })
             }
         }
     }
 
-    private suspend fun loadAlbumArts(context: Context) {
+    private suspend fun loadAlbumArts(onFinish: () -> Unit = {}) {
         withContext(Dispatchers.Default) {
 
             val filteredSongs = songs.value.distinctBy { it.albumId }
@@ -84,7 +88,7 @@ class LibraryRepository(
                     add(
                         AlbumArt(
                             song.albumId,
-                            getAlbumArt(context, song.id, song.albumId, smallSize = true)
+                            getAlbumArt(application, song.id, song.albumId, smallSize = true)
                         )
                     )
                 }
@@ -93,7 +97,7 @@ class LibraryRepository(
                     add(
                         AlbumArt(
                             song.albumId,
-                            getAlbumArt(context, song.id, song.albumId)
+                            getAlbumArt(application, song.id, song.albumId)
                         )
                     )
                 }
@@ -101,15 +105,13 @@ class LibraryRepository(
                 _smallAlbumArts.update { newSmallAlbumArts }
                 _albumArts.update { newAlbumArts }
             }
+
+            onFinish()
         }
     }
 
-    suspend fun initLibrary(context: Context) {
-        loadLibrary{
-            withContext(Dispatchers.Main){
-                loadAlbumArts(context)
-            }
-        }
+    suspend fun initLibrary() {
+        loadLibrary()
     }
 
     suspend fun indexLibrary(

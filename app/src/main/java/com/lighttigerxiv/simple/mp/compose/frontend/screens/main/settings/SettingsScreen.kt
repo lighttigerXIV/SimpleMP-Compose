@@ -387,7 +387,7 @@ fun ColorSchemeDialog(
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
 
                         SecondaryButton(
-                            text = stringResource(id = R.string.Cancel),
+                            text = stringResource(id = R.string.cancel),
                             onClick = {
                                 vm.updateShowColorSchemeDialog(false)
                                 vm.updateColorSchemeDialogSelectedRadioButton(uiState.colorScheme)
@@ -452,7 +452,8 @@ fun LightThemeDialog(
                         Column(Modifier.verticalScroll(rememberScrollState())) {
                             ThemeSelector(
                                 selectedTheme = uiState.lightThemeDialogSelectedTheme,
-                                onThemeSelected = { theme -> vm.updateLightThemeDialogSelectedTheme(theme) }
+                                onThemeSelected = { theme -> vm.updateLightThemeDialogSelectedTheme(theme) },
+                                darkTheme = false
                             )
                         }
                     }
@@ -505,6 +506,7 @@ fun DarkThemeDialog(
                             ThemeSelector(
                                 selectedTheme = uiState.darkThemeDialogSelectedTheme,
                                 onThemeSelected = { theme -> vm.updateDarkThemeDialogSelectedTheme(theme) },
+                                darkTheme = true
                             )
                         }
                     }
@@ -568,7 +570,7 @@ fun DurationFilterDialog(
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
 
                         SecondaryButton(
-                            text = stringResource(id = R.string.Cancel),
+                            text = stringResource(id = R.string.cancel),
                             onClick = {
                                 vm.updateShowDurationFilterDialog(false)
                                 vm.updateDurationFilterDialogText(uiState.durationFilter.toString())

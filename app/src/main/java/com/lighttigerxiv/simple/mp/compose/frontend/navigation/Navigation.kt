@@ -2,6 +2,7 @@ package com.lighttigerxiv.simple.mp.compose.frontend.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import org.mongodb.kbson.ObjectId
 
 
 fun NavController.openNavbarRoute(route: String) {
@@ -55,7 +56,7 @@ fun NavController.goToAlbums() {
 }
 
 fun NavController.goToPlaylists() {
-    this.openNavbarRoute(Routes.Main.Library.PLAYLISTS)
+    this.openNavbarRoute(Routes.Main.Library.PLAYLISTS_ROOT)
 }
 
 fun NavController.goToArtist(artistId: Long) {
@@ -89,4 +90,16 @@ fun NavController.goToPreviewArtist(artistId: Long){
 
 fun NavController.goToPreviewAlbum(albumId: Long){
     this.navigate("${Routes.Main.PREVIEW_ALBUM}/$albumId")
+}
+
+fun NavController.goToGenrePlaylist(playlistId: ObjectId){
+    this.navigate("${Routes.Main.Library.PLAYLISTS_GENRE}/${playlistId.toHexString()}")
+}
+
+fun NavController.goToUserPlaylist(playlistId: ObjectId){
+    this.navigate("${Routes.Main.Library.PLAYLISTS_USER}/${playlistId.toHexString()}")
+}
+
+fun NavController.goToAddSongsToPlaylist(playlistId: ObjectId){
+    this.navigate("${Routes.Main.Library.ADD_SONGS_TO_PLAYLIST}/${playlistId.toHexString()}")
 }

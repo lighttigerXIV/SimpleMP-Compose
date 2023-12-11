@@ -24,7 +24,7 @@
     <string name="YourPlaylists">Suas Playlists</string>
     <string name="playlist_name">Nome da playlist</string>
     <string name="InsertPlaylistName">Insira o nome da playlist</string>
-    <string name="Create">Criar</string>
+    <string name="create">Criar</string>
     <string name="play">Tocar</string>
     <string name="Shuffle">Aleatório</string>
     <string name="edit">Editar Playlist</string>
@@ -40,7 +40,7 @@
     <string name="Queue">Fila De Espera</string>
     <string name="go_to_artist">Ver Artista</string>
     <string name="go_to_album">Ver Album</string>
-    <string name="AddToPlaylist">Adicionar A Uma Playlist</string>
+    <string name="add_to_playlist">Adicionar A Uma Playlist</string>
     <string name="Theming">Tema</string>
     <string name="color_scheme">Tema</string>
     <string name="DarkMode">Modo Escuro</string>
@@ -86,7 +86,7 @@
     <string name="download_artist_cover">Transferir imagem do artista pela internet</string>
     <string name="download_artist_cover_on_mobile_data">Transferir imagem do artista pelos dados móveis</string>
     <string name="playlists">Playlists</string>
-    <string name="SongAlreadyInPlaylist">Musica já adicionada à playlist</string>
+    <string name="song_already_in_playlist">Musica já adicionada à playlist</string>
     <string name="add_songs">Adicionar Músicas</string>
     <string name="Playlist">Playlist</string>
     <string name="add">Adicionar</string>

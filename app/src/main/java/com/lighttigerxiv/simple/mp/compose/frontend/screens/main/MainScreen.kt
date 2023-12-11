@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.Routes
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.about.AboutScreen
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.add_song_to_playlist.AddSongToPlaylistScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.LibraryScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.albums.album.AlbumScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.playlists.playlist.add_songs.AddSongsToPlaylistScreen
@@ -55,7 +56,7 @@ fun MainScreen() {
             val artistId = backstackEntry.arguments?.getLong("id") ?: 0L
 
             Column(modifier = Modifier.padding(Sizes.LARGE)) {
-                PreviewArtistScreen(artistId = artistId, navController = navController)
+                PreviewArtistScreen(artistId = artistId, rootController = navController)
             }
         }
 
@@ -82,6 +83,21 @@ fun MainScreen() {
             val playlistId = ObjectId(backstackEntry.arguments?.getString("id") ?: "")
 
             AddSongsToPlaylistScreen(playlistId = playlistId, navController = navController)
+        }
+
+        composable(
+            "${Routes.Main.ADD_SONG_TO_PLAYLIST}/{id}",
+            arguments = listOf(
+                navArgument("id") { type = NavType.LongType }
+            )
+        ) {backstackEntry->
+
+            val songId = backstackEntry.arguments?.getLong("id") ?: 0L
+
+            AddSongToPlaylistScreen(
+                songId = songId,
+                rootController = navController
+            )
         }
     }
 }

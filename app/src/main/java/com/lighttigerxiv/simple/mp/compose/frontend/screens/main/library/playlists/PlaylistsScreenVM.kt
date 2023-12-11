@@ -83,7 +83,7 @@ class PlaylistsScreenVM(
 
             _uiState.update { uiState.value.copy(showAddPlaylistDialog = false) }
 
-            Queries(getRealm()).addPlaylist(uiState.value.addPlaylistDialogText)
+            Queries(getRealm()).createPlaylist(uiState.value.addPlaylistDialogText)
             playlistsRepository.loadPlaylists(libraryRepository.songs.value)
 
             _uiState.update { uiState.value.copy(addPlaylistDialogText = "") }

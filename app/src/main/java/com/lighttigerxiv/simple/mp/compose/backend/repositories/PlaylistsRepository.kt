@@ -41,8 +41,8 @@ class PlaylistsRepository{
         return genrePlaylists.value.first { it._id == playlistId }
     }
 
-    fun getUserPlaylist(playlistId: ObjectId): Playlist {
-        return userPlaylists.value.first { it._id == playlistId }
+    fun getUserPlaylist(playlistId: ObjectId): Playlist? {
+        return userPlaylists.value.find { it._id == playlistId }
     }
 
     fun getPlaylistSongs(songsIds: List<Long>): List<Song> {

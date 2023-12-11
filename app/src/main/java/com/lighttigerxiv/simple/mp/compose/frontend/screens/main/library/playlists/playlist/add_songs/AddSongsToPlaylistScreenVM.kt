@@ -59,7 +59,10 @@ class AddSongsToPlaylistScreenVM(
             _uiState.update { uiState.value.copy(requestedLoading = true) }
 
             val playlist = playlistsRepository.getUserPlaylist(id)
-            songs = libraryRepository.songs.value.filter { !playlist.songs.contains(it.id) }.sortedBy { it.name }
+
+            playlist?.let {
+                songs = libraryRepository.songs.value.filter { !playlist.songs.contains(it.id) }.sortedBy { it.name }
+            }
 
             _uiState.update { uiState.value.copy(isLoading = false, songs = songs) }
         }

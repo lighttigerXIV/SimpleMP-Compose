@@ -38,6 +38,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.SongMenuItem
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.TextField
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToAbout
+import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToAddSongToPlaylist
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToPreviewAlbum
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToPreviewArtist
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToSettings
@@ -125,10 +126,11 @@ fun HomeScreen(
                             highlight = song.id == uiState.currentSong?.id,
                             onClick = { vm.playSong(song) },
                             menuItems = getSongMenuItems(context),
-                            onMenuItemClick = {menuItemId->
-                                when(menuItemId){
+                            onMenuItemClick = { menuItemId ->
+                                when (menuItemId) {
                                     "preview_artist" -> rootController.goToPreviewArtist(song.artistId)
                                     "preview_album" -> rootController.goToPreviewAlbum(song.albumId)
+                                    "add_to_playlist" -> rootController.goToAddSongToPlaylist(song.id)
                                 }
                             }
                         )
@@ -145,6 +147,7 @@ fun getSongMenuItems(context: Context): List<SongMenuItem> {
     return listOf(
         SongMenuItem("preview_artist", context.getString(R.string.go_to_artist), R.drawable.artist),
         SongMenuItem("preview_album", context.getString(R.string.go_to_album), R.drawable.album),
+        SongMenuItem("add_to_playlist", context.getString(R.string.add_to_playlist), R.drawable.playlist)
     )
 }
 

@@ -33,7 +33,7 @@
     <string name="YourPlaylists">Your Playlists</string>
     <string name="playlist_name">Playlist name</string>
     <string name="InsertPlaylistName">Insert playlist name</string>
-    <string name="Create">Create</string>
+    <string name="create">Create</string>
     <string name="play">Play</string>
     <string name="Shuffle">Shuffle</string>
     <string name="edit">Edit</string>
@@ -49,7 +49,7 @@
     <string name="Queue">Up Next</string>
     <string name="go_to_artist">Go to artist</string>
     <string name="go_to_album">Go to album</string>
-    <string name="AddToPlaylist">Add To Playlist</string>
+    <string name="add_to_playlist">Add To Playlist</string>
     <string name="Theming">Theming</string>
     <string name="DarkMode">Dark Mode</string>
     <string name="AccentColor">Accent Color</string>
@@ -95,7 +95,7 @@
     <string name="download_artist_cover">Download artist cover from internet</string>
     <string name="download_artist_cover_on_mobile_data">Download artist cover on mobile data</string>
     <string name="playlists">Playlists</string>
-    <string name="SongAlreadyInPlaylist">Song already in playlist</string>
+    <string name="song_already_in_playlist">Song already in playlist</string>
     <string name="add_songs">Add Songs</string>
     <string name="Playlist">Playlist</string>
     <string name="add">Add</string>
@@ -137,5 +137,6 @@
     <string name="sort_by_year">Sort By Year</string>
     <string name="add_playlist">Add Playlist</string>
     <string name="edit_name">Edit Name</string>
+    <string name="create_playlist">Create Playlist</string>
 
 </resources>

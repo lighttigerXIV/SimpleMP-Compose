@@ -36,7 +36,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 @Composable
 fun PreviewArtistScreen(
     artistId: Long,
-    navController: NavHostController,
+    rootController: NavHostController,
     vm: PreviewArtistScreenVM = viewModel(factory = PreviewArtistScreenVM.Factory)
 ){
 
@@ -49,7 +49,7 @@ fun PreviewArtistScreen(
     }
 
     Column {
-        Toolbar(navController = navController)
+        Toolbar(navController = rootController)
 
         if(!uiState.isLoading){
 

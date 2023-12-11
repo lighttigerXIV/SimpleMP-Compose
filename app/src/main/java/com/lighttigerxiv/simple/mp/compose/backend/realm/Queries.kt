@@ -85,7 +85,7 @@ class Queries(private val realm: Realm) {
         return realm.query<Playlist>().find()
     }
 
-    suspend fun addPlaylist(name: String) {
+    suspend fun createPlaylist(name: String) {
         val playlist = Playlist()
         playlist.name = name
 
@@ -97,7 +97,12 @@ class Queries(private val realm: Realm) {
     suspend fun addSongToPlaylist(playlistId: ObjectId, songId: Long) {
         realm.write {
             val playlist = this.query<Playlist>("_id == $0", playlistId).first().find()
-            playlist?.songs?.add(songId)
+
+            playlist?.let {
+                if(!playlist.songs.contains(songId)){
+                    playlist.songs.add(songId)
+                }
+            }
         }
     }
 

@@ -16,6 +16,7 @@ object Routes{
         const val LIBRARY = "library"
         const val PREVIEW_ARTIST = "preview_artist"
         const val PREVIEW_ALBUM = "preview_album"
+        const val ADD_SONG_TO_PLAYLIST = "add_song_to_playlist"
 
 
         object Library{

@@ -20,6 +20,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -70,6 +71,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.ObjectId
 
+@ExperimentalMaterial3Api
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LibraryScreen(
@@ -106,7 +108,8 @@ fun LibraryScreen(
                     hideMiniPlayer = uiState.hideMiniPlayer,
                     onOpenPlayer = { scope.launch { scaffoldState.bottomSheetState.expand() } },
                     onClosePlayer = { scope.launch { scaffoldState.bottomSheetState.collapse() } },
-                    showPlayerProgress = uiState.showPlayerProgress
+                    showPlayerProgress = uiState.showPlayerProgress,
+                    rootController = rootController
                 )
             }
         }

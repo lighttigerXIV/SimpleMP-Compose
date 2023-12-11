@@ -74,10 +74,15 @@ class PlaylistScreenVM(
         viewModelScope.launch(Dispatchers.Main) {
             playlistsRepository.userPlaylists.collect {
                 uiState.value.playlistId?.let { playlistId ->
-                    val playlist = playlistsRepository.getUserPlaylist(playlistId)
 
-                    _uiState.update {
-                        uiState.value.copy(songs = playlistsRepository.getPlaylistSongs(playlist.songs))
+                    val newPlaylist = playlistsRepository.getUserPlaylist(playlistId)
+
+                    newPlaylist?.let {
+                        playlist = newPlaylist
+
+                        _uiState.update {
+                            uiState.value.copy(songs = playlistsRepository.getPlaylistSongs(playlist.songs))
+                        }
                     }
                 }
             }
@@ -89,16 +94,21 @@ class PlaylistScreenVM(
 
             _uiState.update { uiState.value.copy(requestedLoading = true) }
 
-            playlist = playlistsRepository.getUserPlaylist(playlistId)
-            songs = playlistsRepository.getPlaylistSongs(playlist.songs)
+            val newPlaylist = playlistsRepository.getUserPlaylist(playlistId)
 
-            _uiState.update {
-                uiState.value.copy(
-                    loading = false,
-                    playlistId = playlistId,
-                    playlistName = playlist.name,
-                    songs = songs
-                )
+            newPlaylist?.let {
+
+                playlist = newPlaylist
+                songs = playlistsRepository.getPlaylistSongs(playlist.songs)
+
+                _uiState.update {
+                    uiState.value.copy(
+                        loading = false,
+                        playlistId = playlistId,
+                        playlistName = playlist.name,
+                        songs = songs
+                    )
+                }
             }
         }
     }

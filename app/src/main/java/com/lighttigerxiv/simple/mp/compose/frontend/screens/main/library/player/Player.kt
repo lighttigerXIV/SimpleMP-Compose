@@ -1,7 +1,8 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.player
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalOverscrollConfiguration
@@ -27,11 +28,16 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -39,11 +45,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -57,19 +65,25 @@ import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import androidx.constraintlayout.compose.layoutId
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.backend.playback.RepeatSate
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.HSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.PlayingListSongCard
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
+import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToAddSongToPlaylist
+import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToPreviewAlbum
+import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToPreviewArtist
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
+@ExperimentalMaterial3Api
 @OptIn(ExperimentalMotionApi::class)
 @Composable
 fun Player(
@@ -77,11 +91,14 @@ fun Player(
     hideMiniPlayer: Boolean,
     onOpenPlayer: () -> Unit,
     onClosePlayer: () -> Unit,
-    showPlayerProgress: Float
+    showPlayerProgress: Float,
+    rootController: NavHostController
 ) {
 
     val uiState = vm.uiState.collectAsState().value
     val playingPlaylistListState = rememberReorderableLazyListState(onMove = { from, to -> vm.reorderPlayingPlaylist(from.key, to.key) })
+    val sheetState = rememberModalBottomSheetState()
+    val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
     val context = LocalContext.current
 
     LaunchedEffect(uiState.showUpNextPlaylist) {
@@ -110,43 +127,58 @@ fun Player(
                 .layoutId("player")
         ) {
 
-            Column(
-                modifier = Modifier
-
-                    .padding(Sizes.XLARGE)
-            ) {
-
-                TopRow(
-                    vm = vm,
-                    uiState = uiState,
-                    onClosePlayer = { onClosePlayer() }
-                )
-
-                VSpacer(size = Sizes.LARGE)
-
+            BottomSheetScaffold(
+                scaffoldState = scaffoldState,
+                sheetPeekHeight = 0.dp,
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                sheetContainerColor = MaterialTheme.colorScheme.surface,
+                sheetContent = {
+                    MenuSheet(
+                        sheetState = sheetState,
+                        rootController = rootController,
+                        uiState = uiState
+                    )
+                }
+            ) { scaffoldPadding ->
 
                 Column(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .padding(scaffoldPadding)
+                        .padding(Sizes.XLARGE)
                 ) {
-                    if (!uiState.showUpNextPlaylist) {
-                        AlbumArtPager(vm = vm, uiState = uiState)
 
-                        VSpacer(size = Sizes.LARGE)
+                    TopRow(
+                        vm = vm,
+                        uiState = uiState,
+                        onClosePlayer = { onClosePlayer() },
+                        sheetState = sheetState
+                    )
 
-                        NameAndTitleRow(uiState = uiState)
+                    VSpacer(size = Sizes.LARGE)
 
-                        VSpacer(size = Sizes.LARGE)
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        if (!uiState.showUpNextPlaylist) {
+                            AlbumArtPager(vm = vm, uiState = uiState)
 
-                        PlayerSlider(vm = vm, uiState = uiState)
+                            VSpacer(size = Sizes.LARGE)
 
-                        VSpacer(size = Sizes.LARGE)
+                            NameAndTitleRow(uiState = uiState)
 
-                        MediaButtons(vm = vm, uiState = uiState)
-                    }
+                            VSpacer(size = Sizes.LARGE)
 
-                    if (uiState.showUpNextPlaylist) {
+                            PlayerSlider(vm = vm, uiState = uiState)
 
-                        PlayingPlaylist(uiState, vm, playingPlaylistListState)
+                            VSpacer(size = Sizes.LARGE)
+
+                            MediaButtons(vm = vm, uiState = uiState)
+                        }
+
+                        if (uiState.showUpNextPlaylist) {
+
+                            PlayingPlaylist(uiState, vm, playingPlaylistListState)
+                        }
                     }
                 }
             }
@@ -239,12 +271,16 @@ fun MiniPlayer(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopRow(
     vm: PlayerVM,
     uiState: PlayerVM.UiState,
-    onClosePlayer: () -> Unit
+    onClosePlayer: () -> Unit,
+    sheetState: SheetState
 ) {
+
+    val scope = rememberCoroutineScope()
 
     Row(
         modifier = Modifier
@@ -336,8 +372,12 @@ fun TopRow(
         Icon(
             modifier = Modifier
                 .size(36.dp)
-                .clickable { onClosePlayer() },
-            painter = painterResource(id = R.drawable.vertical_three_dots),
+                .clickable {
+                    scope.launch(Dispatchers.IO) {
+                        sheetState.expand()
+                    }
+                },
+            painter = painterResource(id = R.drawable.menu),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -362,13 +402,13 @@ fun AlbumArtPager(
     LaunchedEffect(pagerState) {
         snapshotFlow(pagerState::isScrollInProgress)
             .drop(1)
-            .collect {scrolling->
-                if(!scrolling){
-                    if(pagerState.settledPage < vm.getSongPosition()){
+            .collect { scrolling ->
+                if (!scrolling) {
+                    if (pagerState.settledPage < vm.getSongPosition()) {
                         vm.skipToPrevious(false)
                     }
 
-                    if(pagerState.settledPage > vm.getSongPosition()){
+                    if (pagerState.settledPage > vm.getSongPosition()) {
                         vm.skipToNext()
                     }
                 }
@@ -665,6 +705,75 @@ fun PlayingPlaylist(
                         VSpacer(size = Sizes.SMALL)
                     }
                 }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun MenuSheet(
+    sheetState: SheetState,
+    rootController: NavHostController,
+    uiState: PlayerVM.UiState
+) {
+
+    val scope = rememberCoroutineScope()
+
+    @Composable
+    fun MenuRow(
+        iconId: Int,
+        text: String,
+        onClick: () -> Unit
+    ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() }
+                .padding(Sizes.LARGE),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Icon(
+                modifier = Modifier.size(30.dp),
+                painter = painterResource(id = iconId),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+
+            HSpacer(size = Sizes.LARGE)
+
+            Text(
+                text = text,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Medium,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .padding(Sizes.LARGE)
+    ) {
+
+        uiState.currentSong?.let { song ->
+
+            MenuRow(iconId = R.drawable.artist, text = stringResource(id = R.string.go_to_artist)) {
+                rootController.goToPreviewArtist(song.artistId)
+                scope.launch(Dispatchers.IO) { sheetState.hide() }
+            }
+
+            MenuRow(iconId = R.drawable.album, text = stringResource(id = R.string.go_to_album)) {
+                rootController.goToPreviewAlbum(song.albumId)
+                scope.launch(Dispatchers.IO) { sheetState.hide() }
+            }
+
+            MenuRow(iconId = R.drawable.playlist, text = stringResource(id = R.string.add_to_playlist)) {
+                rootController.goToAddSongToPlaylist(song.id)
+                scope.launch(Dispatchers.IO) { sheetState.hide() }
             }
         }
     }

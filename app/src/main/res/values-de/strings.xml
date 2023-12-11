@@ -26,7 +26,7 @@
     <string name="YourPlaylists">Deine Playlisten</string>
     <string name="playlist_name">Name der Playliste</string>
     <string name="InsertPlaylistName">Füge Name der Playliste hinzu</string>
-    <string name="Create">Erstellen</string>
+    <string name="create">Erstellen</string>
     <string name="play">Abspielen</string>
     <string name="Shuffle">Shuffle</string>
     <string name="edit">Bearbeite Playlist</string>
@@ -42,7 +42,7 @@
     <string name="Queue">Nächster Titel</string>
     <string name="go_to_artist">Zum Künstler</string>
     <string name="go_to_album">Zum Album</string>
-    <string name="AddToPlaylist">Füge zur Playlist hinzu</string>
+    <string name="add_to_playlist">Füge zur Playlist hinzu</string>
     <string name="Theming">Theming</string>
     <string name="color_scheme">Farbschema</string>
     <string name="DarkMode">Dunkler Modus</string>
@@ -88,7 +88,7 @@
     <string name="download_artist_cover">Lade Künstler-Cover über das Internet herunter.</string>
     <string name="download_artist_cover_on_mobile_data">Lade Künstler-Cover über mobile Daten herunter. (möglicherweise fallen Kosten an)</string>
     <string name="playlists">Playlists</string>
-    <string name="SongAlreadyInPlaylist">Dieser Titel ist bereits in der Playlist</string>
+    <string name="song_already_in_playlist">Dieser Titel ist bereits in der Playlist</string>
     <string name="add_songs">Füge Titel hinzu</string>
     <string name="Playlist">Playlist</string>
     <string name="add">Hinzufügen</string>

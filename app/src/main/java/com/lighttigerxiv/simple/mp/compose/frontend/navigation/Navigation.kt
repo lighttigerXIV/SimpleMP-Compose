@@ -103,3 +103,7 @@ fun NavController.goToUserPlaylist(playlistId: ObjectId){
 fun NavController.goToAddSongsToPlaylist(playlistId: ObjectId){
     this.navigate("${Routes.Main.Library.ADD_SONGS_TO_PLAYLIST}/${playlistId.toHexString()}")
 }
+
+fun NavController.goToAddSongToPlaylist(songId:Long){
+    this.navigate("${Routes.Main.ADD_SONG_TO_PLAYLIST}/$songId")
+}

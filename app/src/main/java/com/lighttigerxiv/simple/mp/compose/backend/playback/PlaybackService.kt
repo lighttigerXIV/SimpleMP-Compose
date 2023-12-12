@@ -43,6 +43,10 @@ class PlaybackService : Service() {
                 playbackRepository.pauseResume()
             }
 
+            Actions.PAUSE ->{
+                playbackRepository.pause()
+            }
+
             Actions.SKIP -> {
                 playbackRepository.skipToNext()
             }
@@ -60,6 +64,7 @@ class PlaybackService : Service() {
         const val NOTIFY = "start"
         const val PREVIOUS = "previous"
         const val PAUSE_RESUME = "pause_resume"
+        const val PAUSE = "pause"
         const val SKIP = "skip"
         const val STOP = "stop"
     }

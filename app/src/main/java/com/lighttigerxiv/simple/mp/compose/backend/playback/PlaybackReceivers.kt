@@ -12,7 +12,7 @@ class OpenAppReceiver: BroadcastReceiver(){
 
 class BluetoothReceiver: BroadcastReceiver(){
     override fun onReceive(context: Context?, intent: Intent?) {
-        doServiceAction(PlaybackService.Actions.PAUSE_RESUME, context)
+        doServiceAction(PlaybackService.Actions.PAUSE, context)
     }
 }
 

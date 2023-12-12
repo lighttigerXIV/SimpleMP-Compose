@@ -42,6 +42,7 @@
         <receiver android:name=".backend.playback.PreviousPlaybackReceiver"/>
         <receiver android:name=".backend.playback.PauseResumePlaybackReceiver"/>
         <receiver android:name=".backend.playback.SkipPlaybackReceiver"/>
+        <receiver android:name=".backend.playback.BluetoothReceiver"/>
 
         <receiver android:name="androidx.media.session.MediaButtonReceiver"
             android:exported="true">

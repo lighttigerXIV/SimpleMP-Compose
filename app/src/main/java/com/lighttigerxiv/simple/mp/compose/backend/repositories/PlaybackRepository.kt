@@ -23,6 +23,7 @@ import com.lighttigerxiv.simple.mp.compose.backend.playback.PlaybackService
 import com.lighttigerxiv.simple.mp.compose.backend.playback.RepeatSate
 import com.lighttigerxiv.simple.mp.compose.backend.playback.StopPlaybackReceiver
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
+import com.lighttigerxiv.simple.mp.compose.backend.utils.isAtLeastAndroid13
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -208,7 +209,7 @@ class PlaybackRepository(
         build()
     }
 
-    private val bluetoothReceiver = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+    val bluetoothReceiver = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
 
     private fun requestFocusAndPlay() {
 
@@ -231,7 +232,11 @@ class PlaybackRepository(
     }
 
     init {
-        application.registerReceiver(BluetoothReceiver(), bluetoothReceiver)
+        if(isAtLeastAndroid13()){
+            application.registerReceiver(BluetoothReceiver(), bluetoothReceiver, Context.RECEIVER_EXPORTED)
+        }else{
+            application.registerReceiver(BluetoothReceiver(), bluetoothReceiver)
+        }
     }
 
     private fun setPlaybackState(state: Int) {
@@ -344,7 +349,7 @@ class PlaybackRepository(
         }
     }
 
-    private fun pause() {
+    fun pause() {
         player.pause()
         session.isActive = false
         _playbackState.update { playbackState.value?.copy(isPlaying = false) }

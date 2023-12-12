@@ -21,7 +21,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.lighttigerxiv.simple.mp.compose.backend.playback.BluetoothReceiver
 import com.lighttigerxiv.simple.mp.compose.backend.playback.PlaybackService
 import com.lighttigerxiv.simple.mp.compose.backend.playback.RepeatSate
-import com.lighttigerxiv.simple.mp.compose.backend.playback.StopPlaybackReceiver
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import com.lighttigerxiv.simple.mp.compose.backend.utils.isAtLeastAndroid13
 import kotlinx.coroutines.CoroutineScope
@@ -115,7 +114,7 @@ class PlaybackRepository(
 
                 CoroutineScope(Dispatchers.Main).launch {
                     libraryRepository.indexLibrary(application, onFinish = {
-                        withContext(Dispatchers.Main){
+                        withContext(Dispatchers.Main) {
                             libraryRepository.initLibrary()
                         }
                     })
@@ -209,7 +208,7 @@ class PlaybackRepository(
         build()
     }
 
-    val bluetoothReceiver = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
+    private val bluetoothReceiver = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
 
     private fun requestFocusAndPlay() {
 
@@ -232,9 +231,9 @@ class PlaybackRepository(
     }
 
     init {
-        if(isAtLeastAndroid13()){
+        if (isAtLeastAndroid13()) {
             application.registerReceiver(BluetoothReceiver(), bluetoothReceiver, Context.RECEIVER_EXPORTED)
-        }else{
+        } else {
             application.registerReceiver(BluetoothReceiver(), bluetoothReceiver)
         }
     }
@@ -277,7 +276,7 @@ class PlaybackRepository(
     fun seekTo(seconds: Int) {
         player.seekTo((seconds * 1000).toLong())
 
-        if(!player.isPlaying){
+        if (!player.isPlaying) {
             resume()
         }
     }
@@ -522,6 +521,29 @@ class PlaybackRepository(
         val temp = newPlaylist[fromIndex]
         newPlaylist[fromIndex] = newPlaylist[toIndex]
         newPlaylist[toIndex] = temp
+
+        _playlistsState.update {
+            playlistsState.value!!.copy(
+                current = newPlaylist,
+                upNext = newPlaylist.filterIndexed { index, _ -> index > playlistsState.value!!.songPosition }
+            )
+        }
+    }
+
+    fun moveToTopOnPlaylingPlaylist(songId: Long) {
+        val newPlaylist = ArrayList<Song>()
+        val newPosition = playlistsState.value!!.songPosition + 1
+        val songToMove = playlistsState.value!!.current.first { it.id == songId }
+
+        playlistsState.value!!.current.forEachIndexed { index, song ->
+            if (index == newPosition) {
+                newPlaylist.add(songToMove)
+            }
+
+            else if (song.id != songId) {
+                newPlaylist.add(song)
+            }
+        }
 
         _playlistsState.update {
             playlistsState.value!!.copy(

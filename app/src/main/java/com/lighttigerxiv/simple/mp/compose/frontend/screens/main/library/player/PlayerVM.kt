@@ -165,4 +165,8 @@ class PlayerVM(
     fun getSongPosition(): Int{
         return uiState.value.currentSongPosition
     }
+
+    fun moveSongToTop(songId: Long){
+        playbackRepository.moveToTopOnPlaylingPlaylist(songId)
+    }
 }

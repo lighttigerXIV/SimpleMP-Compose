@@ -699,7 +699,8 @@ fun PlayingPlaylist(
                             artistName = vm.getArtistName(song.artistId),
                             art = vm.getSmallSongArt(song.albumId),
                             state = reorderableState,
-                            isDragging = isDragging
+                            isDragging = isDragging,
+                            onClick = { vm.moveSongToTop(song.id) }
                         )
 
                         VSpacer(size = Sizes.SMALL)

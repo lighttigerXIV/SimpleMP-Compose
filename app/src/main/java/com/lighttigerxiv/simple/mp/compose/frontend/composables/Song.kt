@@ -181,7 +181,8 @@ fun PlayingListSongCard(
     artistName: String,
     art: Bitmap?,
     state: ReorderableLazyListState,
-    isDragging: Boolean
+    isDragging: Boolean,
+    onClick: () -> Unit
 ) {
 
     Row(
@@ -190,6 +191,7 @@ fun PlayingListSongCard(
             .height(IntrinsicSize.Max)
             .clip(RoundedCornerShape(Sizes.SMALL))
             .background(if (isDragging) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant)
+            .clickable { onClick() }
     ) {
 
         if (art != null) {

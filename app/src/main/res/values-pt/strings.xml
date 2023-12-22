@@ -91,7 +91,7 @@
     <string name="Playlist">Playlist</string>
     <string name="add">Adicionar</string>
     <string name="Select">Selecionar</string>
-    <string name="SelectImage">Selecionar Imagem</string>
+    <string name="select_image">Selecionar Imagem</string>
     <string name="DeleteImage">Eliminar Imagem</string>
     <string name="Changelog">Mudanças</string>
     <string name="Download">Transferir</string>

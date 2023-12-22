@@ -1,5 +1,10 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.playlists.playlist
 
+import android.graphics.ImageDecoder
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,16 +30,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.glance.layout.Spacer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.CollapsableHeader
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.HSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.IconDialog
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.MenuItem
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.PlayShuffleRow
@@ -44,7 +50,6 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.SongCard
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.TextField
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.Toolbar
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
-import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goBack
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToAddSongsToPlaylist
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.FontSizes
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
@@ -60,6 +65,8 @@ fun PlaylistScreen(
 ) {
 
     val uiState = vm.uiState.collectAsState().value
+    val context = LocalContext.current
+
 
     LaunchedEffect(uiState.requestedLoading) {
         if (!uiState.requestedLoading) {
@@ -144,6 +151,7 @@ fun PlaylistScreen(
         }
 
         DeletePlaylistDialog(playlistId = playlistId, uiState = uiState, vm = vm, navController = navController)
+        EditArtDialog(uiState = uiState, vm = vm)
         EditNameDialog(uiState = uiState, vm = vm)
     }
 }
@@ -248,12 +256,7 @@ fun DeletePlaylistDialog(
         onDismiss = { vm.updateShowDeleteDialog(false) },
         iconId = R.drawable.trash,
         title = stringResource(id = R.string.delete_playlist),
-        primaryButtonText = stringResource(id = R.string.delete),
-        onPrimaryButtonClick = {
-            vm.updateShowDeleteDialog(false)
-            vm.deletePlaylist(playlistId)
-            navController.goBack()
-        }
+        primaryButtonText = stringResource(id = R.string.delete)
     ) {
         Text(
             text = stringResource(id = R.string.confirm_delete_playlist),
@@ -274,16 +277,101 @@ fun EditNameDialog(
         onDismiss = { vm.updateShowEditNameDialog(false) },
         iconId = R.drawable.edit,
         title = stringResource(id = R.string.edit_name),
-        primaryButtonText = stringResource(id = R.string.save),
-        onPrimaryButtonClick = {
-            vm.updatePlaylistName()
-        }
+        primaryButtonText = stringResource(id = R.string.save)
     ) {
         TextField(
             text = uiState.editNameText,
             onTextChange = { vm.updateEditNameText(it) },
             placeholder = stringResource(id = R.string.playlist_name)
         )
+    }
+}
+
+@Composable
+fun EditArtDialog(
+    uiState: PlaylistScreenVM.UiState,
+    vm: PlaylistScreenVM
+) {
+
+    val context = LocalContext.current
+    val askImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let {
+
+                val art = if (Build.VERSION.SDK_INT < 28) {
+                    MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                } else {
+                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri))
+                }
+
+                vm.updatePlaylistArt(art)
+            }
+        })
+
+    IconDialog(
+        show = uiState.showEditArtDialog,
+        onDismiss = { vm.updateShowEditArtDialog(false) },
+        iconId = R.drawable.edit,
+        title = stringResource(id = R.string.edit_art)
+    ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    askImageLauncher.launch("image/*")
+                    vm.updateShowEditArtDialog(false)
+                }
+                .padding(Sizes.LARGE),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Icon(
+                modifier = Modifier.size(30.dp),
+                painter = painterResource(id = R.drawable.image),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+
+            HSpacer(size = Sizes.LARGE)
+
+            Text(
+                text = stringResource(id = R.string.select_image),
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Medium,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    vm.deletePlaylistArt()
+                }
+                .padding(Sizes.LARGE),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Icon(
+                modifier = Modifier.size(30.dp),
+                painter = painterResource(id = R.drawable.trash),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+
+            HSpacer(size = Sizes.LARGE)
+
+            Text(
+                text = stringResource(id = R.string.use_default),
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Medium,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
+        }
     }
 }
 
@@ -298,11 +386,14 @@ fun PlaylistArtAndName(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+        VSpacer(size = Sizes.LARGE)
+
         if (uiState.playlistArt == null) {
 
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(Sizes.XLARGE))
+                    .modifyIf(uiState.inEditMode) { clickable { vm.updateShowEditArtDialog(true) } }
                     .background(MaterialTheme.colorScheme.surfaceVariant)
                     .padding(Sizes.MEDIUM)
             ) {
@@ -314,13 +405,20 @@ fun PlaylistArtAndName(
                 )
             }
         } else {
-            Image(
-                modifier = Modifier
+            Column(
+                Modifier
                     .size(220.dp)
-                    .clip(RoundedCornerShape(Sizes.XLARGE)),
-                bitmap = uiState.playlistArt.asImageBitmap(),
-                contentDescription = null,
-            )
+                    .clip(RoundedCornerShape(Sizes.XLARGE))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Image(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .modifyIf(uiState.inEditMode) { clickable { vm.updateShowEditArtDialog(true) } },
+                    bitmap = uiState.playlistArt.asImageBitmap(),
+                    contentDescription = null,
+                )
+            }
         }
 
         VSpacer(size = Sizes.LARGE)

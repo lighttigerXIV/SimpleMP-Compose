@@ -13,6 +13,7 @@ import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Playlist
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import com.lighttigerxiv.simple.mp.compose.backend.realm.getRealm
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
+import com.lighttigerxiv.simple.mp.compose.backend.repositories.InternalStorageRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaybackRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaylistsRepository
 import kotlinx.coroutines.Dispatchers
@@ -25,18 +26,20 @@ import org.mongodb.kbson.ObjectId
 class PlaylistScreenVM(
     private val playbackRepository: PlaybackRepository,
     private val playlistsRepository: PlaylistsRepository,
-    private val libraryRepository: LibraryRepository
+    private val libraryRepository: LibraryRepository,
+    private val internalStorageRepository: InternalStorageRepository
 ) : ViewModel() {
     companion object Factory {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
 
                 val app = (this[APPLICATION_KEY] as SimpleMPApplication)
-                val playbackRepository = app.container.playbackRepository
-                val playlistsRepository = app.container.playlistsRepository
-                val libraryRepository = app.container.libraryRepository
-
-                PlaylistScreenVM(playbackRepository, playlistsRepository, libraryRepository)
+                PlaylistScreenVM(
+                    app.container.playbackRepository,
+                    app.container.playlistsRepository,
+                    app.container.libraryRepository,
+                    app.container.internalStorageRepository
+                )
             }
         }
     }
@@ -54,6 +57,7 @@ class PlaylistScreenVM(
         val showEditNameDialog: Boolean = false,
         val showEditImageDialog: Boolean = false,
         val showDeletePlaylistDialog: Boolean = false,
+        val showEditArtDialog: Boolean = false,
         val currentSong: Song? = null
     )
 
@@ -62,7 +66,9 @@ class PlaylistScreenVM(
 
     private lateinit var playlist: Playlist
     private lateinit var songs: List<Song>
+    private var playlistArt: Bitmap? = null
     private val queries = Queries(getRealm())
+    private var deleteArt = false
 
     init {
         viewModelScope.launch(Dispatchers.Main) {
@@ -101,13 +107,19 @@ class PlaylistScreenVM(
                 playlist = newPlaylist
                 songs = playlistsRepository.getPlaylistSongs(playlist.songs)
 
-                _uiState.update {
-                    uiState.value.copy(
-                        loading = false,
-                        playlistId = playlistId,
-                        playlistName = playlist.name,
-                        songs = songs
-                    )
+                internalStorageRepository.loadImageFromInternalStorage(playlistId.toHexString()).collect { art ->
+
+                    playlistArt = art
+
+                    _uiState.update {
+                        uiState.value.copy(
+                            loading = false,
+                            playlistId = playlistId,
+                            playlistName = playlist.name,
+                            songs = songs,
+                            playlistArt = art
+                        )
+                    }
                 }
             }
         }
@@ -137,9 +149,13 @@ class PlaylistScreenVM(
         _uiState.update {
             uiState.value.copy(
                 showEditNameDialog = v,
-                editNameText = if(v) uiState.value.playlistName else uiState.value.editNameText
+                editNameText = if (v) uiState.value.playlistName else uiState.value.editNameText
             )
         }
+    }
+
+    fun updateShowEditArtDialog(v: Boolean) {
+        _uiState.update { uiState.value.copy(showEditArtDialog = v) }
     }
 
     fun updateEditNameText(text: String) {
@@ -171,12 +187,16 @@ class PlaylistScreenVM(
     }
 
     fun cancelEditMode() {
+
+        deleteArt = false
+
         _uiState.update {
             uiState.value.copy(
                 playlistName = playlist.name,
                 songs = songs,
                 inEditMode = false,
-                showMenu = false
+                showMenu = false,
+                playlistArt = playlistArt
             )
         }
     }
@@ -185,6 +205,19 @@ class PlaylistScreenVM(
         viewModelScope.launch(Dispatchers.Main) {
             queries.updatePlaylistName(playlist._id, uiState.value.playlistName)
             queries.updatePlaylistSongs(playlist._id, uiState.value.songs.map { it.id })
+
+            uiState.value.playlistArt?.let { art ->
+                internalStorageRepository.saveImageToInternalStorage(playlist._id.toHexString(), art)
+            }
+
+            if(deleteArt){
+                internalStorageRepository.deleteImageFromInternalStorage(playlist._id.toHexString())
+                playlistArt = null
+
+                _uiState.update { uiState.value.copy(playlistArt = null) }
+
+                playlistsRepository.loadPlaylists(libraryRepository.songs.value)
+            }
 
             _uiState.update {
                 uiState.value.copy(
@@ -203,5 +236,14 @@ class PlaylistScreenVM(
                 songs = uiState.value.songs.filter { it.id != songId }
             )
         }
+    }
+
+    fun updatePlaylistArt(art: Bitmap) {
+        _uiState.update { uiState.value.copy(playlistArt = art) }
+    }
+
+    fun deletePlaylistArt() {
+        deleteArt = true
+        _uiState.update { uiState.value.copy(playlistArt = null, showEditArtDialog = false) }
     }
 }

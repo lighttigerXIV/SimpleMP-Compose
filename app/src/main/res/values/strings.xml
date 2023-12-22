@@ -100,7 +100,7 @@
     <string name="Playlist">Playlist</string>
     <string name="add">Add</string>
     <string name="Select">Select</string>
-    <string name="SelectImage">Select Image</string>
+    <string name="select_image">Select image</string>
     <string name="DeleteImage">Delete Image</string>
     <string name="Shrug" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="Changelog">Changelog</string>
@@ -138,5 +138,7 @@
     <string name="add_playlist">Add Playlist</string>
     <string name="edit_name">Edit Name</string>
     <string name="create_playlist">Create Playlist</string>
+    <string name="edit_art">Edit Art</string>
+    <string name="use_default">Use default</string>
 
 </resources>

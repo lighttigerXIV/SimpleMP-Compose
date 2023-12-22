@@ -87,8 +87,7 @@ fun CreatePlaylistDialog(
         onDismiss = { vm.cancelCreatePlaylistDialog() },
         iconId = R.drawable.playlist_filled,
         title = stringResource(id = R.string.create_playlist),
-        primaryButtonText = stringResource(id = R.string.create),
-        onPrimaryButtonClick = { vm.createPlaylist() }
+        primaryButtonText = stringResource(id = R.string.create)
     ) {
 
         TextField(

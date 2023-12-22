@@ -108,7 +108,6 @@ fun HomeScreen(
                 Menu(vm = vm, uiState = uiState, rootController)
             }
 
-
             VSpacer(size = Sizes.LARGE)
 
             LazyColumn(state = lazyColumnState) {

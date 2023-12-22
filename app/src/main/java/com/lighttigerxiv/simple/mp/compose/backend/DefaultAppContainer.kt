@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
+import com.lighttigerxiv.simple.mp.compose.backend.repositories.InternalStorageRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaybackRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaylistsRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.SettingsRepository
@@ -28,4 +29,7 @@ class DefaultAppContainer(
         SettingsRepository(dataStore)
     }
 
+    override val internalStorageRepository: InternalStorageRepository by lazy {
+        InternalStorageRepository(application)
+    }
 }

@@ -35,10 +35,10 @@ fun IconDialog(
     onDismiss: () -> Unit,
     iconId: Int,
     title: String,
-    primaryButtonText: String,
+    primaryButtonText: String? = null,
     disablePrimaryButton: Boolean = false,
-    onPrimaryButtonClick: () -> Unit,
-    content: @Composable ColumnScope.() -> Unit
+    onPrimaryButtonClick: () -> Unit = {},
+    content: @Composable() (ColumnScope.() -> Unit)
 ) {
 
     if (show) {
@@ -84,16 +84,19 @@ fun IconDialog(
 
                         SecondaryButton(
                             text = stringResource(id = R.string.cancel),
-                            onClick = { onDismiss() }
+                            onClick = { onDismiss() },
+                            fillWidth = true
                         )
 
                         HSpacer(size = Sizes.SMALL)
 
-                        PrimaryButton(
-                            text = primaryButtonText,
-                            onClick = { onPrimaryButtonClick() },
-                            disabled = disablePrimaryButton
-                        )
+                        primaryButtonText?.let {
+                            PrimaryButton(
+                                text = primaryButtonText,
+                                onClick = { onPrimaryButtonClick() },
+                                disabled = disablePrimaryButton
+                            )
+                        }
                     }
                 }
             }

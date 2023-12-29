@@ -74,7 +74,6 @@ dependencies {
     implementation "com.google.accompanist:accompanist-pager-indicators:0.17.0"
     implementation ("com.github.Tlaster:NestedScrollView:0.7.0")
     implementation 'com.google.code.gson:gson:2.10'
-    implementation "com.github.skydoves:landscapist-glide:2.0.0"
     implementation "androidx.preference:preference-ktx:1.2.1"
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.google.code.gson:gson:2.10'

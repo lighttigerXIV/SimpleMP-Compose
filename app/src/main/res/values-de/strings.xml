@@ -81,7 +81,7 @@
     <string name="change_artist_image">Mudar capa de artista</string>
     <string name="Artist">Artista</string>
     <string name="select_local_cover">Künstler-Cover ändern</string>
-    <string name="OnlineResults">Online Ergebnisse</string>
+    <string name="online_results">Online Ergebnisse</string>
     <string name="EnableInternetToGetCovers">Aktiviere das Internet um Cover zu erhalten.</string>
     <string name="UseDefault">Standard verwenden</string>
     <string name="Data">Daten</string>

@@ -65,7 +65,6 @@ fun PlaylistScreen(
 ) {
 
     val uiState = vm.uiState.collectAsState().value
-    val context = LocalContext.current
 
 
     LaunchedEffect(uiState.requestedLoading) {

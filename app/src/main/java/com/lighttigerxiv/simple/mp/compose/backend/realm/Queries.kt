@@ -2,6 +2,7 @@ package com.lighttigerxiv.simple.mp.compose.backend.realm
 
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Album
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Artist
+import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.ArtistImageRequest
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Playlist
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import io.realm.kotlin.Realm
@@ -61,6 +62,37 @@ class Queries(private val realm: Realm) {
         return realm.query<Artist>().find()
     }
 
+    fun getArtistImageRequests(): List<ArtistImageRequest> {
+        return realm.query<ArtistImageRequest>().find()
+    }
+
+    suspend fun addArtistImageRequest(artistId: Long) {
+
+        val requests = realm.query<ArtistImageRequest>().find()
+
+        if (!requests.any { it.artistId == artistId }) {
+
+            val artistRequest = ArtistImageRequest()
+            artistRequest.artistId = artistId
+
+            realm.write {
+                copyToRealm(artistRequest)
+            }
+        } else {
+            realm.write {
+                val request = this.query<ArtistImageRequest>("artistId == $0", artistId).find().first()
+                request.useDefault = false
+            }
+        }
+    }
+
+    suspend fun defaultArtistImageRequest(artistId: Long) {
+        realm.write {
+            val request = this.query<ArtistImageRequest>("artistId == $0", artistId).find().first()
+            request.useDefault = true
+        }
+    }
+
     suspend fun addAlbum(
         id: Long,
         name: String,
@@ -99,7 +131,7 @@ class Queries(private val realm: Realm) {
             val playlist = this.query<Playlist>("_id == $0", playlistId).first().find()
 
             playlist?.let {
-                if(!playlist.songs.contains(songId)){
+                if (!playlist.songs.contains(songId)) {
                     playlist.songs.add(songId)
                 }
             }

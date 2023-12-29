@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.lighttigerxiv.simple.mp.compose.SimpleMPApplication
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
+import com.lighttigerxiv.simple.mp.compose.backend.repositories.InternalStorageRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaybackRepository
 import kotlinx.coroutines.Dispatchers
@@ -17,19 +18,23 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.internal.toHexString
 
 class PreviewArtistScreenVM(
     private val libraryRepository: LibraryRepository,
-    private val playbackRepository: PlaybackRepository
+    private val playbackRepository: PlaybackRepository,
+    private val internalStorageRepository: InternalStorageRepository
 ) : ViewModel(){
     companion object Factory{
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = (this[APPLICATION_KEY] as SimpleMPApplication)
-                val libraryRepository = app.container.libraryRepository
-                val playbackRepository = app.container.playbackRepository
 
-                PreviewArtistScreenVM(libraryRepository, playbackRepository)
+                PreviewArtistScreenVM(
+                    app.container.libraryRepository,
+                    app.container.playbackRepository,
+                    app.container.internalStorageRepository
+                )
             }
         }
     }
@@ -64,6 +69,23 @@ class PreviewArtistScreenVM(
             playbackRepository.currentSongState.collect{ newSongState ->
                 _uiState.update {
                     uiState.value.copy(currentSong = newSongState?.currentSong)
+                }
+            }
+        }
+
+        val request = libraryRepository.getArtistImageRequest(artistId)
+
+        if (request == null) {
+            _uiState.update { uiState.value.copy(artistImage = null) }
+        } else {
+
+            if (request.useDefault) {
+                _uiState.update { uiState.value.copy(artistImage = null) }
+            } else {
+                viewModelScope.launch(Dispatchers.Main) {
+                    internalStorageRepository.loadImageFromInternalStorage(artistId.toHexString()).collect { image ->
+                        _uiState.update { uiState.value.copy(artistImage = image) }
+                    }
                 }
             }
         }

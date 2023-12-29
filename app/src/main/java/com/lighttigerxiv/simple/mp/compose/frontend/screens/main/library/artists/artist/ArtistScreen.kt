@@ -1,6 +1,7 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.artists.artist
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -143,15 +146,25 @@ fun ArtistAlbumAndName(
                 modifier = Modifier
                     .clip(RoundedCornerShape(Sizes.XLARGE))
                     .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .size(220.dp)
                     .padding(Sizes.MEDIUM)
             ) {
                 Icon(
-                    modifier = Modifier.size(220.dp),
+                    modifier = Modifier.fillMaxSize(),
                     painter = painterResource(id = R.drawable.artist),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
+        }else{
+            Image(
+                modifier = Modifier
+                    .size(220.dp)
+                    .clip(RoundedCornerShape(Sizes.XLARGE)),
+                bitmap = uiState.artistImage.asImageBitmap(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
         }
 
         VSpacer(size = Sizes.LARGE)

@@ -2,6 +2,7 @@ package com.lighttigerxiv.simple.mp.compose.backend.realm
 
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Album
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Artist
+import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.ArtistImageRequest
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Playlist
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import io.realm.kotlin.Realm
@@ -13,10 +14,11 @@ fun getRealm(): Realm{
             Song::class,
             Album::class,
             Artist::class,
-            Playlist::class
+            Playlist::class,
+            ArtistImageRequest::class
         )
     )
-        .schemaVersion(11)
+        .schemaVersion(12)
         .compactOnLaunch()
         .build()
 

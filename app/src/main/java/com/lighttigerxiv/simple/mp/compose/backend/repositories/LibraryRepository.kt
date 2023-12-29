@@ -13,6 +13,7 @@ import android.util.Size
 import com.lighttigerxiv.simple.mp.compose.backend.realm.Queries
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Album
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Artist
+import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.ArtistImageRequest
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import com.lighttigerxiv.simple.mp.compose.backend.realm.getRealm
 import com.lighttigerxiv.simple.mp.compose.backend.utils.isAtLeastAndroid10
@@ -54,6 +55,11 @@ class LibraryRepository(
     private val _albumArts = MutableStateFlow<List<AlbumArt>>(ArrayList())
     val albumArts = _albumArts.asStateFlow()
 
+    private val _artistImageRequests = MutableStateFlow<List<ArtistImageRequest>>(ArrayList())
+    val artistImageRequests = _artistImageRequests.asStateFlow()
+
+    var onArtistImageChanged: () -> Unit = {}
+
     private val _indexingLibrary = MutableStateFlow(false)
     val indexingLibrary = _indexingLibrary.asStateFlow()
 
@@ -72,6 +78,7 @@ class LibraryRepository(
                 _albums.update { newAlbums }
                 playlistsRepository.loadPlaylists(songs.value)
 
+                loadArtistImageRequests()
                 loadAlbumArts(onFinish = { onFinish() })
             }
         }
@@ -108,6 +115,11 @@ class LibraryRepository(
 
             onFinish()
         }
+    }
+
+    fun loadArtistImageRequests(){
+        _artistImageRequests.update { queries.getArtistImageRequests() }
+        onArtistImageChanged()
     }
 
     suspend fun initLibrary() {
@@ -280,5 +292,9 @@ class LibraryRepository(
 
     fun getAlbumSongs(albumId: Long): List<Song> {
         return songs.value.filter { it.albumId == albumId }
+    }
+
+    fun getArtistImageRequest(artistId: Long): ArtistImageRequest? {
+        return artistImageRequests.value.find { it.artistId == artistId }
     }
 }

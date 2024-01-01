@@ -121,7 +121,7 @@
     <string name="ExperimentalFeatures">Experimental Features</string>
     <string name="CarPlayer">Car Player</string>
     <string name="KeepScreenOnInCarMode">Keep Screen On In Car Mode</string>
-    <string name="ShowCarPlayer">Show Car Player</string>
+    <string name="show_car_player">Show car player</string>
     <string name="SortByArtist">Sort By Artist</string>
     <string name="loading_library">Loading Library ...</string>
     <string name="use_default_cover">Use Default Cover</string>
@@ -140,5 +140,6 @@
     <string name="create_playlist">Create Playlist</string>
     <string name="edit_art">Edit Art</string>
     <string name="use_default">Use default</string>
+    <string name="hide_car_player">Hide car player</string>
 
 </resources>

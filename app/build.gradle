@@ -22,9 +22,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+            shrinkResources false
         }
     }
     compileOptions {
@@ -56,10 +55,10 @@ dependencies {
     implementation "androidx.compose.material:material:1.5.4"
     implementation "androidx.compose.ui:ui-tooling-preview:1.5.4"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
-    implementation 'androidx.activity:activity-compose:1.8.0'
-    implementation 'androidx.navigation:navigation-compose:2.7.5'
+    implementation 'androidx.activity:activity-compose:1.8.2'
+    implementation 'androidx.navigation:navigation-compose:2.7.6'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.10.0'
+    implementation 'com.google.android.material:material:1.11.0'
     implementation 'com.google.accompanist:accompanist-flowlayout:0.32.0'
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
@@ -69,15 +68,12 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.5.4"
     debugImplementation "androidx.compose.ui:ui-tooling:1.5.4"
-    implementation 'androidx.media:media:1.6.0'
+    implementation 'androidx.media:media:1.7.0'
     implementation "androidx.compose.material3:material3:1.1.2"
     implementation "com.google.accompanist:accompanist-pager-indicators:0.17.0"
-    implementation ("com.github.Tlaster:NestedScrollView:0.7.0")
-    implementation 'com.google.code.gson:gson:2.10'
+    implementation("com.github.Tlaster:NestedScrollView:0.7.0")
     implementation "androidx.preference:preference-ktx:1.2.1"
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.google.code.gson:gson:2.10'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
     implementation("androidx.compose.foundation:foundation:1.5.4")
@@ -96,7 +92,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 
     //Work Manager
-    implementation("androidx.work:work-runtime-ktx:2.8.1")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     //Catppuccin Colors
     implementation 'com.github.lighttigerxiv:catppuccin-kt:1.0.0'
@@ -108,4 +104,7 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.2.0")
     implementation("androidx.media3:media3-session:1.2.0")
     implementation "androidx.media3:media3-common:1.2.0"
+
+    //Gson
+    implementation("com.google.code.gson:gson:2.10")
 }

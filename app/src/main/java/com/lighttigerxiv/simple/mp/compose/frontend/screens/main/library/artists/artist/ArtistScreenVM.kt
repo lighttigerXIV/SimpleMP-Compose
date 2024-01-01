@@ -107,7 +107,7 @@ class ArtistScreenVM(
                 }
 
                 viewModelScope.launch(Dispatchers.Main) {
-                    libraryRepository.artistImageRequests.collect{
+                    libraryRepository.artistImageRequests.collect {
                         updateArtistImage(artistId)
                     }
                 }
@@ -134,6 +134,7 @@ class ArtistScreenVM(
                                         viewModelScope.launch(Dispatchers.Main) {
                                             try {
                                                 val jsonData = Gson().fromJson(response.body(), DiscogsResponse::class.java)
+
                                                 if (jsonData.results.isNotEmpty()) {
 
                                                     val imageUrl = jsonData.results[0].cover_image
@@ -187,7 +188,7 @@ class ArtistScreenVM(
         }
     }
 
-    fun updateArtistImage(artistId: Long){
+    fun updateArtistImage(artistId: Long) {
         val request = libraryRepository.getArtistImageRequest(artistId)
 
         if (request == null) {

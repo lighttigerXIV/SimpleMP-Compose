@@ -2,8 +2,6 @@ package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.artist
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -21,20 +19,15 @@ import com.lighttigerxiv.simple.mp.compose.backend.repositories.SettingsReposito
 import com.lighttigerxiv.simple.mp.compose.backend.requests.DiscogsResponse
 import com.lighttigerxiv.simple.mp.compose.backend.requests.getDiscogsRetrofit
 import com.lighttigerxiv.simple.mp.compose.backend.utils.canDownloadArtistImages
-import com.lighttigerxiv.simple.mp.compose.backend.utils.isNetworkAvailable
-import com.lighttigerxiv.simple.mp.compose.backend.utils.isOnMobileData
-import com.lighttigerxiv.simple.mp.compose.backend.utils.isOnWifi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.internal.toHexString
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.ByteArrayOutputStream
 
 class SelectArtistCoverScreenVM(
     private val application: Application,

@@ -182,6 +182,7 @@ fun PlayingListSongCard(
     art: Bitmap?,
     state: ReorderableLazyListState,
     isDragging: Boolean,
+    carPlayer: Boolean,
     onClick: () -> Unit
 ) {
 
@@ -197,7 +198,7 @@ fun PlayingListSongCard(
         if (art != null) {
             Image(
                 modifier = Modifier
-                    .size(70.dp)
+                    .size( if(carPlayer) 100.dp else 70.dp)
                     .clip(RoundedCornerShape(Sizes.SMALL)),
                 bitmap = remember { art }.asImageBitmap(),
                 contentDescription = null
@@ -250,7 +251,7 @@ fun PlayingListSongCard(
 
             Icon(
                 modifier = Modifier
-                    .size(30.dp)
+                    .size(if(carPlayer) 50.dp else 30.dp)
                     .detectReorder(state),
                 painter = painterResource(id = R.drawable.drag),
                 contentDescription = null,

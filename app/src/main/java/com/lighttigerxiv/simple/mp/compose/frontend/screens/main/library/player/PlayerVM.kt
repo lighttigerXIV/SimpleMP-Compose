@@ -1,7 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.player
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -50,7 +49,8 @@ class PlayerVM(
         val currentProgress: Int = 0,
         val currentProgressAsTime: String = "",
         val songDurationAsTime: String = "",
-        val showUpNextPlaylist: Boolean = false
+        val showUpNextPlaylist: Boolean = false,
+        val showCarPlayer: Boolean = false
     )
 
 
@@ -162,11 +162,15 @@ class PlayerVM(
         _uiState.update { uiState.value.copy(showUpNextPlaylist = v) }
     }
 
-    fun getSongPosition(): Int{
+    fun getSongPosition(): Int {
         return uiState.value.currentSongPosition
     }
 
-    fun moveSongToTop(songId: Long){
+    fun moveSongToTop(songId: Long) {
         playbackRepository.moveToTopOnPlaylingPlaylist(songId)
+    }
+
+    fun toggleCarPlayer() {
+        _uiState.update { uiState.value.copy(showCarPlayer = !uiState.value.showCarPlayer) }
     }
 }

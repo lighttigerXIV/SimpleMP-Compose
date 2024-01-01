@@ -51,7 +51,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -134,6 +133,7 @@ fun Player(
                 sheetContainerColor = MaterialTheme.colorScheme.surface,
                 sheetContent = {
                     MenuSheet(
+                        vm = vm,
                         sheetState = sheetState,
                         rootController = rootController,
                         uiState = uiState
@@ -164,7 +164,9 @@ fun Player(
 
                             VSpacer(size = Sizes.LARGE)
 
-                            NameAndTitleRow(uiState = uiState)
+                            if (!uiState.showCarPlayer) {
+                                NameAndTitleRow(uiState = uiState)
+                            }
 
                             VSpacer(size = Sizes.LARGE)
 
@@ -426,11 +428,27 @@ fun AlbumArtPager(
         // so the effect of flickering disappears since the pager shows the previous pages even without animations
 
         if (pagerTabPosition in (uiState.currentSongPosition - 1)..(uiState.currentSongPosition + 1)) {
-            val art = vm.getSongArt(uiState.playingPlaylist[pagerTabPosition].albumId)
 
-            PlayerAlbumArt(art = art)
-        } else {
-            PlayerAlbumArt(art = uiState.smallAlbumArt)
+            val song = uiState.playingPlaylist[pagerTabPosition]
+
+            if (uiState.showCarPlayer) {
+
+                CarPlayerTitleAndArtist(
+                    songName = song.name,
+                    artistName = vm.getArtistName(song.artistId)
+                )
+            } else {
+
+                val art = vm.getSongArt(song.albumId)
+                PlayerAlbumArt(art = art)
+            }
+        }else{
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            )
         }
     }
 }
@@ -464,6 +482,39 @@ fun PlayerAlbumArt(art: Bitmap?) {
                 tint = MaterialTheme.colorScheme.primary
             )
         }
+    }
+}
+
+
+@Composable
+fun CarPlayerTitleAndArtist(songName: String, artistName: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1f),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Text(
+            text = songName,
+            fontWeight = FontWeight.Medium,
+            fontSize = 40.sp,
+            color = MaterialTheme.colorScheme.primary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        VSpacer(size = Sizes.SMALL)
+
+        Text(
+            text = artistName,
+            fontWeight = FontWeight.Medium,
+            fontSize = 35.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
@@ -567,22 +618,20 @@ fun MediaButtons(
     vm: PlayerVM,
     uiState: PlayerVM.UiState
 ) {
+    @Composable
+    fun ShuffleButton(){
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-            if (uiState.shuffle) {
-                VSpacer(size = Sizes.XSMALL + Sizes.SMALL)
+            if(!uiState.showCarPlayer && uiState.shuffle){
+                VSpacer(size = Sizes.SMALL)
             }
 
             Icon(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(if (uiState.showCarPlayer) 80.dp else 40.dp)
                     .clip(CircleShape)
                     .clickable { vm.toggleShuffle() },
                 painter = painterResource(id = R.drawable.shuffle),
@@ -591,50 +640,68 @@ fun MediaButtons(
             )
 
             if (uiState.shuffle) {
-                VSpacer(size = Sizes.XSMALL)
-                MediaButtonDot()
+                MediaButtonDot(uiState.showCarPlayer)
+            }else{
+                if(uiState.showCarPlayer){
+                    VSpacer(size = Sizes.LARGE)
+                }
             }
         }
+    }
 
+    @Composable
+    fun PreviousButton(){
         Icon(
             modifier = Modifier
-                .size(40.dp)
+                .size(if (uiState.showCarPlayer) 80.dp else 40.dp)
                 .clip(RoundedCornerShape(Sizes.SMALL))
                 .clickable { vm.skipToPrevious() },
             painter = painterResource(id = R.drawable.previous),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
+    }
 
+
+    @Composable
+    fun PlayPauseButton(){
         Icon(
             modifier = Modifier
-                .size(80.dp)
+                .size(if (uiState.showCarPlayer) 120.dp else 80.dp)
                 .clip(CircleShape)
                 .clickable { vm.pauseOrResume() },
             painter = painterResource(id = if (uiState.isPlaying) R.drawable.pause_round else R.drawable.play_round),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
+    }
 
+
+    @Composable
+    fun NextButton(){
         Icon(
             modifier = Modifier
-                .size(40.dp)
+                .size(if (uiState.showCarPlayer) 80.dp else 40.dp)
                 .clip(RoundedCornerShape(Sizes.SMALL))
                 .clickable { vm.skipToNext() },
             painter = painterResource(id = R.drawable.next),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
+    }
 
+
+    @Composable
+    fun RepeatButton(){
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            if (uiState.repeatState != RepeatSate.Off) {
-                VSpacer(size = Sizes.XSMALL + Sizes.SMALL)
+            if(!uiState.showCarPlayer && uiState.repeatState != RepeatSate.Off){
+                VSpacer(size = Sizes.SMALL)
             }
 
             Icon(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(if (uiState.showCarPlayer) 80.dp else 40.dp)
                     .clip(CircleShape)
                     .clickable { vm.toggleRepeatState() },
                 painter = painterResource(id = R.drawable.repeat),
@@ -643,24 +710,76 @@ fun MediaButtons(
             )
 
             if (uiState.repeatState != RepeatSate.Off) {
-                VSpacer(size = Sizes.XSMALL)
                 Row {
-                    MediaButtonDot()
+                    MediaButtonDot(uiState.showCarPlayer)
+
+                    HSpacer(size = Sizes.SMALL)
+
                     if (uiState.repeatState == RepeatSate.Endless) {
-                        HSpacer(size = Sizes.XSMALL)
-                        MediaButtonDot()
+                        MediaButtonDot(uiState.showCarPlayer)
                     }
                 }
+            }else{
+                if(uiState.showCarPlayer){
+                    VSpacer(size = Sizes.LARGE)
+                }
             }
+        }
+    }
+
+    if(uiState.showCarPlayer){
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ){
+                PreviousButton()
+                PlayPauseButton()
+                NextButton()
+            }
+
+            VSpacer(size = Sizes.XLARGE)
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ){
+                ShuffleButton()
+                RepeatButton()
+            }
+        }
+
+    }else{
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            ShuffleButton()
+            PreviousButton()
+            PlayPauseButton()
+            NextButton()
+            RepeatButton()
         }
     }
 }
 
 @Composable
-fun MediaButtonDot() {
+fun MediaButtonDot(
+    carPlayer: Boolean
+) {
     Box(
         modifier = Modifier
-            .size(Sizes.SMALL)
+            .size(if (carPlayer) Sizes.LARGE else Sizes.SMALL)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.primary)
     )
@@ -700,6 +819,7 @@ fun PlayingPlaylist(
                             art = vm.getSmallSongArt(song.albumId),
                             state = reorderableState,
                             isDragging = isDragging,
+                            carPlayer = uiState.showCarPlayer,
                             onClick = { vm.moveSongToTop(song.id) }
                         )
 
@@ -712,8 +832,10 @@ fun PlayingPlaylist(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuSheet(
+    vm: PlayerVM,
     sheetState: SheetState,
     rootController: NavHostController,
     uiState: PlayerVM.UiState
@@ -774,6 +896,14 @@ fun MenuSheet(
 
             MenuRow(iconId = R.drawable.playlist, text = stringResource(id = R.string.add_to_playlist)) {
                 rootController.goToAddSongToPlaylist(song.id)
+                scope.launch(Dispatchers.IO) { sheetState.hide() }
+            }
+
+            MenuRow(
+                iconId = R.drawable.car,
+                text = if (uiState.showCarPlayer) stringResource(id = R.string.hide_car_player) else stringResource(id = R.string.show_car_player)
+            ) {
+                vm.toggleCarPlayer()
                 scope.launch(Dispatchers.IO) { sheetState.hide() }
             }
         }

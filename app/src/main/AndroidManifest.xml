@@ -52,6 +52,7 @@
         </receiver>
 
         <service android:name=".backend.playback.PlaybackService" android:foregroundServiceType="mediaPlayback"/>
+
     </application>
 
 </manifest>

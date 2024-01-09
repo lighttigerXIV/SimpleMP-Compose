@@ -1,5 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.add_song_to_playlist
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -68,7 +70,7 @@ fun AddSongToPlaylistScreen(
                 key = { it._id.toHexString() }
             ) { playlist ->
 
-                PlaylistCard(rootController = rootController, vm = vm, playlist = playlist, songId)
+                PlaylistCard(rootController = rootController, vm = vm, uiState = uiState, playlist = playlist , songId)
             }
         }
 
@@ -87,7 +89,8 @@ fun CreatePlaylistDialog(
         onDismiss = { vm.cancelCreatePlaylistDialog() },
         iconId = R.drawable.playlist_filled,
         title = stringResource(id = R.string.create_playlist),
-        primaryButtonText = stringResource(id = R.string.create)
+        primaryButtonText = stringResource(id = R.string.create),
+        onPrimaryButtonClick = { vm.createPlaylist() }
     ) {
 
         TextField(
@@ -102,6 +105,7 @@ fun CreatePlaylistDialog(
 fun PlaylistCard(
     rootController: NavHostController,
     vm: AddSongToPlaylistScreenVM,
+    uiState: AddSongToPlaylistScreenVM.UiState,
     playlist: Playlist,
     songId: Long
 ) {
@@ -117,20 +121,40 @@ fun PlaylistCard(
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(Sizes.LARGE))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                modifier = Modifier.size(60.dp),
-                painter = painterResource(id = R.drawable.playlist_filled),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
+
+        if (uiState.playlistsArts.any { it.id == playlist._id && it.art != null }) {
+
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(Sizes.LARGE))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    bitmap = uiState.playlistsArts.first { it.id == playlist._id }.art!!.asImageBitmap(),
+                    contentDescription = null
+                )
+            }
+
+        } else {
+
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(Sizes.LARGE))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    modifier = Modifier.size(60.dp),
+                    painter = painterResource(id = R.drawable.playlist_filled),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
+
 
         HSpacer(size = Sizes.LARGE)
 

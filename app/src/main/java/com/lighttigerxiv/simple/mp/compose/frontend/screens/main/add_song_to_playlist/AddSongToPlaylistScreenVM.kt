@@ -1,6 +1,7 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.add_song_to_playlist
 
 import android.app.Application
+import android.graphics.Bitmap
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +14,7 @@ import com.lighttigerxiv.simple.mp.compose.SimpleMPApplication
 import com.lighttigerxiv.simple.mp.compose.backend.realm.Queries
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Playlist
 import com.lighttigerxiv.simple.mp.compose.backend.realm.getRealm
+import com.lighttigerxiv.simple.mp.compose.backend.repositories.InternalStorageRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaylistsRepository
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +27,8 @@ import org.mongodb.kbson.ObjectId
 class AddSongToPlaylistScreenVM(
     private val application: Application,
     private val libraryRepository: LibraryRepository,
-    private val playlistsRepository: PlaylistsRepository
+    private val playlistsRepository: PlaylistsRepository,
+    private val internalStorageRepository: InternalStorageRepository
 ) : ViewModel() {
     companion object Factory {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
@@ -35,7 +38,8 @@ class AddSongToPlaylistScreenVM(
                 AddSongToPlaylistScreenVM(
                     app,
                     app.container.libraryRepository,
-                    app.container.playlistsRepository
+                    app.container.playlistsRepository,
+                    app.container.internalStorageRepository
                 )
             }
         }
@@ -45,8 +49,14 @@ class AddSongToPlaylistScreenVM(
         val isLoading: Boolean = true,
         val playlists: List<Playlist> = ArrayList(),
         val showCreatePlaylistDialog: Boolean = false,
-        val nameTextCreatePlaylistDialog: String = ""
-    )
+        val nameTextCreatePlaylistDialog: String = "",
+        val playlistsArts: List<PlaylistArt> = ArrayList()
+    ) {
+        data class PlaylistArt(
+            val id: ObjectId,
+            val art: Bitmap?
+        )
+    }
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
@@ -55,11 +65,31 @@ class AddSongToPlaylistScreenVM(
 
     init {
         viewModelScope.launch(Dispatchers.Main) {
+
+            val playlists = queries.getUserPlaylists()
+
             _uiState.update {
                 uiState.value.copy(
                     isLoading = false,
-                    playlists = queries.getUserPlaylists()
+                    playlists = playlists
                 )
+            }
+
+            playlists.forEach { playlist ->
+                viewModelScope.launch(Dispatchers.Main) {
+                    internalStorageRepository.loadImageFromInternalStorage(playlist._id.toHexString()).collect { art ->
+                        val newArts = uiState.value.playlistsArts.toMutableList().apply {
+                            add(UiState.PlaylistArt(playlist._id, art))
+                        }
+
+                        _uiState.update { state->
+                            uiState.value.copy(
+                                playlistsArts = newArts,
+                                playlists = state.playlists
+                            )
+                        }
+                    }
+                }
             }
         }
     }

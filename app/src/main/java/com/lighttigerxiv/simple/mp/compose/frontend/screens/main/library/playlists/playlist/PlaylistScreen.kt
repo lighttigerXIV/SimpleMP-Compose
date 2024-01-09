@@ -259,7 +259,10 @@ fun Songs(
                 }
             }
         } else {
-            Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
                     text = stringResource(id = R.string.no_songs_added),
                     color = MaterialTheme.colorScheme.onSurface,
@@ -271,23 +274,38 @@ fun Songs(
 
         VSpacer(size = Sizes.LARGE)
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
-        ) {
-            items(
-                items = uiState.songs,
-                key = { it.id }
-            ) { song ->
-                RemoveFromPlaylistSongCard(
-                    song = song,
-                    artistName = vm.getArtistName(song.artistId),
-                    art = vm.getAlbumArt(song.albumId),
-                    onClick = { vm.removeSong(song.id) }
-                )
-            }
+        if(uiState.songs.isNotEmpty()){
 
-            item {
-                MiniPlayerSpacer(isShown = showMiniPlayer)
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+            ) {
+                items(
+                    items = uiState.songs,
+                    key = { it.id }
+                ) { song ->
+                    RemoveFromPlaylistSongCard(
+                        song = song,
+                        artistName = vm.getArtistName(song.artistId),
+                        art = vm.getAlbumArt(song.albumId),
+                        onClick = { vm.removeSong(song.id) }
+                    )
+                }
+
+                item {
+                    MiniPlayerSpacer(isShown = showMiniPlayer)
+                }
+            }
+        }else{
+
+            Column(
+                Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(id = R.string.no_songs_added),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Medium
+                )
             }
         }
     }

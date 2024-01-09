@@ -30,11 +30,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -97,15 +95,6 @@ fun LibraryScreen(
 
     ChangeNavigationBarsColor(color = MaterialTheme.colorScheme.surfaceVariant)
 
-
-    LaunchedEffect(sheetState) {
-        snapshotFlow { sheetState.progress }
-            .collect { progress ->
-                vm.updateNavbarAnimation(progress, sheetState)
-            }
-    }
-
-
     LayoutScaffold(
         landscapeNavigationBar = {
             NavigationBar(navController = navController, inLandscape = true)
@@ -124,7 +113,6 @@ fun LibraryScreen(
                 uiState.currentSong?.let {
                     Player(
                         onClosePlayer = { scope.launch { scaffoldState.bottomSheetState.collapse() } },
-                        showPlayerProgress = uiState.showPlayerProgress,
                         rootController = rootController,
                         inLandscape = inLandscape
                     )

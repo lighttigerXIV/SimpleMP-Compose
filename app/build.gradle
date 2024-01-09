@@ -88,9 +88,6 @@ dependencies {
     //Draggable List
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
 
-    //Motion Layout
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
-
     //Work Manager
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 

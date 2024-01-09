@@ -51,7 +51,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,10 +58,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.constraintlayout.compose.ExperimentalMotionApi
-import androidx.constraintlayout.compose.MotionLayout
-import androidx.constraintlayout.compose.MotionScene
-import androidx.constraintlayout.compose.layoutId
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
@@ -83,12 +78,10 @@ import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
 @ExperimentalMaterial3Api
-@OptIn(ExperimentalMotionApi::class)
 @Composable
 fun Player(
     vm: PlayerVM = viewModel(factory = PlayerVM.Factory),
     onClosePlayer: () -> Unit,
-    showPlayerProgress: Float,
     rootController: NavHostController,
     inLandscape: Boolean
 ) {
@@ -97,120 +90,56 @@ fun Player(
     val playingPlaylistListState = rememberReorderableLazyListState(onMove = { from, to -> vm.reorderPlayingPlaylist(from.key, to.key) })
     val sheetState = rememberModalBottomSheetState()
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
-    val context = LocalContext.current
 
     LaunchedEffect(uiState.showUpNextPlaylist) {
         playingPlaylistListState.listState.scrollToItem(0)
     }
 
-    MotionLayout(
+    Column(
         modifier = Modifier
-            .fillMaxSize(),
-        motionScene = MotionScene(
-            content = context.resources
-                .openRawResource(R.raw.player)
-                .readBytes()
-                .decodeToString()
-        ),
-        progress = showPlayerProgress
+            .fillMaxSize()
     ) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .layoutId("player")
-        ) {
+        BottomSheetScaffold(
+            scaffoldState = scaffoldState,
+            sheetPeekHeight = 0.dp,
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            sheetContainerColor = MaterialTheme.colorScheme.surface,
+            sheetContent = {
+                MenuSheet(
+                    vm = vm,
+                    sheetState = sheetState,
+                    rootController = rootController,
+                    uiState = uiState
+                )
+            }
+        ) { scaffoldPadding ->
 
-            BottomSheetScaffold(
-                scaffoldState = scaffoldState,
-                sheetPeekHeight = 0.dp,
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                sheetContainerColor = MaterialTheme.colorScheme.surface,
-                sheetContent = {
-                    MenuSheet(
+            if (inLandscape) {
+
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(scaffoldPadding)
+                        .padding(Sizes.XLARGE)
+                ) {
+                    TopRow(
                         vm = vm,
-                        sheetState = sheetState,
-                        rootController = rootController,
-                        uiState = uiState
+                        uiState = uiState,
+                        onClosePlayer = { onClosePlayer() },
+                        sheetState = sheetState
                     )
-                }
-            ) { scaffoldPadding ->
 
-                if (inLandscape) {
+                    VSpacer(size = Sizes.LARGE)
 
-                    Column(
-                        Modifier
-                            .fillMaxSize()
-                            .padding(scaffoldPadding)
-                            .padding(Sizes.XLARGE)
-                    ) {
-                        TopRow(
-                            vm = vm,
-                            uiState = uiState,
-                            onClosePlayer = { onClosePlayer() },
-                            sheetState = sheetState
-                        )
+                    if (!uiState.showUpNextPlaylist) {
+                        Row(Modifier.fillMaxSize()) {
+                            Column(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .weight(if (uiState.showCarPlayer) 0.5f else 0.3f, fill = true)
+                            ) {
 
-                        VSpacer(size = Sizes.LARGE)
-
-                        if(!uiState.showUpNextPlaylist){
-                            Row(Modifier.fillMaxSize()) {
-                                Column(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .weight(if (uiState.showCarPlayer) 0.5f else 0.3f, fill = true)
-                                ) {
-
-                                    AlbumArtPager(vm = vm, uiState = uiState)
-
-                                    VSpacer(size = Sizes.LARGE)
-
-                                    if (!uiState.showCarPlayer) {
-                                        NameAndTitleRow(uiState = uiState)
-                                    }
-                                }
-
-                                HSpacer(size = Sizes.LARGE)
-
-                                Column(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .weight(1f, fill = true)
-                                ) {
-                                    PlayerSlider(vm = vm, uiState = uiState)
-
-                                    VSpacer(size = Sizes.LARGE)
-
-                                    MediaButtons(vm = vm, uiState = uiState, inLandscape = true)
-                                }
-                            }
-                        }
-
-                        if(uiState.showUpNextPlaylist){
-                            PlayingPlaylist(uiState, vm, playingPlaylistListState)
-                        }
-                    }
-
-                } else {
-                    Column(
-                        modifier = Modifier
-                            .padding(scaffoldPadding)
-                            .padding(Sizes.XLARGE)
-                    ) {
-
-                        TopRow(
-                            vm = vm,
-                            uiState = uiState,
-                            onClosePlayer = { onClosePlayer() },
-                            sheetState = sheetState
-                        )
-
-                        VSpacer(size = Sizes.LARGE)
-
-                        Column(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            if (!uiState.showUpNextPlaylist) {
                                 AlbumArtPager(vm = vm, uiState = uiState)
 
                                 VSpacer(size = Sizes.LARGE)
@@ -218,20 +147,69 @@ fun Player(
                                 if (!uiState.showCarPlayer) {
                                     NameAndTitleRow(uiState = uiState)
                                 }
+                            }
 
-                                VSpacer(size = Sizes.LARGE)
+                            HSpacer(size = Sizes.LARGE)
 
+                            Column(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true)
+                            ) {
                                 PlayerSlider(vm = vm, uiState = uiState)
 
                                 VSpacer(size = Sizes.LARGE)
 
-                                MediaButtons(vm = vm, uiState = uiState, inLandscape = false)
+                                MediaButtons(vm = vm, uiState = uiState, inLandscape = true)
+                            }
+                        }
+                    }
+
+                    if (uiState.showUpNextPlaylist) {
+                        PlayingPlaylist(uiState, vm, playingPlaylistListState)
+                    }
+                }
+
+            } else {
+                Column(
+                    modifier = Modifier
+                        .padding(scaffoldPadding)
+                        .padding(Sizes.XLARGE)
+                ) {
+
+                    TopRow(
+                        vm = vm,
+                        uiState = uiState,
+                        onClosePlayer = { onClosePlayer() },
+                        sheetState = sheetState
+                    )
+
+                    VSpacer(size = Sizes.LARGE)
+
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        if (!uiState.showUpNextPlaylist) {
+                            AlbumArtPager(vm = vm, uiState = uiState)
+
+                            VSpacer(size = Sizes.LARGE)
+
+                            if (!uiState.showCarPlayer) {
+                                NameAndTitleRow(uiState = uiState)
                             }
 
-                            if (uiState.showUpNextPlaylist) {
+                            VSpacer(size = Sizes.LARGE)
 
-                                PlayingPlaylist(uiState, vm, playingPlaylistListState)
-                            }
+                            PlayerSlider(vm = vm, uiState = uiState)
+
+                            VSpacer(size = Sizes.LARGE)
+
+                            MediaButtons(vm = vm, uiState = uiState, inLandscape = false)
+                        }
+
+                        if (uiState.showUpNextPlaylist) {
+
+                            PlayingPlaylist(uiState, vm, playingPlaylistListState)
                         }
                     }
                 }
@@ -239,13 +217,12 @@ fun Player(
         }
     }
 
-    if(uiState.showCarPlayer && uiState.keepScreenOnCarPlayer){
+    if (uiState.showCarPlayer && uiState.keepScreenOnCarPlayer) {
         KeepScreenOn()
     }
 
 
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -705,13 +682,13 @@ fun MediaButtons(
 
     if (uiState.showCarPlayer) {
 
-        if(inLandscape){
+        if (inLandscape) {
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 ShuffleButton()
                 PreviousButton()
                 PlayPauseButton()
@@ -719,11 +696,11 @@ fun MediaButtons(
                 RepeatButton()
             }
 
-        }else{
+        } else {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){
+            ) {
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),

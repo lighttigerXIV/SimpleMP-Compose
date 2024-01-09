@@ -1,9 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library
 
 import android.graphics.Bitmap
-import androidx.compose.material.BottomSheetState
-import androidx.compose.material.BottomSheetValue
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -44,7 +41,6 @@ class LibraryScreenVM(
         val peekHeight: Dp = 0.dp,
         val currentSong: Song? = null,
         val showMiniPlayer: Boolean = false,
-        val showPlayerProgress: Float = 0f,
         val smallAlbumArt: Bitmap? = null,
         val currentSongArtistName: String = "",
         val isPlaying: Boolean = false
@@ -79,20 +75,6 @@ class LibraryScreenVM(
         viewModelScope.launch(Dispatchers.Main) {
             playbackRepository.playbackState.collect { newPlaybackState ->
                 _uiState.update { uiState.value.copy(isPlaying = newPlaybackState?.isPlaying ?: false) }
-            }
-        }
-    }
-
-    @OptIn(ExperimentalMaterialApi::class)
-    fun updateNavbarAnimation(progress: Float, sheetState: BottomSheetState) {
-        viewModelScope.launch(Dispatchers.Main) {
-
-            if (progress in 0.1f..1f) {
-                if (sheetState.targetValue == BottomSheetValue.Expanded) {
-                    _uiState.update { uiState.value.copy(showPlayerProgress = 0 + progress) }
-                } else {
-                    _uiState.update { uiState.value.copy(showPlayerProgress = 1 - progress) }
-                }
             }
         }
     }

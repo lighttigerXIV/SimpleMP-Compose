@@ -17,7 +17,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.layoutId
 import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goBack
@@ -36,8 +35,7 @@ fun Toolbar(
             modifier = Modifier
                 .size(30.dp)
                 .clip(CircleShape)
-                .clickable { navController.goBack() }
-                .layoutId("toolbar"),
+                .clickable { navController.goBack() },
             painter = painterResource(id = R.drawable.back),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary
@@ -69,8 +67,7 @@ fun FullscreenDialogToolbar(
             modifier = Modifier
                 .size(30.dp)
                 .clip(CircleShape)
-                .clickable { onCancelClick() }
-                .layoutId("toolbar"),
+                .clickable { onCancelClick() },
             painter = painterResource(id = R.drawable.close),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary

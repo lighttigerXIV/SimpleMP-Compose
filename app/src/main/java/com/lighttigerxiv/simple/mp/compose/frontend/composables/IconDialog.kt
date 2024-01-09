@@ -80,12 +80,15 @@ fun IconDialog(
 
                     VSpacer(size = Sizes.LARGE)
 
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
 
                         SecondaryButton(
                             text = stringResource(id = R.string.cancel),
                             onClick = { onDismiss() },
-                            fillWidth = true
+                            fillWidth = primaryButtonText == null
                         )
 
                         HSpacer(size = Sizes.SMALL)

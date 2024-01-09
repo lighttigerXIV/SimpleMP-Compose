@@ -39,7 +39,8 @@ class ArtistsScreenVM(
         val searchText: String = "",
         val artists: List<Artist> = ArrayList(),
         val sortType: String = "",
-        val showMenu: Boolean = false
+        val showMenu: Boolean = false,
+        val withMiniPlayer: Boolean = false
     )
 
     private val _uiState = MutableStateFlow(UiState())

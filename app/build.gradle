@@ -107,4 +107,7 @@ dependencies {
 
     //Gson
     implementation("com.google.code.gson:gson:2.10")
+
+    //Layout Scaffold
+    implementation 'com.github.lighttigerXIV:layout-scaffold:1.1.0'
 }

@@ -106,7 +106,7 @@
     <string name="IndexingSongs">A indexar m�sicas. N�o feche a aplicaç�o</string>
     <string name="ExperimentalFeatures">Funcionalidades Experimentais</string>
     <string name="CarPlayer">Player Do Carro</string>
-    <string name="KeepScreenOnInCarMode">Manter Ecr� Ativo Em Modo Carro</string>
+    <string name="keep_scren_on_in_car_player">Manter Ecr� Ativo Em Modo Carro</string>
     <string name="show_car_player">Mostar Player Do Carro</string>
     <string name="SortByArtist">Ordenar Por Artista</string>
 </resources>

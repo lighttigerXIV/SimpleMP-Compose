@@ -120,7 +120,7 @@
     <string name="IndexingSongs">Indexing Songs. Don\'t close the app.</string>
     <string name="ExperimentalFeatures">Experimental Features</string>
     <string name="CarPlayer">Car Player</string>
-    <string name="KeepScreenOnInCarMode">Keep Screen On In Car Mode</string>
+    <string name="keep_scren_on_in_car_player">Keep screen on in car player</string>
     <string name="show_car_player">Show car player</string>
     <string name="SortByArtist">Sort By Artist</string>
     <string name="loading_library">Loading Library ...</string>
@@ -141,5 +141,6 @@
     <string name="edit_art">Edit Art</string>
     <string name="use_default">Use default</string>
     <string name="hide_car_player">Hide car player</string>
+    <string name="other">Other</string>
 
 </resources>

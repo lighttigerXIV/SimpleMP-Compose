@@ -11,7 +11,8 @@ data class Settings(
     val downloadArtistCoverWithData: Boolean,
     val homeSort: String,
     val albumsSort: String,
-    val artistsSort: String
+    val artistsSort: String,
+    val keepScreenOnCarPlayer: Boolean
 )
 
 object SettingsOptions{

@@ -3,10 +3,11 @@ package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.home
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,6 +34,7 @@ import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.MenuItem
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.MiniPlayerSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.SongCard
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.SongMenuItem
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.TextField
@@ -43,6 +45,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToPreviewAlbum
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToPreviewArtist
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToSettings
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -67,17 +70,22 @@ fun HomeScreen(
     Scaffold(
         floatingActionButton = {
             if (uiState.songs.isNotEmpty()) {
-                Box(
+                Column(
                     modifier = Modifier
+                        .modifyIf(uiState.withMiniPlayer) {
+                            offset(y = (-65).dp)
+                        }
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primary)
                         .clickable { vm.shuffleAndPlay() }
                         .padding(Sizes.LARGE),
-                    contentAlignment = Alignment.Center
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
                     Icon(
-                        modifier = Modifier.size(30.dp),
+                        modifier = Modifier
+                            .size(30.dp),
                         painter = painterResource(id = R.drawable.shuffle),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onPrimary
@@ -136,6 +144,10 @@ fun HomeScreen(
 
                         VSpacer(size = Sizes.SMALL)
                     }
+                }
+
+                item {
+                    MiniPlayerSpacer(isShown = uiState.withMiniPlayer)
                 }
             }
         }

@@ -457,37 +457,42 @@ class PlaybackRepository(
 
     private fun playSong() {
 
-        val songPosition = playlistsState.value!!.songPosition
-        val song = playlistsState.value!!.current[songPosition]
+        try {
 
-        _currentSongState.update {
-            CurrentSongState(
-                currentSong = song,
-                artistName = libraryRepository.getArtistName(song.artistId),
-                albumName = libraryRepository.getAlbumName(song.albumId),
-                albumArt = libraryRepository.getLargeAlbumArt(song.albumId)
-            )
-        }
+            val songPosition = playlistsState.value!!.songPosition
+            val song = playlistsState.value!!.current[songPosition]
 
-        _playlistsState.update {
-            playlistsState.value!!.copy(
-                upNext = playlistsState.value!!.current.filterIndexed { index, _ -> index > songPosition }
-            )
-        }
-
-        player.setMediaItem(MediaItem.fromUri(song.path))
-        player.prepare()
-        requestFocusAndPlay()
-
-        val handler = Handler(Looper.getMainLooper())
-        handler.post(object : Runnable {
-            override fun run() {
-
-                _playbackState.update { playbackState.value!!.copy(progress = player.currentPosition) }
-
-                handler.postDelayed(this, 1000)
+            _currentSongState.update {
+                CurrentSongState(
+                    currentSong = song,
+                    artistName = libraryRepository.getArtistName(song.artistId),
+                    albumName = libraryRepository.getAlbumName(song.albumId),
+                    albumArt = libraryRepository.getLargeAlbumArt(song.albumId)
+                )
             }
-        })
+
+            _playlistsState.update {
+                playlistsState.value!!.copy(
+                    upNext = playlistsState.value!!.current.filterIndexed { index, _ -> index > songPosition }
+                )
+            }
+
+            player.setMediaItem(MediaItem.fromUri(song.path))
+            player.prepare()
+            requestFocusAndPlay()
+
+            val handler = Handler(Looper.getMainLooper())
+            handler.post(object : Runnable {
+                override fun run() {
+
+                    _playbackState.update { playbackState.value?.copy(progress = player.currentPosition) }
+
+                    handler.postDelayed(this, 1000)
+                }
+            })
+        } catch (e: Exception) {
+            Log.e("Play Song", e.message.toString())
+        }
     }
 
     fun stop(skipStopService: Boolean = false) {
@@ -538,9 +543,7 @@ class PlaybackRepository(
         playlistsState.value!!.current.forEachIndexed { index, song ->
             if (index == newPosition) {
                 newPlaylist.add(songToMove)
-            }
-
-            else if (song.id != songId) {
+            } else if (song.id != songId) {
                 newPlaylist.add(song)
             }
         }

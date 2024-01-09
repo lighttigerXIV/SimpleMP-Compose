@@ -179,6 +179,29 @@ fun SettingsScreen(
                         disabled = !uiState.downloadArtistCover
                     )
                 }
+
+                VSpacer(size = Sizes.LARGE)
+
+                Text(
+                    modifier = Modifier.offset(x = 8.dp),
+                    text = stringResource(id = R.string.other),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = FontSizes.HEADER,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Column(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(Sizes.XLARGE))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    SwitchSettingCard(
+                        iconId = R.drawable.car,
+                        title = stringResource(id = R.string.keep_scren_on_in_car_player),
+                        settingValue = uiState.keepScreenOnCarPlayer,
+                        onCheckedChange = { checked -> vm.updateKeepScreenOnCarPlayer(checked) }
+                    )
+                }
             }
         }
 

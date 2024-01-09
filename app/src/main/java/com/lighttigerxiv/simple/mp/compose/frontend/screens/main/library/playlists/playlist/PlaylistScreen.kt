@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,11 +39,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.lighttigerxiv.layout_scaffold.inLandscape
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.CollapsableHeader
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.HSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.IconDialog
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.MenuItem
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.MiniPlayerSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.PlayShuffleRow
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.PrimaryButton
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.RemoveFromPlaylistSongCard
@@ -50,6 +53,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.SongCard
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.TextField
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.Toolbar
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
+import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goBack
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToAddSongsToPlaylist
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.FontSizes
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
@@ -61,7 +65,8 @@ fun PlaylistScreen(
     playlistId: ObjectId,
     navController: NavHostController,
     rootController: NavHostController,
-    vm: PlaylistScreenVM = viewModel(factory = PlaylistScreenVM.Factory)
+    vm: PlaylistScreenVM = viewModel(factory = PlaylistScreenVM.Factory),
+    showMiniPlayer: Boolean
 ) {
 
     val uiState = vm.uiState.collectAsState().value
@@ -83,68 +88,44 @@ fun PlaylistScreen(
         )
 
         if (!uiState.loading) {
-            CollapsableHeader(
-                header = {
-                    PlaylistArtAndName(uiState = uiState, vm = vm)
-                }
-            ) {
+
+            if (inLandscape()) {
 
                 VSpacer(size = Sizes.LARGE)
 
-                if (!uiState.inEditMode) {
+                Row(Modifier.fillMaxWidth()) {
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(0.2f, fill = true)
+                    ) {
 
-                    if (uiState.songs.isNotEmpty()) {
-                        PlayShuffleRow(
-                            onPlayClick = { vm.playSong(uiState.songs[0]) },
-                            onShuffleClick = { vm.shuffleAndPlay() }
-                        )
-
-                        VSpacer(size = Sizes.LARGE)
-
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
-                        ) {
-                            items(
-                                items = uiState.songs,
-                                key = { it.id }
-                            ) { song ->
-                                SongCard(
-                                    song = song,
-                                    artistName = vm.getArtistName(song.artistId),
-                                    art = vm.getAlbumArt(song.albumId),
-                                    highlight = uiState.currentSong?.id == song.id,
-                                    onClick = { vm.playSong(song) }
-                                )
-                            }
-                        }
-                    } else {
-                        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = stringResource(id = R.string.no_songs_added),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
+                        PlaylistArtAndName(uiState = uiState, vm = vm)
                     }
-                } else {
+
+                    HSpacer(size = Sizes.LARGE)
+
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f, fill = true)
+                    ) {
+
+                        Songs(vm = vm, uiState = uiState, showMiniPlayer = showMiniPlayer)
+                    }
+                }
+
+            } else {
+
+                CollapsableHeader(
+                    header = {
+                        PlaylistArtAndName(uiState = uiState, vm = vm)
+                    }
+                ) {
 
                     VSpacer(size = Sizes.LARGE)
 
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
-                    ) {
-                        items(
-                            items = uiState.songs,
-                            key = { it.id }
-                        ) { song ->
-                            RemoveFromPlaylistSongCard(
-                                song = song,
-                                artistName = vm.getArtistName(song.artistId),
-                                art = vm.getAlbumArt(song.albumId),
-                                onClick = { vm.removeSong(song.id) }
-                            )
-                        }
-                    }
+                    Songs(vm = vm, uiState = uiState, showMiniPlayer = showMiniPlayer)
                 }
             }
         }
@@ -195,7 +176,7 @@ fun PlaylistToolbar(
             )
 
             Column {
-                Menu(playlistId = playlistId, navController = navController, uiState = uiState, vm = vm, rootController = rootController)
+                Menu(playlistId = playlistId, uiState = uiState, vm = vm, rootController = rootController)
             }
         }
     }
@@ -206,7 +187,6 @@ fun Menu(
     playlistId: ObjectId,
     uiState: PlaylistScreenVM.UiState,
     vm: PlaylistScreenVM,
-    navController: NavHostController,
     rootController: NavHostController
 ) {
 
@@ -243,6 +223,77 @@ fun Menu(
 }
 
 @Composable
+fun Songs(
+    vm: PlaylistScreenVM,
+    uiState: PlaylistScreenVM.UiState,
+    showMiniPlayer: Boolean
+) {
+    if (!uiState.inEditMode) {
+
+        if (uiState.songs.isNotEmpty()) {
+            PlayShuffleRow(
+                onPlayClick = { vm.playSong(uiState.songs[0]) },
+                onShuffleClick = { vm.shuffleAndPlay() }
+            )
+
+            VSpacer(size = Sizes.LARGE)
+
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+            ) {
+                items(
+                    items = uiState.songs,
+                    key = { it.id }
+                ) { song ->
+                    SongCard(
+                        song = song,
+                        artistName = vm.getArtistName(song.artistId),
+                        art = vm.getAlbumArt(song.albumId),
+                        highlight = uiState.currentSong?.id == song.id,
+                        onClick = { vm.playSong(song) }
+                    )
+                }
+
+                item {
+                    MiniPlayerSpacer(isShown = showMiniPlayer)
+                }
+            }
+        } else {
+            Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(id = R.string.no_songs_added),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    } else {
+
+        VSpacer(size = Sizes.LARGE)
+
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+        ) {
+            items(
+                items = uiState.songs,
+                key = { it.id }
+            ) { song ->
+                RemoveFromPlaylistSongCard(
+                    song = song,
+                    artistName = vm.getArtistName(song.artistId),
+                    art = vm.getAlbumArt(song.albumId),
+                    onClick = { vm.removeSong(song.id) }
+                )
+            }
+
+            item {
+                MiniPlayerSpacer(isShown = showMiniPlayer)
+            }
+        }
+    }
+}
+
+@Composable
 fun DeletePlaylistDialog(
     playlistId: ObjectId,
     uiState: PlaylistScreenVM.UiState,
@@ -255,7 +306,12 @@ fun DeletePlaylistDialog(
         onDismiss = { vm.updateShowDeleteDialog(false) },
         iconId = R.drawable.trash,
         title = stringResource(id = R.string.delete_playlist),
-        primaryButtonText = stringResource(id = R.string.delete)
+        primaryButtonText = stringResource(id = R.string.delete),
+        onPrimaryButtonClick = {
+            vm.updateShowDeleteDialog(false)
+            vm.deletePlaylist(playlistId)
+            navController.goBack()
+        }
     ) {
         Text(
             text = stringResource(id = R.string.confirm_delete_playlist),
@@ -273,10 +329,17 @@ fun EditNameDialog(
 
     IconDialog(
         show = uiState.showEditNameDialog,
-        onDismiss = { vm.updateShowEditNameDialog(false) },
+        onDismiss = {
+            vm.updateShowEditNameDialog(false)
+            vm.updateEditNameText(uiState.playlistName)
+        },
         iconId = R.drawable.edit,
         title = stringResource(id = R.string.edit_name),
-        primaryButtonText = stringResource(id = R.string.save)
+        primaryButtonText = stringResource(id = R.string.save),
+        onPrimaryButtonClick = {
+            vm.saveEditName()
+        },
+        disablePrimaryButton = uiState.editNameText.trim().isEmpty()
     ) {
         TextField(
             text = uiState.editNameText,
@@ -397,7 +460,14 @@ fun PlaylistArtAndName(
                     .padding(Sizes.MEDIUM)
             ) {
                 Icon(
-                    modifier = Modifier.size(220.dp),
+                    modifier = Modifier
+                        .modifyIf(inLandscape()) {
+                            fillMaxWidth()
+                            aspectRatio(1f)
+                        }
+                        .modifyIf(!inLandscape()) {
+                            size(220.dp)
+                        },
                     painter = painterResource(id = R.drawable.playlist_filled),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
@@ -406,7 +476,13 @@ fun PlaylistArtAndName(
         } else {
             Column(
                 Modifier
-                    .size(220.dp)
+                    .modifyIf(inLandscape()) {
+                        fillMaxWidth()
+                        aspectRatio(1f)
+                    }
+                    .modifyIf(!inLandscape()) {
+                        size(220.dp)
+                    }
                     .clip(RoundedCornerShape(Sizes.XLARGE))
                     .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {

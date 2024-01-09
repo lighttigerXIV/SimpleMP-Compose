@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -24,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,6 +44,7 @@ import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Playlist
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.Card
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.DoubleTabRow
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.IconDialog
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.MiniPlayerSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.TextField
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToGenrePlaylist
@@ -53,10 +57,13 @@ import kotlinx.coroutines.withContext
 @Composable
 fun PlaylistsScreen(
     navController: NavHostController,
-    vm: PlaylistsScreenVM = viewModel(factory = PlaylistsScreenVM.Factory)
+    vm: PlaylistsScreenVM = viewModel(factory = PlaylistsScreenVM.Factory),
+    inLandscape: Boolean,
+    showMiniPlayer: Boolean
 ) {
     val uiState = vm.uiState.collectAsState().value
     val pagerState = rememberPagerState(pageCount = { 2 })
+    val gridCellsCount by remember { mutableIntStateOf(if (inLandscape) 5 else 2) }
 
     Column {
         DoubleTabRow(
@@ -74,7 +81,7 @@ fun PlaylistsScreen(
                 0 -> {
                     LazyVerticalGrid(
                         modifier = Modifier.fillMaxSize(),
-                        columns = GridCells.Fixed(2),
+                        columns = GridCells.Fixed(gridCellsCount),
                         verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
                         horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL)
                     ) {
@@ -89,6 +96,10 @@ fun PlaylistsScreen(
                                 onClick = { navController.goToGenrePlaylist(playlist._id) }
                             )
                         }
+
+                        item(span = { GridItemSpan(gridCellsCount) }) {
+                            MiniPlayerSpacer(isShown = showMiniPlayer)
+                        }
                     }
                 }
 
@@ -101,26 +112,30 @@ fun PlaylistsScreen(
                             placeholder = stringResource(id = R.string.search_playlists),
                             onTextChange = { vm.updateUserPlaylistsSearchText(it) },
                             startIcon = R.drawable.plus,
-                            onStartIconClick = {vm.updateShowAddPlaylistDialog(true)}
+                            onStartIconClick = { vm.updateShowAddPlaylistDialog(true) }
                         )
 
                         VSpacer(size = Sizes.LARGE)
 
                         LazyVerticalGrid(
-                            columns = GridCells.Fixed(2),
+                            columns = GridCells.Fixed(gridCellsCount),
                             verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
                             horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL),
                             content = {
                                 items(
                                     items = uiState.userPlaylists,
                                     key = { "userPlaylist-${it._id}" }
-                                ){ playlist->
+                                ) { playlist ->
 
                                     PlaylistCard(
                                         playlist = playlist,
                                         vm = vm,
                                         navController = navController
                                     )
+                                }
+
+                                item(span = { GridItemSpan(gridCellsCount) }) {
+                                    MiniPlayerSpacer(isShown = showMiniPlayer)
                                 }
                             }
                         )
@@ -135,7 +150,11 @@ fun PlaylistsScreen(
                         iconId = R.drawable.plus,
                         title = stringResource(id = R.string.add_playlist),
                         primaryButtonText = stringResource(id = R.string.add),
-                        disablePrimaryButton = uiState.addPlaylistDialogText.trim().isEmpty()
+                        disablePrimaryButton = uiState.addPlaylistDialogText.trim().isEmpty(),
+                        onPrimaryButtonClick = {
+                            vm.updateShowAddPlaylistDialog(false)
+                            vm.addPlaylist()
+                        }
                     ) {
 
                         TextField(
@@ -156,12 +175,12 @@ fun PlaylistCard(
     playlist: Playlist,
     vm: PlaylistsScreenVM,
     navController: NavHostController
-){
+) {
 
-    val image = remember{ mutableStateOf<Bitmap?>(null) }
+    val image = remember { mutableStateOf<Bitmap?>(null) }
 
-    LaunchedEffect(image){
-        withContext(Dispatchers.IO){
+    LaunchedEffect(image) {
+        withContext(Dispatchers.IO) {
             image.value = vm.getPlaylistArt(playlist._id)
         }
     }

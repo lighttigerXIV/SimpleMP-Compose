@@ -9,23 +9,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -53,11 +50,13 @@ import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 fun SelectArtistCoverScreen(
     artistId: Long,
     navController: NavHostController,
-    vm: SelectArtistCoverScreenVM = viewModel(factory = SelectArtistCoverScreenVM.Factory)
+    vm: SelectArtistCoverScreenVM = viewModel(factory = SelectArtistCoverScreenVM.Factory),
+    inLandscape: Boolean
 ) {
 
     val uiState = vm.uiState.collectAsState().value
     val context = LocalContext.current
+    val gridCellsCount by remember { mutableIntStateOf(if (inLandscape) 5 else 2) }
     val askImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
@@ -120,7 +119,7 @@ fun SelectArtistCoverScreen(
                 VSpacer(size = Sizes.SMALL)
 
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
+                    columns = GridCells.Fixed(gridCellsCount),
                     verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
                     horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL)
                 ) {

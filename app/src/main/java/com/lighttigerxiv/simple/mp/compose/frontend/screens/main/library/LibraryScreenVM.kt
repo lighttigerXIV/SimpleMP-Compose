@@ -1,6 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library
 
-import android.app.Application
+import android.graphics.Bitmap
 import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
@@ -23,19 +23,19 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LibraryScreenVM(
-    application: Application,
-    libraryRepository: LibraryRepository,
-    playbackRepository: PlaybackRepository
+    private val libraryRepository: LibraryRepository,
+    private val playbackRepository: PlaybackRepository
 ) : ViewModel() {
 
     companion object Factory {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as SimpleMPApplication)
-                val libraryRepository = application.container.libraryRepository
-                val playbackRepository = application.container.playbackRepository
 
-                LibraryScreenVM(application, libraryRepository, playbackRepository)
+                LibraryScreenVM(
+                    application.container.libraryRepository,
+                    application.container.playbackRepository
+                )
             }
         }
     }
@@ -43,9 +43,11 @@ class LibraryScreenVM(
     data class UiState(
         val peekHeight: Dp = 0.dp,
         val currentSong: Song? = null,
-        val hideNavBarProgress: Float = 0f,
+        val showMiniPlayer: Boolean = false,
         val showPlayerProgress: Float = 0f,
-        val hideMiniPlayer: Boolean = false
+        val smallAlbumArt: Bitmap? = null,
+        val currentSongArtistName: String = "",
+        val isPlaying: Boolean = false
     )
 
 
@@ -65,9 +67,18 @@ class LibraryScreenVM(
                 _uiState.update {
                     uiState.value.copy(
                         currentSong = newSongState?.currentSong,
-                        peekHeight = if (newSongState != null) 125.dp else 0.dp
+                        peekHeight = if (newSongState != null) 125.dp else 0.dp,
+                        smallAlbumArt = if (newSongState?.currentSong != null) libraryRepository.getSmallAlbumArt(newSongState.currentSong.albumId) else null,
+                        currentSongArtistName = if (newSongState?.currentSong != null) libraryRepository.getArtistName(newSongState.currentSong.artistId) else "",
+                        showMiniPlayer = newSongState?.currentSong != null
                     )
                 }
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.Main) {
+            playbackRepository.playbackState.collect { newPlaybackState ->
+                _uiState.update { uiState.value.copy(isPlaying = newPlaybackState?.isPlaying ?: false) }
             }
         }
     }
@@ -76,30 +87,17 @@ class LibraryScreenVM(
     fun updateNavbarAnimation(progress: Float, sheetState: BottomSheetState) {
         viewModelScope.launch(Dispatchers.Main) {
 
-            if (progress > 0 && sheetState.currentValue == BottomSheetValue.Collapsed && sheetState.targetValue == BottomSheetValue.Expanded) {
-                if (!uiState.value.hideMiniPlayer) {
-                    _uiState.update { uiState.value.copy(hideMiniPlayer = true) }
-                }
-            }
-
-            if (progress >= 0.9f && sheetState.targetValue == BottomSheetValue.Collapsed) {
-                if (uiState.value.hideMiniPlayer) {
-                    _uiState.update { uiState.value.copy(hideMiniPlayer = false) }
-                }
-            }
-
-            if (progress == 1f && sheetState.targetValue == BottomSheetValue.Expanded) {
-                _uiState.update { uiState.value.copy(hideMiniPlayer = true) }
-            }
-
-
             if (progress in 0.1f..1f) {
                 if (sheetState.targetValue == BottomSheetValue.Expanded) {
-                    _uiState.update { uiState.value.copy(hideNavBarProgress = 0 + progress, showPlayerProgress = 0 + progress) }
+                    _uiState.update { uiState.value.copy(showPlayerProgress = 0 + progress) }
                 } else {
-                    _uiState.update { uiState.value.copy(hideNavBarProgress = 1 - progress, showPlayerProgress = 1 - progress) }
+                    _uiState.update { uiState.value.copy(showPlayerProgress = 1 - progress) }
                 }
             }
         }
+    }
+
+    fun pauseOrResume() {
+        playbackRepository.pauseResume()
     }
 }

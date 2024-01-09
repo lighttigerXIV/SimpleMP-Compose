@@ -3,6 +3,7 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.player
 
 import android.graphics.Bitmap
+import android.view.View
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalOverscrollConfiguration
@@ -15,10 +16,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -59,6 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
@@ -87,11 +87,10 @@ import org.burnoutcrew.reorderable.reorderable
 @Composable
 fun Player(
     vm: PlayerVM = viewModel(factory = PlayerVM.Factory),
-    hideMiniPlayer: Boolean,
-    onOpenPlayer: () -> Unit,
     onClosePlayer: () -> Unit,
     showPlayerProgress: Float,
-    rootController: NavHostController
+    rootController: NavHostController,
+    inLandscape: Boolean
 ) {
 
     val uiState = vm.uiState.collectAsState().value
@@ -104,16 +103,12 @@ fun Player(
         playingPlaylistListState.listState.scrollToItem(0)
     }
 
-    if (!hideMiniPlayer) {
-        MiniPlayer(vm = vm, uiState = uiState, onClick = { onOpenPlayer() })
-    }
-
     MotionLayout(
         modifier = Modifier
             .fillMaxSize(),
         motionScene = MotionScene(
             content = context.resources
-                .openRawResource(R.raw.player_visibility)
+                .openRawResource(R.raw.player)
                 .readBytes()
                 .decodeToString()
         ),
@@ -141,137 +136,117 @@ fun Player(
                 }
             ) { scaffoldPadding ->
 
-                Column(
-                    modifier = Modifier
-                        .padding(scaffoldPadding)
-                        .padding(Sizes.XLARGE)
-                ) {
-
-                    TopRow(
-                        vm = vm,
-                        uiState = uiState,
-                        onClosePlayer = { onClosePlayer() },
-                        sheetState = sheetState
-                    )
-
-                    VSpacer(size = Sizes.LARGE)
+                if (inLandscape) {
 
                     Column(
-                        modifier = Modifier.fillMaxSize()
+                        Modifier
+                            .fillMaxSize()
+                            .padding(scaffoldPadding)
+                            .padding(Sizes.XLARGE)
                     ) {
-                        if (!uiState.showUpNextPlaylist) {
-                            AlbumArtPager(vm = vm, uiState = uiState)
+                        TopRow(
+                            vm = vm,
+                            uiState = uiState,
+                            onClosePlayer = { onClosePlayer() },
+                            sheetState = sheetState
+                        )
 
-                            VSpacer(size = Sizes.LARGE)
+                        VSpacer(size = Sizes.LARGE)
 
-                            if (!uiState.showCarPlayer) {
-                                NameAndTitleRow(uiState = uiState)
+                        if(!uiState.showUpNextPlaylist){
+                            Row(Modifier.fillMaxSize()) {
+                                Column(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .weight(if (uiState.showCarPlayer) 0.5f else 0.3f, fill = true)
+                                ) {
+
+                                    AlbumArtPager(vm = vm, uiState = uiState)
+
+                                    VSpacer(size = Sizes.LARGE)
+
+                                    if (!uiState.showCarPlayer) {
+                                        NameAndTitleRow(uiState = uiState)
+                                    }
+                                }
+
+                                HSpacer(size = Sizes.LARGE)
+
+                                Column(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f, fill = true)
+                                ) {
+                                    PlayerSlider(vm = vm, uiState = uiState)
+
+                                    VSpacer(size = Sizes.LARGE)
+
+                                    MediaButtons(vm = vm, uiState = uiState, inLandscape = true)
+                                }
                             }
-
-                            VSpacer(size = Sizes.LARGE)
-
-                            PlayerSlider(vm = vm, uiState = uiState)
-
-                            VSpacer(size = Sizes.LARGE)
-
-                            MediaButtons(vm = vm, uiState = uiState)
                         }
 
-                        if (uiState.showUpNextPlaylist) {
-
+                        if(uiState.showUpNextPlaylist){
                             PlayingPlaylist(uiState, vm, playingPlaylistListState)
+                        }
+                    }
+
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .padding(scaffoldPadding)
+                            .padding(Sizes.XLARGE)
+                    ) {
+
+                        TopRow(
+                            vm = vm,
+                            uiState = uiState,
+                            onClosePlayer = { onClosePlayer() },
+                            sheetState = sheetState
+                        )
+
+                        VSpacer(size = Sizes.LARGE)
+
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            if (!uiState.showUpNextPlaylist) {
+                                AlbumArtPager(vm = vm, uiState = uiState)
+
+                                VSpacer(size = Sizes.LARGE)
+
+                                if (!uiState.showCarPlayer) {
+                                    NameAndTitleRow(uiState = uiState)
+                                }
+
+                                VSpacer(size = Sizes.LARGE)
+
+                                PlayerSlider(vm = vm, uiState = uiState)
+
+                                VSpacer(size = Sizes.LARGE)
+
+                                MediaButtons(vm = vm, uiState = uiState, inLandscape = false)
+                            }
+
+                            if (uiState.showUpNextPlaylist) {
+
+                                PlayingPlaylist(uiState, vm, playingPlaylistListState)
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
 
-@Composable
-fun MiniPlayer(
-    vm: PlayerVM,
-    uiState: PlayerVM.UiState,
-    onClick: () -> Unit
-) {
-
-    uiState.currentSong?.let {
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-                .clip(RoundedCornerShape(Sizes.SMALL))
-                .clickable { onClick() }
-                .padding(Sizes.MEDIUM),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            if (uiState.smallAlbumArt != null) {
-                Image(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(Sizes.SMALL)),
-                    bitmap = uiState.smallAlbumArt.asImageBitmap(),
-                    contentDescription = null
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(Sizes.SMALL))
-                        .size(70.dp)
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-
-                ) {
-                    Icon(
-                        modifier = Modifier.size(70.dp),
-                        painter = painterResource(id = R.drawable.album),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-
-
-            HSpacer(size = Sizes.LARGE)
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f, fill = true)
-            ) {
-
-                Text(
-                    text = uiState.currentSong.name,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Text(
-                    text = uiState.currentSongArtistName,
-                    fontWeight = FontWeight.Normal,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            HSpacer(size = Sizes.LARGE)
-
-            Icon(
-                modifier = Modifier
-                    .size(22.dp)
-                    .clickable { vm.pauseOrResume() },
-                painter = painterResource(id = if (uiState.isPlaying) R.drawable.pause else R.drawable.play),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
+    if(uiState.showCarPlayer && uiState.keepScreenOnCarPlayer){
+        KeepScreenOn()
     }
+
+
 }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -442,7 +417,7 @@ fun AlbumArtPager(
                 val art = vm.getSongArt(song.albumId)
                 PlayerAlbumArt(art = art)
             }
-        }else{
+        } else {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -616,16 +591,17 @@ fun PlayerSlider(
 @Composable
 fun MediaButtons(
     vm: PlayerVM,
-    uiState: PlayerVM.UiState
+    uiState: PlayerVM.UiState,
+    inLandscape: Boolean
 ) {
     @Composable
-    fun ShuffleButton(){
+    fun ShuffleButton() {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
 
-            if(!uiState.showCarPlayer && uiState.shuffle){
+            if (!uiState.showCarPlayer && uiState.shuffle) {
                 VSpacer(size = Sizes.SMALL)
             }
 
@@ -641,8 +617,8 @@ fun MediaButtons(
 
             if (uiState.shuffle) {
                 MediaButtonDot(uiState.showCarPlayer)
-            }else{
-                if(uiState.showCarPlayer){
+            } else {
+                if (uiState.showCarPlayer) {
                     VSpacer(size = Sizes.LARGE)
                 }
             }
@@ -650,7 +626,7 @@ fun MediaButtons(
     }
 
     @Composable
-    fun PreviousButton(){
+    fun PreviousButton() {
         Icon(
             modifier = Modifier
                 .size(if (uiState.showCarPlayer) 80.dp else 40.dp)
@@ -664,7 +640,7 @@ fun MediaButtons(
 
 
     @Composable
-    fun PlayPauseButton(){
+    fun PlayPauseButton() {
         Icon(
             modifier = Modifier
                 .size(if (uiState.showCarPlayer) 120.dp else 80.dp)
@@ -678,7 +654,7 @@ fun MediaButtons(
 
 
     @Composable
-    fun NextButton(){
+    fun NextButton() {
         Icon(
             modifier = Modifier
                 .size(if (uiState.showCarPlayer) 80.dp else 40.dp)
@@ -692,10 +668,10 @@ fun MediaButtons(
 
 
     @Composable
-    fun RepeatButton(){
+    fun RepeatButton() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            if(!uiState.showCarPlayer && uiState.repeatState != RepeatSate.Off){
+            if (!uiState.showCarPlayer && uiState.repeatState != RepeatSate.Off) {
                 VSpacer(size = Sizes.SMALL)
             }
 
@@ -719,44 +695,60 @@ fun MediaButtons(
                         MediaButtonDot(uiState.showCarPlayer)
                     }
                 }
-            }else{
-                if(uiState.showCarPlayer){
+            } else {
+                if (uiState.showCarPlayer) {
                     VSpacer(size = Sizes.LARGE)
                 }
             }
         }
     }
 
-    if(uiState.showCarPlayer){
+    if (uiState.showCarPlayer) {
 
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        if(inLandscape){
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ){
+                ShuffleButton()
                 PreviousButton()
                 PlayPauseButton()
                 NextButton()
+                RepeatButton()
             }
 
-            VSpacer(size = Sizes.XLARGE)
-
-            Row(
+        }else{
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalAlignment = Alignment.CenterHorizontally
             ){
-                ShuffleButton()
-                RepeatButton()
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    PreviousButton()
+                    PlayPauseButton()
+                    NextButton()
+                }
+
+                VSpacer(size = Sizes.XLARGE)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    ShuffleButton()
+                    RepeatButton()
+                }
             }
         }
 
-    }else{
+    } else {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -909,3 +901,6 @@ fun MenuSheet(
         }
     }
 }
+
+@Composable
+fun KeepScreenOn() = AndroidView({ View(it).apply { keepScreenOn = true } })

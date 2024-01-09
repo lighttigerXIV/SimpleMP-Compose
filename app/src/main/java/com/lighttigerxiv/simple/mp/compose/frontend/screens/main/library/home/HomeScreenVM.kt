@@ -29,6 +29,7 @@ data class HomeUiState(
     val searchText: String = "",
     val showMenu: Boolean = false,
     val currentSong: Song? = null,
+    val withMiniPlayer: Boolean = false,
     val indexingLibrary: Boolean = false,
     val sortType: String = ""
 )
@@ -65,7 +66,10 @@ class HomeScreenVM(
                 viewModelScope.launch(Dispatchers.Main) {
                     playbackRepository.currentSongState.collect { newSongState ->
                         _uiState.update {
-                            uiSate.value.copy(currentSong = newSongState?.currentSong)
+                            uiSate.value.copy(
+                                currentSong = newSongState?.currentSong,
+                                withMiniPlayer = newSongState?.currentSong != null
+                            )
                         }
                     }
                 }

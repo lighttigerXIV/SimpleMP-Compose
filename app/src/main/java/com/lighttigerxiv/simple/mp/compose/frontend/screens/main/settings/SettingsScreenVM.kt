@@ -1,6 +1,5 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.settings
 
-import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
@@ -23,19 +22,21 @@ import kotlinx.coroutines.launch
 class SettingsScreenVM(
     private val settingsRepository: SettingsRepository,
     private val libraryRepository: LibraryRepository,
-    private val application: Application
 ) : ViewModel() {
     companion object Factory {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val app = (this[APPLICATION_KEY] as SimpleMPApplication)
-                val settingsRepository = app.container.settingsRepository
-                val libraryRepository = app.container.libraryRepository
 
-                SettingsScreenVM(settingsRepository, libraryRepository, app)
+                SettingsScreenVM(
+                    app.container.settingsRepository,
+                    app.container.libraryRepository
+                )
             }
         }
     }
+
+
 
     data class UiState(
         val isLoading: Boolean = true,
@@ -53,7 +54,8 @@ class SettingsScreenVM(
         val colorSchemeDialogSelectedRadioButton: String = "",
         val lightThemeDialogSelectedTheme: String = "",
         val darkThemeDialogSelectedTheme: String = "",
-        val durationFilterDialogText: String = ""
+        val durationFilterDialogText: String = "",
+        val keepScreenOnCarPlayer: Boolean = false
     )
 
     private val _uiState = MutableStateFlow(UiState())
@@ -75,7 +77,8 @@ class SettingsScreenVM(
                         colorSchemeDialogSelectedRadioButton = newSettings.colorScheme,
                         lightThemeDialogSelectedTheme = newSettings.lightTheme,
                         darkThemeDialogSelectedTheme = newSettings.darkTheme,
-                        durationFilterDialogText = newSettings.durationFilter.toString()
+                        durationFilterDialogText = newSettings.durationFilter.toString(),
+                        keepScreenOnCarPlayer = newSettings.keepScreenOnCarPlayer
                     )
                 }
             }
@@ -139,6 +142,12 @@ class SettingsScreenVM(
     fun updateDarkTheme(v: String) {
         viewModelScope.launch(Dispatchers.Main) {
             settingsRepository.updateDarkTheme(v)
+        }
+    }
+
+    fun updateKeepScreenOnCarPlayer(v: Boolean) {
+        viewModelScope.launch(Dispatchers.Main) {
+            settingsRepository.updateKeepScreenOnCarPlayer(v)
         }
     }
 

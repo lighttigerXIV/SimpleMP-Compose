@@ -12,8 +12,8 @@ import com.lighttigerxiv.simple.mp.compose.backend.realm.Queries
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Playlist
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import com.lighttigerxiv.simple.mp.compose.backend.realm.getRealm
-import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.InternalStorageRepository
+import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaybackRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaylistsRepository
 import kotlinx.coroutines.Dispatchers
@@ -210,7 +210,7 @@ class PlaylistScreenVM(
                 internalStorageRepository.saveImageToInternalStorage(playlist._id.toHexString(), art)
             }
 
-            if(deleteArt){
+            if (deleteArt) {
                 internalStorageRepository.deleteImageFromInternalStorage(playlist._id.toHexString())
                 playlistArt = null
 
@@ -245,5 +245,16 @@ class PlaylistScreenVM(
     fun deletePlaylistArt() {
         deleteArt = true
         _uiState.update { uiState.value.copy(playlistArt = null, showEditArtDialog = false) }
+    }
+
+    fun saveEditName() {
+        viewModelScope.launch(Dispatchers.Main) {
+            _uiState.update {
+                uiState.value.copy(
+                    showEditNameDialog = false,
+                    playlistName = it.editNameText
+                )
+            }
+        }
     }
 }

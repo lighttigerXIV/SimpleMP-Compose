@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -22,8 +24,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,13 +38,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.lighttigerxiv.layout_scaffold.inLandscape
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.Card
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.CollapsableHeader
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.HSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.MenuItem
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.MiniPlayerSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.PlayShuffleRow
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.SongCard
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.Toolbar
@@ -59,7 +63,8 @@ import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 fun ArtistScreen(
     artistId: Long,
     navController: NavHostController,
-    vm: ArtistScreenVM = viewModel(factory = ArtistScreenVM.Factory)
+    vm: ArtistScreenVM = viewModel(factory = ArtistScreenVM.Factory),
+    showMiniPlayer: Boolean
 ) {
 
     val uiState = vm.uiState.collectAsState().value
@@ -91,21 +96,46 @@ fun ArtistScreen(
             }
         )
 
-        CollapsableHeader(
-            header = {
-
-                VSpacer(size = Sizes.LARGE)
-
-                ArtistAlbumAndName(uiState = uiState)
-            }
-        ) {
+        if (inLandscape()) {
 
             VSpacer(size = Sizes.LARGE)
 
-            SongsAndAlbumsPager(uiState = uiState, vm = vm, navController = navController)
+            Row(Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.2f)
+                ) {
+                    ArtistAlbumAndName(uiState = uiState)
+                }
+
+                HSpacer(size = Sizes.LARGE)
+
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f, fill = true)
+                ) {
+                    SongsAndAlbumsPager(uiState = uiState, vm = vm, navController = navController, showMiniPlayer)
+                }
+            }
+
+        } else {
+            CollapsableHeader(
+                header = {
+
+                    VSpacer(size = Sizes.LARGE)
+
+                    ArtistAlbumAndName(uiState = uiState)
+                }
+            ) {
+
+                VSpacer(size = Sizes.LARGE)
+
+                SongsAndAlbumsPager(uiState = uiState, vm = vm, navController = navController, showMiniPlayer = showMiniPlayer)
+            }
         }
     }
-
 }
 
 @Composable
@@ -146,7 +176,13 @@ fun ArtistAlbumAndName(
                 modifier = Modifier
                     .clip(RoundedCornerShape(Sizes.XLARGE))
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .size(220.dp)
+                    .modifyIf(inLandscape()) {
+                        fillMaxWidth()
+                        aspectRatio(1f)
+                    }
+                    .modifyIf(!inLandscape()) {
+                        size(220.dp)
+                    }
                     .padding(Sizes.MEDIUM)
             ) {
                 Icon(
@@ -156,10 +192,16 @@ fun ArtistAlbumAndName(
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
-        }else{
+        } else {
             Image(
                 modifier = Modifier
-                    .size(220.dp)
+                    .modifyIf(inLandscape()) {
+                        fillMaxWidth()
+                        aspectRatio(1f)
+                    }
+                    .modifyIf(!inLandscape()) {
+                        size(220.dp)
+                    }
                     .clip(RoundedCornerShape(Sizes.XLARGE)),
                 bitmap = uiState.artistImage.asImageBitmap(),
                 contentDescription = null,
@@ -173,7 +215,9 @@ fun ArtistAlbumAndName(
             text = uiState.artistName,
             fontSize = FontSizes.HEADER,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
         )
     }
 }
@@ -235,10 +279,12 @@ fun TabRow(
 fun SongsAndAlbumsPager(
     uiState: ArtistScreenVM.UiState,
     vm: ArtistScreenVM,
-    navController: NavHostController
+    navController: NavHostController,
+    showMiniPlayer: Boolean
 ) {
 
-    val pagerState = rememberPagerState(pageCount = { 2 })
+    val gridCellsCount = if (inLandscape()) 4 else 2
+    val pagerState = rememberPagerState(pageCount = { gridCellsCount })
 
     LaunchedEffect(pagerState.currentPage) {
         vm.updateCurrentPagerTab(pagerState.currentPage)
@@ -285,13 +331,17 @@ fun SongsAndAlbumsPager(
                             highlight = uiState.currentSong == song
                         )
                     }
+
+                    item{
+                        MiniPlayerSpacer(isShown = showMiniPlayer)
+                    }
                 }
             }
 
             if (page == 1) {
 
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
+                    columns = GridCells.Fixed(gridCellsCount),
                     verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
                     horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL)
                 ) {
@@ -306,6 +356,10 @@ fun SongsAndAlbumsPager(
                             text = album.name,
                             onClick = { navController.goToArtistAlbum(album.id) }
                         )
+                    }
+
+                    item(span = { GridItemSpan(gridCellsCount)}){
+                        MiniPlayerSpacer(isShown = showMiniPlayer)
                     }
                 }
             }

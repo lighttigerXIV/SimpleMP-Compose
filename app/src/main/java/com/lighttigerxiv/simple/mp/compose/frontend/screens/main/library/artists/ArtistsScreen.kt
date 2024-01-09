@@ -4,32 +4,31 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.Card
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.MenuItem
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.MiniPlayerSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.TextField
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
-import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToAbout
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToArtist
-import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToSettings
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,15 +36,18 @@ import kotlinx.coroutines.withContext
 @Composable
 fun ArtistsScreen(
     vm: ArtistsScreenVM = viewModel(factory = ArtistsScreenVM.Factory),
-    navController: NavHostController
+    navController: NavHostController,
+    inLandscape: Boolean,
+    showMiniPlayer: Boolean
 ) {
 
     val uiState = vm.uiState.collectAsState().value
     val lazyGridState = rememberLazyGridState()
+    val gridCellsCount by remember { mutableIntStateOf(if (inLandscape) 5 else 2) }
 
-    LaunchedEffect(uiState.sortType){
-        withContext(Dispatchers.Main){
-            if(uiState.artists.isNotEmpty()){
+    LaunchedEffect(uiState.sortType) {
+        withContext(Dispatchers.Main) {
+            if (uiState.artists.isNotEmpty()) {
                 lazyGridState.scrollToItem(0)
             }
         }
@@ -61,7 +63,7 @@ fun ArtistsScreen(
             onTextChange = { vm.updateSearchText(it) },
             placeholder = stringResource(id = R.string.search_artists),
             startIcon = R.drawable.sort,
-            onStartIconClick = {vm.updateShowMenu(true)}
+            onStartIconClick = { vm.updateShowMenu(true) }
         )
 
         Menu(vm = vm, uiState = uiState)
@@ -70,7 +72,7 @@ fun ArtistsScreen(
 
         LazyVerticalGrid(
             state = lazyGridState,
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Fixed(gridCellsCount),
             verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
             horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL)
         ) {
@@ -84,6 +86,10 @@ fun ArtistsScreen(
                     text = artist.name,
                     onClick = { navController.goToArtist(artist.id) }
                 )
+            }
+
+            item(span = { GridItemSpan(gridCellsCount) }) {
+                MiniPlayerSpacer(isShown = showMiniPlayer)
             }
         }
     }

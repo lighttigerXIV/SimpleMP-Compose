@@ -2,12 +2,12 @@
   ConstraintSets: {
     start: {
       player: {
-        visibility: 'invisible',
+        visibility: 'invisible'
       }
     },
     end: {
       player: {
-        visibility: 'visible',
+        visibility: 'visible'
       }
     }
   }

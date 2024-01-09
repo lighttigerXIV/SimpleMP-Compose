@@ -12,6 +12,7 @@ import com.lighttigerxiv.simple.mp.compose.backend.playback.RepeatSate
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaybackRepository
+import com.lighttigerxiv.simple.mp.compose.backend.repositories.SettingsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,17 +21,20 @@ import kotlinx.coroutines.launch
 
 class PlayerVM(
     private val playbackRepository: PlaybackRepository,
-    private val libraryRepository: LibraryRepository
+    private val libraryRepository: LibraryRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
     companion object Factory {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
 
                 val application = (this[APPLICATION_KEY] as SimpleMPApplication)
-                val playbackRepository = application.container.playbackRepository
-                val libraryRepository = application.container.libraryRepository
 
-                PlayerVM(playbackRepository, libraryRepository)
+                PlayerVM(
+                    application.container.playbackRepository,
+                    application.container.libraryRepository,
+                    application.container.settingsRepository
+                )
             }
         }
     }
@@ -50,7 +54,8 @@ class PlayerVM(
         val currentProgressAsTime: String = "",
         val songDurationAsTime: String = "",
         val showUpNextPlaylist: Boolean = false,
-        val showCarPlayer: Boolean = false
+        val showCarPlayer: Boolean = false,
+        val keepScreenOnCarPlayer: Boolean = false
     )
 
 
@@ -58,6 +63,11 @@ class PlayerVM(
     val uiState = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch(Dispatchers.Main) {
+            settingsRepository.settingsFlow.collect { settings ->
+                _uiState.update { uiState.value.copy(keepScreenOnCarPlayer = settings.keepScreenOnCarPlayer) }
+            }
+        }
         viewModelScope.launch(Dispatchers.Main) {
             playbackRepository.playlistsState.collect { newPlaylistsState ->
                 if (newPlaylistsState != null) {
@@ -80,7 +90,8 @@ class PlayerVM(
                         uiState.value.copy(
                             currentSong = newCurrentSongState.currentSong,
                             currentSongArtistName = newCurrentSongState.artistName,
-                            smallAlbumArt = libraryRepository.getSmallAlbumArt(newCurrentSongState.currentSong.albumId)
+                            smallAlbumArt = libraryRepository.getSmallAlbumArt(newCurrentSongState.currentSong.albumId),
+                            songDurationAsTime = newCurrentSongState.currentSong.duration.asTime()
                         )
                     }
                 }

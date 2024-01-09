@@ -27,6 +27,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val HOME_SORT = stringPreferencesKey("home_sort")
         val ALBUMS_SORT = stringPreferencesKey("albums_sort")
         val ARTISTS_SORT = stringPreferencesKey("artists_sort")
+        val KEEP_SCREEN_ON_CAR_PLAYER = booleanPreferencesKey("keep_screen_on_car_player")
     }
 
     val settingsFlow: Flow<Settings> = dataStore.data
@@ -49,7 +50,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             downloadArtistCoverWithData = preferences[Keys.DOWNLOAD_ARTIST_COVER_WITH_DATA] ?: false,
             homeSort = preferences[Keys.HOME_SORT] ?: SettingsOptions.Sort.DEFAULT_REVERSED,
             albumsSort = preferences[Keys.ALBUMS_SORT] ?: SettingsOptions.Sort.DEFAULT_REVERSED,
-            artistsSort = preferences[Keys.ARTISTS_SORT] ?: SettingsOptions.Sort.DEFAULT_REVERSED
+            artistsSort = preferences[Keys.ARTISTS_SORT] ?: SettingsOptions.Sort.DEFAULT_REVERSED,
+            keepScreenOnCarPlayer = preferences[Keys.KEEP_SCREEN_ON_CAR_PLAYER] ?: true
         )
     }
 
@@ -65,7 +67,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             downloadArtistCoverWithData = false,
             homeSort = SettingsOptions.Sort.DEFAULT,
             albumsSort = SettingsOptions.Sort.DEFAULT,
-            artistsSort = SettingsOptions.Sort.DEFAULT
+            artistsSort = SettingsOptions.Sort.DEFAULT,
+            keepScreenOnCarPlayer = true
         )
     }
 
@@ -111,5 +114,9 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun updateArtistsSort(v: String) {
         dataStore.edit { it[Keys.ARTISTS_SORT] = v }
+    }
+
+    suspend fun updateKeepScreenOnCarPlayer(v:Boolean){
+        dataStore.edit { it[Keys.KEEP_SCREEN_ON_CAR_PLAYER] = v }
     }
 }

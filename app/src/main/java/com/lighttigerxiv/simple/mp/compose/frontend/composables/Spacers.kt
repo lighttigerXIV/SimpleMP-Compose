@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 
 @Composable
@@ -16,4 +17,9 @@ fun VSpacer(size: Dp){
 @Composable
 fun HSpacer(size: Dp){
     Box(modifier = Modifier.width(size))
+}
+
+@Composable
+fun MiniPlayerSpacer(isShown: Boolean){
+    Box(modifier = Modifier.height(if(isShown) 75.dp else 0.dp))
 }

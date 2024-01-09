@@ -71,7 +71,11 @@ fun MainScreen() {
             val albumId = backstackEntry.arguments?.getLong("id") ?: 0L
 
             Column(modifier = Modifier.padding(Sizes.LARGE)) {
-                AlbumScreen(albumId = albumId, navController = navController)
+                AlbumScreen(
+                    albumId = albumId,
+                    navController = navController,
+                    showMiniPlayer = false
+                )
             }
         }
 

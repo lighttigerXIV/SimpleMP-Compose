@@ -2,7 +2,6 @@ package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.artist
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.ViewModel
@@ -25,6 +24,7 @@ import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaybackReposito
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.SettingsRepository
 import com.lighttigerxiv.simple.mp.compose.backend.requests.DiscogsResponse
 import com.lighttigerxiv.simple.mp.compose.backend.requests.getDiscogsRetrofit
+import com.lighttigerxiv.simple.mp.compose.backend.utils.compressed
 import com.lighttigerxiv.simple.mp.compose.backend.utils.isNetworkAvailable
 import com.lighttigerxiv.simple.mp.compose.backend.utils.isOnMobileData
 import com.lighttigerxiv.simple.mp.compose.backend.utils.isOnWifi
@@ -37,7 +37,6 @@ import okhttp3.internal.toHexString
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.ByteArrayOutputStream
 
 
 class ArtistScreenVM(
@@ -151,15 +150,9 @@ class ArtistScreenVM(
                                                             .target { drawable ->
                                                                 viewModelScope.launch(Dispatchers.Main) {
 
-                                                                    val imageBitmap = drawable.toBitmap()
+                                                                    val artistArt = drawable.toBitmap().compressed()
 
-                                                                    val compressedImageOutputStream = ByteArrayOutputStream()
-                                                                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 50, compressedImageOutputStream)
-
-                                                                    val compressedImageBytes = compressedImageOutputStream.toByteArray()
-                                                                    val compressedImage = BitmapFactory.decodeByteArray(compressedImageBytes, 0, compressedImageBytes.size)
-
-                                                                    internalStorageRepository.saveImageToInternalStorage(artistId.toHexString(), compressedImage)
+                                                                    internalStorageRepository.saveImageToInternalStorage(artistId.toHexString(), artistArt)
 
                                                                     queries.addArtistImageRequest(artistId)
                                                                     libraryRepository.loadArtistImageRequests()

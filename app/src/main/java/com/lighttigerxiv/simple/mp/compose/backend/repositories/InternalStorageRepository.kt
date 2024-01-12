@@ -4,10 +4,8 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -15,9 +13,11 @@ import java.io.IOException
 
 class InternalStorageRepository(private val application: Application) {
 
-    suspend fun saveImageToInternalStorage(filename: String, bitmap: Bitmap): Boolean{
+    suspend fun saveImageToInternalStorage(filename: String, bitmap: Bitmap): Boolean {
         return withContext(Dispatchers.IO) {
             return@withContext try {
+
+
 
                 val isExistingFile = application.filesDir.listFiles()?.firstOrNull {
                     it.canRead() && it.isFile && it.nameWithoutExtension == filename
@@ -45,14 +45,14 @@ class InternalStorageRepository(private val application: Application) {
         emit(
             application.filesDir.listFiles()?.filter {
                 it.canRead() && it.isFile && it.nameWithoutExtension == filename
-            }?.map{
+            }?.map {
                 val bytes = it.readBytes()
                 BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             }?.firstOrNull()
         )
     }.flowOn(Dispatchers.IO)
 
-    suspend fun deleteImageFromInternalStorage(filename: String): Boolean{
+    suspend fun deleteImageFromInternalStorage(filename: String): Boolean {
         return withContext(Dispatchers.IO) {
             return@withContext try {
                 application.deleteFile(filename)

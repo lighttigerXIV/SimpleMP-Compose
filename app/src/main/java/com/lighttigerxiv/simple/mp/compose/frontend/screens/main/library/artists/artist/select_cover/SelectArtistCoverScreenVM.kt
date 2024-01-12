@@ -19,6 +19,7 @@ import com.lighttigerxiv.simple.mp.compose.backend.repositories.SettingsReposito
 import com.lighttigerxiv.simple.mp.compose.backend.requests.DiscogsResponse
 import com.lighttigerxiv.simple.mp.compose.backend.requests.getDiscogsRetrofit
 import com.lighttigerxiv.simple.mp.compose.backend.utils.canDownloadArtistImages
+import com.lighttigerxiv.simple.mp.compose.backend.utils.compressed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -107,7 +108,7 @@ class SelectArtistCoverScreenVM(
     fun changeArtistImage(artistImage: Bitmap?, artistId: Long) {
         artistImage?.let {
             viewModelScope.launch(Dispatchers.Main) {
-                internalStorageRepository.saveImageToInternalStorage(artistId.toHexString(), artistImage)
+                internalStorageRepository.saveImageToInternalStorage(artistId.toHexString(), artistImage.compressed())
                 queries.addArtistImageRequest(artistId)
                 libraryRepository.loadArtistImageRequests()
             }

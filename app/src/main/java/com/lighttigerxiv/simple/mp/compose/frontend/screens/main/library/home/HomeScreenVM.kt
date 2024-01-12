@@ -126,7 +126,7 @@ class HomeScreenVM(
     }
 
     fun playSong(song: Song) {
-        playbackRepository.playSelectedSong(song, uiSate.value.songs)
+        playbackRepository.playSelectedSong(song, librarySongs)
     }
 
     fun shuffleAndPlay() {

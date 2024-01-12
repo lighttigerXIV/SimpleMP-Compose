@@ -2,7 +2,6 @@ package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,8 +37,7 @@ import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.FullscreenDialogToolbar
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.HSpacer
-import com.lighttigerxiv.simple.mp.compose.frontend.composables.PrimaryButton
-import com.lighttigerxiv.simple.mp.compose.frontend.composables.SecondaryButton
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.IconDialog
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.TextField
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.ThemeSelector
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.Toolbar
@@ -304,132 +302,84 @@ fun ColorSchemeDialog(
     uiState: SettingsScreenVM.UiState,
     vm: SettingsScreenVM
 ) {
-
-    if (uiState.showColorSchemeDialog) {
-        Dialog(
-            onDismissRequest = {
-                vm.updateShowColorSchemeDialog(false)
-                vm.updateColorSchemeDialogSelectedRadioButton(uiState.colorScheme)
-            }
-        ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(Sizes.XLARGE))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(Sizes.LARGE)
-            ) {
-                Column {
-
-                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-
-                        Icon(
-                            painter = painterResource(id = R.drawable.colorscheme),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-
-                        VSpacer(size = Sizes.SMALL)
-
-                        Text(
-                            text = stringResource(id = R.string.color_scheme),
-                            fontWeight = FontWeight.Medium,
-                            fontSize = FontSizes.HEADER,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    VSpacer(size = Sizes.SMALL)
-
-                    Divider(Modifier.height(1.dp), color = MaterialTheme.colorScheme.surfaceVariant)
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { vm.updateColorSchemeDialogSelectedRadioButton(SettingsOptions.ColorScheme.SYSTEM) },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = uiState.colorSchemeDialogSelectedRadioButton == SettingsOptions.ColorScheme.SYSTEM,
-                            onClick = { vm.updateColorSchemeDialogSelectedRadioButton(SettingsOptions.ColorScheme.SYSTEM) }
-                        )
-
-                        HSpacer(size = Sizes.SMALL)
-
-                        Text(
-                            text = stringResource(id = R.string.system),
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { vm.updateColorSchemeDialogSelectedRadioButton(SettingsOptions.ColorScheme.LIGHT) },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = uiState.colorSchemeDialogSelectedRadioButton == SettingsOptions.ColorScheme.LIGHT,
-                            onClick = { vm.updateColorSchemeDialogSelectedRadioButton(SettingsOptions.ColorScheme.LIGHT) }
-                        )
-
-                        HSpacer(size = Sizes.SMALL)
-
-                        Text(
-                            text = stringResource(id = R.string.light),
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { vm.updateColorSchemeDialogSelectedRadioButton(SettingsOptions.ColorScheme.DARK) },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = uiState.colorSchemeDialogSelectedRadioButton == SettingsOptions.ColorScheme.DARK,
-                            onClick = { vm.updateColorSchemeDialogSelectedRadioButton(SettingsOptions.ColorScheme.DARK) }
-                        )
-
-                        HSpacer(size = Sizes.SMALL)
-
-                        Text(
-                            text = stringResource(id = R.string.dark),
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    Divider(Modifier.height(1.dp), color = MaterialTheme.colorScheme.surfaceVariant)
-
-                    VSpacer(size = Sizes.LARGE)
-
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-
-                        SecondaryButton(
-                            text = stringResource(id = R.string.cancel),
-                            onClick = {
-                                vm.updateShowColorSchemeDialog(false)
-                                vm.updateColorSchemeDialogSelectedRadioButton(uiState.colorScheme)
-                            }
-                        )
-
-                        HSpacer(size = Sizes.SMALL)
-
-                        PrimaryButton(
-                            text = stringResource(id = R.string.save),
-                            onClick = {
-                                vm.updateShowColorSchemeDialog(false)
-                                vm.updateColorScheme(uiState.colorSchemeDialogSelectedRadioButton)
-                            }
-                        )
-                    }
-                }
-            }
+    IconDialog(
+        show = uiState.showColorSchemeDialog,
+        onDismiss = {
+            vm.updateShowColorSchemeDialog(false)
+            vm.updateColorSchemeDialogSelectedRadioButton(uiState.colorScheme)
+        },
+        iconId = R.drawable.colorscheme,
+        title = stringResource(id = R.string.color_scheme),
+        primaryButtonText = stringResource(id = R.string.save),
+        onPrimaryButtonClick = {
+            vm.updateShowColorSchemeDialog(false)
+            vm.updateColorScheme(uiState.colorSchemeDialogSelectedRadioButton)
         }
+    ) {
+
+        Divider(Modifier.height(1.dp), color = MaterialTheme.colorScheme.surfaceVariant)
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { vm.updateColorSchemeDialogSelectedRadioButton(SettingsOptions.ColorScheme.SYSTEM) },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = uiState.colorSchemeDialogSelectedRadioButton == SettingsOptions.ColorScheme.SYSTEM,
+                onClick = { vm.updateColorSchemeDialogSelectedRadioButton(SettingsOptions.ColorScheme.SYSTEM) }
+            )
+
+            HSpacer(size = Sizes.SMALL)
+
+            Text(
+                text = stringResource(id = R.string.system),
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { vm.updateColorSchemeDialogSelectedRadioButton(SettingsOptions.ColorScheme.LIGHT) },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = uiState.colorSchemeDialogSelectedRadioButton == SettingsOptions.ColorScheme.LIGHT,
+                onClick = { vm.updateColorSchemeDialogSelectedRadioButton(SettingsOptions.ColorScheme.LIGHT) }
+            )
+
+            HSpacer(size = Sizes.SMALL)
+
+            Text(
+                text = stringResource(id = R.string.light),
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { vm.updateColorSchemeDialogSelectedRadioButton(SettingsOptions.ColorScheme.DARK) },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = uiState.colorSchemeDialogSelectedRadioButton == SettingsOptions.ColorScheme.DARK,
+                onClick = { vm.updateColorSchemeDialogSelectedRadioButton(SettingsOptions.ColorScheme.DARK) }
+            )
+
+            HSpacer(size = Sizes.SMALL)
+
+            Text(
+                text = stringResource(id = R.string.dark),
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        Divider(Modifier.height(1.dp), color = MaterialTheme.colorScheme.surfaceVariant)
     }
 }
 
@@ -545,74 +495,26 @@ fun DurationFilterDialog(
     vm: SettingsScreenVM
 ) {
 
-    if (uiState.showDurationFilterDialog) {
-        Dialog(
-            onDismissRequest = {
-                vm.updateShowDurationFilterDialog(false)
-                vm.updateDurationFilterDialogText(uiState.durationFilter.toString())
-            }
-        ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(Sizes.XLARGE))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(Sizes.LARGE)
-            ){
-
-                Column {
-                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-
-                        Icon(
-                            painter = painterResource(id = R.drawable.filter),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-
-                        VSpacer(size = Sizes.SMALL)
-
-                        Text(
-                            text = stringResource(id = R.string.filter_audio_below),
-                            fontWeight = FontWeight.Medium,
-                            fontSize = FontSizes.HEADER,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    VSpacer(size = Sizes.SMALL)
-
-                    TextField(
-                        text = uiState.durationFilterDialogText,
-                        onTextChange = { vm.updateDurationFilterDialogText(it) },
-                        numberField = true,
-                        placeholder = stringResource(id = R.string.seconds)
-                    )
-
-                    VSpacer(size = Sizes.LARGE)
-
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-
-                        SecondaryButton(
-                            text = stringResource(id = R.string.cancel),
-                            onClick = {
-                                vm.updateShowDurationFilterDialog(false)
-                                vm.updateDurationFilterDialogText(uiState.durationFilter.toString())
-                            }
-                        )
-
-                        HSpacer(size = Sizes.SMALL)
-
-                        PrimaryButton(
-                            text = stringResource(id = R.string.save),
-                            onClick = {
-                                vm.updateShowDurationFilterDialog(false)
-                                vm.updateDurationFilter()
-                            },
-                            disabled = uiState.durationFilterDialogText.isEmpty()
-                        )
-                    }
-                }
-            }
-        }
+    IconDialog(
+        show = uiState.showDurationFilterDialog,
+        onDismiss = {
+            vm.updateShowDurationFilterDialog(false)
+            vm.updateDurationFilterDialogText(uiState.durationFilter.toString())
+        },
+        iconId = R.drawable.filter,
+        title = stringResource(id = R.string.filter_audio_below),
+        primaryButtonText = stringResource(id = R.string.save),
+        onPrimaryButtonClick = {
+            vm.updateShowDurationFilterDialog(false)
+            vm.updateDurationFilter()
+        },
+        disablePrimaryButton = uiState.durationFilterDialogText.trim().isEmpty()
+    ) {
+        TextField(
+            text = uiState.durationFilterDialogText,
+            onTextChange = { vm.updateDurationFilterDialogText(it) },
+            numberField = true,
+            placeholder = stringResource(id = R.string.seconds)
+        )
     }
 }

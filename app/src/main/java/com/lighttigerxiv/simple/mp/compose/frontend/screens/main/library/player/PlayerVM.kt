@@ -150,9 +150,19 @@ class PlayerVM(
     private fun Int.asTime(): String {
 
         val minutes = (this / 1000) / 60
+        val hours = minutes / 60
         val seconds = (this / 1000) % 60
 
-        return "${if (minutes <= 9) "0" else ""}$minutes:${if (seconds <= 9) "0" else ""}$seconds"
+        var timeString = ""
+
+        if(hours <= 9 && hours != 0) timeString += "0"
+        if(hours > 0) timeString += "$hours:"
+        if(minutes <= 9 ) timeString += "0"
+        timeString += if(minutes == 60) "00:" else "$minutes:"
+        if(seconds <= 9) timeString += "0"
+        timeString += seconds
+
+        return timeString
     }
 
     fun getArtistName(artistId: Long): String {

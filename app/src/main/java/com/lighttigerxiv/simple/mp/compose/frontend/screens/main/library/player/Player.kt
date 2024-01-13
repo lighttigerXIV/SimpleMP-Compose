@@ -421,8 +421,8 @@ fun PlayerAlbumArt(art: Bitmap?) {
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .background(MaterialTheme.colorScheme.surface)
                 .clip(RoundedCornerShape(Sizes.LARGE))
+                .background(MaterialTheme.colorScheme.surface)
         ) {
 
             Icon(

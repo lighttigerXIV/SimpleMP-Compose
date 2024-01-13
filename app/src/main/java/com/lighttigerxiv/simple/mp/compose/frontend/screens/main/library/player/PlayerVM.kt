@@ -158,7 +158,7 @@ class PlayerVM(
         if(hours <= 9 && hours != 0) timeString += "0"
         if(hours > 0) timeString += "$hours:"
         if(minutes <= 9 ) timeString += "0"
-        timeString += if(minutes == 60) "00:" else "$minutes:"
+        timeString += if(minutes >= 60) "00:" else "$minutes:"
         if(seconds <= 9) timeString += "0"
         timeString += seconds
 

@@ -1,5 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.setup.dark_theme
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.ThemeSelector
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goBack
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToOtherSettings
+import com.lighttigerxiv.simple.mp.compose.frontend.theme.PreviewTheme
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeNavigationBarsColor
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeStatusBarColor
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
@@ -42,68 +44,74 @@ fun DarkThemeScreen(
 
     val settings = vm.settings.collectAsState().value
 
-    ChangeNavigationBarsColor(color = MaterialTheme.colorScheme.surface)
-    ChangeStatusBarColor(color = MaterialTheme.colorScheme.surface)
+
 
     if(settings != null){
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(Sizes.LARGE)
-        ) {
+        PreviewTheme(themeId = settings.darkTheme, darkTheme = true) {
 
+            ChangeNavigationBarsColor(color = MaterialTheme.colorScheme.surface)
+            ChangeStatusBarColor(color = MaterialTheme.colorScheme.surface)
+            
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(1f, fill = true)
-                    .verticalScroll(rememberScrollState())
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(Sizes.LARGE)
             ) {
 
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f, fill = true)
+                        .verticalScroll(rememberScrollState())
                 ) {
 
-                    Icon(
-                        modifier = Modifier.size(80.dp),
-                        painter = painterResource(id = R.drawable.brush_filled),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
 
-                    Text(
-                        text = stringResource(id = R.string.dark_theme),
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 24.sp
+                        Icon(
+                            modifier = Modifier.size(80.dp),
+                            painter = painterResource(id = R.drawable.brush_filled),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+
+                        Text(
+                            text = stringResource(id = R.string.dark_theme),
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 24.sp
+                        )
+                    }
+
+                    VSpacer(size = Sizes.LARGE)
+
+                    ThemeSelector(
+                        selectedTheme = settings.darkTheme,
+                        onThemeSelected = { vm.updateTheme(it) },
+                        darkTheme = true
                     )
                 }
 
                 VSpacer(size = Sizes.LARGE)
 
-                ThemeSelector(
-                    selectedTheme = settings.darkTheme,
-                    onThemeSelected = { vm.updateTheme(it) },
-                    darkTheme = true
-                )
-            }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ){
 
-            VSpacer(size = Sizes.LARGE)
+                    PrimaryButton(text = stringResource(id = R.string.back)) {
+                        navController.goBack()
+                    }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ){
+                    HSpacer(size = Sizes.MEDIUM)
 
-                PrimaryButton(text = stringResource(id = R.string.back)) {
-                    navController.goBack()
-                }
-
-                HSpacer(size = Sizes.MEDIUM)
-
-                PrimaryButton(text = stringResource(id = R.string.next)) {
-                    navController.goToOtherSettings()
+                    PrimaryButton(text = stringResource(id = R.string.next)) {
+                        navController.goToOtherSettings()
+                    }
                 }
             }
         }

@@ -4,8 +4,6 @@ import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -35,15 +32,14 @@ import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.backend.utils.isAtLeastAndroid13
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.HSpacer
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.PermissionCard
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.PrimaryButton
-import com.lighttigerxiv.simple.mp.compose.frontend.composables.VDivider
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goBack
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToLightTheme
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeNavigationBarsColor
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeStatusBarColor
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
-import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 
 @Composable
 fun PermissionsScreen(
@@ -154,47 +150,5 @@ fun PermissionsScreen(
                 navController.goToLightTheme()
             }
         }
-    }
-}
-
-@Composable
-fun PermissionCard(
-    checked: Boolean,
-    iconId: Int,
-    description: String,
-    onCheckedChange: () -> Unit
-) {
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .modifyIf(!checked) {
-                clickable { onCheckedChange() }
-            }
-            .padding(Sizes.LARGE),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        Icon(
-            modifier = Modifier.size(30.dp),
-            painter = painterResource(id = iconId),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
-        )
-
-        HSpacer(size = Sizes.LARGE)
-
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f, fill = true),
-            text = description,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontWeight = FontWeight.Medium
-        )
-
-        HSpacer(size = Sizes.SMALL)
-
-        Switch(checked = checked, onCheckedChange = { if (!checked) onCheckedChange() })
     }
 }

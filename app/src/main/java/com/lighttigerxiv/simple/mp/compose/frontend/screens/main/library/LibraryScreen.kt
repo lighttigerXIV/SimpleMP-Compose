@@ -188,7 +188,12 @@ fun LibraryScreen(
 
                                 val id = navBackStackEntry.arguments?.getLong("id") ?: 0L
 
-                                SelectArtistCoverScreen(artistId = id, navController = navController, inLandscape = inLandscape)
+                                SelectArtistCoverScreen(
+                                    artistId = id,
+                                    navController = navController,
+                                    inLandscape = inLandscape,
+                                    showMiniPlayer = uiState.showMiniPlayer
+                                )
                             }
                         }
 

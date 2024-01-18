@@ -80,7 +80,10 @@ class PlaybackRepository(
 
                     if (playlistsState.value!!.songPosition + 1 < playlistsState.value!!.current.size) {
                         skipToNext()
+                        return
                     }
+
+                    stop()
                 }
 
                 super.onPlaybackStateChanged(state)
@@ -322,6 +325,7 @@ class PlaybackRepository(
 
             if (player.currentPosition > 5000) {
                 player.seekTo(0)
+                resume()
                 return
             }
         }
@@ -491,7 +495,29 @@ class PlaybackRepository(
                 }
             })
         } catch (e: Exception) {
-            Log.e("Play Song", e.message.toString())
+            Log.e("Faulty Song", e.message.toString())
+
+
+            val faultySongPosition = playlistsState.value!!.songPosition
+            val faultySongId = playlistsState.value!!.current[faultySongPosition].id
+
+            val newCurrentPlaylist = playlistsState.value!!.current.toMutableList().filter { it.id != faultySongId }
+            val newShuffledPlaylist = playlistsState.value!!.shuffled.toMutableList().filter { it.id != faultySongId }
+            val newOriginalPlaylist = playlistsState.value!!.original.filter { it.id != faultySongId }
+
+            _playlistsState.update {
+                playlistsState.value?.copy(
+                    current = newCurrentPlaylist,
+                    shuffled = newShuffledPlaylist,
+                    original = newOriginalPlaylist
+                )
+            }
+
+            if (faultySongPosition >= newCurrentPlaylist.size + 1) {
+                stop()
+            } else {
+                playSong()
+            }
         }
     }
 
@@ -504,7 +530,6 @@ class PlaybackRepository(
         }
 
         player.stop()
-        player.release()
         session.isActive = false
 
         _playbackState.update { null }

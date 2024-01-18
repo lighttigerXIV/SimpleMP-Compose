@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +18,7 @@ import androidx.navigation.navArgument
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.Routes
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.about.AboutScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.add_song_to_playlist.AddSongToPlaylistScreen
+import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.ask_permissions.AskPermissionsScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.LibraryScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.albums.album.AlbumScreen
 import com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.playlists.playlist.add_songs.AddSongsToPlaylistScreen
@@ -26,8 +29,11 @@ import org.mongodb.kbson.ObjectId
 
 @ExperimentalMaterial3Api
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    vm: MainScreenVM = viewModel()
+) {
     val navController = rememberNavController()
+    val uiState = vm.uiState.collectAsState().value
 
     NavHost(
         modifier = Modifier
@@ -38,7 +44,13 @@ fun MainScreen() {
     ) {
 
         composable(Routes.Main.LIBRARY) {
-            LibraryScreen(navController)
+
+            if(uiState.hasNotificationsPermission && uiState.hasStoragePermission){
+                LibraryScreen(navController)
+            }else{
+                AskPermissionsScreen(vm = vm)
+            }
+
         }
 
         composable(Routes.Main.ABOUT) {
@@ -84,7 +96,7 @@ fun MainScreen() {
             arguments = listOf(
                 navArgument("id") { type = NavType.StringType }
             )
-        ) {backstackEntry->
+        ) { backstackEntry ->
 
             val playlistId = ObjectId(backstackEntry.arguments?.getString("id") ?: "")
 
@@ -96,7 +108,7 @@ fun MainScreen() {
             arguments = listOf(
                 navArgument("id") { type = NavType.LongType }
             )
-        ) {backstackEntry->
+        ) { backstackEntry ->
 
             val songId = backstackEntry.arguments?.getLong("id") ?: 0L
 

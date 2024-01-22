@@ -58,6 +58,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goBack
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToAddSongsToPlaylist
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.FontSizes
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.customRememberLazyListState
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 import org.mongodb.kbson.ObjectId
 
@@ -71,7 +72,6 @@ fun PlaylistScreen(
 ) {
 
     val uiState = vm.uiState.collectAsState().value
-
 
 
     LaunchedEffect(uiState.requestedLoading) {
@@ -230,6 +230,9 @@ fun Songs(
     uiState: PlaylistScreenVM.UiState,
     showMiniPlayer: Boolean
 ) {
+
+    val listState = customRememberLazyListState(index = vm.listPosition, onKill = { vm.listPosition = it })
+
     if (!uiState.inEditMode) {
 
         if (uiState.songs.isNotEmpty()) {
@@ -241,7 +244,8 @@ fun Songs(
             VSpacer(size = Sizes.LARGE)
 
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+                verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
+                state = listState
             ) {
                 items(
                     items = uiState.songs,
@@ -276,10 +280,11 @@ fun Songs(
 
         VSpacer(size = Sizes.LARGE)
 
-        if(uiState.songs.isNotEmpty()){
+        if (uiState.songs.isNotEmpty()) {
 
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+                verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
+                state = listState
             ) {
                 items(
                     items = uiState.songs,
@@ -297,7 +302,7 @@ fun Songs(
                     MiniPlayerSpacer(isShown = showMiniPlayer)
                 }
             }
-        }else{
+        } else {
 
             Column(
                 Modifier.fillMaxSize(),

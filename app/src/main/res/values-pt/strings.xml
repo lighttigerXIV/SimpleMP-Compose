@@ -34,8 +34,8 @@
     <string name="delete">Eliminar</string>
     <string name="no_songs_added">Sem músicas adicionadas</string>
     <string name="Artists">Artistas</string>
-    <string name="Songs">Músicas</string>
-    <string name="Albums">Álbums</string>
+    <string name="songs">Músicas</string>
+    <string name="albums">Álbums</string>
     <string name="song">Música</string>
     <string name="Queue">Fila De Espera</string>
     <string name="go_to_artist">Ver Artista</string>

@@ -31,7 +31,7 @@ data class HomeUiState(
     val currentSong: Song? = null,
     val withMiniPlayer: Boolean = false,
     val indexingLibrary: Boolean = false,
-    val sortType: String = ""
+    val sortType: String = "",
 )
 
 class HomeScreenVM(
@@ -40,6 +40,8 @@ class HomeScreenVM(
     private val playbackRepository: PlaybackRepository,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
+
+    var listPosition = 0;
 
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {

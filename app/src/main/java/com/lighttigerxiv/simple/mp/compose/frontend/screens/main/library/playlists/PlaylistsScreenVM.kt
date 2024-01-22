@@ -17,7 +17,6 @@ import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaylistsReposit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,6 +52,10 @@ class PlaylistsScreenVM(
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
+
+    var pagerTab = 0
+    var genrePlaylistsGridPosition = 0
+    var playlistsPositionGridPosition = 0
 
     init {
         viewModelScope.launch(Dispatchers.Main) {

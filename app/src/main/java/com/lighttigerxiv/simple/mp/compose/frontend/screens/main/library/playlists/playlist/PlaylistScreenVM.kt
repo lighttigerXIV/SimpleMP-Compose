@@ -70,6 +70,7 @@ class PlaylistScreenVM(
     private var playlistArt: Bitmap? = null
     private val queries = Queries(getRealm())
     private var deleteArt = false
+    var listPosition = 0
 
     init {
         viewModelScope.launch(Dispatchers.Main) {

@@ -48,6 +48,8 @@ class AlbumScreenVM(
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
+    var listPosition = 0
+
     fun loadScreen(albumId: Long){
         viewModelScope.launch(Dispatchers.Main) {
             _uiState.update { uiState.value.copy(loadingRequested = true) }

@@ -6,17 +6,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,7 +30,10 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.TextField
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToAlbum
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.customRememberLazyGridState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
@@ -42,16 +45,8 @@ fun AlbumsScreen(
 ) {
 
     val uiState = vm.uiState.collectAsState().value
-    val lazyGridState = rememberLazyGridState()
+    val lazyGridState = customRememberLazyGridState(vm.listPosition) { vm.listPosition = it }
     val gridCellsCount by remember { mutableIntStateOf(if (inLandscape) 5 else 2) }
-
-    LaunchedEffect(uiState.sortType) {
-        withContext(Dispatchers.Main) {
-            if (uiState.albums.isNotEmpty()) {
-                lazyGridState.scrollToItem(0)
-            }
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -66,7 +61,7 @@ fun AlbumsScreen(
             onStartIconClick = { vm.updateShowMenu(true) }
         )
 
-        Menu(vm = vm, uiState = uiState)
+        Menu(vm = vm, uiState = uiState, gridState = lazyGridState)
 
         VSpacer(size = Sizes.LARGE)
 
@@ -99,8 +94,20 @@ fun AlbumsScreen(
 @Composable
 fun Menu(
     vm: AlbumsScreenVM,
-    uiState: AlbumsScreenVM.UiState
+    uiState: AlbumsScreenVM.UiState,
+    gridState: LazyGridState
 ) {
+    val scope = rememberCoroutineScope()
+
+    fun scrollUp(){
+        scope.launch {
+            withContext(Dispatchers.Main) {
+                delay(200)
+                gridState.scrollToItem(0)
+            }
+        }
+    }
+
     Column {
         DropdownMenu(
             modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
@@ -120,6 +127,8 @@ fun Menu(
                         else
                             SettingsOptions.Sort.DEFAULT_REVERSED
                     )
+
+                    scrollUp()
                 }
             )
 
@@ -136,6 +145,8 @@ fun Menu(
                         else
                             SettingsOptions.Sort.ALPHABETICALLY_ASCENDENT
                     )
+
+                    scrollUp()
                 }
             )
         }

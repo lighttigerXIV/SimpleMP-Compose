@@ -9,7 +9,6 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.lighttigerxiv.simple.mp.compose.SimpleMPApplication
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Album
-import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Artist
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.SettingsRepository
 import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
@@ -17,7 +16,6 @@ import com.lighttigerxiv.simple.mp.compose.backend.utils.matchesSearch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -49,6 +47,8 @@ class AlbumsScreenVM(
     val uiState = _uiState.asStateFlow()
 
     private var albums: List<Album> = ArrayList()
+
+    var listPosition = 0
 
     init {
         viewModelScope.launch(Dispatchers.Main) {

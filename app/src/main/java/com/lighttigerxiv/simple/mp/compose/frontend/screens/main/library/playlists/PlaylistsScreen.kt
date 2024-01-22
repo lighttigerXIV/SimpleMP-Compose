@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -51,6 +50,8 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToGenrePlaylist
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToUserPlaylist
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.customRememberLazyGridState
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.customRememberPagerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -63,14 +64,16 @@ fun PlaylistsScreen(
     showMiniPlayer: Boolean
 ) {
     val uiState = vm.uiState.collectAsState().value
-    val pagerState = rememberPagerState(pageCount = { 2 })
+    val pagerState = customRememberPagerState(index = vm.pagerTab, onKill = {vm.pagerTab = it})
+    val genrePlaylistsState = customRememberLazyGridState(index = vm.genrePlaylistsGridPosition, onKill = { vm.genrePlaylistsGridPosition = it })
+    val playlistsState = customRememberLazyGridState(index = vm.playlistsPositionGridPosition, onKill = { vm.playlistsPositionGridPosition = it })
     val gridCellsCount by remember { mutableIntStateOf(if (inLandscape) 5 else 2) }
 
     Column {
         DoubleTabRow(
             pagerState = pagerState,
             firstTabTitle = stringResource(id = R.string.genres),
-            secondTabTitle = stringResource(id = R.string.playlists)
+            secondTabTitle = stringResource(id = R.string.playlists),
         )
 
         VSpacer(size = Sizes.LARGE)
@@ -82,6 +85,7 @@ fun PlaylistsScreen(
                 0 -> {
                     LazyVerticalGrid(
                         modifier = Modifier.fillMaxSize(),
+                        state = genrePlaylistsState,
                         columns = GridCells.Fixed(gridCellsCount),
                         verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
                         horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL)
@@ -119,6 +123,7 @@ fun PlaylistsScreen(
                         VSpacer(size = Sizes.LARGE)
 
                         LazyVerticalGrid(
+                            state = playlistsState,
                             columns = GridCells.Fixed(gridCellsCount),
                             verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
                             horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL),

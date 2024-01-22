@@ -48,6 +48,8 @@ class ArtistsScreenVM(
 
     var artists: List<Artist> = ArrayList()
 
+    var listPosition = 0
+
     init {
         viewModelScope.launch(Dispatchers.Main) {
             settingsRepository.settingsFlow.collect { newSettings ->

@@ -42,6 +42,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.Toolbar
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.FontSizes
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.customRememberLazyListState
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 
 @Composable
@@ -52,6 +53,7 @@ fun AlbumScreen(
     showMiniPlayer: Boolean
 ) {
     val uiState = vm.uiState.collectAsState().value
+    val listState = customRememberLazyListState(index = vm.listPosition, onKill = { vm.listPosition = it })
 
     LaunchedEffect(uiState.loadingRequested) {
         if (!uiState.loadingRequested) {
@@ -60,6 +62,7 @@ fun AlbumScreen(
     }
 
     Column {
+
         Toolbar(navController = navController)
 
         if (!uiState.isLoading) {
@@ -93,7 +96,8 @@ fun AlbumScreen(
 
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+                            verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
+                            state = listState
                         ) {
                             items(
                                 items = uiState.songs,
@@ -134,7 +138,8 @@ fun AlbumScreen(
 
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+                        verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
+                        state = listState
                     ) {
                         items(
                             items = uiState.songs,

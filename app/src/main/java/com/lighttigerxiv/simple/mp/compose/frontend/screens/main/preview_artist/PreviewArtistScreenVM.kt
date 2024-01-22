@@ -15,7 +15,6 @@ import com.lighttigerxiv.simple.mp.compose.backend.repositories.PlaybackReposito
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okhttp3.internal.toHexString
@@ -50,6 +49,8 @@ class PreviewArtistScreenVM(
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
+
+    var listPosition = 0
 
     fun load(artistId: Long){
         viewModelScope.launch(Dispatchers.Main) {

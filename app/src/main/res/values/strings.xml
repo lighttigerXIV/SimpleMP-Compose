@@ -43,8 +43,8 @@
     <string name="delete">Delete</string>
     <string name="no_songs_added">No songs added</string>
     <string name="Artists">Artists</string>
-    <string name="Songs">Songs</string>
-    <string name="Albums">Albums</string>
+    <string name="songs">Songs</string>
+    <string name="albums">Albums</string>
     <string name="song">Song</string>
     <string name="Queue">Up Next</string>
     <string name="go_to_artist">Go to artist</string>

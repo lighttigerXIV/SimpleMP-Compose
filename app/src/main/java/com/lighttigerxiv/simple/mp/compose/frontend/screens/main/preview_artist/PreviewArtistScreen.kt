@@ -40,6 +40,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.Toolbar
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.FontSizes
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.customRememberLazyListState
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 
 @Composable
@@ -170,6 +171,9 @@ fun Songs(
     uiState: PreviewArtistScreenVM.UiState,
     vm: PreviewArtistScreenVM
 ) {
+
+    val listState = customRememberLazyListState(index = vm.listPosition, onKill = { vm.listPosition = 0 })
+
     PlayShuffleRow(
         onPlayClick = { vm.playSong(uiState.songs[0]) },
         onShuffleClick = { vm.shuffle() }
@@ -178,7 +182,8 @@ fun Songs(
     VSpacer(size = Sizes.LARGE)
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+        verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
+        state = listState
     ) {
         items(
             items = uiState.songs,

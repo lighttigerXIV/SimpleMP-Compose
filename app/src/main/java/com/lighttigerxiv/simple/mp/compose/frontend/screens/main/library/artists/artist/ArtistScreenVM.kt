@@ -71,7 +71,6 @@ class ArtistScreenVM(
         val songs: List<Song> = ArrayList(),
         val albums: List<Album> = ArrayList(),
         val currentSong: Song? = null,
-        val currentPagerTab: Int = 0,
         val showMenu: Boolean = false
     )
 
@@ -79,6 +78,10 @@ class ArtistScreenVM(
     val uiState = _uiState.asStateFlow()
 
     private val queries = Queries(getRealm())
+
+    var pagerTab = 0
+    var songsPosition = 0
+    var albumsPosition = 0
 
     fun loadScreen(artistId: Long) {
         viewModelScope.launch(Dispatchers.Main) {
@@ -206,10 +209,6 @@ class ArtistScreenVM(
 
     fun playSong(song: Song) {
         playbackRepository.playSelectedSong(song, uiState.value.songs)
-    }
-
-    fun updateCurrentPagerTab(v: Int) {
-        _uiState.update { uiState.value.copy(currentPagerTab = v) }
     }
 
     fun shuffle() {

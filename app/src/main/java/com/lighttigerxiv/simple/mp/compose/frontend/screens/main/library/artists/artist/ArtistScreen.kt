@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
@@ -46,6 +45,7 @@ import com.lighttigerxiv.layout_scaffold.inLandscape
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.Card
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.CollapsableHeader
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.DoubleTabRow
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.HSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.MenuItem
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.MiniPlayerSpacer
@@ -57,6 +57,9 @@ import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToArtistAlbum
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goToSelectArtistCover
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.FontSizes
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.customRememberLazyGridState
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.customRememberLazyListState
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.customRememberPagerState
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 
 @Composable
@@ -222,57 +225,6 @@ fun ArtistAlbumAndName(
     }
 }
 
-@Composable
-fun TabRow(
-    uiState: ArtistScreenVM.UiState,
-    vm: ArtistScreenVM
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f, fill = true)
-                .clip(CircleShape)
-                .modifyIf(uiState.currentPagerTab == 0) {
-                    background(MaterialTheme.colorScheme.surfaceVariant)
-                }
-                .clickable { vm.updateCurrentPagerTab(0) }
-                .padding(Sizes.MEDIUM),
-            horizontalArrangement = Arrangement.Center
-        ) {
-
-            Text(
-                text = stringResource(id = R.string.Songs),
-                fontWeight = FontWeight.Medium,
-                color = if (uiState.currentPagerTab == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f, fill = true)
-                .clip(CircleShape)
-                .modifyIf(uiState.currentPagerTab == 1) {
-                    background(MaterialTheme.colorScheme.surfaceVariant)
-                }
-                .clickable { vm.updateCurrentPagerTab(1) }
-                .padding(Sizes.MEDIUM),
-            horizontalArrangement = Arrangement.Center
-        ) {
-
-            Text(
-                text = stringResource(id = R.string.Albums),
-                fontWeight = FontWeight.Medium,
-                color = if (uiState.currentPagerTab == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
-}
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -284,17 +236,15 @@ fun SongsAndAlbumsPager(
 ) {
 
     val gridCellsCount = if (inLandscape()) 4 else 2
-    val pagerState = rememberPagerState(pageCount = { gridCellsCount })
+    val pagerState = customRememberPagerState(index = vm.pagerTab, onKill = { vm.pagerTab = it })
+    val songsListState = customRememberLazyListState(index = vm.songsPosition, onKill = { vm.songsPosition = it })
+    val albumsGridState = customRememberLazyGridState(index = vm.albumsPosition, onKill = { vm.albumsPosition = it })
 
-    LaunchedEffect(pagerState.currentPage) {
-        vm.updateCurrentPagerTab(pagerState.currentPage)
-    }
-
-    LaunchedEffect(uiState.currentPagerTab) {
-        pagerState.animateScrollToPage(uiState.currentPagerTab)
-    }
-
-    TabRow(uiState = uiState, vm = vm)
+    DoubleTabRow(
+        pagerState = pagerState,
+        firstTabTitle = stringResource(id = R.string.songs),
+        secondTabTitle = stringResource(id = R.string.albums),
+    )
 
     VSpacer(size = Sizes.LARGE)
 
@@ -317,7 +267,8 @@ fun SongsAndAlbumsPager(
                 VSpacer(size = Sizes.LARGE)
 
                 LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+                    verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
+                    state = songsListState
                 ) {
                     items(
                         items = uiState.songs,
@@ -332,7 +283,7 @@ fun SongsAndAlbumsPager(
                         )
                     }
 
-                    item{
+                    item {
                         MiniPlayerSpacer(isShown = showMiniPlayer)
                     }
                 }
@@ -343,7 +294,8 @@ fun SongsAndAlbumsPager(
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(gridCellsCount),
                     verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
-                    horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+                    horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL),
+                    state = albumsGridState
                 ) {
                     items(
                         items = uiState.albums,
@@ -358,7 +310,7 @@ fun SongsAndAlbumsPager(
                         )
                     }
 
-                    item(span = { GridItemSpan(gridCellsCount)}){
+                    item(span = { GridItemSpan(gridCellsCount) }) {
                         MiniPlayerSpacer(isShown = showMiniPlayer)
                     }
                 }

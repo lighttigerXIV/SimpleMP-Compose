@@ -63,6 +63,8 @@ class SelectArtistCoverScreenVM(
 
     private val queries = Queries(getRealm())
 
+    var gridPosition = 0
+
     fun load(artistId: Long) {
         viewModelScope.launch(Dispatchers.Main) {
 

@@ -46,29 +46,38 @@ import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goBack
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.FontSizes
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.customRememberLazyGridState
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 
 @Composable
 fun SelectArtistCoverScreen(
-    artistId: Long, navController: NavHostController, vm: SelectArtistCoverScreenVM = viewModel(factory = SelectArtistCoverScreenVM.Factory), inLandscape: Boolean, showMiniPlayer: Boolean
+    artistId: Long,
+    navController: NavHostController,
+    vm: SelectArtistCoverScreenVM = viewModel(factory = SelectArtistCoverScreenVM.Factory),
+    inLandscape: Boolean,
+    showMiniPlayer: Boolean
 ) {
 
     val uiState = vm.uiState.collectAsState().value
     val context = LocalContext.current
+    val gridState = customRememberLazyGridState(index = vm.gridPosition, onKill = { vm.gridPosition = it })
     val gridCellsCount by remember { mutableIntStateOf(if (inLandscape) 5 else 2) }
-    val askImageLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(), onResult = { uri ->
-        uri?.let {
+    val askImageLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let {
 
-            val art = if (Build.VERSION.SDK_INT < 28) {
-                MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-            } else {
-                ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri))
+                val art = if (Build.VERSION.SDK_INT < 28) {
+                    MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                } else {
+                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri))
+                }
+
+                vm.changeArtistImage(art, artistId)
+                navController.goBack()
             }
-
-            vm.changeArtistImage(art, artistId)
-            navController.goBack()
         }
-    })
+    )
 
     LaunchedEffect(uiState.requestedLoading) {
         if (!uiState.requestedLoading) {
@@ -84,18 +93,22 @@ fun SelectArtistCoverScreen(
             VSpacer(size = Sizes.LARGE)
 
             SecondaryButton(
-                text = stringResource(id = R.string.use_default_cover), onClick = {
+                text = stringResource(id = R.string.use_default_cover),
+                onClick = {
                     vm.clearArtistImage(artistId)
                     navController.goBack()
-                }, fillWidth = true
+                },
+                fillWidth = true
             )
 
             VSpacer(size = Sizes.SMALL)
 
             SecondaryButton(
-                text = stringResource(id = R.string.select_local_cover), onClick = {
+                text = stringResource(id = R.string.select_local_cover),
+                onClick = {
                     askImageLauncher.launch("image/*")
-                }, fillWidth = true
+                },
+                fillWidth = true
             )
 
             VSpacer(size = Sizes.LARGE)
@@ -109,7 +122,10 @@ fun SelectArtistCoverScreen(
                 VSpacer(size = Sizes.SMALL)
 
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(gridCellsCount), verticalArrangement = Arrangement.spacedBy(Sizes.SMALL), horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL)
+                    columns = GridCells.Fixed(gridCellsCount),
+                    verticalArrangement = Arrangement.spacedBy(Sizes.SMALL),
+                    horizontalArrangement = Arrangement.spacedBy(Sizes.SMALL),
+                    state = gridState
                 ) {
                     itemsIndexed(items = uiState.imagesUrls, key = { i, _ -> i }) { _, url ->
 

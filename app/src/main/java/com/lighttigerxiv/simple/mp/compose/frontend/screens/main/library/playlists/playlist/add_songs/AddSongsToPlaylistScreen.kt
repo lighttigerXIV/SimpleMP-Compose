@@ -2,11 +2,9 @@ package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.library.playli
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,15 +16,14 @@ import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.AddToPlaylistSongCard
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.PrimaryButton
-import com.lighttigerxiv.simple.mp.compose.frontend.composables.SongCard
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.TextField
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.Toolbar
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.navigation.goBack
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
+import com.lighttigerxiv.simple.mp.compose.frontend.utils.customRememberLazyListState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
 
 @Composable
@@ -37,7 +34,8 @@ fun AddSongsToPlaylistScreen(
 ) {
 
     val uiState = vm.uiState.collectAsState().value
-    val lazyColState = rememberLazyListState()
+    val lazyColState = customRememberLazyListState(index = vm.listPosition, onKill = { vm.listPosition = it })
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(uiState.requestedLoading) {
         if (!uiState.requestedLoading) {
@@ -45,13 +43,6 @@ fun AddSongsToPlaylistScreen(
         }
     }
 
-    LaunchedEffect(uiState.songs) {
-        withContext(Dispatchers.Main) {
-            if (uiState.songs.isNotEmpty()) {
-                lazyColState.scrollToItem(0)
-            }
-        }
-    }
 
     Column(Modifier.padding(Sizes.LARGE)) {
         Toolbar(navController = navController) {
@@ -70,7 +61,15 @@ fun AddSongsToPlaylistScreen(
 
         TextField(
             text = uiState.searchText,
-            onTextChange = { vm.updateSearchText(it) },
+            onTextChange = {
+                vm.updateSearchText(it)
+
+                scope.launch(Dispatchers.Main) {
+                    if (uiState.songs.isNotEmpty()) {
+                        lazyColState.scrollToItem(0)
+                    }
+                }
+            },
             placeholder = stringResource(id = R.string.search_songs)
         )
 

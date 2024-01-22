@@ -15,9 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.modifyIf
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +28,7 @@ fun DoubleTabRow(
     pagerState: PagerState,
     firstTabTitle: String,
     secondTabTitle: String
-){
+) {
 
     val scope = rememberCoroutineScope()
 
@@ -47,7 +45,11 @@ fun DoubleTabRow(
                     background(MaterialTheme.colorScheme.surfaceVariant)
                 }
                 .clickable {
-                    scope.launch { withContext(Dispatchers.Main){ pagerState.scrollToPage(0) } }
+                    scope.launch {
+                        withContext(Dispatchers.Main) {
+                            pagerState.scrollToPage(0)
+                        }
+                    }
                 }
                 .padding(Sizes.MEDIUM),
             horizontalArrangement = Arrangement.Center
@@ -69,7 +71,11 @@ fun DoubleTabRow(
                     background(MaterialTheme.colorScheme.surfaceVariant)
                 }
                 .clickable {
-                    scope.launch { withContext(Dispatchers.Main){ pagerState.scrollToPage(1) } }
+                    scope.launch {
+                        withContext(Dispatchers.Main) {
+                            pagerState.scrollToPage(1)
+                        }
+                    }
                 }
                 .padding(Sizes.MEDIUM),
             horizontalArrangement = Arrangement.Center

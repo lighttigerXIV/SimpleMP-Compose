@@ -36,8 +36,8 @@
     <string name="delete">Löschen</string>
     <string name="no_songs_added">Keine Songs hinzugefügt</string>
     <string name="Artists">Künstler</string>
-    <string name="Songs">Titel</string>
-    <string name="Albums">Alben</string>
+    <string name="songs">Titel</string>
+    <string name="albums">Alben</string>
     <string name="song">Titel</string>
     <string name="Queue">Nächster Titel</string>
     <string name="go_to_artist">Zum Künstler</string>

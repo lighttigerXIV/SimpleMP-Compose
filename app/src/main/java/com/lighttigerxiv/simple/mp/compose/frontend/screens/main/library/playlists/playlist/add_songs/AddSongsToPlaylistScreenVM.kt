@@ -50,6 +50,7 @@ class AddSongsToPlaylistScreenVM(
 
     private lateinit var songs: List<Song>
     private lateinit var playlistId: ObjectId
+    var listPosition = 0
 
     fun load(id: ObjectId) {
         viewModelScope.launch(Dispatchers.Main) {

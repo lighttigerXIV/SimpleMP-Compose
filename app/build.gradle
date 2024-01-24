@@ -54,7 +54,7 @@ dependencies {
     implementation "androidx.compose.ui:ui:1.5.4"
     implementation "androidx.compose.material:material:1.5.4"
     implementation "androidx.compose.ui:ui-tooling-preview:1.5.4"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
     implementation 'androidx.activity:activity-compose:1.8.2'
     implementation 'androidx.navigation:navigation-compose:2.7.6'
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -78,33 +78,39 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
     implementation("androidx.compose.foundation:foundation:1.5.4")
 
-    //Mongo Realm
+    // Mongo Realm
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
     implementation 'io.realm.kotlin:library-base:1.11.0'
 
-    //Coil
+    // Coil
     implementation("io.coil-kt:coil-compose:2.5.0")
 
-    //Draggable List
+    // Draggable List
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
 
-    //Work Manager
+    // Work Manager
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
-    //Catppuccin Colors
+    // Catppuccin Colors
     implementation 'com.github.lighttigerxiv:catppuccin-kt:1.0.0'
 
-    //Datastore
+    // Datastore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
-    //ExoPlayer
-    implementation("androidx.media3:media3-exoplayer:1.2.0")
-    implementation("androidx.media3:media3-session:1.2.0")
-    implementation "androidx.media3:media3-common:1.2.0"
+    // ExoPlayer
+    implementation("androidx.media3:media3-exoplayer:1.2.1")
+    implementation("androidx.media3:media3-session:1.2.1")
+    implementation "androidx.media3:media3-common:1.2.1"
 
-    //Gson
+    // Gson
     implementation("com.google.code.gson:gson:2.10")
 
-    //Layout Scaffold
+    // Layout Scaffold
     implementation 'com.github.lighttigerXIV:layout-scaffold:1.1.0'
+
+    // Directory Picker
+    implementation("com.darkrockstudios:mpfilepicker:3.1.0")
+
+    // Uri Full Path
+    implementation 'com.github.starry-shivam:FileUtils:1.0.0'
 }

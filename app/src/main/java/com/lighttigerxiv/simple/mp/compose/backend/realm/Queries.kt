@@ -3,6 +3,7 @@ package com.lighttigerxiv.simple.mp.compose.backend.realm
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Album
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Artist
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.ArtistImageRequest
+import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.BlacklistPath
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Playlist
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import io.realm.kotlin.Realm
@@ -41,7 +42,26 @@ class Queries(private val realm: Realm) {
     }
 
     fun getSongs(): List<Song> {
-        return realm.query<Song>().find()
+
+        val blacklistedPaths = getBlacklistedPaths().map { it.path }
+        val songs = realm.query<Song>().find()
+        val filteredSongs: ArrayList<Song> = ArrayList()
+
+        songs.forEach { song->
+            var canShow = true
+
+            blacklistedPaths.forEach {path->
+                if(song.path.startsWith(path)){
+                    canShow = false
+                }
+            }
+
+            if(canShow){
+                filteredSongs.add(song)
+            }
+        }
+
+        return filteredSongs
     }
 
     suspend fun addArtist(
@@ -168,6 +188,32 @@ class Queries(private val realm: Realm) {
         realm.write {
             val playlist = this.query<Playlist>("_id == $0", playlistId).find()
             delete(playlist)
+        }
+    }
+
+    fun getBlacklistedPaths(): List<BlacklistPath>{
+        return realm.query<BlacklistPath>().find()
+    }
+
+    suspend fun addBlacklistedPath(path: String){
+
+        val blacklistedPaths = getBlacklistedPaths()
+
+        if(blacklistedPaths.none { it.path == path }){
+
+            val blacklistPath = BlacklistPath()
+            blacklistPath.path = path
+
+            realm.write {
+                copyToRealm(blacklistPath)
+            }
+        }
+    }
+
+    suspend fun removeBlacklistedPath(path: String){
+        realm.write {
+            val blacklistPath = this.query<BlacklistPath>("path == $0", path).find()
+            delete(blacklistPath)
         }
     }
 }

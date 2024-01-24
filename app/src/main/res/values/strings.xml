@@ -142,5 +142,8 @@
     <string name="use_default">Use default</string>
     <string name="hide_car_player">Hide car player</string>
     <string name="other">Other</string>
+    <string name="blacklist">Blacklist</string>
+    <string name="paths">Paths</string>
+    <string name="remove">Remove</string>
 
 </resources>

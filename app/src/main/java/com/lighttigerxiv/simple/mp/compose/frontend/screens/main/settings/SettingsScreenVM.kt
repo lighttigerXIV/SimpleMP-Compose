@@ -10,6 +10,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.SimpleMPApplication
+import com.lighttigerxiv.simple.mp.compose.backend.realm.Queries
+import com.lighttigerxiv.simple.mp.compose.backend.realm.getRealm
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.SettingsRepository
 import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
@@ -36,7 +38,7 @@ class SettingsScreenVM(
         }
     }
 
-
+    private val queries = Queries(getRealm())
 
     data class UiState(
         val isLoading: Boolean = true,
@@ -55,7 +57,8 @@ class SettingsScreenVM(
         val lightThemeDialogSelectedTheme: String = "",
         val darkThemeDialogSelectedTheme: String = "",
         val durationFilterDialogText: String = "",
-        val keepScreenOnCarPlayer: Boolean = false
+        val keepScreenOnCarPlayer: Boolean = false,
+        val blacklistedPaths: List<String> = ArrayList(),
     )
 
     private val _uiState = MutableStateFlow(UiState())
@@ -78,7 +81,8 @@ class SettingsScreenVM(
                         lightThemeDialogSelectedTheme = newSettings.lightTheme,
                         darkThemeDialogSelectedTheme = newSettings.darkTheme,
                         durationFilterDialogText = newSettings.durationFilter.toString(),
-                        keepScreenOnCarPlayer = newSettings.keepScreenOnCarPlayer
+                        keepScreenOnCarPlayer = newSettings.keepScreenOnCarPlayer,
+                        blacklistedPaths = queries.getBlacklistedPaths().map { it.path }
                     )
                 }
             }
@@ -164,6 +168,50 @@ class SettingsScreenVM(
             settingsRepository.updateDurationFilter(uiState.value.durationFilterDialogText.toInt())
             libraryRepository.initLibrary()
         }
+    }
+
+    fun addBlacklistedPath(path: String) {
+        if(uiState.value.blacklistedPaths.none{ it == path }){
+            viewModelScope.launch(Dispatchers.Main) {
+                queries.addBlacklistedPath(path)
+
+                _uiState.update {
+                    uiState.value.copy(
+                        blacklistedPaths = uiState.value.blacklistedPaths.toMutableList().apply { add(path) }
+                    )
+                }
+
+                libraryRepository.initLibrary()
+            }
+        }
+    }
+
+    fun removeBlacklistedPath(path: String) {
+        viewModelScope.launch(Dispatchers.Main) {
+            queries.removeBlacklistedPath(path)
+
+            _uiState.update {
+                uiState.value.copy(
+                    blacklistedPaths = uiState.value.blacklistedPaths.toMutableList().apply { remove(path) }
+                )
+            }
+
+            libraryRepository.initLibrary()
+        }
+    }
+
+    fun getDirectoryName(path: String): String{
+        var name = "";
+
+        path.reversed().forEach {
+            if(it == '/'){
+                return name.reversed()
+            }
+
+            name += it
+        }
+
+        return name.reversed()
     }
 
     @Composable

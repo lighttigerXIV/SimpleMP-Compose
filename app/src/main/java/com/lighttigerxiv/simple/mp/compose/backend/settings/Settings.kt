@@ -12,7 +12,8 @@ data class Settings(
     val homeSort: String,
     val albumsSort: String,
     val artistsSort: String,
-    val keepScreenOnCarPlayer: Boolean
+    val keepScreenOnCarPlayer: Boolean,
+    val blacklistedPaths: List<String>
 )
 
 object SettingsOptions{

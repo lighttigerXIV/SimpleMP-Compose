@@ -6,6 +6,8 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.lighttigerxiv.simple.mp.compose.backend.realm.Queries
+import com.lighttigerxiv.simple.mp.compose.backend.realm.getRealm
 import com.lighttigerxiv.simple.mp.compose.backend.settings.Settings
 import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
 import com.lighttigerxiv.simple.mp.compose.backend.utils.isAtLeastAndroid12
@@ -13,7 +15,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
-class SettingsRepository(private val dataStore: DataStore<Preferences>) {
+class SettingsRepository(
+    private val dataStore: DataStore<Preferences>,
+    private val queries: Queries = Queries(getRealm())
+) {
 
     private object Keys {
         val SETUP_COMPLETED = booleanPreferencesKey("setup_completed")
@@ -51,7 +56,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             homeSort = preferences[Keys.HOME_SORT] ?: SettingsOptions.Sort.DEFAULT_REVERSED,
             albumsSort = preferences[Keys.ALBUMS_SORT] ?: SettingsOptions.Sort.DEFAULT_REVERSED,
             artistsSort = preferences[Keys.ARTISTS_SORT] ?: SettingsOptions.Sort.DEFAULT_REVERSED,
-            keepScreenOnCarPlayer = preferences[Keys.KEEP_SCREEN_ON_CAR_PLAYER] ?: true
+            keepScreenOnCarPlayer = preferences[Keys.KEEP_SCREEN_ON_CAR_PLAYER] ?: true,
+            blacklistedPaths = queries.getBlacklistedPaths().map { it.path }
         )
     }
 
@@ -68,7 +74,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             homeSort = SettingsOptions.Sort.DEFAULT,
             albumsSort = SettingsOptions.Sort.DEFAULT,
             artistsSort = SettingsOptions.Sort.DEFAULT,
-            keepScreenOnCarPlayer = true
+            keepScreenOnCarPlayer = true,
+            blacklistedPaths = queries.getBlacklistedPaths().map { it.path }
         )
     }
 

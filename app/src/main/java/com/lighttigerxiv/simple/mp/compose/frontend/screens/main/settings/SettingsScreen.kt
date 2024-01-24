@@ -1,7 +1,12 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.main.settings
 
+import android.os.Environment.getExternalStorageDirectory
+import android.provider.DocumentsContract
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -38,6 +44,7 @@ import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.FullscreenDialogToolbar
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.HSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.IconDialog
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.SecondaryButton
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.TextField
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.ThemeSelector
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.Toolbar
@@ -54,6 +61,19 @@ fun SettingsScreen(
 ) {
 
     val uiState = vm.uiState.collectAsState().value
+    val dirPickerLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) { result ->
+        result?.let {uri->
+            val documentId = DocumentsContract.getTreeDocumentId(uri)
+            val split = documentId.split(":")
+
+            if (split.size > 1 && "com.android.externalstorage.documents" == uri.authority) {
+                val path = split[1]
+                val fullPath = "${getExternalStorageDirectory()}/$path"
+
+                vm.addBlacklistedPath(fullPath)
+            }
+        }
+    }
 
     ChangeNavigationBarsColor(color = MaterialTheme.colorScheme.surface)
 
@@ -179,6 +199,82 @@ fun SettingsScreen(
                 }
 
                 VSpacer(size = Sizes.LARGE)
+
+                Text(
+                    modifier = Modifier.offset(x = 8.dp),
+                    text = stringResource(id = R.string.blacklist),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = FontSizes.HEADER,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Column(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(Sizes.XLARGE))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .padding(Sizes.LARGE)
+                ) {
+
+                    Row(Modifier.fillMaxWidth()) {
+
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .weight(1f, fill = true)
+                        )
+
+                        SecondaryButton(
+                            text = stringResource(id = R.string.add),
+                            onClick = { dirPickerLauncher.launch(null) },
+                        )
+                    }
+
+                    if(uiState.blacklistedPaths.isNotEmpty()){
+                        VSpacer(size = Sizes.SMALL)
+
+                        VSpacer(size = Sizes.LARGE)
+                    }
+
+                    uiState.blacklistedPaths.forEach { path->
+
+                        Row (
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+
+
+                            Icon(
+                                modifier = Modifier.size(30.dp),
+                                painter = painterResource(id = R.drawable.folder),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            HSpacer(size = Sizes.LARGE)
+
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f, fill = true),
+                                text = vm.getDirectoryName(path),
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+
+                            HSpacer(size = Sizes.LARGE)
+
+                            SecondaryButton(
+                                text = stringResource(id = R.string.remove),
+                                onClick = { vm.removeBlacklistedPath(path) }
+                            )
+                        }
+
+                        VSpacer(size = Sizes.LARGE)
+                    }
+                }
 
                 Text(
                     modifier = Modifier.offset(x = 8.dp),

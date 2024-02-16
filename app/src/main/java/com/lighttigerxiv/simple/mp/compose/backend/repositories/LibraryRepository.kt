@@ -16,6 +16,7 @@ import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Artist
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.ArtistImageRequest
 import com.lighttigerxiv.simple.mp.compose.backend.realm.collections.Song
 import com.lighttigerxiv.simple.mp.compose.backend.realm.getRealm
+import com.lighttigerxiv.simple.mp.compose.backend.utils.hasStoragePermission
 import com.lighttigerxiv.simple.mp.compose.backend.utils.isAtLeastAndroid10
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,22 +65,24 @@ class LibraryRepository(
     val indexingLibrary = _indexingLibrary.asStateFlow()
 
     private suspend fun loadLibrary(onFinish: () -> Unit = {}) {
-        withContext(Dispatchers.Main) {
-            settingsRepository.settingsFlow.collect { settings ->
+        if (hasStoragePermission(application)) {
+            withContext(Dispatchers.Main) {
+                settingsRepository.settingsFlow.collect { settings ->
 
-                val durationFilter = settings.durationFilter * 1000
+                    val durationFilter = settings.durationFilter * 1000
 
-                val newSongs = queries.getSongs().filter { it.duration >= durationFilter }
-                val newArtists = queries.getArtists().filter { artist -> newSongs.any { song -> song.artistId == artist.id } }
-                val newAlbums = queries.getAlbums().filter { album -> newSongs.any { song -> song.albumId == album.id } }
+                    val newSongs = queries.getSongs().filter { it.duration >= durationFilter }
+                    val newArtists = queries.getArtists().filter { artist -> newSongs.any { song -> song.artistId == artist.id } }
+                    val newAlbums = queries.getAlbums().filter { album -> newSongs.any { song -> song.albumId == album.id } }
 
-                _songs.update { newSongs }
-                _artists.update { newArtists }
-                _albums.update { newAlbums }
-                playlistsRepository.loadPlaylists(songs.value)
+                    _songs.update { newSongs }
+                    _artists.update { newArtists }
+                    _albums.update { newAlbums }
+                    playlistsRepository.loadPlaylists(songs.value)
 
-                loadArtistImageRequests()
-                loadAlbumArts(onFinish = { onFinish() })
+                    loadArtistImageRequests()
+                    loadAlbumArts(onFinish = { onFinish() })
+                }
             }
         }
     }
@@ -117,7 +120,7 @@ class LibraryRepository(
         }
     }
 
-    fun loadArtistImageRequests(){
+    fun loadArtistImageRequests() {
         _artistImageRequests.update { queries.getArtistImageRequests() }
         onArtistImageChanged()
     }
@@ -131,8 +134,7 @@ class LibraryRepository(
         onFinish: suspend () -> Unit = {}
     ) {
 
-        if (!indexingLibrary.value) {
-
+        if (hasStoragePermission(context) && !indexingLibrary.value) {
             _indexingLibrary.update { true }
 
             val songs: ArrayList<Song> = ArrayList()

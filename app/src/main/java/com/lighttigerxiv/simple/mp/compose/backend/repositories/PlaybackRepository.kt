@@ -123,7 +123,6 @@ class PlaybackRepository(
                     })
                 }
 
-
                 super.onPlayerError(error)
             }
         })

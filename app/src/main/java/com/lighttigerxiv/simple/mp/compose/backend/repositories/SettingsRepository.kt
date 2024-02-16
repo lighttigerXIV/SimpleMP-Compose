@@ -33,6 +33,7 @@ class SettingsRepository(
         val ALBUMS_SORT = stringPreferencesKey("albums_sort")
         val ARTISTS_SORT = stringPreferencesKey("artists_sort")
         val KEEP_SCREEN_ON_CAR_PLAYER = booleanPreferencesKey("keep_screen_on_car_player")
+        val BACKGROUND_SYNC_INTERVAL = intPreferencesKey("background_sync_interval")
     }
 
     val settingsFlow: Flow<Settings> = dataStore.data
@@ -125,5 +126,9 @@ class SettingsRepository(
 
     suspend fun updateKeepScreenOnCarPlayer(v:Boolean){
         dataStore.edit { it[Keys.KEEP_SCREEN_ON_CAR_PLAYER] = v }
+    }
+
+    suspend fun updateBackgroundSyncInterval(v:Int){
+        dataStore.edit { it[Keys.BACKGROUND_SYNC_INTERVAL] = v }
     }
 }

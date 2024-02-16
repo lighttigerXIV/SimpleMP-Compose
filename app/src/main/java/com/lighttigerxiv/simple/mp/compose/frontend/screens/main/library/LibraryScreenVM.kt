@@ -52,11 +52,6 @@ class LibraryScreenVM(
 
 
     init {
-        if (!libraryRepository.initialized.value) {
-            viewModelScope.launch(Dispatchers.Main) {
-                libraryRepository.initLibrary()
-            }
-        }
 
         viewModelScope.launch(Dispatchers.Main) {
             playbackRepository.currentSongState.collect { newSongState ->

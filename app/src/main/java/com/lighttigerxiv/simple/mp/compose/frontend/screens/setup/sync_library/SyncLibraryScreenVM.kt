@@ -35,10 +35,11 @@ class SyncLibraryScreenVM(
     init {
 
         //Indexes The Library
-        viewModelScope.launch(Dispatchers.Default){
+        viewModelScope.launch(Dispatchers.Main){
             libraryRepository.indexLibrary(application){
-                withContext(Dispatchers.Default){
+                withContext(Dispatchers.Main){
                     settingsRepository.updateSetupCompleted(true)
+                    libraryRepository.initLibrary()
                 }
             }
         }

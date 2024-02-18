@@ -33,6 +33,7 @@ import com.lighttigerxiv.simple.mp.compose.data.data_classes.Song
 import com.lighttigerxiv.simple.mp.compose.data.data_classes.SongsData
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.getMongoRealm
 import com.lighttigerxiv.simple.mp.compose.data.mongodb.queries.CacheQueries
+import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.data.variables.Settings
 import com.lighttigerxiv.simple.mp.compose.data.workers.SyncSongsWorker
 import com.lighttigerxiv.simple.mp.compose.functions.Permissions
@@ -623,18 +624,23 @@ class MainVM(application: Application) : AndroidViewModel(application) {
 
         val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
+
+        val navigationHeight = 55.dp
+        //            Navigation + Toolbar + Spacing Spacer TOP + SheetDraggingBar + Spacing Bottom
+        val peekPlayerHeight =  60.dp + SMALL_SPACING + 5.dp
+
         smpService?.let {
             if (isPortrait && !smpService!!.isMusicPlayingOrPaused()) {
-                _miniPlayerPeekHeight.update { 55.dp }
+                _miniPlayerPeekHeight.update { navigationHeight }
             }
             if (isPortrait && smpService!!.isMusicPlayingOrPaused()) {
-                _miniPlayerPeekHeight.update { 115.dp }
+                _miniPlayerPeekHeight.update { navigationHeight + peekPlayerHeight }
             }
             if (!isPortrait && !smpService!!.isMusicPlayingOrPaused()) {
                 _miniPlayerPeekHeight.update { 0.dp }
             }
             if (!isPortrait && smpService!!.isMusicPlayingOrPaused()) {
-                _miniPlayerPeekHeight.update { 55.dp }
+                _miniPlayerPeekHeight.update { peekPlayerHeight }
             }
         }
     }

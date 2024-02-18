@@ -20,6 +20,7 @@ import com.lighttigerxiv.simple.mp.compose.data.variables.SMALL_SPACING
 import com.lighttigerxiv.simple.mp.compose.activities.main.MainVM
 import com.lighttigerxiv.simple.mp.compose.data.variables.ImageSizes
 import com.lighttigerxiv.simple.mp.compose.ui.composables.spacers.SmallHorizontalSpacer
+import com.lighttigerxiv.simple.mp.compose.ui.composables.SheetDraggingBar
 import com.lighttigerxiv.simple.mp.compose.functions.getImage
 import com.lighttigerxiv.simple.mp.compose.screens.main.playlists.playlist.modifyIf
 
@@ -39,79 +40,85 @@ fun MiniPlayer(
     } else {
         remember { getImage(context, R.drawable.play, ImageSizes.SMALL) }
     }
-
-    Row(
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(SMALL_SPACING)
-            .clickable { onClick() }
     ) {
+        SheetDraggingBar()
 
-        if (song != null) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(SMALL_SPACING)
+                .clickable { onClick() }
+        ) {
 
-            val artistName = mainVM.getSongArtist(song).name
+            if (song != null) {
 
-            Image(
-                bitmap = (art ?: getImage(context, R.drawable.cd, ImageSizes.SMALL)).asImageBitmap(),
-                colorFilter = if (art == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
-                contentDescription = "Song Album Art",
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(7.dp))
-                    .modifyIf(art == null) {
-                        background(surfaceColor)
-                    }
-                    .modifyIf(art == null) {
-                        padding(5.dp)
-                    }
-            )
-
-            SmallHorizontalSpacer()
-
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f, fill = true),
-                verticalArrangement = Arrangement.Top
-            ) {
-
-                CustomText(
-                    text = song.title,
-                    weight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                CustomText(
-                    text = artistName
-                )
-            }
-
-            SmallHorizontalSpacer()
-
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.Center
-            ) {
+                val artistName = mainVM.getSongArtist(song).name
 
                 Image(
+                    bitmap = (art ?: getImage(context, R.drawable.cd, ImageSizes.SMALL)).asImageBitmap(),
+                    colorFilter = if (art == null) ColorFilter.tint(MaterialTheme.colorScheme.primary) else null,
+                    contentDescription = "Song Album Art",
                     modifier = Modifier
-                        .height(20.dp)
-                        .width(20.dp)
-                        .clip(RoundedCornerShape(2.dp))
-                        .clickable {
-                            mainVM.pauseResumeMusic()
-                        },
-                    bitmap = playPauseIcon.asImageBitmap(),
-                    contentDescription = "Play/Pause button",
-                    contentScale = ContentScale.Fit,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(7.dp))
+                        .modifyIf(art == null) {
+                            background(surfaceColor)
+                        }
+                        .modifyIf(art == null) {
+                            padding(5.dp)
+                        }
                 )
-            }
 
-            SmallHorizontalSpacer()
+                SmallHorizontalSpacer()
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f, fill = true),
+                    verticalArrangement = Arrangement.Top
+                ) {
+
+                    CustomText(
+                        text = song.title,
+                        weight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    CustomText(
+                        text = artistName
+                    )
+                }
+
+                SmallHorizontalSpacer()
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+
+                    Image(
+                        modifier = Modifier
+                            .height(20.dp)
+                            .width(20.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .clickable {
+                                mainVM.pauseResumeMusic()
+                            },
+                        bitmap = playPauseIcon.asImageBitmap(),
+                        contentDescription = "Play/Pause button",
+                        contentScale = ContentScale.Fit,
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                    )
+                }
+
+                SmallHorizontalSpacer()
+            }
         }
     }
 }

@@ -228,6 +228,8 @@ class LibraryRepository(
 
             _indexingLibrary.update { false }
             onFinish()
+
+            initLibrary()
         }
     }
 

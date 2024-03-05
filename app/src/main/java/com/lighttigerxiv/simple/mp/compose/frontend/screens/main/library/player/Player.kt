@@ -41,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -374,33 +375,22 @@ fun AlbumArtPager(
         pageSpacing = 16.dp
 
     ) { pagerTabPosition ->
-
         // Explanation:
         // It only loads the current album art and the 2 next to it and shows the current album art on the others,
         // so the effect of flickering disappears since the pager shows the previous pages even without animations
 
-        if (pagerTabPosition in (uiState.currentSongPosition - 1)..(uiState.currentSongPosition + 1)) {
+        val song = uiState.playingPlaylist[pagerTabPosition]
 
-            val song = uiState.playingPlaylist[pagerTabPosition]
+        if (uiState.showCarPlayer) {
 
-            if (uiState.showCarPlayer) {
-
-                CarPlayerTitleAndArtist(
-                    songName = song.name,
-                    artistName = vm.getArtistName(song.artistId)
-                )
-            } else {
-
-                val art = vm.getSongArt(song.albumId)
-                PlayerAlbumArt(art = art)
-            }
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            CarPlayerTitleAndArtist(
+                songName = song.name,
+                artistName = vm.getArtistName(song.artistId)
             )
+        } else {
+
+            val art by remember { derivedStateOf { vm.getSongArt(song.albumId) } }
+            PlayerAlbumArt(art = art)
         }
     }
 }

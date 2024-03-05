@@ -10,10 +10,13 @@ class BackgroundSyncWorker(private val appContext: Context, params: WorkerParame
 
         val app = (appContext.applicationContext as SimpleMPApplication)
         val libraryRepository = app.container.libraryRepository;
+        val settingsRepository = app.container.settingsRepository;
 
-        if(!libraryRepository.indexingLibrary.value){
-            libraryRepository.initLibrary();
-            libraryRepository.indexLibrary(app);
+        settingsRepository.settingsFlow.collect{
+            if(it.setupCompleted && !libraryRepository.indexingLibrary.value){
+                libraryRepository.initLibrary()
+                libraryRepository.indexLibrary(app);
+            }
         }
 
         return Result.success()

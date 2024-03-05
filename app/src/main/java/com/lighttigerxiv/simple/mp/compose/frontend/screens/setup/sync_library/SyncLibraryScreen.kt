@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.VSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.FontSizes
@@ -24,6 +25,7 @@ import com.lighttigerxiv.simple.mp.compose.frontend.utils.Sizes
 
 @Composable
 fun SyncLibraryScreen(
+    navController: NavHostController,
     vm: SyncLibraryScreenVM = viewModel(factory = SyncLibraryScreenVM.Factory)
 ) {
 

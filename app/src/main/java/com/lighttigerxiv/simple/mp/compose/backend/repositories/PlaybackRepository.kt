@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class PlaybackRepository(
     private val libraryRepository: LibraryRepository,
@@ -116,11 +115,7 @@ class PlaybackRepository(
                 skipToNext()
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    libraryRepository.indexLibrary(application, onFinish = {
-                        withContext(Dispatchers.Main) {
-                            libraryRepository.initLibrary()
-                        }
-                    })
+                    libraryRepository.indexLibrary(application)
                 }
 
                 super.onPlayerError(error)
@@ -289,8 +284,6 @@ class PlaybackRepository(
 
             _playbackState.update { playbackState.value!!.copy(shuffle = false) }
 
-
-
             _playlistsState.update {
                 playlistsState.value?.copy(
                     current = playlistsState.value!!.original,
@@ -309,7 +302,7 @@ class PlaybackRepository(
             }
 
             _playlistsState.update {
-                playlistsState.value?.copy(
+                it?.copy(
                     shuffled = shuffledPlaylist,
                     current = shuffledPlaylist,
                     upNext = shuffledPlaylist.filterIndexed { index, _ -> index > 0 },

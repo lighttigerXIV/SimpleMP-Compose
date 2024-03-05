@@ -11,6 +11,7 @@ import com.lighttigerxiv.simple.mp.compose.SimpleMPApplication
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.LibraryRepository
 import com.lighttigerxiv.simple.mp.compose.backend.repositories.SettingsRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -36,10 +37,10 @@ class SyncLibraryScreenVM(
 
         //Indexes The Library
         viewModelScope.launch(Dispatchers.Main){
+            delay(1000)
             libraryRepository.indexLibrary(application){
                 withContext(Dispatchers.Main){
                     settingsRepository.updateSetupCompleted(true)
-                    libraryRepository.initLibrary()
                 }
             }
         }

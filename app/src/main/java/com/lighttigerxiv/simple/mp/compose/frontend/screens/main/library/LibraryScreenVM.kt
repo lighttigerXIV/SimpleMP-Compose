@@ -52,6 +52,10 @@ class LibraryScreenVM(
 
 
     init {
+        viewModelScope.launch(Dispatchers.Main) {
+            println("froakie")
+            libraryRepository.initLibrary()
+        }
 
         viewModelScope.launch(Dispatchers.Main) {
             playbackRepository.currentSongState.collect { newSongState ->

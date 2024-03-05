@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -14,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
@@ -28,11 +31,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.lighttigerxiv.simple.mp.compose.R
 import com.lighttigerxiv.simple.mp.compose.backend.settings.SettingsOptions
+import com.lighttigerxiv.simple.mp.compose.frontend.composables.HSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.MenuItem
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.MiniPlayerSpacer
 import com.lighttigerxiv.simple.mp.compose.frontend.composables.SongCard
@@ -96,6 +102,14 @@ fun HomeScreen(
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(paddingValues)
         ) {
+
+            if (uiState.indexingLibrary) {
+                Row(modifier = Modifier.padding(Sizes.SMALL), verticalAlignment = Alignment.CenterVertically){
+                    CircularProgressIndicator(modifier = Modifier.size(Sizes.XLARGE))
+                    HSpacer(size = Sizes.SMALL)
+                    Text(text = "Indexing", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
+                }
+            }
 
             Column {
 
@@ -259,7 +273,15 @@ fun Menu(
         MenuItem(
             iconId = R.drawable.reload,
             text = stringResource(id = R.string.reindex_library),
-            onClick = { vm.indexLibrary() },
+            onClick = {
+                scope.launch(Dispatchers.Main) {
+                    vm.updateShowMenu(false)
+                }
+                scope.launch {
+                    delay(200)
+                    vm.indexLibrary()
+                }
+            },
             disabled = uiState.indexingLibrary
         )
 

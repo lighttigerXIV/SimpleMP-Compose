@@ -30,7 +30,7 @@ data class HomeUiState(
     val showMenu: Boolean = false,
     val currentSong: Song? = null,
     val withMiniPlayer: Boolean = false,
-    val indexingLibrary: Boolean = false,
+    val indexingLibrary: Boolean = true,
     val sortType: String = "",
 )
 
@@ -86,14 +86,19 @@ class HomeScreenVM(
 
                 viewModelScope.launch(Dispatchers.Main) {
                     libraryRepository.songs.collect { songs ->
-                        librarySongs = songs.sorted(newSettings.homeSort)
-                        filterSongs()
+                        librarySongs = songs.sorted(newSettings.homeSort).also {
+                            filterSongs()
+                        }
                     }
                 }
 
                 viewModelScope.launch(Dispatchers.Main) {
-                    libraryRepository.indexingLibrary.collect { newIndexingLIbrary ->
-                        _uiState.update { uiSate.value.copy(indexingLibrary = newIndexingLIbrary) }
+                    libraryRepository.indexingLibrary.collect { newIndexingLibrary ->
+                        _uiState.update { uiSate.value.copy(indexingLibrary = newIndexingLibrary) }
+
+                        if(!newIndexingLibrary){
+                            filterSongs()
+                        }
                     }
                 }
             }
@@ -135,7 +140,7 @@ class HomeScreenVM(
         playbackRepository.shuffleAndPlay(librarySongs)
     }
 
-    fun indexLibrary() {
+    suspend fun indexLibrary() {
         viewModelScope.launch(Dispatchers.Main) {
             libraryRepository.indexLibrary(application)
         }

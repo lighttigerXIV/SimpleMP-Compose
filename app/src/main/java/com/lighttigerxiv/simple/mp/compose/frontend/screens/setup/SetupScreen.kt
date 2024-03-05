@@ -1,11 +1,9 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.screens.setup
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -50,7 +48,7 @@ fun SetupScreen() {
         }
 
         composable(Routes.Setup.SYNC_LIBRARY){
-            SyncLibraryScreen()
+            SyncLibraryScreen(navController = navController)
         }
     }
 }

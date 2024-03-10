@@ -1,0 +1,124 @@
+<resources>
+  <string name="app_name">SimpleMP</string>
+  <string name="Undefined">Tanımlanmamış</string>
+  <string name="notificationChannelName" translatable="false">Playback</string>
+  <string name="notificationChannelDescription" translatable="false">Simple MP Playback</string>
+  <string name="appwidget_text">ÖRNEK</string>
+  <string name="add_widget">Widget ekle</string>
+  <string name="emptyDescription" translatable="false">.</string>
+  <string name="imagineDragons" translatable="false">Imagine Dragons</string>
+  <string name="demons" translatable="false">Demons</string>
+  <string name="app_widget_description" translatable="false">Simple MP Widget</string>
+  <string name="noMusicPlaying">Müzik çalmıyor. Uygulamayı açmak için tıklayın.</string>
+  <string name="SearchSongs">Şarkı Ara</string>
+  <string name="SearchArtists">Sanatçı Ara</string>
+  <string name="SearchAlbums">Albüm Ara</string>
+  <string name="SearchPlaylists">Oynatma Listelerinde Ara</string>
+  <string name="ModificationDate">Değişiklik Tarihine Göre Sırala</string>
+  <string name="SortAlphabetically">Alfabetik Olarak Sırala</string>
+  <string name="SortByRecentlyAdded">Son Eklenenlere Göre Sırala</string>
+  <string name="SortByOldestAdded">En Eskiye Göre Sırala Eklendi</string>
+  <string name="SortByAscendent">Yükselene Göre Sırala</string>
+  <string name="SortByDescendent">Alt Ögeye Göre Sırala</string>
+  <string name="Settings">Ayarlar</string>
+  <string name="About">Hakkında</string>
+  <string name="AppVersion">Uygulama Sürümü</string>
+  <string name="AppSource">Uygulama Kaynağı</string>
+  <string name="GetAppSourceOnGitHub">Uygulama kaynağını GitHub'dan edinin</string>
+  <string name="GetAppSourceOnGitLab">Uygulama kaynağını GitLab'dan edinin</string>
+  <string name="Home">Ana Sayfa</string>
+  <string name="Genres">Türler</string>
+  <string name="YourPlaylists">Oynatma Listeleriniz</string>
+  <string name="PlaylistName">Çalma listesi adı</string>
+  <string name="InsertPlaylistName">Oynatma listesi adı ekle</string>
+  <string name="Create">Oluştur</string>
+  <string name="Play">Oynat</string>
+  <string name="Shuffle">Karıştır</string>
+  <string name="EditPlaylist">Oynatma Listesini Düzenle</string>
+  <string name="DeletePlaylist">Oynatma Listesini Sil</string>
+  <string name="ConfirmDeletePlaylist">Çalma listesini silmek istediğinizden emin misiniz?</string>
+  <string name="Cancel">İptal</string>
+  <string name="Delete">Sil</string>
+  <string name="NoSongsAdded">Hiçbir şarkı eklenmedi</string>
+  <string name="Artists">Sanatçılar</string>
+  <string name="Songs">Şarkılar</string>
+  <string name="Albums">Albümler</string>
+  <string name="Song">Şarkı</string>
+  <string name="Queue">Sıradaki</string>
+  <string name="GoToArtist">Sanatçıya Git</string>
+  <string name="GoToAlbum">Albüme Git</string>
+  <string name="AddToPlaylist">Oynatma Listesine Ekle</string>
+  <string name="Theming">Tema</string>
+  <string name="DarkMode">Koyu Mod</string>
+  <string name="AccentColor">Vurgu Rengi</string>
+  <string name="SelectColorScheme">Renk Şemasını Seçin</string>
+  <string name="SystemDefault">Sistem Varsayılanı</string>
+  <string name="LightMode">Işık Modu</string>
+  <string name="Apply">Uygula</string>
+  <string name="Audio">Ses</string>
+  <string name="FilterAudioBelow">Aşağıdaki Sesi Filtrele</string>
+  <string name="SelectDarkMode">Karanlık Modu Seç</string>
+  <string name="Color">Renk</string>
+  <string name="Oled" translatable="false">Oled</string>
+  <string name="FilterAudio">Sesi Filtrele</string>
+  <string name="InsertMinimumSeconds">Minimum saniye ekle</string>
+  <string name="MaterialYou">Malzeme Sen</string>
+  <string name="Blue">Mavi</string>
+  <string name="Red">Kırmızı</string>
+  <string name="Purple">Mor</string>
+  <string name="Orange">Turuncu</string>
+  <string name="Yellow">Sarı</string>
+  <string name="Green">Yeşil</string>
+  <string name="Pink">Pembe</string>
+  <string name="Common">Yaygın</string>
+  <string name="WelcomeToSimpleMP">Simple MP'ye Hoş Geldiniz</string>
+  <string name="Next">Sonraki</string>
+  <string name="Granted">Verildi</string>
+  <string name="Grant">Hibe</string>
+  <string name="Permissions">İzinler</string>
+  <string name="OtherSettings">Diğer Ayarlar</string>
+  <string name="EnableStorageExplanation">Cihazınızdaki tüm müzik dosyalarını okumak için depolama iznini etkinleştirin</string>
+  <string name="EnableNotificationExplanation">Müzik bildirimini göstermek için bildirim iznini etkinleştir</string>
+  <string name="Back">Geri</string>
+  <string name="Accents">Aksanlar</string>
+  <string name="Finish">Bitir</string>
+  <string name="ImageTooBig">Görüntü çok büyük. Görüntüyü sıkıştırmayı düşünün</string>
+  <string name="ChangeArtistCover">Sanatçı kapağını değiştir</string>
+  <string name="Artist">Sanatçı</string>
+  <string name="SelectLocalCover">Yerel kapak seçin</string>
+  <string name="OnlineResults">Online Sonuçlar</string>
+  <string name="EnableInternetToGetCovers">Kapakları almak için interneti etkinleştir</string>
+  <string name="UseDefault">Varsayılanı kullan</string>
+  <string name="Data">Veri</string>
+  <string name="DownloadArtistCoverFromInternet">Sanatçı kapağını internetten indir</string>
+  <string name="DownloadArtistCoverOnData">Sanatçı kapağını mobil verilere indirin</string>
+  <string name="Playlists">Oynatma listeleri</string>
+  <string name="SongAlreadyInPlaylist">Şarkı zaten çalma listesinde</string>
+  <string name="AddSongs">Şarkı Ekle</string>
+  <string name="Playlist">Çalma Listesi</string>
+  <string name="Add">Ekle</string>
+  <string name="Select">Seç</string>
+  <string name="SelectImage">Resim Seç</string>
+  <string name="DeleteImage">Resmi Sil</string>
+  <string name="Shrug" translatable="false">¯\\_(ツ)_/¯</string>
+  <string name="Changelog">Değişiklik Günlüğü</string>
+  <string name="Download">İndir</string>
+  <string name="GitHubReleases" translatable="false">GitHub Sürümleri</string>
+  <string name="DownloadInGitHubReleases">GitHub Sürümlerini İndir</string>
+  <string name="PlayStore" translatable="false">Play Store</string>
+  <string name="DownloadInPlayStore">Play Store'dan indir</string>
+  <string name="FDroid" translatable="false">F-Droid</string>
+  <string name="DownloadInFDroid">F - Droid ile indir</string>
+  <string name="ReloadSongs">Şarkıları Yeniden Yükle</string>
+  <string name="DontCloseAppWhileReloading">Şarkıları yeniden yüklerken uygulamayı kapatmayın!!</string>
+  <string name="ReloadingSongs">Şarkılar Yeniden Yükleniyor</string>
+  <string name="ColorScheme">Renk uyumu</string>
+  <string name="DarkColorScheme">Koyu Renk Şeması</string>
+  <string name="LightColorScheme">Açık Renk Şeması</string>
+  <string name="IndexingSongs">Şarkılar İndeksleniyor. Uygulamayı kapatmayın.</string>
+  <string name="ExperimentalFeatures">Deneysel Özellikler</string>
+  <string name="CarPlayer">Araba Oynatıcı</string>
+  <string name="KeepScreenOnInCarMode">Araç Modunda Ekranı Açık Tutun</string>
+  <string name="ShowCarPlayer">Araç Oynatıcıyı Göster</string>
+  <string name="SortByArtist">Sanatçıya Göre Sırala</string>
+</resources>

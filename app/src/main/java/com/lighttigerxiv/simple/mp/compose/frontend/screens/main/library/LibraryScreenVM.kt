@@ -52,12 +52,11 @@ class LibraryScreenVM(
 
 
     init {
-        viewModelScope.launch(Dispatchers.Main) {
-            println("froakie")
+        viewModelScope.launch(Dispatchers.IO) {
             libraryRepository.initLibrary()
         }
 
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.IO) {
             playbackRepository.currentSongState.collect { newSongState ->
                 _uiState.update {
                     uiState.value.copy(
@@ -71,7 +70,7 @@ class LibraryScreenVM(
             }
         }
 
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.IO) {
             playbackRepository.playbackState.collect { newPlaybackState ->
                 _uiState.update { uiState.value.copy(isPlaying = newPlaybackState?.isPlaying ?: false) }
             }

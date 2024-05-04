@@ -281,6 +281,18 @@ class SettingsScreenVM(
             SettingsOptions.Themes.MOCHA_SAPPHIRE -> "Mocha Sapphire"
             SettingsOptions.Themes.MOCHA_BLUE -> "Mocha Blue"
             SettingsOptions.Themes.MOCHA_LAVENDER -> "Mocha Lavender"
+            SettingsOptions.Themes.PANTHER_BANANA -> "Panther Banana"
+            SettingsOptions.Themes.PANTHER_BLUEBERRY -> "Panther Blueberry"
+            SettingsOptions.Themes.PANTHER_CHERRY -> "Panther Cherry"
+            SettingsOptions.Themes.PANTHER_GRAPE -> "Panther Grape"
+            SettingsOptions.Themes.PANTHER_KIWI -> "Panther Kiwi"
+            SettingsOptions.Themes.PANTHER_TANGERINE -> "Panther Tangerine"
+            SettingsOptions.Themes.TIGER_BANANA -> "Tiger Banana"
+            SettingsOptions.Themes.TIGER_BLUEBERRY -> "Tiger Blueberry"
+            SettingsOptions.Themes.TIGER_CHERRY -> "Tiger Cherry"
+            SettingsOptions.Themes.TIGER_GRAPE -> "Tiger Grape"
+            SettingsOptions.Themes.TIGER_KIWI -> "Tiger Kiwi"
+            SettingsOptions.Themes.TIGER_TANGERINE -> "Tiger Tangerine"
             else -> "n/a"
         }
     }

@@ -1,5 +1,6 @@
 package com.lighttigerxiv.simple.mp.compose.frontend.theme
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
@@ -107,9 +108,21 @@ fun SimpleMPTheme(
             useDarkTheme && darkTheme == SettingsOptions.Themes.LATTE_SAPPHIRE -> getLatteScheme(AppTheme.CatppuccinLatte.SAPPHIRE)
             useDarkTheme && darkTheme == SettingsOptions.Themes.LATTE_BLUE -> getLatteScheme(AppTheme.CatppuccinLatte.BLUE)
             useDarkTheme && darkTheme == SettingsOptions.Themes.LATTE_LAVENDER -> getLatteScheme(AppTheme.CatppuccinLatte.LAVENDER)
+            useDarkTheme && darkTheme == SettingsOptions.Themes.PANTHER_BANANA -> getPantherScheme(AppTheme.WhiskersPanther.BANANA)
+            useDarkTheme && darkTheme == SettingsOptions.Themes.PANTHER_BLUEBERRY -> getPantherScheme(AppTheme.WhiskersPanther.BLUEBERRY)
+            useDarkTheme && darkTheme == SettingsOptions.Themes.PANTHER_CHERRY -> getPantherScheme(AppTheme.WhiskersPanther.CHERRY)
+            useDarkTheme && darkTheme == SettingsOptions.Themes.PANTHER_GRAPE -> getPantherScheme(AppTheme.WhiskersPanther.GRAPE)
+            useDarkTheme && darkTheme == SettingsOptions.Themes.PANTHER_KIWI -> getPantherScheme(AppTheme.WhiskersPanther.KIWI)
+            useDarkTheme && darkTheme == SettingsOptions.Themes.PANTHER_TANGERINE -> getPantherScheme(AppTheme.WhiskersPanther.TANGERINE)
+            useDarkTheme && darkTheme == SettingsOptions.Themes.TIGER_BANANA -> getTigerScheme(AppTheme.WhiskersTiger.BANANA)
+            useDarkTheme && darkTheme == SettingsOptions.Themes.TIGER_BLUEBERRY -> getTigerScheme(AppTheme.WhiskersTiger.BLUEBERRY)
+            useDarkTheme && darkTheme == SettingsOptions.Themes.TIGER_CHERRY -> getTigerScheme(AppTheme.WhiskersTiger.CHERRY)
+            useDarkTheme && darkTheme == SettingsOptions.Themes.TIGER_GRAPE -> getTigerScheme(AppTheme.WhiskersTiger.GRAPE)
+            useDarkTheme && darkTheme == SettingsOptions.Themes.TIGER_KIWI -> getTigerScheme(AppTheme.WhiskersTiger.KIWI)
+            useDarkTheme && darkTheme == SettingsOptions.Themes.TIGER_TANGERINE -> getTigerScheme(AppTheme.WhiskersTiger.TANGERINE)
             useDarkTheme && darkTheme == SettingsOptions.Themes.MATERIAL_YOU && supportsMaterialYou -> dynamicDarkColorScheme(context)
 
-            useDarkTheme -> getMacchiatoScheme(AppTheme.CatppuccinMacchiato.ROSEWATER)
+            useDarkTheme -> getPantherScheme(AppTheme.WhiskersPanther.BANANA)
 
             useLightTheme && lightTheme == SettingsOptions.Themes.BLUE -> LightBlueColors
             useLightTheme && lightTheme == SettingsOptions.Themes.RED -> LightRedColors
@@ -174,9 +187,21 @@ fun SimpleMPTheme(
             useLightTheme && lightTheme == SettingsOptions.Themes.LATTE_SAPPHIRE -> getLatteScheme(AppTheme.CatppuccinLatte.SAPPHIRE)
             useLightTheme && lightTheme == SettingsOptions.Themes.LATTE_BLUE -> getLatteScheme(AppTheme.CatppuccinLatte.BLUE)
             useLightTheme && lightTheme == SettingsOptions.Themes.LATTE_LAVENDER -> getLatteScheme(AppTheme.CatppuccinLatte.LAVENDER)
+            useLightTheme && lightTheme == SettingsOptions.Themes.PANTHER_BANANA -> getPantherScheme(AppTheme.WhiskersPanther.BANANA)
+            useLightTheme && lightTheme == SettingsOptions.Themes.PANTHER_BLUEBERRY -> getPantherScheme(AppTheme.WhiskersPanther.BLUEBERRY)
+            useLightTheme && lightTheme == SettingsOptions.Themes.PANTHER_CHERRY -> getPantherScheme(AppTheme.WhiskersPanther.CHERRY)
+            useLightTheme && lightTheme == SettingsOptions.Themes.PANTHER_GRAPE -> getPantherScheme(AppTheme.WhiskersPanther.GRAPE)
+            useLightTheme && lightTheme == SettingsOptions.Themes.PANTHER_KIWI -> getPantherScheme(AppTheme.WhiskersPanther.KIWI)
+            useLightTheme && lightTheme == SettingsOptions.Themes.PANTHER_TANGERINE -> getPantherScheme(AppTheme.WhiskersPanther.TANGERINE)
+            useLightTheme && lightTheme == SettingsOptions.Themes.TIGER_BANANA -> getTigerScheme(AppTheme.WhiskersTiger.BANANA)
+            useLightTheme && lightTheme == SettingsOptions.Themes.TIGER_BLUEBERRY -> getTigerScheme(AppTheme.WhiskersTiger.BLUEBERRY)
+            useLightTheme && lightTheme == SettingsOptions.Themes.TIGER_CHERRY -> getTigerScheme(AppTheme.WhiskersTiger.CHERRY)
+            useLightTheme && lightTheme == SettingsOptions.Themes.TIGER_GRAPE -> getTigerScheme(AppTheme.WhiskersTiger.GRAPE)
+            useLightTheme && lightTheme == SettingsOptions.Themes.TIGER_KIWI -> getTigerScheme(AppTheme.WhiskersTiger.KIWI)
+            useLightTheme && lightTheme == SettingsOptions.Themes.TIGER_TANGERINE -> getTigerScheme(AppTheme.WhiskersTiger.TANGERINE)
             useLightTheme && lightTheme == SettingsOptions.Themes.MATERIAL_YOU && supportsMaterialYou -> dynamicLightColorScheme(context)
 
-            else -> getLatteScheme(AppTheme.CatppuccinLatte.ROSEWATER)
+            else -> getTigerScheme(AppTheme.WhiskersTiger.BANANA)
         }
 
         val surfaceColor = if (useDarkTheme && it.useOledOnDarkTheme) Color(0xff000000) else theme.surface
@@ -188,6 +213,7 @@ fun SimpleMPTheme(
     }
 }
 
+@SuppressLint("NewApi")
 @Composable
 fun PreviewTheme(
     themeId: String,
@@ -270,6 +296,18 @@ fun PreviewTheme(
         themeId == SettingsOptions.Themes.MOCHA_SAPPHIRE -> getMochaScheme(AppTheme.CatppuccinMocha.SAPPHIRE)
         themeId == SettingsOptions.Themes.MOCHA_BLUE -> getMochaScheme(AppTheme.CatppuccinMocha.BLUE)
         themeId == SettingsOptions.Themes.MOCHA_LAVENDER -> getMochaScheme(AppTheme.CatppuccinMocha.LAVENDER)
+        themeId == SettingsOptions.Themes.PANTHER_BANANA -> getPantherScheme(AppTheme.WhiskersPanther.BANANA)
+        themeId == SettingsOptions.Themes.PANTHER_BLUEBERRY -> getPantherScheme(AppTheme.WhiskersPanther.BLUEBERRY)
+        themeId == SettingsOptions.Themes.PANTHER_CHERRY -> getPantherScheme(AppTheme.WhiskersPanther.CHERRY)
+        themeId == SettingsOptions.Themes.PANTHER_GRAPE -> getPantherScheme(AppTheme.WhiskersPanther.GRAPE)
+        themeId == SettingsOptions.Themes.PANTHER_KIWI -> getPantherScheme(AppTheme.WhiskersPanther.KIWI)
+        themeId == SettingsOptions.Themes.PANTHER_TANGERINE -> getPantherScheme(AppTheme.WhiskersPanther.TANGERINE)
+        themeId == SettingsOptions.Themes.TIGER_BANANA -> getTigerScheme(AppTheme.WhiskersTiger.BANANA)
+        themeId == SettingsOptions.Themes.TIGER_BLUEBERRY -> getTigerScheme(AppTheme.WhiskersTiger.BLUEBERRY)
+        themeId == SettingsOptions.Themes.TIGER_CHERRY -> getTigerScheme(AppTheme.WhiskersTiger.CHERRY)
+        themeId == SettingsOptions.Themes.TIGER_GRAPE -> getTigerScheme(AppTheme.WhiskersTiger.GRAPE)
+        themeId == SettingsOptions.Themes.TIGER_KIWI -> getTigerScheme(AppTheme.WhiskersTiger.KIWI)
+        themeId == SettingsOptions.Themes.TIGER_TANGERINE -> getTigerScheme(AppTheme.WhiskersTiger.TANGERINE)
         else -> getLatteScheme(AppTheme.CatppuccinLatte.ROSEWATER)
     }
 

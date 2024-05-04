@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -103,13 +105,7 @@ fun HomeScreen(
                 .padding(paddingValues)
         ) {
 
-            if (uiState.indexingLibrary) {
-                Row(modifier = Modifier.padding(Sizes.SMALL), verticalAlignment = Alignment.CenterVertically){
-                    CircularProgressIndicator(modifier = Modifier.size(Sizes.XLARGE))
-                    HSpacer(size = Sizes.SMALL)
-                    Text(text = "Indexing", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
-                }
-            }
+
 
             Column {
 
@@ -124,6 +120,12 @@ fun HomeScreen(
                 )
 
                 Menu(vm = vm, uiState = uiState, rootController, lazyColumnState)
+            }
+
+            if (uiState.indexingLibrary) {
+                VSpacer(size = Sizes.LARGE)
+
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primary)
             }
 
             VSpacer(size = Sizes.LARGE)

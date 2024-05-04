@@ -3,6 +3,8 @@ package com.lighttigerxiv.simple.mp.compose
 import android.app.Application
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
@@ -20,7 +22,7 @@ class SimpleMPApplication : Application() {
         super.onCreate()
         container = DefaultAppContainer(this, this.dataStore)
 
-        val request: WorkRequest = OneTimeWorkRequestBuilder<BackgroundSyncWorker>().build()
-        WorkManager.getInstance(this).enqueue(request)
+        val request: OneTimeWorkRequest = OneTimeWorkRequest.from(BackgroundSyncWorker::class.java)
+        WorkManager.getInstance(this).enqueueUniqueWork("indexing", ExistingWorkPolicy.KEEP, request)
     }
 }

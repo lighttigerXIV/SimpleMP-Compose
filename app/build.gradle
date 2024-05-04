@@ -113,4 +113,6 @@ dependencies {
 
     // Uri Full Path
     implementation 'com.github.starry-shivam:FileUtils:1.0.0'
+
+    implementation('com.github.Whiskers-Color-Scheme:whiskers-palette-kt:1.0.0')
 }

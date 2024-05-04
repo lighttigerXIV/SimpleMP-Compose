@@ -88,6 +88,18 @@ object SettingsOptions{
         const val MOCHA_SAPPHIRE = "mocha_sapphire"
         const val MOCHA_BLUE = "mocha_blue"
         const val MOCHA_LAVENDER = "mocha_lavender"
+        const val PANTHER_BANANA = "panther_banana"
+        const val PANTHER_BLUEBERRY = "panther_blueberry"
+        const val PANTHER_CHERRY = "panther_cherry"
+        const val PANTHER_GRAPE = "panther_grape"
+        const val PANTHER_KIWI = "panther_kiwi"
+        const val PANTHER_TANGERINE = "panther_tangerine"
+        const val TIGER_BANANA = "tiger_banana"
+        const val TIGER_BLUEBERRY = "tiger_blueberry"
+        const val TIGER_CHERRY = "tiger_cherry"
+        const val TIGER_GRAPE = "tiger_grape"
+        const val TIGER_KIWI = "tiger_kiwi"
+        const val TIGER_TANGERINE = "tiger_tangerine"
     }
 
     object Sort{

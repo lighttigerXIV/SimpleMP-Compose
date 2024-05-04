@@ -60,6 +60,8 @@ import com.lighttigerxiv.simple.mp.compose.frontend.theme.getFrappeScheme
 import com.lighttigerxiv.simple.mp.compose.frontend.theme.getLatteScheme
 import com.lighttigerxiv.simple.mp.compose.frontend.theme.getMacchiatoScheme
 import com.lighttigerxiv.simple.mp.compose.frontend.theme.getMochaScheme
+import com.lighttigerxiv.simple.mp.compose.frontend.theme.getPantherScheme
+import com.lighttigerxiv.simple.mp.compose.frontend.theme.getTigerScheme
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeNavigationBarsColor
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.ChangeStatusBarColor
 import com.lighttigerxiv.simple.mp.compose.frontend.utils.FontSizes
@@ -75,9 +77,10 @@ fun ThemeSelector(
     val context = LocalContext.current
     val showCommonThemes = remember { mutableStateOf(true) }
     val showCatppuccinThemes = remember { mutableStateOf(true) }
-    val commonThemes = remember{ getCommonColorSchemes(darkTheme, context) }
+    val showWhiskersThemes = remember { mutableStateOf(true) }
+    val commonThemes = remember { getCommonColorSchemes(darkTheme, context) }
 
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -93,7 +96,7 @@ fun ThemeSelector(
 
                 val theme = Theme(
                     name = stringResource(id = R.string.MaterialYou),
-                    colorScheme = if(darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context),
+                    colorScheme = if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context),
                     setting = SettingsOptions.Themes.MATERIAL_YOU
                 )
 
@@ -103,7 +106,7 @@ fun ThemeSelector(
                         .clip(RoundedCornerShape(14.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(Sizes.MEDIUM)
-                ){
+                ) {
                     ThemePreview(
                         selectedTheme = selectedTheme,
                         theme = theme,
@@ -232,6 +235,62 @@ fun ThemeSelector(
 
                 LazyRow {
                     items(items = getCatppuccinMochaColorSchemes(), key = { it.setting }) { theme ->
+
+                        ThemePreview(selectedTheme = selectedTheme, theme = theme, onClick = { onThemeSelected(theme.setting) })
+
+                        HSpacer(size = Sizes.SMALL)
+                    }
+                }
+            }
+
+
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(14.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(10.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { showWhiskersThemes.value = !showWhiskersThemes.value },
+                    text = "Whiskers",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            if (showWhiskersThemes.value) {
+                Text(text = "Tiger", fontSize = FontSizes.HEADER_2, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+                LazyRow {
+                    items(items = getWhiskersTigerColorSchemes(), key = { it.setting }) { theme ->
+
+                        ThemePreview(selectedTheme = selectedTheme, theme = theme, onClick = { onThemeSelected(theme.setting) })
+
+                        HSpacer(size = Sizes.SMALL)
+                    }
+                }
+
+                VSpacer(size = Sizes.SMALL)
+
+                Text(text = "Panther", fontSize = FontSizes.HEADER_2, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+                LazyRow {
+                    items(items = getWhiskersPantherColorSchemes(), key = { it.setting }) { theme ->
 
                         ThemePreview(selectedTheme = selectedTheme, theme = theme, onClick = { onThemeSelected(theme.setting) })
 
@@ -723,5 +782,75 @@ fun getCatppuccinMochaColorSchemes(): List<Theme> {
             getMochaScheme(AppTheme.CatppuccinMocha.LAVENDER),
             SettingsOptions.Themes.MOCHA_LAVENDER
         )
+    )
+}
+
+fun getWhiskersPantherColorSchemes(): List<Theme> {
+    return listOf(
+        Theme(
+            "Banana",
+            getPantherScheme(AppTheme.WhiskersPanther.BANANA),
+            SettingsOptions.Themes.PANTHER_BANANA
+        ),
+        Theme(
+            "Blueberry",
+            getPantherScheme(AppTheme.WhiskersPanther.BLUEBERRY),
+            SettingsOptions.Themes.PANTHER_BLUEBERRY
+        ),
+        Theme(
+            "Cherry",
+            getPantherScheme(AppTheme.WhiskersPanther.CHERRY),
+            SettingsOptions.Themes.PANTHER_CHERRY
+        ),
+        Theme(
+            "Grape",
+            getPantherScheme(AppTheme.WhiskersPanther.GRAPE),
+            SettingsOptions.Themes.PANTHER_GRAPE
+        ),
+        Theme(
+            "Kiwi",
+            getPantherScheme(AppTheme.WhiskersPanther.KIWI),
+            SettingsOptions.Themes.PANTHER_KIWI
+        ),
+        Theme(
+            "Tangerine",
+            getPantherScheme(AppTheme.WhiskersPanther.TANGERINE),
+            SettingsOptions.Themes.PANTHER_TANGERINE
+        ),
+    )
+}
+
+fun getWhiskersTigerColorSchemes(): List<Theme> {
+    return listOf(
+        Theme(
+            "Banana",
+            getTigerScheme(AppTheme.WhiskersTiger.BANANA),
+            SettingsOptions.Themes.TIGER_BANANA
+        ),
+        Theme(
+            "Blueberry",
+            getTigerScheme(AppTheme.WhiskersTiger.BLUEBERRY),
+            SettingsOptions.Themes.TIGER_BLUEBERRY
+        ),
+        Theme(
+            "Cherry",
+            getTigerScheme(AppTheme.WhiskersTiger.CHERRY),
+            SettingsOptions.Themes.TIGER_CHERRY
+        ),
+        Theme(
+            "Grape",
+            getTigerScheme(AppTheme.WhiskersTiger.GRAPE),
+            SettingsOptions.Themes.TIGER_GRAPE
+        ),
+        Theme(
+            "Kiwi",
+            getTigerScheme(AppTheme.WhiskersTiger.KIWI),
+            SettingsOptions.Themes.TIGER_KIWI
+        ),
+        Theme(
+            "Tangerine",
+            getTigerScheme(AppTheme.WhiskersTiger.TANGERINE),
+            SettingsOptions.Themes.TIGER_TANGERINE
+        ),
     )
 }

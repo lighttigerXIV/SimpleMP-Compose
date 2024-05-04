@@ -5,11 +5,13 @@ import com.lighttigerxiv.catppuccin_kt.getFrappeColors
 import com.lighttigerxiv.catppuccin_kt.getLatteColors
 import com.lighttigerxiv.catppuccin_kt.getMacchiatoColors
 import com.lighttigerxiv.catppuccin_kt.getMochaColors
+import com.lighttigerxiv.whiskers_palette_kt.getPantherPalette
+import com.lighttigerxiv.whiskers_palette_kt.getTigerPalette
 
 
-object AppTheme{
-    object Blue{
-        object Dark{
+object AppTheme {
+    object Blue {
+        object Dark {
             val PRIMARY = Color(0xFFA6C8FF)
             val ON_PRIMARY = Color(0xFF003060)
             val PRIMARY_CONTAINER = Color(0xFF004787)
@@ -38,7 +40,8 @@ object AppTheme{
             val INVERSE_PRIMARY = Color(0xFF225FA6)
             val SURFACE_TINT = Color(0xFFA6C8FF)
         }
-        object Light{
+
+        object Light {
             val PRIMARY = Color(0xFF225FA6)
             val ON_PRIMARY = Color(0xFFFFFFFF)
             val PRIMARY_CONTAINER = Color(0xFFD5E3FF)
@@ -69,8 +72,8 @@ object AppTheme{
         }
     }
 
-    object Red{
-        object Dark{
+    object Red {
+        object Dark {
             val PRIMARY = Color(0xFFFFB3B0)
             val ON_PRIMARY = Color(0xFF680010)
             val PRIMARY_CONTAINER = Color(0xFF92001B)
@@ -100,7 +103,7 @@ object AppTheme{
             val SURFACE_TINT = Color(0xFFFFB3B0)
         }
 
-        object Light{
+        object Light {
             val PRIMARY = Color(0xFFBF0027)
             val ON_PRIMARY = Color(0xFFFFFFFF)
             val PRIMARY_CONTAINER = Color(0xFFFFDAD8)
@@ -131,8 +134,8 @@ object AppTheme{
         }
     }
 
-    object Purple{
-        object Dark{
+    object Purple {
+        object Dark {
             val PRIMARY = Color(0xFFCFBCFF)
             val ON_PRIMARY = Color(0xFF381E72)
             val PRIMARY_CONTAINER = Color(0xFF4F378A)
@@ -161,7 +164,8 @@ object AppTheme{
             val INVERSE_PRIMARY = Color(0xFF6750A4)
             val SURFACE_TINT = Color(0xFFCFBCFF)
         }
-        object Light{
+
+        object Light {
             val PRIMARY = Color(0xFF6750A4)
             val ON_PRIMARY = Color(0xFFFFFFFF)
             val PRIMARY_CONTAINER = Color(0xFFE9DDFF)
@@ -192,8 +196,8 @@ object AppTheme{
         }
     }
 
-    object Yellow{
-        object Dark{
+    object Yellow {
+        object Dark {
             val PRIMARY = Color(0xFFE2C624)
             val ON_PRIMARY = Color(0xFF393000)
             val PRIMARY_CONTAINER = Color(0xFF524600)
@@ -222,7 +226,8 @@ object AppTheme{
             val INVERSE_PRIMARY = Color(0xFF6D5E00)
             val SURFACE_TINT = Color(0xFFE2C624)
         }
-        object Light{
+
+        object Light {
             val PRIMARY = Color(0xFF6D5E00)
             val ON_PRIMARY = Color(0xFFFFFFFF)
             val PRIMARY_CONTAINER = Color(0xFFFFE249)
@@ -253,8 +258,8 @@ object AppTheme{
         }
     }
 
-    object Orange{
-        object Dark{
+    object Orange {
+        object Dark {
             val PRIMARY = Color(0xFFFFB781)
             val ON_PRIMARY = Color(0xFF4E2600)
             val PRIMARY_CONTAINER = Color(0xFF6F3800)
@@ -283,7 +288,8 @@ object AppTheme{
             val INVERSE_PRIMARY = Color(0xFF924B00)
             val SURFACE_TINT = Color(0xFFFFB781)
         }
-        object Light{
+
+        object Light {
             val PRIMARY = Color(0xFF924B00)
             val ON_PRIMARY = Color(0xFFFFFFFF)
             val PRIMARY_CONTAINER = Color(0xFFFFDCC4)
@@ -314,8 +320,8 @@ object AppTheme{
         }
     }
 
-    object Green{
-        object Dark{
+    object Green {
+        object Dark {
             val PRIMARY = Color(0xFF8CDB55)
             val ON_PRIMARY = Color(0xFF173800)
             val PRIMARY_CONTAINER = Color(0xFF245100)
@@ -344,7 +350,8 @@ object AppTheme{
             val INVERSE_PRIMARY = Color(0xFF326B00)
             val SURFACE_TINT = Color(0xFF8CDB55)
         }
-        object Light{
+
+        object Light {
             val PRIMARY = Color(0xFF326B00)
             val ON_PRIMARY = Color(0xFFFFFFFF)
             val PRIMARY_CONTAINER = Color(0xFFA7F86E)
@@ -375,8 +382,8 @@ object AppTheme{
         }
     }
 
-    object Pink{
-        object Dark{
+    object Pink {
+        object Dark {
             val PRIMARY = Color(0xFFF6ADFD)
             val ON_PRIMARY = Color(0xFF50155C)
             val PRIMARY_CONTAINER = Color(0xFF6A2E74)
@@ -405,7 +412,8 @@ object AppTheme{
             val INVERSE_PRIMARY = Color(0xFF84468E)
             val SURFACE_TINT = Color(0xFFF6ADFD)
         }
-        object Light{
+
+        object Light {
             val PRIMARY = Color(0xFF84468E)
             val ON_PRIMARY = Color(0xFFFFFFFF)
             val PRIMARY_CONTAINER = Color(0xFFFFD5FF)
@@ -436,7 +444,7 @@ object AppTheme{
         }
     }
 
-    object CatppuccinMocha{
+    object CatppuccinMocha {
         val BACKGROUND = Color(getMochaColors().base.hex.asLong())
         val SURFACE = Color(getMochaColors().base.hex.asLong())
         val ON_PRIMARY = Color(getMochaColors().crust.hex.asLong())
@@ -459,7 +467,7 @@ object AppTheme{
         val LAVENDER = Color(getMochaColors().lavender.hex.asLong())
     }
 
-    object CatppuccinMacchiato{
+    object CatppuccinMacchiato {
         val BACKGROUND = Color(getMacchiatoColors().base.hex.asLong())
         val SURFACE = Color(getMacchiatoColors().base.hex.asLong())
         val ON_PRIMARY = Color(getMacchiatoColors().crust.hex.asLong())
@@ -481,7 +489,8 @@ object AppTheme{
         val BLUE = Color(getMacchiatoColors().blue.hex.asLong())
         val LAVENDER = Color(getMacchiatoColors().lavender.hex.asLong())
     }
-    object CatppuccinFrappe{
+
+    object CatppuccinFrappe {
         val BACKGROUND = Color(getFrappeColors().base.hex.asLong())
         val SURFACE = Color(getFrappeColors().base.hex.asLong())
         val ON_PRIMARY = Color(getFrappeColors().crust.hex.asLong())
@@ -504,7 +513,7 @@ object AppTheme{
         val LAVENDER = Color(getFrappeColors().lavender.hex.asLong())
     }
 
-    object CatppuccinLatte{
+    object CatppuccinLatte {
         val BACKGROUND = Color(getLatteColors().base.hex.asLong())
         val SURFACE = Color(getLatteColors().base.hex.asLong())
         val ON_PRIMARY = Color(getLatteColors().crust.hex.asLong())
@@ -525,5 +534,35 @@ object AppTheme{
         val SAPPHIRE = Color(getLatteColors().sapphire.hex.asLong())
         val BLUE = Color(getLatteColors().blue.hex.asLong())
         val LAVENDER = Color(getLatteColors().lavender.hex.asLong())
+    }
+
+    object WhiskersPanther {
+        val BACKGROUND = Color(getPantherPalette().neutralTwo.asLong())
+        val SURFACE = Color(getPantherPalette().neutralTwo.asLong())
+        val ON_PRIMARY = Color(getPantherPalette().neutral.asLong())
+        val ON_SURFACE = Color(getPantherPalette().text.asLong())
+        val SURFACE_VARIANT = Color(getPantherPalette().neutralFor.asLong())
+        val ON_SURFACE_VARIANT = Color(getPantherPalette().text.asLong())
+        val BANANA = Color(getPantherPalette().banana.asLong())
+        val BLUEBERRY = Color(getPantherPalette().blueberry.asLong())
+        val CHERRY = Color(getPantherPalette().cherry.asLong())
+        val GRAPE = Color(getPantherPalette().grape.asLong())
+        val KIWI = Color(getPantherPalette().kiwi.asLong())
+        val TANGERINE = Color(getPantherPalette().tangerine.asLong())
+    }
+
+    object WhiskersTiger {
+        val BACKGROUND = Color(getTigerPalette().neutralTwo.asLong())
+        val SURFACE = Color(getTigerPalette().neutralTwo.asLong())
+        val ON_PRIMARY = Color(getTigerPalette().neutral.asLong())
+        val ON_SURFACE = Color(getTigerPalette().text.asLong())
+        val SURFACE_VARIANT = Color(getTigerPalette().neutralFor.asLong())
+        val ON_SURFACE_VARIANT = Color(getTigerPalette().text.asLong())
+        val BANANA = Color(getTigerPalette().banana.asLong())
+        val BLUEBERRY = Color(getTigerPalette().blueberry.asLong())
+        val CHERRY = Color(getTigerPalette().cherry.asLong())
+        val GRAPE = Color(getTigerPalette().grape.asLong())
+        val KIWI = Color(getTigerPalette().kiwi.asLong())
+        val TANGERINE = Color(getTigerPalette().tangerine.asLong())
     }
 }

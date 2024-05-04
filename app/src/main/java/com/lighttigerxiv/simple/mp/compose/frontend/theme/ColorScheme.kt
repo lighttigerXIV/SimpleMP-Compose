@@ -482,3 +482,27 @@ fun getLatteScheme(accent: Color): ColorScheme {
         onSurfaceVariant = AppTheme.CatppuccinLatte.ON_SURFACE_VARIANT
     )
 }
+
+fun getPantherScheme(accent: Color): ColorScheme {
+    return darkColorScheme(
+        background = AppTheme.WhiskersPanther.BACKGROUND,
+        primary = accent,
+        onPrimary = AppTheme.WhiskersPanther.ON_PRIMARY,
+        surface = AppTheme.WhiskersPanther.SURFACE,
+        onSurface = AppTheme.WhiskersPanther.ON_SURFACE,
+        surfaceVariant = AppTheme.WhiskersPanther.SURFACE_VARIANT,
+        onSurfaceVariant = AppTheme.WhiskersPanther.ON_SURFACE_VARIANT
+    )
+}
+
+fun getTigerScheme(accent: Color): ColorScheme {
+    return darkColorScheme(
+        background = AppTheme.WhiskersTiger.BACKGROUND,
+        primary = accent,
+        onPrimary = AppTheme.WhiskersTiger.ON_PRIMARY,
+        surface = AppTheme.WhiskersTiger.SURFACE,
+        onSurface = AppTheme.WhiskersTiger.ON_SURFACE,
+        surfaceVariant = AppTheme.WhiskersTiger.SURFACE_VARIANT,
+        onSurfaceVariant = AppTheme.WhiskersTiger.ON_SURFACE_VARIANT
+    )
+}

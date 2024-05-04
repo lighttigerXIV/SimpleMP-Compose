@@ -63,12 +63,12 @@ class PlayerVM(
     val uiState = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.IO) {
             settingsRepository.settingsFlow.collect { settings ->
                 _uiState.update { uiState.value.copy(keepScreenOnCarPlayer = settings.keepScreenOnCarPlayer) }
             }
         }
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.IO) {
             playbackRepository.playlistsState.collect { newPlaylistsState ->
                 if (newPlaylistsState != null) {
                     _uiState.update {
@@ -83,7 +83,7 @@ class PlayerVM(
             }
         }
 
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.IO) {
             playbackRepository.currentSongState.collect { newCurrentSongState ->
                 if (newCurrentSongState != null) {
                     _uiState.update {
@@ -98,7 +98,7 @@ class PlayerVM(
             }
         }
 
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch(Dispatchers.IO) {
             playbackRepository.playbackState.collect { newPlaybackState ->
                 if (newPlaybackState != null) {
                     _uiState.update {

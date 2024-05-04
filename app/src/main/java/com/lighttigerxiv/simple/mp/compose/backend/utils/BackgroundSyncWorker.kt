@@ -9,13 +9,17 @@ class BackgroundSyncWorker(private val appContext: Context, params: WorkerParame
     override suspend fun doWork(): Result {
 
         val app = (appContext.applicationContext as SimpleMPApplication)
-        val libraryRepository = app.container.libraryRepository;
-        val settingsRepository = app.container.settingsRepository;
+        val libraryRepository = app.container.libraryRepository
+        val settingsRepository = app.container.settingsRepository
 
-        settingsRepository.settingsFlow.collect{
-            if(it.setupCompleted && !libraryRepository.indexingLibrary.value){
+        println("Sprigatito")
+
+        libraryRepository.setAppInitialized(true)
+
+        settingsRepository.settingsFlow.collect {
+            if (it.setupCompleted && !libraryRepository.indexingLibrary.value) {
                 libraryRepository.initLibrary()
-                libraryRepository.indexLibrary(app);
+                libraryRepository.indexLibrary(app)
             }
         }
 

@@ -38,8 +38,11 @@ class LibraryRepository(
 
     private val queries = Queries(getRealm())
 
-    private val _initialized = MutableStateFlow(false)
-    val initialized = _initialized.asStateFlow()
+    private val _appInitialized = MutableStateFlow(false)
+    val appInitialized = _appInitialized.asStateFlow()
+    fun setAppInitialized(value: Boolean){
+        _appInitialized.update { value }
+    }
 
     private val _songs = MutableStateFlow<List<Song>>(ArrayList())
     val songs = _songs.asStateFlow()
